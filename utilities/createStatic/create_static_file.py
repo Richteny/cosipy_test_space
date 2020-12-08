@@ -16,9 +16,15 @@ aggregate = False
 elevation_test = True
 
 ### input digital elevation model (DEM)
+<<<<<<< HEAD
 dem_path_tif = static_folder + 'DEM/ALOS_N039E071_AVE_DSM.tif'
 ### input shape of glacier or study area, e.g. from the Randolph glacier inventory
 shape_path = static_folder + 'Shapefiles/abramov_rgi6.shp'
+=======
+dem_path_tif = static_folder + 'DEM/ALOS_N029E102_AVE_DSM.tif'
+### input shape of glacier or study area, e.g. from the Randolph glacier inventory
+shape_path = static_folder + 'Shapefiles/abramov_rgi.shp'
+>>>>>>> 5ea095e (adjusted shp and dem path)
 ### path were the static.nc file is saved
 output_path = static_folder + 'Abramov_300m_static_test.nc'
 
