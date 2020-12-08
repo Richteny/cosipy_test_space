@@ -21,6 +21,11 @@ shape_path = static_folder + 'Shapefiles/Zhadang_RGI6.shp'
 output_path = static_folder + 'Zhadang_static.nc'
 
 ### to shrink the DEM use the following lat/lon corners
+#for abramov
+ul_lon = 102.035
+ul_lat = 29.98
+lr_lon = 102.065
+lr_lat = 29.95
 longitude_upper_left = '90.62'
 latitude_upper_left = '30.48'
 longitude_lower_right = '90.66'
