@@ -14,18 +14,18 @@ tile = True
 aggregate = True
 
 ### input digital elevation model (DEM)
-dem_path_tif = static_folder + 'DEM/ALOS_N029E102_AVE_DSM.tif'
+dem_path_tif = static_folder + 'DEM/ALOS_N039E071_AVE_DSM.tif'
 ### input shape of glacier or study area, e.g. from the Randolph glacier inventory
-shape_path = static_folder + 'Shapefiles/abramov_rgi.shp'
+shape_path = static_folder + 'Shapefiles/abramov_rgi6.shp'
 ### path were the static.nc file is saved
 output_path = static_folder + 'Abramov_static.nc'
 
 ### to shrink the DEM use the following lat/lon corners
 #for abramov
-longitude_upper_left = '102.035'
-latitude_upper_left = '29.98'
-longitude_lower_right = '102.065'
-latitude_lower_right = '29.95'
+longitude_upper_left = '71.48'
+latitude_upper_left = '39.67'
+longitude_lower_right = '71.61'
+latitude_lower_right = '39.57'
 
 ### to aggregate the DEM to a coarser spatial resolution
 aggregate_degree = '0.003'
