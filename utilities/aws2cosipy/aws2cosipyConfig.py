@@ -27,7 +27,7 @@ RRR_var = 'RRR'
 U2_var = 'U2'
 
 # Incoming longwave radiation
-LWin_var = 'LWinCor_Avg'
+LWin_var = 'LWin'
 
 # Snowfall
 SNOWFALL_var = 'SNOWFALL'
