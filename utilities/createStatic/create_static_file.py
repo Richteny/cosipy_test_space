@@ -22,10 +22,10 @@ output_path = static_folder + 'Abramov_static.nc'
 
 ### to shrink the DEM use the following lat/lon corners
 #for abramov
-longitude_upper_left = '71.48'
-latitude_upper_left = '39.67'
-longitude_lower_right = '71.61'
-latitude_lower_right = '39.57'
+longitude_upper_left = '71.49'
+latitude_upper_left = '39.66'
+longitude_lower_right = '71.60'
+latitude_lower_right = '39.58'
 
 ### to aggregate the DEM to a coarser spatial resolution
 aggregate_degree = '0.003'
