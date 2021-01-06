@@ -53,7 +53,8 @@ WRF = False
 radiationModule = True
 
 # Time zone
-timezone_lon = 90.0
+#Abramov in time zone 75 = +5 hours
+timezone_lon = 75.0
 
 # Zenit threshold (>threshold == zenit): maximum potential solar zenith angle during the whole year, specific for each location
 zeni_thld = 85.0            # I you do not know the exact value for your location, set value to 89.0
