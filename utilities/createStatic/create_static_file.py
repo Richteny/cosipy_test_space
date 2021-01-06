@@ -56,7 +56,7 @@ os.system('gdal_translate -of NETCDF ' + dem_path_tif  + ' ' + dem_path)
 os.system('gdaldem slope -of NETCDF ' + dem_path + ' ' + slope_path + ' -s 111120')
 
 ### calculate aspect from DEM
-aspect = np.flipud(rd.TerrainAttribute(rd.LoadGDAL(dem_path_tif, no_data= -9999), attrib = 'aspect'))
+aspect = np.flipud(rd.TerrainAttribute(rd.LoadGDAL(dem_path_tif, no_data= np.nan), attrib = 'aspect'))
 
 ### calculate mask as NetCDF with DEM and shapefile
 os.system('gdalwarp -of NETCDF  --config GDALWARP_IGNORE_BAD_CUTLINE YES -cutline ' + shape_path + ' ' + dem_path_tif  + ' ' + mask_path)
