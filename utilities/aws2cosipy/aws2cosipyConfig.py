@@ -70,8 +70,8 @@ hgt = 5665.0
 #------------------------
 # Interpolation arguments 
 #------------------------
-stationName = 'Zhadang'
-stationAlt = 5665.0
+stationName = 'Abramov'
+stationAlt = 4193.866
 
 lapse_T         = -0.006    # Temp K per  m
 lapse_RH        =  0.000    # RH % per  m (0 to 1)
