@@ -6,9 +6,9 @@
 #-----------------------------------
 # SIMULATION PERIOD 
 #-----------------------------------
-# Zhadang
-time_start = '2009-01-01T06:00'
-time_end   = '2009-01-10T00:00'
+# Abramov
+time_start = '2016-01-01T06:00'
+time_end   = '2016-12-31T00:00'
 
 # Hintereisferner
 #time_start = '2018-09-17T08:00'
@@ -23,8 +23,8 @@ time_end_str=(time_end[0:10]).replace('-','')
 data_path = './data/'
 
 # Zhadang example
-input_netcdf= 'Zhadang/Zhadang_ERA5_2009.nc'
-output_netcdf = 'Zhadang_ERA5_'+time_start_str+'-'+time_end_str+'.nc'
+input_netcdf= 'Abramov/Abramov_ERA5L_2016.nc'
+output_netcdf = 'Abramov_agg_ERA5L_'+time_start_str+'-'+time_end_str+'.nc'
 
 # Hintereisferner example
 #input_netcdf = 'HEF/HEF_input.nc'
@@ -67,7 +67,7 @@ compression_level = 2                                       # Choose value betwe
 #-----------------------------------
 # PARALLELIZATION 
 #-----------------------------------
-slurm_use = False                                           # use SLURM
+slurm_use = True                                          # use SLURM
 workers = None                                              # number of workers, if local cluster is used
 local_port = 8786                                           # port for local cluster
 
@@ -81,7 +81,7 @@ if WRF_X_CSPY:
 #-----------------------------------
 # TOTAL PRECIPITATION  
 #-----------------------------------
-force_use_TP = False                                        # If total precipitation and snowfall in input data;
+force_use_TP = True                                        # If total precipitation and snowfall in input data;
                                                             # use total precipitation
 
 #-----------------------------------

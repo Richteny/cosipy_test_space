@@ -1,15 +1,8 @@
 #!/bin/bash -l
 
 # The batch system should use the current directory as working directory.
-#SBATCH --job-name=REAL
-#SBATCH --nodes=1
-#SBATCH --ntasks-per-node=20
-#SBATCH --time=03:00:00
 
-module load intel64 netcdf 
 
-export KMP_STACKSIZE=64000000
-export OMP_NUM_THREADS=1
-ulimit -s unlimited
+module load anaconda/2019.07 
 
-python3 aws2cosipy.py -c ../../data/input/Zhadang/Zhadang_ERA5_200901_short.csv -o ../../data/input/Zhadang/Zhadang_ERA5_2009.nc -s ../../data/static/Zhadang_static.nc -b 20090101 -e 20091231 
+python3 aws2cosipy.py -c ../../data/input/Abramov/Abramov_ERA5L_1981_2019.csv -o ../../data/input/Abramov/Abramov_ERA5L_2016.nc -s ../../data/static/Abramov_static.nc -b 20160101 -e 20161231 
