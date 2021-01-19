@@ -1,5 +1,5 @@
 /programs/anaconda/2019.07/lib/python3.7/site-packages/dask_jobqueue/config.py:12: YAMLLoadWarning: calling yaml.load() without Loader=... is deprecated, as the default Loader is unsafe. Please read https://msg.pyyaml.org/load for full details.
   defaults = yaml.load(f)
+INFO:__main__:COSIPY simulation started
 /programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
   "diagnostics_port has been deprecated. "
-slurmstepd: error: *** JOB 11452 ON node01 CANCELLED AT 2021-01-13T18:08:21 ***

@@ -7,8 +7,8 @@
 # SIMULATION PERIOD 
 #-----------------------------------
 # Abramov
-time_start = '2009-01-01T06:00'
-time_end   = '2019-12-31T00:00'
+time_start = '2016-08-29T06:00'
+time_end   = '2016-09-30T00:00'
 
 # Hintereisferner
 #time_start = '2018-09-17T08:00'
@@ -23,8 +23,8 @@ time_end_str=(time_end[0:10]).replace('-','')
 data_path = './data/'
 
 # Zhadang example
-input_netcdf= 'Abramov/Abramov_ERA5L_2016.nc'
-output_netcdf = 'Abramov_agg_ERA5L_'+time_start_str+'-'+time_end_str+'.nc'
+input_netcdf= 'Abramov/Abramov_n_agg_ERA5L_06_09_2016.nc'
+output_netcdf = 'Abramov_n_agg_ERA5L_'+time_start_str+'-'+time_end_str+'.nc'
 
 # Hintereisferner example
 #input_netcdf = 'HEF/HEF_input.nc'
