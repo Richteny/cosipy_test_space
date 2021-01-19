@@ -3,7 +3,7 @@
 #SBATCH --job-name="MaEraAbr"
 #SBATCH --qos=short
 #SBATCH --nodes=1
-#SBATCH --ntasks-per-node=10
+#SBATCH --ntasks-per-node=20
 #SBATCH --chdir=/data/scratch/richteny/thesis/cosipy/
 #SBATCH --account=morsanat
 #SBATCH --error=Control_master.err
