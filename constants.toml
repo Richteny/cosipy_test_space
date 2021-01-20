@@ -1,6 +1,6 @@
 [GENERAL]
 dt = 3600                                       # Time step in the input files [s]
-max_layers = 200                                # Max. number of layers, just for the restart file
+max_layers = 50                                # og. 200, Max. number of layers, just for the restart file
 z = 2.0                                         # Measurement height [m]
 
 [PARAMETERIZATIONS]
