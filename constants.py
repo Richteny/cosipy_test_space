@@ -6,7 +6,7 @@ from config import WRF_X_CSPY
 
 ' GENERAL INFORMATION ' 
 dt = 3600                                       # Time step in the input files [s]
-max_layers = 200                                # Max. number of layers, just for the restart file
+max_layers = 50                                # og. 200, Max. number of layers, just for the restart file
 z = 2.0                                         # Measurement height [m]
 
 ' PARAMETERIZATIONS '
@@ -17,7 +17,7 @@ penetrating_method = 'Bintanja95'               # possibilities: 'Bintanja95'
 roughness_method = 'Moelg12'                    # possibilities: 'Moelg12'
 saturation_water_vapour_method = 'Sonntag90'    # possibilities: 'Sonntag90'
 thermal_conductivity_method = 'bulk'		    # possibilities: 'bulk', 'empirical'
-sfc_temperature_method = 'SLSQP'                # possibilities: 'L-BFGS-B', 'SLSQP'(faster), 'Newton' (Secant, fastest)'
+sfc_temperature_method = 'Newton'                # possibilities: 'L-BFGS-B', 'SLSQP'(faster), 'Newton' (Secant, fastest)'
 
 # WRF_X_CSPY: for efficiency and consistency
 if WRF_X_CSPY:
