@@ -1,26 +1,28 @@
 20
 
- Maximum available time interval from 2016-06-01T00:00 until 2016-09-30T23:00. Time steps: 2928 
+ Maximum available time interval from 1981-01-01T06:00 until 2020-01-01T04:00. Time steps: 341855 
 
 
 --------------------------------------------------------------
-	 Integration from 2016-08-29T06:00 to 2016-09-30T00:00
+	 Integration from 2009-01-01T00:00 to 2019-12-31T23:00
 --------------------------------------------------------------
 
 --------------------------------------------------------------
 Checking input data .... 
 
 Temperature data (T2) ... ok 
+Please check the input data, its seems they are out of range T2 MAX: 293.03 MIN: 233.00 
+
 Relative humidity data (RH2) ... ok 
 Shortwave data (G) ... ok 
 Wind velocity data (U2) ... ok 
 Precipitation data (RRR) ... ok 
 Pressure data (PRES) ... ok 
 Incoming longwave data (LWin) ... ok 
-Please check the input data, its seems they are out of range Lwin MAX: 324.89 MIN: 0.00 
+Please check the input data, its seems they are out of range Lwin MAX: 364.94 MIN: 86.75 
 
 
- Glacier gridpoints: 29027 
+ Glacier gridpoints: 254 
 
 
 
@@ -47,7 +49,7 @@ JOB_ID=${SLURM_JOB_ID%;*}
 
 
 
-/programs/anaconda/2019.07/bin/python -m distributed.cli.dask_worker tcp://192.168.1.11:8786 --nthreads 0 --nprocs 20 --memory-limit 3.00GB --name WoEraAbr--${JOB_ID}-- --death-timeout 60 --local-directory logs/dask-worker-space
+/programs/anaconda/2019.07/bin/python -m distributed.cli.dask_worker tcp://192.168.1.1:8786 --nthreads 0 --nprocs 20 --memory-limit 3.00GB --name WoEraAbr--${JOB_ID}-- --death-timeout 60 --local-directory logs/dask-worker-space
 
 You are using SLURM!
 
@@ -58,9 +60,9 @@ SLURMCluster(cores=0, memory=0 B, workers=0/0, jobs=0/0)
 -------------------------------------------------------------- 
 
 SLURMCluster(cores=0, memory=0 B, workers=0/280, jobs=0/14)
-<Client: scheduler='tcp://192.168.1.11:8786' processes=0 cores=0>
-168480 280 601
-	 Time required to do calculations:   27 minutes 56.5396 seconds 
+<Client: scheduler='tcp://192.168.1.1:8786' processes=0 cores=0>
+999 280 3
+	 Time required to do calculations:    6 minutes 10.2746 seconds 
 
 
 
@@ -68,9 +70,9 @@ SLURMCluster(cores=0, memory=0 B, workers=0/280, jobs=0/14)
 Write results ...
 -------------------------------------------------------------- 
 
-	 Time required tor write restart and output files:    2 minutes 48.1413 seconds 
+	 Time required tor write restart and output files:    0 minutes 43.6748 seconds 
 
-	 Total run duration:   30 minutes 48.3216 seconds 
+	 Total run duration:    6 minutes 55.8323 seconds 
 
 --------------------------------------------------------------
 	 SIMULATION WAS SUCCESSFUL
