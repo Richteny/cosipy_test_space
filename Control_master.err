@@ -3,3 +3,16 @@
 INFO:__main__:COSIPY simulation started
 /programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
   "diagnostics_port has been deprecated. "
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/worker.py:3177: UserWarning: Large object of size 6.17 MB detected in task graph: 
+  [<xarray.Dataset>
+Dimensions:  (time: 96408)
+Coord ... 1 147.2, 3, 23]
+Consider scattering large objects ahead of time
+with client.scatter to reduce scheduler burden and 
+keep data on workers
+
+    future = client.submit(func, big_data)    # bad
+
+    big_future = client.scatter(big_data)     # good
+    future = client.submit(func, big_future)  # good
+  % (format_bytes(len(b)), s)
