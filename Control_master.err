@@ -1,21 +1,18 @@
 /programs/anaconda/2019.07/lib/python3.7/site-packages/dask_jobqueue/config.py:12: YAMLLoadWarning: calling yaml.load() without Loader=... is deprecated, as the default Loader is unsafe. Please read https://msg.pyyaml.org/load for full details.
   defaults = yaml.load(f)
 INFO:__main__:COSIPY simulation started
-Traceback (most recent call last):
-  File "/data/scratch/richteny/thesis/cosipy/COSIPY.py", line 366, in <module>
-    main()
-  File "/data/scratch/richteny/thesis/cosipy/COSIPY.py", line 59, in main
-    DATA = IO.create_data_file() 
-  File "/data/scratch/richteny/thesis/cosipy/cosipy/cpkernel/io.py", line 62, in create_data_file
-    self.init_data_dataset()  # If no restart, read data according to the dates defined in the config.py
-  File "/data/scratch/richteny/thesis/cosipy/cosipy/cpkernel/io.py", line 177, in init_data_dataset
-    check(self.DATA.T2, 313.16, 243.16)
-  File "/data/scratch/richteny/thesis/cosipy/cosipy/cpkernel/io.py", line 172, in check
-    if np.nanmax(field) > max or np.nanmin(field) < min:
-  File "/programs/anaconda/2019.07/lib/python3.7/site-packages/numpy/lib/nanfunctions.py", line 411, in nanmax
-    res = np.amax(a, axis=axis, out=out, **kwargs)
-  File "/programs/anaconda/2019.07/lib/python3.7/site-packages/numpy/core/fromnumeric.py", line 2505, in amax
-    initial=initial)
-  File "/programs/anaconda/2019.07/lib/python3.7/site-packages/numpy/core/fromnumeric.py", line 86, in _wrapreduction
-    return ufunc.reduce(obj, axis, dtype, out, **passkwargs)
-ValueError: zero-size array to reduction operation maximum which has no identity
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/worker.py:3177: UserWarning: Large object of size 5.05 MB detected in task graph: 
+  [<xarray.Dataset>
+Dimensions:  (time: 78888)
+Coord ... 9 226.1, 5, 41]
+Consider scattering large objects ahead of time
+with client.scatter to reduce scheduler burden and 
+keep data on workers
+
+    future = client.submit(func, big_data)    # bad
+
+    big_future = client.scatter(big_data)     # good
+    future = client.submit(func, big_future)  # good
+  % (format_bytes(len(b)), s)

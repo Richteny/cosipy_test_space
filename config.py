@@ -7,8 +7,8 @@
 # SIMULATION PERIOD 
 #-----------------------------------
 # Abramov
-time_start = '2016-01-01T00:00'
-time_end   = '2016-03-31T23:59'
+time_start = '2010-12-31T00:00'
+time_end   = '2019-12-31T00:00' #2010 01010
 
 # Hintereisferner
 #time_start = '2018-09-17T08:00'
@@ -25,8 +25,8 @@ data_path = './data/'
 # Zhadang example
 # n_agg version -> 'Abramov/Abramov_n_agg_ERA5L_06_09_2016.nc'
 # agg version ->  'Abramov/Abramov_ERA5L_1981_2019.nc'
-input_netcdf= 'Abramov/Abramov_n_agg_ERA5L__2016.nc'
-output_netcdf = 'Abramov_n_agg_ERA5L_'+time_start_str+'-'+time_end_str+'.nc'
+input_netcdf= 'Abramov/Abramov_180m_ERA5L_fix_2000_2019.nc'
+output_netcdf = 'Abramov_180m_ERA5L_fix_adj_precp_MB_'+time_start_str+'-'+time_end_str+'.nc'
 
 # Hintereisferner example
 #input_netcdf = 'HEF/HEF_input.nc'
@@ -35,7 +35,7 @@ output_netcdf = 'Abramov_n_agg_ERA5L_'+time_start_str+'-'+time_end_str+'.nc'
 #-----------------------------------
 # RESTART 
 #-----------------------------------
-restart = False                                             # set to true if you want to start from restart file
+restart = True                                             # set to true if you want to start from restart file
 
 #-----------------------------------
 # STAKE DATA 
