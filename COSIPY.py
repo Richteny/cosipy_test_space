@@ -67,14 +67,61 @@ def main():
     #----------------------------------------------
 
     # Auxiliary variables for futures
-    futures = []
+    #futures = []
 
     # Measure time
     start_time = datetime.now()
 
+    #here lapse rate changes
+    #if run_multiple_lapse_rates:
+    df_tsl_stats = pd.DataFrame(columns={'LR_T2':[],
+                                         'LR_RRR':[],
+                                         'RMSE':[],
+                                         'R2':[],
+                                         'MBE':[],
+                                         'MAE':[]})
+    #check if lapse rate in aws2cosipy - 
+    from utilities.aws2cosipy.aws2cosipyConfig import lapse_T, lapse_RRR
+    if lapse_T != 0:
+        print("Attention! AWS2cosipy contains a temperature lapse rate that is not zero. \nPlease be sure the input file is not constructed with a lapse rate.")
+    else:
+        print("No temperature lapse rate used in AWS2cosipy.")    
+
+    if lapse_RRR != 0:
+        print("Attention! AWS2cosipy contains a precipitation lapse rate that is not zero. \nPlease be sure the input file is not constructed with a lapse rate.")
+    else:
+        print("No precipitation lapse rate used in AWS2cosipy.") 
+    
+    #why np.max for RRR in aws2cosipy?
+    #calculate temperature with lapse rate
+
+    for lapse_T in lapse_T_range:
+    
+        for lapse_RRR in lapse_RRR_range:
+            
+            if (restart == True):
+                DATA = IO.create_data_file(suffix="_lrT_{}_lrRRR_{}".format(abs(lapse_T),lapse_RRR))
+            else:
+                DATA = IO.create_data_file()
+            RESULT = IO.create_result_file() 
+            RESTART = IO.create_restart_file()
+
+            futures= []
+  
+            print("Starting run with lapse rates:", lapse_T, "and:", lapse_RRR) 
+            for t in range(len(DATA.time)):
+                DATA.T2[t,:,:] = DATA.T2[t,:,:]+ (DATA.HGT - station_altitude)*lapse_T
+                DATA.RRR[t,:,:] = np.maximum(DATA.RRR[t,:,:]+ (DATA.HGT - station_altitude)*lapse_RRR, 0.0)
+        
+   
+
+
+    ## einrücken bis Ende von Main, stop duration von gesamtlauf oder beiden läufen kurz vor run cosipy
+
     #-----------------------------------------------
     # Create a client for distributed calculations
     #-----------------------------------------------
+
     if Config.slurm_use:
         SlurmConfig()
         with SLURMCluster(
@@ -104,6 +151,7 @@ def main():
     #-----------------------------------------------
     # Write results and restart files
     #-----------------------------------------------
+<<<<<<< HEAD
     timestamp = pd.to_datetime(str(IO.get_restart().time.values)).strftime('%Y-%m-%dT%H-%M')
 
     encoding = dict()
@@ -132,15 +180,15 @@ def main():
     restart_path = create_data_directory(path='restart')
     IO.get_restart().to_netcdf(os.path.join(restart_path,f'restart_{timestamp}.nc'), encoding=encoding)
 
-    #-----------------------------------------------
     # Stop time measurement
     #-----------------------------------------------
-    duration_run = datetime.now() - start_time
-    duration_run_writing = datetime.now() - start_writing
+            duration_run = datetime.now() - start_time
+            duration_run_writing = datetime.now() - start_writing
 
     #-----------------------------------------------
     # Print out some information
     #-----------------------------------------------
+
     get_time_required(
         action="write restart and output files", times=duration_run_writing
     )
@@ -366,7 +414,6 @@ def set_output_netcdf_path() -> str:
     output_path = f"{Config.output_prefix}_{time_start}-{time_end}.nc"
 
     return output_path
-
 
 def start_logging():
     """Start the python logging"""
