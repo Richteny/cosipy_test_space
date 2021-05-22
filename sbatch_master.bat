@@ -4,10 +4,10 @@
 #SBATCH --qos=short
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=20
-#SBATCH --chdir=/data/scratch/richteny/thesis/cosipy/
+#SBATCH --chdir=/data/scratch/richteny/thesis/cosipy_test_space/
 #SBATCH --account=morsanat
 #SBATCH --error=Control_master.err
-##SBATCH --partition=computehm
+#SBATCH --partition=computehm
 #SBATCH --output=Control_master.out
 #SBATCH --mail-type=ALL
 
@@ -18,6 +18,6 @@ echo $SLURM_CPUS_ON_NODE
 
 module load anaconda/2019.07
 
-python -u /data/scratch/richteny/thesis/cosipy/COSIPY.py
+python -u /data/scratch/richteny/thesis/cosipy_test_space/COSIPY.py
 
 
