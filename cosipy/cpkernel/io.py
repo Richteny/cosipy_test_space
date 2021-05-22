@@ -37,6 +37,7 @@ class IOClass:
         if DATA is not None:
             self.time = self.DATA.sizes["time"]
 
+
     def get_output_variables(self, variables: str) -> list:
         """Get output variable names from configuration string."""
         # Sets are unordered -> same config, different checksums
