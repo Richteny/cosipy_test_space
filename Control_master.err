@@ -3,10 +3,10 @@
 INFO:__main__:COSIPY simulation started
 /programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
   "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/worker.py:3177: UserWarning: Large object of size 5.05 MB detected in task graph: 
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/worker.py:3177: UserWarning: Large object of size 4.49 MB detected in task graph: 
   [<xarray.Dataset>
-Dimensions:  (time: 78888)
-Coord ... 9 226.1, 5, 41]
+Dimensions:  (time: 70128)
+Coord ... 1 262.9, 1, 55]
 Consider scattering large objects ahead of time
 with client.scatter to reduce scheduler burden and 
 keep data on workers
@@ -16,3 +16,9 @@ keep data on workers
     big_future = client.scatter(big_data)     # good
     future = client.submit(func, big_future)  # good
   % (format_bytes(len(b)), s)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/xarray/core/nanops.py:161: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/programs/anaconda/2019.07/lib/python3.7/site-packages/xarray/core/nanops.py:161: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
