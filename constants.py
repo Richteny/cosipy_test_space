@@ -28,7 +28,7 @@ if WRF_X_CSPY:
 ' INITIAL CONDITIONS '
 initial_snowheight_constant = 0.2               # Initial snowheight
 initial_snow_layer_heights = 0.10               # Initial thickness of snow layers
-initial_glacier_height = 80.0                   # Initial glacier height without snowlayers
+initial_glacier_height = 200.0                   # Initial glacier height without snowlayers
 initial_glacier_layer_heights = 0.5             # Initial thickness of glacier ice layers
 
 initial_top_density_snowpack = 300.0            # Top density for initial snowpack
@@ -43,7 +43,7 @@ zlt2 = 0.1					                    # Second depth for temperature interpolation 
 ' MODEL CONSTANTS '
 center_snow_transfer_function = 1.0             # center (50/50) when total precipitation is transferred to snow and rain
 spread_snow_transfer_function = 1               # 1: +-2.5
-mult_factor_RRR = 0.5                           # multiplication factor for RRR
+mult_factor_RRR = 0.65                          # multiplication factor for RRR
 
 minimum_snow_layer_height = 0.001               # minimum layer height
 minimum_snowfall = 0.001                        # minimum snowfall per time step in m which is added as new snow
