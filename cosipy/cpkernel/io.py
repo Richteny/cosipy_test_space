@@ -39,7 +39,7 @@ class IOClass:
     # Creates the input data and reads the restart file, if necessary. The function
     # returns the DATA xarray dataset which contains all input variables.
     #==============================================================================
-    def create_data_file(self):
+    def create_data_file(self, suffix=""):
         """ Returns the DATA xarray dataset"""
     
         if (restart==True):
@@ -49,8 +49,8 @@ class IOClass:
             
             # Load the restart file
             timestamp = pd.to_datetime(time_start).strftime('%Y-%m-%dT%H-%M')
-            if (os.path.isfile(os.path.join(data_path, 'restart', 'restart_'+timestamp+'.nc')) & (time_start != time_end)):
-                self.GRID_RESTART = xr.open_dataset(os.path.join(data_path, 'restart', 'restart_'+timestamp+'.nc'))
+            if (os.path.isfile(os.path.join(data_path, 'restart', 'restart_'+timestamp+'{}.nc'.format(suffix))) & (time_start != time_end)):
+                self.GRID_RESTART = xr.open_dataset(os.path.join(data_path, 'restart', 'restart_'+timestamp+'{}.nc'.format(suffix)))
                 self.restart_date = self.GRID_RESTART.time+np.timedelta64(dt,'s')     # Get time of the last calculation and add one time step
                 self.init_data_dataset()                       # Read data from the last date to the end of the data file
             else:
