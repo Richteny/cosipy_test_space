@@ -18,17 +18,17 @@ dem_path_tif = static_folder + 'DEM/ALOS_N039E071_AVE_DSM.tif'
 ### input shape of glacier or study area, e.g. from the Randolph glacier inventory
 shape_path = static_folder + 'Shapefiles/abramov_rgi6.shp'
 ### path were the static.nc file is saved
-output_path = static_folder + 'Abramov_180m_static.nc'
+output_path = static_folder + 'Abramov_9000m_static.nc'
 
 ### to shrink the DEM use the following lat/lon corners
 #for abramov
-longitude_upper_left = '71.49'
-latitude_upper_left = '39.66'
-longitude_lower_right = '71.60'
-latitude_lower_right = '39.58'
+longitude_upper_left = '71.4'
+latitude_upper_left = '39.76'
+longitude_lower_right = '71.70'
+latitude_lower_right = '39.50'
 
 ### to aggregate the DEM to a coarser spatial resolution
-aggregate_degree = '0.00166667'
+aggregate_degree = '0.0125'
 
 ### intermediate files, will be removed afterwards
 dem_path_tif_temp = static_folder + 'DEM_temp.tif'

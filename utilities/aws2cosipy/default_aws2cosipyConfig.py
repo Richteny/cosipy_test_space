@@ -73,7 +73,7 @@ hgt = 5665.0
 stationName = 'Abramov'
 stationAlt = 4193.866
 
-lapse_T         =  -0.0061    # Temp K per  m Barandun et al. 2018 -0.0048
+lapse_T         = -0.006    # Temp K per  m
 lapse_RH        =  0.000    # RH % per  m (0 to 1)
-lapse_RRR       =  0.0013   # mm per m # 0.00064 from Barandun et al. 2018
+lapse_RRR       =  0.0000   # mm per m
 lapse_SNOWFALL  =  0.0000   # Snowfall % per m (0 to 1)
