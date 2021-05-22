@@ -7,8 +7,8 @@
 # SIMULATION PERIOD 
 #-----------------------------------
 # Abramov
-time_start = '2010-12-31T00:00'
-time_end   = '2019-12-31T00:00' #2010 01010
+time_start = '2010-09-30T00:00'
+time_end   = '2018-09-30T00:00' #2010 01010
 
 # Hintereisferner
 #time_start = '2018-09-17T08:00'
@@ -25,8 +25,8 @@ data_path = './data/'
 # Zhadang example
 # n_agg version -> 'Abramov/Abramov_n_agg_ERA5L_06_09_2016.nc'
 # agg version ->  'Abramov/Abramov_ERA5L_1981_2019.nc'
-input_netcdf= 'Abramov/Abramov_180m_ERA5L_fix_2000_2019.nc'
-output_netcdf = 'Abramov_180m_ERA5L_fix_adj_precp_MB_'+time_start_str+'-'+time_end_str+'.nc'
+input_netcdf= 'Abramov/Abramov_120m_ERA5L_fix_no_lr_prcp_2000_2018.nc'
+output_netcdf = 'Abramov_120m_ERA5L_fix_lr_prcp_MB_'+time_start_str+'-'+time_end_str+'.nc'
 
 # Hintereisferner example
 #input_netcdf = 'HEF/HEF_input.nc'
@@ -38,6 +38,12 @@ output_netcdf = 'Abramov_180m_ERA5L_fix_adj_precp_MB_'+time_start_str+'-'+time_e
 restart = True                                             # set to true if you want to start from restart file
 
 #-----------------------------------
+# Concatenate restarted outputs
+#-----------------------------------
+merge = True                                               # set to true if you want to concatenate outputs
+time_start_old_file = "19991001"                           # requires string of start time from previous file
+
+#-----------------------------------
 # STAKE DATA 
 #-----------------------------------
 stake_evaluation = False 
@@ -45,6 +51,24 @@ stakes_loc_file = './data/input/HEF/loc_stakes.csv'         # path to stake loca
 stakes_data_file = './data/input/HEF/data_stakes_hef.csv'   # path to stake data file
 eval_method = 'rmse'                                        # how to evaluate the simulations ('rmse')
 obs_type = 'snowheight'                                     # What kind of stake data is used 'mb' or 'snowheight'
+
+#-----------------------------------
+# TRANSIENT SNOWLINE DATA
+#-----------------------------------
+tsl_evaluation = True
+time_col_obs = 'LS_DATE'
+tsla_col_obs = 'SC_median'
+min_snowheight = 0.01                                         # Minimum snowheight in m
+tsl_data_file = './data/input/Abramov/snowlines/TSLA_Abramov.csv' # path to transient snow line altitudes dataset
+
+#-----------------------------------
+# Run mutliple Lapse Rates
+#-----------------------------------
+#import numpy as np 
+lapse_T_range = [-0.0061] #np.random.normal(-0.0061, 0.1, 10) if implementation not wanted, just give lapse rate of 0
+lapse_RRR_range = [0.0009, 0.0013] #np.random.uniform(0.0013,0.00013,10) same here
+station_altitude = 4193.866
+
 
 #-----------------------------------
 # STANDARD LAT/LON or WRF INPUT 
