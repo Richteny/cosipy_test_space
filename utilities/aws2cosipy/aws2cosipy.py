@@ -342,7 +342,7 @@ def create_2D_input(cs_file, cosipy_file, static_file, start_date, end_date, x0=
     else:
         dso = ds    
         dso.coords['time'] = df.index.values
-
+    
     #-----------------------------------
     # Order variables
     #-----------------------------------
