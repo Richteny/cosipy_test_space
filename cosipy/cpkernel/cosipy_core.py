@@ -7,12 +7,13 @@ from cosipy.cpkernel.init import init_snowpack, load_snowpack
 from cosipy.cpkernel.io import IOClass
 from cosipy.modules.albedo import updateAlbedo
 from cosipy.modules.densification import densification
-from cosipy.modules.evaluation import evaluate
+from cosipy.modules.evaluation import evaluate, resample_output, create_tsl_df, eval_tsl, resample_by_hand
 from cosipy.modules.heatEquation import solveHeatEquation
 from cosipy.modules.penetratingRadiation import penetrating_radiation
 from cosipy.modules.percolation import percolation
 from cosipy.modules.refreezing import refreezing
 from cosipy.modules.roughness import updateRoughness
+from cosipy.modules.densification import densification
 from cosipy.modules.surfaceTemperature import update_surface_temperature
 
 
