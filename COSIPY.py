@@ -45,7 +45,6 @@ from tornado import gen
 from dask_jobqueue import SLURMCluster
 
 import scipy
-
 import cProfile
 
 def main():
@@ -56,89 +55,201 @@ def main():
     # Create input and output dataset
     #------------------------------------------ 
     IO = IOClass()
-    DATA = IO.create_data_file() 
+    #DATA = IO.create_data_file() 
     
     # Create global result and restart datasets
-    RESULT = IO.create_result_file() 
-    RESTART = IO.create_restart_file() 
+    #RESULT = IO.create_result_file() 
+    #RESTART = IO.create_restart_file() 
 
     #----------------------------------------------
     # Calculation - Multithreading using all cores  
     #----------------------------------------------
     
     # Auxiliary variables for futures
-    futures = []
+    #futures = []
 
     # Measure time
     start_time = datetime.now()
 
+    #here lapse rate changes
+    #if run_multiple_lapse_rates:
+    df_tsl_stats = pd.DataFrame(columns={'LR_T2':[],
+                                         'LR_RRR':[],
+                                         'RMSE':[],
+                                         'R2':[],
+                                         'MBE':[],
+                                         'MAE':[]})
+    #check if lapse rate in aws2cosipy - 
+    from utilities.aws2cosipy.aws2cosipyConfig import lapse_T, lapse_RRR
+    if lapse_T != 0:
+        print("Attention! AWS2cosipy contains a temperature lapse rate that is not zero. \nPlease be sure the input file is not constructed with a lapse rate.")
+    else:
+        print("No temperature lapse rate used in AWS2cosipy.")    
+
+    if lapse_RRR != 0:
+        print("Attention! AWS2cosipy contains a precipitation lapse rate that is not zero. \nPlease be sure the input file is not constructed with a lapse rate.")
+    else:
+        print("No precipitation lapse rate used in AWS2cosipy.") 
+    
+    #why np.max for RRR in aws2cosipy?
+    #calculate temperature with lapse rate
+
+    for lapse_T in lapse_T_range:
+    
+        for lapse_RRR in lapse_RRR_range:
+            
+            if (restart == True):
+                DATA = IO.create_data_file(suffix="_lrT_{}_lrRRR_{}".format(abs(lapse_T),lapse_RRR))
+            else:
+                DATA = IO.create_data_file()
+            RESULT = IO.create_result_file() 
+            RESTART = IO.create_restart_file()
+
+            futures= []
+  
+            print("Starting run with lapse rates:", lapse_T, "and:", lapse_RRR) 
+            for t in range(len(DATA.time)):
+                DATA.T2[t,:,:] = DATA.T2[t,:,:]+ (DATA.HGT - station_altitude)*lapse_T
+                DATA.RRR[t,:,:] = np.maximum(DATA.RRR[t,:,:]+ (DATA.HGT - station_altitude)*lapse_RRR, 0.0)
+        
+   
+
+
+    ## einrücken bis Ende von Main, stop duration von gesamtlauf oder beiden läufen kurz vor run cosipy
+
     #-----------------------------------------------
     # Create a client for distributed calculations
     #-----------------------------------------------
-    if (slurm_use):
+            if (slurm_use):
 
-        with SLURMCluster(scheduler_port=port, cores=cores, processes=processes, memory=memory, shebang=shebang, name=name, job_extra=slurm_parameters, local_directory='logs/dask-worker-space') as cluster:
-            cluster.scale(processes * nodes)   
-            print(cluster.job_script())
-            print("You are using SLURM!\n")
-            print(cluster)
-            run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures)
+                with SLURMCluster(scheduler_port=port, cores=cores, processes=processes, memory=memory, shebang=shebang, name=name, job_extra=slurm_parameters, local_directory='logs/dask-worker-space') as cluster:
+                    cluster.scale(processes * nodes)   
+                    print(cluster.job_script())
+                    print("You are using SLURM!\n")
+                    print(cluster)
+                    run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures)
 
-    else:
-        with LocalCluster(scheduler_port=local_port, n_workers=workers, local_dir='logs/dask-worker-space', threads_per_worker=1, silence_logs=True) as cluster:
-            print(cluster)
-            run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures)
+            else:
+                with LocalCluster(scheduler_port=local_port, n_workers=workers, local_dir='logs/dask-worker-space', threads_per_worker=1, silence_logs=True) as cluster:
+                    print(cluster)
+                    run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures)
 
-    print('\n')
-    print('--------------------------------------------------------------')
-    print('Write results ...')
-    print('-------------------------------------------------------------- \n')
-    start_writing = datetime.now()
+            print('\n')
+            print('--------------------------------------------------------------')
+            print('Write results ...')
+            print('-------------------------------------------------------------- \n')
+            start_writing = datetime.now()
 
     #-----------------------------------------------
     # Write results and restart files
     #-----------------------------------------------
-    timestamp = pd.to_datetime(str(IO.get_restart().time.values)).strftime('%Y-%m-%dT%H-%M')
+            timestamp = pd.to_datetime(str(IO.get_restart().time.values)).strftime('%Y-%m-%dT%H-%M')
    
-    encoding = dict()
-    for var in IO.get_result().data_vars:
-        dataMin = IO.get_result()[var].min(skipna=True).values
-        dataMax = IO.get_result()[var].max(skipna=True).values
-        dtype = 'int16'
-        FillValue = -9999 
-        scale_factor, add_offset = compute_scale_and_offset(dataMin, dataMax, 16)
-        #encoding[var] = dict(zlib=True, complevel=compression_level, dtype=dtype, scale_factor=scale_factor, add_offset=add_offset, _FillValue=FillValue)
-        encoding[var] = dict(zlib=True, complevel=compression_level)
-  
-    IO.get_result().to_netcdf(os.path.join(data_path,'output',output_netcdf), encoding=encoding, mode = 'w')
+            encoding = dict()
+            for var in IO.get_result().data_vars:
+                dataMin = IO.get_result()[var].min(skipna=True).values
+                dataMax = IO.get_result()[var].max(skipna=True).values
+                dtype = 'int16'
+                FillValue = -9999 
+                scale_factor, add_offset = compute_scale_and_offset(dataMin, dataMax, 16)
+                #encoding[var] = dict(zlib=True, complevel=compression_level, dtype=dtype, scale_factor=scale_factor, add_offset=add_offset, _FillValue=FillValue)
+                encoding[var] = dict(zlib=True, complevel=compression_level)
+            
+            results_output_name = output_netcdf.split('.nc')[0]+'_lrT_{}_lrRRR_{}.nc'.format(abs(lapse_T), lapse_RRR)  
+            IO.get_result().to_netcdf(os.path.join(data_path,'output',results_output_name), encoding=encoding, mode = 'w')
 
-    encoding = dict()
-    for var in IO.get_restart().data_vars:
-        dataMin = IO.get_restart()[var].min(skipna=True).values
-        dataMax = IO.get_restart()[var].max(skipna=True).values
-        dtype = 'int16'
-        FillValue = -9999 
-        scale_factor, add_offset = compute_scale_and_offset(dataMin, dataMax, 16)
-        #encoding[var] = dict(zlib=True, complevel=compression_level, dtype=dtype, scale_factor=scale_factor, add_offset=add_offset, _FillValue=FillValue)
-        encoding[var] = dict(zlib=True, complevel=compression_level)
+            encoding = dict()
+            for var in IO.get_restart().data_vars:
+                dataMin = IO.get_restart()[var].min(skipna=True).values
+                dataMax = IO.get_restart()[var].max(skipna=True).values
+                dtype = 'int16'
+                FillValue = -9999 
+                scale_factor, add_offset = compute_scale_and_offset(dataMin, dataMax, 16)
+                #encoding[var] = dict(zlib=True, complevel=compression_level, dtype=dtype, scale_factor=scale_factor, add_offset=add_offset, _FillValue=FillValue)
+                encoding[var] = dict(zlib=True, complevel=compression_level)
+                
+            IO.get_restart().to_netcdf(os.path.join(data_path,'restart','restart_'+timestamp+'_lrT_{}_lrRRR_{}.nc'.format(abs(lapse_T),lapse_RRR)), encoding=encoding)
     
-    IO.get_restart().to_netcdf(os.path.join(data_path,'restart','restart_'+timestamp+'.nc'), encoding=encoding)
-    
+    #----------------------------------------------
+    # Implement TSL Extraction
+    #----------------------------------------------
+            if (restart == True) and (merge == True):
+                print("Trying to concatenate files. Requires some time.")
+                #Get name of files 
+                previous_output_name = results_output_name.replace(time_start_str, time_start_old_file).replace(time_end_str, time_start_str)
+                merged_output_name = results_output_name.replace(time_start_str, time_start_old_file)
+                previous_output = xr.open_dataset(os.path.join(data_path,'output',previous_output_name))
+                #Get variables to concat on
+                list_vars = list(IO.get_result().keys())
+                [list_vars.remove(x) for x in ['HGT','SLOPE','ASPECT','MASK']]
+                #To prevent OOM-Kill Event split into multiple datasets and add variable
+                sub_lists = [list_vars[i:i+3] for i in range(0, len(list_vars),3)]
+                ds_merged_dict = {}
+                for i in range(len(sub_lists)):
+                    print(sub_lists[i])
+                    ds_merged_dict['ds_merged_{}'.format(i)] = xr.concat([previous_output[sub_lists[i]], IO.get_result()[sub_lists[i]]], dim='time')
+                
+                for key in ds_merged_dict.keys():
+                    if key != "ds_merged_0":
+                        print(key)
+                        for var in list(ds_merged_dict[key].keys()):
+                            print(var)
+                            ds_merged_dict["ds_merged_0"][var] = ds_merged_dict[key][var]
+                
+                for var in ['HGT','MASK','SLOPE','ASPECT']:
+                    ds_merged_dict["ds_merged_0"][var] = IO.get_result()[var]
+                ds_merged_dict["ds_merged_0"].to_netcdf(os.path.join(data_path,'output',merged_output_name))    
+                    
+            if tsl_evaluation is True:
+                tsla_observations = pd.read_csv(tsl_data_file)
+                if (restart == True) and (merge == True):
+                    tsl_csv_name = 'tsla_'+merged_output_name.split('.nc')[0].lower()+'.csv'
+                    resampled_out = resample_output(ds_merged_dict["ds_merged_0"])
+                    tsl_out = calculate_tsl(resampled_out, min_snowheight)
+                    tsla_stats = eval_tsl(tsla_observations, tsl_out)
+                    print("TSLA Observed vs Modelled RMSE: " + str(tsla_stats[0]) + "; R-squared: " + str(tsla_stats[1]))
+                    tsl_out.to_csv(os.path.join(data_path,'output',tsl_csv_name))
+                    df_tsl_stats = df_tsl_stats.append({'LR_T2':lapse_T,
+                                                        'LR_RRR':lapse_RRR,
+                                                        'RMSE':tsla_stats[0],
+                                                        'R2':tsla_stats[1],
+                                                        'MBE':tsla_stats[2],
+                                                        'MAE':tsla_stats[3]}, ignore_index=True)
+                    del ds_merged_dict
+                else:
+                    tsl_csv_name = 'tsla_'+results_output_name.split('.nc')[0].lower()+'.csv'    
+                    tsla_observations = pd.read_csv(tsl_data_file)
+                    resampled_out = resample_output(IO.get_result())
+                    tsl_out = calculate_tsl(resampled_out, min_snowheight)     
+                    tsla_stats = eval_tsl(tsla_observations,tsl_out)
+                    print("TSLA Observed vs. Modelled RMSE: " + str(tsla_stats[0])+ "; R-squared: " + str(tsla_stats[1]))
+                    tsl_out.to_csv(os.path.join(data_path,'output',tsl_csv_name))
+                    df_tsl_stats = df_tsl_stats.append({'LR_T2':lapse_T,
+                                                        'LR_RRR':lapse_RRR,
+                                                        'RMSE':tsla_stats[0],
+                                                        'R2':tsla_stats[1],
+                                                        'MBE':tsla_stats[2],
+                                                        'MAE':tsla_stats[3]}, ignore_index=True)
     #-----------------------------------------------
     # Stop time measurement
     #-----------------------------------------------
-    duration_run = datetime.now() - start_time
-    duration_run_writing = datetime.now() - start_writing
+            duration_run = datetime.now() - start_time
+            duration_run_writing = datetime.now() - start_writing
 
     #-----------------------------------------------
     # Print out some information
     #-----------------------------------------------
-    print("\t Time required tor write restart and output files: %4g minutes %2g seconds \n" % (duration_run_writing.total_seconds()//60.0,duration_run_writing.total_seconds()%60.0))
-    print("\t Total run duration: %4g minutes %2g seconds \n" % (duration_run.total_seconds()//60.0,duration_run.total_seconds()%60.0))
-    print('--------------------------------------------------------------')
-    print('\t SIMULATION WAS SUCCESSFUL')
-    print('--------------------------------------------------------------')
+            print("\t Time required to write restart and output files: %4g minutes %2g seconds \n" % (duration_run_writing.total_seconds()//60.0,duration_run_writing.total_seconds()%60.0))
+            print("\t Total run duration: %4g minutes %2g seconds \n" % (duration_run.total_seconds()//60.0,duration_run.total_seconds()%60.0))
+            print('--------------------------------------------------------------')
+            print('\t SIMULATION WAS SUCCESSFUL')
+            print('--------------------------------------------------------------')
+            #re-scale to original DATA  only when DATA not in loop
+            #for t in range(len(DATA.time)):
+            #    DATA.T2[t,:,:] = DATA.T2[t,:,:]+ (DATA.HGT - station_altitude)*(lapse_T*-1)
+            #    DATA.RRR[t,:,:] = DATA.RRR[t,:,:]+ (DATA.HGT - station_altitude)*(lapse_RRR*-1) 
 
+    df_tsl_stats.to_csv(os.path.join(data_path,'output','tsla_statistics.csv'))
 
 def run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures):
 
@@ -302,7 +413,6 @@ def run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures):
             # Save the statistics and the mass balance simulations at the stakes to files
             df_stat.to_csv(os.path.join(data_path,'output','stake_statistics.csv'),sep='\t', float_format='%.2f')
             df_val.to_csv(os.path.join(data_path,'output','stake_simulations.csv'),sep='\t', float_format='%.2f')
-
 
 
 def start_logging():
