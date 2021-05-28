@@ -7,8 +7,8 @@
 # SIMULATION PERIOD 
 #-----------------------------------
 # Abramov
-time_start = '2010-09-30T00:00'
-time_end   = '2018-09-30T00:00' #2010 01010
+time_start = '1982-10-01T00:00'
+time_end   = '1992-09-30T00:00' #2010 01010
 
 # Hintereisferner
 #time_start = '2018-09-17T08:00'
@@ -22,11 +22,9 @@ time_end_str=(time_end[0:10]).replace('-','')
 
 data_path = './data/'
 
-# Zhadang example
-# n_agg version -> 'Abramov/Abramov_n_agg_ERA5L_06_09_2016.nc'
-# agg version ->  'Abramov/Abramov_ERA5L_1981_2019.nc'
-input_netcdf= 'Abramov/Abramov_120m_ERA5L_fix_no_lr_prcp_2000_2018.nc'
-output_netcdf = 'Abramov_120m_ERA5L_fix_lr_prcp_MB_'+time_start_str+'-'+time_end_str+'.nc'
+# agg version ->  'Abramov/Abramov_120m_ERA5L_fix_no_lr_prcp_2000_2018'
+input_netcdf= 'Abramov/Abramov_300m_ERA5L_fix_no_lr_1983_2000.nc'
+output_netcdf = 'kronenberg_Abramov_300m_ERA5L_fix_lr_prcp_MB_'+time_start_str+'-'+time_end_str+'.nc'
 
 # Hintereisferner example
 #input_netcdf = 'HEF/HEF_input.nc'
@@ -35,12 +33,12 @@ output_netcdf = 'Abramov_120m_ERA5L_fix_lr_prcp_MB_'+time_start_str+'-'+time_end
 #-----------------------------------
 # RESTART 
 #-----------------------------------
-restart = True                                             # set to true if you want to start from restart file
+restart = False                                             # set to true if you want to start from restart file
 
 #-----------------------------------
 # Concatenate restarted outputs
 #-----------------------------------
-merge = True                                               # set to true if you want to concatenate outputs
+merge = False                                              # set to true if you want to concatenate outputs
 time_start_old_file = "19991001"                           # requires string of start time from previous file
 
 #-----------------------------------
@@ -55,7 +53,7 @@ obs_type = 'snowheight'                                     # What kind of stake
 #-----------------------------------
 # TRANSIENT SNOWLINE DATA
 #-----------------------------------
-tsl_evaluation = True
+tsl_evaluation = False
 time_col_obs = 'LS_DATE'
 tsla_col_obs = 'SC_median'
 min_snowheight = 0.01                                         # Minimum snowheight in m
@@ -64,9 +62,9 @@ tsl_data_file = './data/input/Abramov/snowlines/TSLA_Abramov.csv' # path to tran
 #-----------------------------------
 # Run mutliple Lapse Rates
 #-----------------------------------
-#import numpy as np 
+lapse_rate_config = True                                     #switch off to run COSIPY without online lapse rate calculation
 lapse_T_range = [-0.0061] #np.random.normal(-0.0061, 0.1, 10) if implementation not wanted, just give lapse rate of 0
-lapse_RRR_range = [0.0009, 0.0013] #np.random.uniform(0.0013,0.00013,10) same here
+lapse_RRR_range = [0.0013] #np.random.uniform(0.0013,0.00013,10) same here
 station_altitude = 4193.866
 
 
