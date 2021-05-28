@@ -19,4 +19,4 @@ module load anaconda/2019.07
 
 #python aws2cosipy.py -c ../../data/input/Abramov/Abramov_ERA5L_1981_2019.csv -o ../../data/input/Abramov/Abramov_ERA5L_1981_2019.nc -s ../../data/static/Abramov_static.nc
 
-python aws2cosipy.py -c ../../data/input/Abramov/Abramov_ERA5L_fix_1982_2019.csv -o ../../data/input/Abramov/Abramov_120m_ERA5L_fix_1983_2000.nc -s ../../data/static/Abramov_120m_static.nc -b 19821001 -e 20000930
+python aws2cosipy.py -c ../../data/input/Abramov/Abramov_ERA5L_fix_1982_2019.csv -o ../../data/input/Abramov/Abramov_120m_ERA5L_fix_no_lr_2000_2018.nc -s ../../data/static/Abramov_120m_static.nc -b 19991001 -e 20190930
