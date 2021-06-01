@@ -43,6 +43,12 @@ def method_Moelg(GRID) -> float:
         Surface roughness length, [mm]
     """
 
+    # Unpack constants from NAMELIST
+    roughness_fresh_snow = NAMELIST['roughness_fresh_snow']
+    roughness_firn = NAMELIST['roughness_firn']
+    roughness_ice = NAMELIST['roughness_ice']
+    snow_ice_threshold = NAMELIST['snow_ice_threshold']
+    aging_factor_roughness = NAMELIST['aging_factor_roughness']
     # Get hours since the last snowfall
     # First get fresh snow properties (height and timestamp)
     _, fresh_snow_timestamp, _ = GRID.get_fresh_snow_props()

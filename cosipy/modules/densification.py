@@ -31,12 +31,13 @@ def densification(GRID, SLOPE, dt):
         NotImplementedError: Densification method is not allowed.
     """
     densification_allowed = ['Boone', 'Vionnet', 'empirical', 'constant']
+    densification_method = NAMELIST['densification_method']
     if densification_method == 'Boone':
-        method_Boone(GRID,SLOPE,dt)
+        method_Boone(GRID,SLOPE,dt, CONST)
     elif densification_method == 'Vionnet':
-        method_Vionnet(GRID,SLOPE,dt)
+        method_Vionnet(GRID,SLOPE,dt, CONST)
     elif densification_method == 'empirical':
-        method_empirical(GRID,SLOPE,dt)
+        method_empirical(GRID,SLOPE,dt, CONST)
     elif densification_method == 'constant':
         pass
     else:
@@ -177,6 +178,9 @@ def method_Vionnet(GRID, SLOPE, dt):
         SLOPE (np.ndarray): Slope of the surface [|degree|].
         dt (int): Integration time [s].
     """
+    # Unpack what we need from the namelist.
+    snow_ice_threshold = NAMELIST['snow_ice_threshold']
+    minimum_snow_layer_height = NAMELIST['minimum_snow_layer_height']
 
     # Constants
     f2 = 1.0

@@ -46,7 +46,6 @@ def update_surface_temperature(GRID, dt, z, z0, T2, rH2, p, SWnet, u2, RAIN, SLO
         SLOPE (float): Slope of the surface [degree].
         LWin (float): Incoming longwave radiation [|W m^-2|].
         N (float): Fractional cloud cover [-].
-
     Returns:
         tuple:
         :res.fun: Minimisation function.
@@ -206,6 +205,9 @@ def interp_subT(GRID) -> np.ndarray:
         Interpolated subsurface temperatures at requested depths.
     """
     
+    # Unpack the namelist
+    zlt1 = CONST['zlt1']
+    zlt2 = CONST['zlt2']
     # Cumulative layer depths
     layer_heights_cum = np.cumsum(np.array(GRID.get_height()))
 
@@ -280,6 +282,19 @@ def eb_fluxes(GRID, T0, dt, z, z0, T2, rH2, p, u2, RAIN, SLOPE, B_Ts, LWin=None,
         :q2: Mixing ratio at measurement height [|kg kg^-1|].
     """
 
+    # Unpack the namelist
+    saturation_water_vapour_method = PARAMS['saturation_water_vapour_method']
+    stability_correction = PARAMS['stability_correction']
+    zero_temperature = CONST['zero_temperature']
+    lat_heat_sublimation = CONST['lat_heat_sublimation']
+    lat_heat_vaporize = CONST['lat_heat_vaporize']
+    spec_heat_air = CONST['spec_heat_air']
+    water_density = CONST['water_density']
+    spec_heat_water = CONST['spec_heat_water']
+    surface_emission_coeff = CONST['surface_emission_coeff']
+    sigma = CONST['sigma']
+    zlt1 = CONST['zlt1']
+    zlt2 = CONST['zlt2']
     # Saturation vapour pressure (hPa)
     Ew, Ew0 = get_saturation_vapor_pressure(T_0=T0, T_2=T2)
     
@@ -542,6 +557,8 @@ def eb_optim(
         Minimised residual.
     """
 
+    # Unpack what we need from the params
+    sfc_temperature_method = PARAMS['sfc_temperature_method']
     # Get surface fluxes for surface temperature T0
     (Li, Lo, H, L, B, Qrr, _, _, _, _, _, _, _) = eb_fluxes(
         GRID, T0, dt, z, z0, T2, rH2, p, u2, RAIN, SLOPE, B_Ts, LWin, N

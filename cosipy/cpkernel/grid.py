@@ -36,7 +36,6 @@ ice_density = Constants.ice_density
 water_density = Constants.water_density
 albedo_method = Constants.albedo_method
 
-
 @jitclass(spec)
 class Grid:
     """A ``Grid`` structure controls and stores the numerical mesh.
@@ -374,7 +373,7 @@ class Grid:
         E.g. for the stretching factor, a value of 1.1 corresponds to a
         10% stretching from one layer to the next.
         """
-        last_layer_height = first_layer_height
+        last_layer_height = self.first_layer_height
 
         hsnow = self.get_total_snowheight()  # Total snowheight
 
@@ -416,7 +415,6 @@ class Grid:
 
                 # Height for the next layer
                 last_layer_height = layer_stretching * last_layer_height
-
             # if the last layer is smaller than the required height,
             # then merge with the previous layer
             elif hrest < last_layer_height:

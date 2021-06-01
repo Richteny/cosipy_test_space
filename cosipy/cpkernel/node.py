@@ -26,7 +26,6 @@ spec["liquid_water_content"] = float64
 spec["ice_fraction"] = float64
 spec["refreeze"] = float64
 
-
 @jitclass(spec)
 class Node:
     """A ``Node`` class stores a layer's state variables.
@@ -133,7 +132,7 @@ class Node:
         Returns:
             Specific heat capacity [|J kg^-1 K^-1|].
         """
-        return self.get_layer_ice_fraction()*spec_heat_ice + self.get_layer_air_porosity()*spec_heat_air + self.get_layer_liquid_water_content()*spec_heat_water
+        return self.get_layer_ice_fraction()*self.spec_heat_ice + self.get_layer_air_porosity()*self.spec_heat_air + self.get_layer_liquid_water_content()*self.spec_heat_water
 
     def get_layer_liquid_water_content(self) -> float:
         """Get the node's liquid water content.
@@ -182,6 +181,7 @@ class Node:
             Thermal conductivity, |kappa| [|W m^-1 K^-1|].
         """
         methods_allowed = ['bulk', 'empirical']
+
         if thermal_conductivity_method == 'bulk':
             kappa = self.get_layer_ice_fraction()*k_i + self.get_layer_air_porosity()*k_a + self.get_layer_liquid_water_content()*k_w
         elif thermal_conductivity_method == 'empirical':
