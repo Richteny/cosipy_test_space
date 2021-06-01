@@ -1,339 +1,261 @@
-distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.7:44557'
-distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.7:45447'
-distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.7:38803'
-distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.7:39889'
-distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.7:34865'
-distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.7:37659'
-distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.7:42747'
-distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.7:35415'
-distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.7:39107'
-distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.7:44743'
-distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.7:39633'
-distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.7:40183'
-distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.7:45173'
-distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.7:42775'
-distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.7:36837'
-distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.7:39265'
-distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.7:42569'
-distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.7:45617'
-distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.7:41809'
-distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.7:38687'
-distributed.worker - INFO -       Start worker at:    tcp://192.168.1.7:39827
-distributed.worker - INFO -       Start worker at:    tcp://192.168.1.7:41349
-distributed.worker - INFO -          Listening to:    tcp://192.168.1.7:39827
-distributed.worker - INFO -          Listening to:    tcp://192.168.1.7:41349
-distributed.worker - INFO -          dashboard at:          192.168.1.7:37881
-distributed.worker - INFO -       Start worker at:    tcp://192.168.1.7:46217
-distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
-distributed.worker - INFO -          dashboard at:          192.168.1.7:34523
-distributed.worker - INFO -          Listening to:    tcp://192.168.1.7:46217
-distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO -          dashboard at:          192.168.1.7:38873
-distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
-distributed.worker - INFO -               Threads:                          1
-distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO -                Memory:                    3.00 GB
-distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-n7vst8wb
-distributed.worker - INFO -               Threads:                          1
-distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO -                Memory:                    3.00 GB
-distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-wk7ezpsk
-distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
-distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO -       Start worker at:    tcp://192.168.1.7:40833
-distributed.worker - INFO -               Threads:                          1
-distributed.worker - INFO -          Listening to:    tcp://192.168.1.7:40833
-distributed.worker - INFO -                Memory:                    3.00 GB
-distributed.worker - INFO -          dashboard at:          192.168.1.7:35613
-distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
-distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-m5enfzeh
-distributed.worker - INFO -       Start worker at:    tcp://192.168.1.7:44345
-distributed.worker - INFO -          Listening to:    tcp://192.168.1.7:44345
-distributed.worker - INFO -               Threads:                          1
-distributed.worker - INFO -       Start worker at:    tcp://192.168.1.7:45373
-distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO -          dashboard at:          192.168.1.7:36231
-distributed.worker - INFO -          Listening to:    tcp://192.168.1.7:45373
-distributed.worker - INFO -                Memory:                    3.00 GB
-distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
-distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-2wmpjekg
-distributed.worker - INFO -          dashboard at:          192.168.1.7:34997
-distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
-distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO -               Threads:                          1
-distributed.worker - INFO -                Memory:                    3.00 GB
-distributed.worker - INFO -               Threads:                          1
-distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-j07zsg7w
-distributed.worker - INFO -                Memory:                    3.00 GB
-distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-b4mxnezn
-distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO -       Start worker at:    tcp://192.168.1.7:41733
-distributed.worker - INFO -          Listening to:    tcp://192.168.1.7:41733
-distributed.worker - INFO -          dashboard at:          192.168.1.7:45561
-distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
-distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO -               Threads:                          1
-distributed.worker - INFO -                Memory:                    3.00 GB
-distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-p05ubphk
-distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO -       Start worker at:    tcp://192.168.1.7:32919
-distributed.worker - INFO -          Listening to:    tcp://192.168.1.7:32919
-distributed.worker - INFO -          dashboard at:          192.168.1.7:44497
-distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
-distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO -               Threads:                          1
-distributed.worker - INFO -                Memory:                    3.00 GB
-distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-hhe_311x
-distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO -       Start worker at:    tcp://192.168.1.7:45275
-distributed.worker - INFO -          Listening to:    tcp://192.168.1.7:45275
-distributed.worker - INFO -          dashboard at:          192.168.1.7:39039
-distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
-distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO -               Threads:                          1
-distributed.worker - INFO -                Memory:                    3.00 GB
-distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-0p9u05qm
-distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO -       Start worker at:    tcp://192.168.1.7:34109
-distributed.worker - INFO -          Listening to:    tcp://192.168.1.7:34109
-distributed.worker - INFO -          dashboard at:          192.168.1.7:41653
-distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
-distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO -       Start worker at:    tcp://192.168.1.7:40823
-distributed.worker - INFO -               Threads:                          1
-distributed.worker - INFO -                Memory:                    3.00 GB
-distributed.worker - INFO -          Listening to:    tcp://192.168.1.7:40823
-distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-omvr8y49
-distributed.worker - INFO -          dashboard at:          192.168.1.7:37717
-distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
-distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO -       Start worker at:    tcp://192.168.1.7:40761
-distributed.worker - INFO -          Listening to:    tcp://192.168.1.7:40761
-distributed.worker - INFO -               Threads:                          1
-distributed.worker - INFO -          dashboard at:          192.168.1.7:46123
-distributed.worker - INFO -                Memory:                    3.00 GB
-distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
-distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-exeqxrrl
-distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO -       Start worker at:    tcp://192.168.1.7:46213
-distributed.worker - INFO -               Threads:                          1
-distributed.worker - INFO -                Memory:                    3.00 GB
-distributed.worker - INFO -          Listening to:    tcp://192.168.1.7:46213
-distributed.worker - INFO -       Start worker at:    tcp://192.168.1.7:46837
-distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-j01sjd72
-distributed.worker - INFO -          dashboard at:          192.168.1.7:43365
-distributed.worker - INFO -          Listening to:    tcp://192.168.1.7:46837
-distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
-distributed.worker - INFO -          dashboard at:          192.168.1.7:38361
-distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
-distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO -               Threads:                          1
-distributed.worker - INFO -       Start worker at:    tcp://192.168.1.7:39187
-distributed.worker - INFO -                Memory:                    3.00 GB
-distributed.worker - INFO -               Threads:                          1
-distributed.worker - INFO -          Listening to:    tcp://192.168.1.7:39187
-distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-vkxopcfy
-distributed.worker - INFO -                Memory:                    3.00 GB
-distributed.worker - INFO -       Start worker at:    tcp://192.168.1.7:42857
-distributed.worker - INFO -       Start worker at:    tcp://192.168.1.7:40989
-distributed.worker - INFO -          dashboard at:          192.168.1.7:37791
-distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-yd5u98qh
-distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO -          Listening to:    tcp://192.168.1.7:42857
-distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
-distributed.worker - INFO -          Listening to:    tcp://192.168.1.7:40989
-distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO -          dashboard at:          192.168.1.7:44641
-distributed.worker - INFO -          dashboard at:          192.168.1.7:43435
+distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.10:37247'
+distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.10:43719'
+distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.10:45619'
+distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.10:37755'
+distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.10:44415'
+distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.10:41893'
+distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.10:39825'
+distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.10:38921'
+distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.10:40587'
+distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.10:41833'
+distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.10:39325'
+distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.10:36055'
+distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.10:38397'
+distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.10:36791'
+distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.10:36867'
+distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.10:44249'
+distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.10:34467'
+distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.10:45211'
+distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.10:43489'
+distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.10:45063'
+distributed.worker - INFO -       Start worker at:   tcp://192.168.1.10:33493
+distributed.worker - INFO -       Start worker at:   tcp://192.168.1.10:46499
+distributed.worker - INFO -          Listening to:   tcp://192.168.1.10:33493
+distributed.worker - INFO -          Listening to:   tcp://192.168.1.10:46499
+distributed.worker - INFO -          dashboard at:         192.168.1.10:39035
+distributed.worker - INFO -          dashboard at:         192.168.1.10:36939
 distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
 distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
 distributed.worker - INFO - -------------------------------------------------
 distributed.worker - INFO - -------------------------------------------------
 distributed.worker - INFO -               Threads:                          1
-distributed.worker - INFO -                Memory:                    3.00 GB
-distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-k2w59jwj
 distributed.worker - INFO -               Threads:                          1
-distributed.worker - INFO -               Threads:                          1
+distributed.worker - INFO -       Start worker at:   tcp://192.168.1.10:40031
 distributed.worker - INFO -                Memory:                    3.00 GB
-distributed.worker - INFO - -------------------------------------------------
 distributed.worker - INFO -                Memory:                    3.00 GB
-distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-2l8f90zo
-distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-ld2wbbd4
+distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-8qgkbpv9
+distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-6s0ai8qj
+distributed.worker - INFO -          Listening to:   tcp://192.168.1.10:40031
 distributed.worker - INFO - -------------------------------------------------
 distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO -       Start worker at:    tcp://192.168.1.7:38195
-distributed.worker - INFO -          Listening to:    tcp://192.168.1.7:38195
-distributed.worker - INFO -          dashboard at:          192.168.1.7:44505
+distributed.worker - INFO -          dashboard at:         192.168.1.10:33871
+distributed.worker - INFO -       Start worker at:   tcp://192.168.1.10:44411
+distributed.worker - INFO -          Listening to:   tcp://192.168.1.10:44411
+distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
+distributed.worker - INFO -          dashboard at:         192.168.1.10:37153
+distributed.worker - INFO -       Start worker at:   tcp://192.168.1.10:39033
+distributed.worker - INFO -       Start worker at:   tcp://192.168.1.10:38765
 distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
 distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO -       Start worker at:    tcp://192.168.1.7:33223
-distributed.worker - INFO -          Listening to:    tcp://192.168.1.7:33223
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -          Listening to:   tcp://192.168.1.10:39033
+distributed.worker - INFO -          Listening to:   tcp://192.168.1.10:38765
+distributed.worker - INFO -       Start worker at:   tcp://192.168.1.10:33559
+distributed.worker - INFO -          dashboard at:         192.168.1.10:46267
+distributed.worker - INFO -          dashboard at:         192.168.1.10:40799
 distributed.worker - INFO -               Threads:                          1
-distributed.worker - INFO -          dashboard at:          192.168.1.7:45197
-distributed.worker - INFO -                Memory:                    3.00 GB
 distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
-distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-6en1zr27
-distributed.worker - INFO -       Start worker at:    tcp://192.168.1.7:45563
-distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO -          Listening to:    tcp://192.168.1.7:45563
-distributed.worker - INFO -               Threads:                          1
-distributed.worker - INFO -                Memory:                    3.00 GB
-distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-6ghhvp4y
-distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO -          dashboard at:          192.168.1.7:42381
+distributed.worker - INFO -          Listening to:   tcp://192.168.1.10:33559
 distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
 distributed.worker - INFO - -------------------------------------------------
 distributed.worker - INFO -               Threads:                          1
 distributed.worker - INFO -                Memory:                    3.00 GB
-distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-rbe23q34
 distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
+distributed.worker - INFO -       Start worker at:   tcp://192.168.1.10:33281
+distributed.worker - INFO -          dashboard at:         192.168.1.10:41709
+distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-cocywc_r
+distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
+distributed.worker - INFO -                Memory:                    3.00 GB
+distributed.worker - INFO -       Start worker at:   tcp://192.168.1.10:41535
 distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
+distributed.worker - INFO -               Threads:                          1
+distributed.worker - INFO -               Threads:                          1
+distributed.worker - INFO -       Start worker at:   tcp://192.168.1.10:35979
+distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-r5ykzozq
 distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
-distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
+distributed.worker - INFO -          Listening to:   tcp://192.168.1.10:41535
+distributed.worker - INFO -                Memory:                    3.00 GB
+distributed.worker - INFO -                Memory:                    3.00 GB
+distributed.worker - INFO -          Listening to:   tcp://192.168.1.10:35979
+distributed.worker - INFO -          dashboard at:         192.168.1.10:42985
+distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-29z5xl22
 distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
-distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
-distributed.worker - INFO - -------------------------------------------------
-distributed.core - INFO - Starting established connection
-distributed.core - INFO - Starting established connection
-distributed.core - INFO - Starting established connection
-distributed.core - INFO - Starting established connection
-distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
-distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
-distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
-distributed.worker - INFO - -------------------------------------------------
-distributed.core - INFO - Starting established connection
-distributed.core - INFO - Starting established connection
-distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
-distributed.core - INFO - Starting established connection
-distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
-distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
-distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
+distributed.worker - INFO -               Threads:                          1
+distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-eq4d2npj
+distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
+distributed.worker - INFO -          dashboard at:         192.168.1.10:36979
+distributed.worker - INFO -                Memory:                    3.00 GB
 distributed.worker - INFO - -------------------------------------------------
 distributed.worker - INFO - -------------------------------------------------
-distributed.core - INFO - Starting established connection
-distributed.core - INFO - Starting established connection
-distributed.core - INFO - Starting established connection
-distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
 distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
+distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-hltwt4s8
+distributed.worker - INFO -          Listening to:   tcp://192.168.1.10:33281
 distributed.worker - INFO - -------------------------------------------------
-distributed.core - INFO - Starting established connection
-distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
+distributed.worker - INFO -               Threads:                          1
+distributed.worker - INFO -          dashboard at:         192.168.1.10:46807
+distributed.worker - INFO -                Memory:                    3.00 GB
+distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
+distributed.worker - INFO -       Start worker at:   tcp://192.168.1.10:33413
+distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-dd5ksjgt
 distributed.worker - INFO - -------------------------------------------------
-distributed.core - INFO - Starting established connection
-distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
+distributed.worker - INFO -          Listening to:   tcp://192.168.1.10:33413
 distributed.worker - INFO - -------------------------------------------------
-distributed.core - INFO - Starting established connection
-distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
+distributed.worker - INFO -          dashboard at:         192.168.1.10:36377
+distributed.worker - INFO -       Start worker at:   tcp://192.168.1.10:44025
+distributed.worker - INFO -               Threads:                          1
+distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
 distributed.worker - INFO - -------------------------------------------------
-distributed.core - INFO - Starting established connection
-distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
+distributed.worker - INFO -                Memory:                    3.00 GB
+distributed.worker - INFO -          Listening to:   tcp://192.168.1.10:44025
+distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-25kk4bp8
+distributed.worker - INFO -          dashboard at:         192.168.1.10:43695
+distributed.worker - INFO -               Threads:                          1
 distributed.worker - INFO - -------------------------------------------------
-distributed.core - INFO - Starting established connection
-distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
+distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
 distributed.worker - INFO - -------------------------------------------------
-distributed.core - INFO - Starting established connection
-distributed.core - INFO - Starting established connection
-distributed.core - INFO - Starting established connection
-distributed.core - INFO - Starting established connection
-distributed.core - INFO - Starting established connection
-worker - INFO -         Registered to:     tcp://192.168.1.9:8786
+distributed.worker - INFO -                Memory:                    3.00 GB
+distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-hm90qk2c
+distributed.worker - INFO -               Threads:                          1
 distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
-distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
+distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
+distributed.worker - INFO -                Memory:                    3.00 GB
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-lbycdb52
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -               Threads:                          1
+distributed.worker - INFO -                Memory:                    3.00 GB
+distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-trwll5p_
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -       Start worker at:   tcp://192.168.1.10:43825
+distributed.worker - INFO -          Listening to:   tcp://192.168.1.10:43825
+distributed.worker - INFO -          dashboard at:         192.168.1.10:39149
+distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -               Threads:                          1
+distributed.worker - INFO -       Start worker at:   tcp://192.168.1.10:42017
+distributed.worker - INFO -                Memory:                    3.00 GB
+distributed.worker - INFO -          Listening to:   tcp://192.168.1.10:42017
+distributed.worker - INFO -          dashboard at:         192.168.1.10:36433
+distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-r913j05r
+distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
+distributed.worker - INFO -       Start worker at:   tcp://192.168.1.10:34587
 distributed.worker - INFO - -------------------------------------------------
 distributed.worker - INFO - -------------------------------------------------
-distributed.core - INFO - Starting established connection
-distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
+distributed.worker - INFO -          Listening to:   tcp://192.168.1.10:34587
+distributed.worker - INFO -          dashboard at:         192.168.1.10:40687
+distributed.worker - INFO -               Threads:                          1
+distributed.worker - INFO -                Memory:                    3.00 GB
+distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-xs7ddfwr
 distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
+distributed.worker - INFO -       Start worker at:   tcp://192.168.1.10:40715
+distributed.worker - INFO -          Listening to:   tcp://192.168.1.10:40715
+distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
 distributed.worker - INFO - -------------------------------------------------
-distributed.core - INFO - Starting established connection
-distributed.core - INFO - Starting established connection
-distributed.core - INFO - Starting established connection
-distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
-distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
-distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
-distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
-distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO - -------------------------------------------------
-distributed.core - INFO - Starting established connection
-distributed.core - INFO - Starting established connection
-distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
-distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
-distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
-distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
-distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
-distributed.worker - INFO - -------------------------------------------------
-distributed.core - INFO - Starting established connection
-distributed.core - INFO - Starting established connection
-distributed.core - INFO - Starting established connection
-distributed.core - INFO - Starting established connection
-distributed.core - INFO - Starting established connection
-distributed.core - INFO - Starting established connection
-distributed.core - INFO - Starting established connection
-distributed.core - INFO - Starting established connection
-distributed.core - INFO - Starting established connection
-/programs/anaconda/2019.07/lib/python3.7/contextlib.py:119: UserWarning: Creating scratch directories is taking a surprisingly long time. This is often due to running workers on a network file system. Consider specifying a local-directory to point workers to write scratch data to a local disk.
-  next(self.gen)
-distributed.worker - INFO -       Start worker at:    tcp://192.168.1.1:39931
-distributed.worker - INFO -          Listening to:    tcp://192.168.1.1:39931
-distriStarting established connection
-distributed.core - INFO - Starting established connection
-distributed.core - INFO - Starting established connection
-/programs/anaconda/2019.07/lib/python3.7/contextlib.py:119: UserWarning: Creating scratch directories is taking a surprisingly long time. This is often due to running workers on a network file system. Consider specifying a local-directory to point workers to write scratch data to a local disk.
-  next(self.gen)
-distributed.worker - INFO -       Start worker at:    tcp://192.168.1.6:35021
-distributed.worker - INFO -          Listening to:    tcp://192.168.1.6:35021
-distributed.worker - INFO -          dashboard at:          192.168.1.6:40717
+distributed.worker - INFO -          dashboard at:         192.168.1.10:44581
 distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
 distributed.worker - INFO - -------------------------------------------------
 distributed.worker - INFO -               Threads:                          1
 distributed.worker - INFO -                Memory:                    3.00 GB
-distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-wzs30ii0
+distributed.worker - INFO -               Threads:                          1
+distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-ewztq3m6
+distributed.worker - INFO -                Memory:                    3.00 GB
+distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-49pk3wsc
 distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
 distributed.worker - INFO - -------------------------------------------------
-distributed.core - INFO - Starting established connection
-/programs/anaconda/2019.07/lib/python3.7/contextlib.py:119: UserWarning: Creating scratch directories is taking a surprisingly long time. This is often due to running workers on a network file system. Consider specifying a local-directory to point workers to write scratch data to a local disk.
-  next(self.gen)
-distributed.worker - INFO -       Start worker at:    tcp://192.168.1.6:46837
-distributed.worker - INFO -          Listening to:    tcp://192.168.1.6:46837
-distributed.worker - INFO -          dashboard at:          192.168.1.6:43495
+distributed.worker - INFO -       Start worker at:   tcp://192.168.1.10:40193
+distributed.worker - INFO -          Listening to:   tcp://192.168.1.10:40193
+distributed.worker - INFO -          dashboard at:         192.168.1.10:36107
 distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
 distributed.worker - INFO - -------------------------------------------------
 distributed.worker - INFO -               Threads:                          1
 distributed.worker - INFO -                Memory:                    3.00 GB
-distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-u64wdf98
+distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-yzprkr0g
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -       Start worker at:   tcp://192.168.1.10:32895
+distributed.worker - INFO -          Listening to:   tcp://192.168.1.10:32895
+distributed.worker - INFO -       Start worker at:   tcp://192.168.1.10:33395
+distributed.worker - INFO -          dashboard at:         192.168.1.10:37607
+distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -          Listening to:   tcp://192.168.1.10:33395
+distributed.worker - INFO -               Threads:                          1
+distributed.worker - INFO -                Memory:                    3.00 GB
+distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-hmpki2rp
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -          dashboard at:         192.168.1.10:46477
+distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -               Threads:                          1
+distributed.worker - INFO -                Memory:                    3.00 GB
+distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-sxpaxfre
+distributed.worker - INFO - -------------------------------------------------
+distributed.core - INFO - Starting established connection
+distributed.worker - INFO -       Start worker at:   tcp://192.168.1.10:32785
+distributed.worker - INFO -          Listening to:   tcp://192.168.1.10:32785
+distributed.worker - INFO -          dashboard at:         192.168.1.10:33181
+distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -               Threads:                          1
+distributed.worker - INFO -                Memory:                    3.00 GB
+distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-06ae45r6
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
+distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
+distributed.worker - INFO - -------------------------------------------------
 distributed.worker - INFO - -------------------------------------------------
 distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
 distributed.worker - INFO - -------------------------------------------------
 distributed.core - INFO - Starting established connection
-                                                                                                                                                                                                                                                                                                                                                    slurmstepd: error: *** JOB 48144 ON node06 CANCELLED AT 2021-05-28T18:43:21 ***
+distributed.core - INFO - Starting established connection
+distributed.core - INFO - Starting established connection
+distributed.core - INFO - Starting established connection
+distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
+distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
+distributed.worker - INFO - -------------------------------------------------
+distributed.core - INFO - Starting established connection
+distributed.core - INFO - Starting established connection
+distributed.core - INFO - Starting established connection
+distributed.core - INFO - Starting established connection
+distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
+distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO - -------------------------------------------------
+distributed.core - INFO - Starting established connection
+distributed.core - INFO - Starting established connection
+distributed.core - INFO - Starting established connection
+distributed.core - INFO - Starting established connection
+distributed.core - INFO - Starting established connection
+distributed.core - INFO - Starting established connection
+distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
+distributed.worker - INFO - -------------------------------------------------
+diNFO - -------------------------------------------------
+distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
+distributed.worker - INFO - -------------------------------------------------
+distributed.core - INFO - Starting established connection
+distributed.core - INFO - Starting established connection
+distributed.core - INFO - Starting established connection
+distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
+distributed.worker - INFO - -------------------------------------------------
+distributed.core - INFO - Starting established connection
+distributed.worker - WARNING - Memory use is high but worker has no data to store to disk.  Perhaps some other process is leaking memory?  Process memory: 2.11 slurmstepd: error: *** JOB 48988 ON node13 CANCELLED AT 2021-06-01T11:28:19 ***
