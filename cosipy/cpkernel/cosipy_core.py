@@ -92,6 +92,7 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
 
     # Replace values from constants.py if coupled
     # TODO: This only affects the current module scope instead of global.
+
     if WRF_X_CSPY:
         dt = int(DATA.DT.values)
         max_layers = int(DATA.max_layers.values)
@@ -152,14 +153,14 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
     # Initialize snowpack or load restart grid
     #--------------------------------------------
     if GRID_RESTART is None:
-        GRID = init_snowpack(DATA)
+        GRID = init_snowpack(DATA, NAMELIST, CONST, PARAMS)
     else:
         GRID = load_snowpack(GRID_RESTART)
 
     # Create the local output datasets if not coupled
     RESTART = None
     if not WRF_X_CSPY:
-        IO = IOClass(DATA)
+        IO = IOClass(NAMELIST, DATA)
         RESTART = IO.create_local_restart_dataset()
 
     # hours since the last snowfall (albedo module)
@@ -283,10 +284,11 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
         #--------------------------------------------
         alpha, albedo_snow = updateAlbedo(GRID,surface_temperature,albedo_snow)
 
+
         #--------------------------------------------
         # Update roughness length
         #--------------------------------------------
-        z0 = updateRoughness(GRID)
+        z0 = updateRoughness(GRID, NAMELIST)
 
         #--------------------------------------------
         # Surface Energy Balance
@@ -296,7 +298,7 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
 
         # Penetrating SW radiation and subsurface melt
         if SWnet > 0.0:
-            subsurface_melt, G_penetrating = penetrating_radiation(GRID, SWnet, dt)
+            subsurface_melt, G_penetrating = penetrating_radiation(GRID, SWnet, dt, NAMELIST, CONST)
         else:
             subsurface_melt = 0.0
             G_penetrating = 0.0
@@ -365,7 +367,7 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
         #--------------------------------------------
         # Refreezing
         #--------------------------------------------
-        water_refreezed = refreezing(GRID)
+        water_refreezed = refreezing(GRID, CONST)
 
         #--------------------------------------------
         # Solve the heat equation
@@ -375,7 +377,7 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
         #--------------------------------------------
         # Calculate new density to densification
         #--------------------------------------------
-        densification(GRID, SLOPE, dt)
+        densification(GRID, SLOPE, dt, NAMELIST, CONST)
 
         #--------------------------------------------
         # Calculate mass balance

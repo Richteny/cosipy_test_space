@@ -51,6 +51,13 @@ def main():
     Constants()
 
     start_logging()
+    # Unpack variables from namelist
+    data_path = NAMELIST['data_path']
+    compression_level = NAMELIST['compression_level']
+    slurm_use = NAMELIST['slurm_use']
+    workers = NAMELIST['workers']
+    local_port = NAMELIST['local_port']
+    output_netcdf = NAMELIST['output_netcdf']
 
     #------------------------------------------
     # Create input and output dataset
@@ -252,34 +259,36 @@ def main():
                 print('--------------------------------------------------------------')
                 print('\t SIMULATION WAS SUCCESSFUL')
                 print('--------------------------------------------------------------')
-         
-        df_tsl_stats.to_csv(os.path.join(data_path,'output','tsla_statistics.csv'))
+        if tsl_evaluation is True:
+            df_tsl_stats.to_csv(os.path.join(data_path,'output','tsla_statistics.csv'))
 
     # if run without lapse rate config    
     else:
-        IO = IOClass()
-        DATA = IO.create_data_file()
-        # Create global result and restart datasets
-        RESULT = IO.create_result_file()
-        RESTART = IO.create_restart_file()
-        futures = []
-        start_time = datetime.now()
-    #-----------------------------------------------
-    # Create a client for distributed calculations
-    #-----------------------------------------------
-        if (slurm_use):
+           IO = IOClass(NAMELIST)
+           DATA = IO.create_data_file()
+           RESULT = IO.create_result_file()
+           RESTART = IO.create_restart_file()
+           futures =  []
+           start_time = datetime.now()
+           #-----------------------------------------------
+           # Create a client for distributed calculations
+           #-----------------------------------------------
+           if (slurm_use) :
 
-            with SLURMCluster(scheduler_port=port, cores=cores, processes=processes, memory=memory, shebang=shebang, name=name, job_extra=slurm_parameters, local_directory='logs/dask-worker-space') as cluster:
-                cluster.scale(processes * nodes)
-                print(cluster.job_script())
-                print("You are using SLURM!\n")
-                print(cluster)
-                run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures)
 
-        else:
-            with LocalCluster(scheduler_port=local_port, n_workers=workers, local_dir='logs/dask-worker-space', threads_per_worker=1, silence_logs=True) as cluster:
-                print(cluster)
-                run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures)
+
+
+                with SLURMCluster(scheduler_port=port, cores=cores, processes=processes, memory=memory, shebang=shebang, name=name, job_extra=slurm_parameters, local_directory='logs/dask-worker-space') as cluster:
+                    cluster.scale(processes * nodes)
+                    print(cluster.job_script())
+                    print("You are using SLURM!\n")
+                    print(cluster)
+                    run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures)
+
+            else:
+                with LocalCluster(scheduler_port=local_port, n_workers=workers, local_dir='logs/dask-worker-space', threads_per_worker=1, silence_logs=True) as cluster:
+                    print(cluster)
+                    run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures)
 
         print('\n')
         print('--------------------------------------------------------------')
@@ -319,6 +328,8 @@ def main():
 
     # Stop time measurement
     #-----------------------------------------------
+        if tsl_evaluation is True:
+            df_tsl_stats.to_csv(os.path.join(data_path,'output','tsla_statistics.csv'))
         duration_run = datetime.now() - start_time
         duration_run_writing = datetime.now() - start_writing
 
@@ -332,7 +343,6 @@ def main():
     run_time = duration_run.total_seconds()
     print(f"\tTotal run duration: {run_time // 60.0:4g} minutes {run_time % 60.0:2g} seconds\n")
     print_notice(msg="\tSIMULATION WAS SUCCESSFUL")
-
 
 def run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures):
     Config()
@@ -451,7 +461,7 @@ def run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures):
                         )
                     )
         # Finally, do the calculations and print the progress
-        #progress(futures)
+        progress(futures)
 
         #---------------------------------------
         # Guarantee that restart file is closed
