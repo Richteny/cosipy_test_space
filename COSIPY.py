@@ -30,7 +30,7 @@ import itertools
 import logging
 import yaml
 
-from config import *
+
 from slurm_config import *
 from cosipy.cpkernel.cosipy_core import * 
 from cosipy.cpkernel.io import *
@@ -43,6 +43,7 @@ from dask.distributed import progress, wait, as_completed
 import dask
 from tornado import gen
 from dask_jobqueue import SLURMCluster
+from cfg import NAMELIST
 
 import scipy
 import cProfile
@@ -50,11 +51,18 @@ import cProfile
 def main():
 
     start_logging()
+    # Unpack variables from namelist
+    data_path = NAMELIST['data_path']
+    compression_level = NAMELIST['compression_level']
+    slurm_use = NAMELIST['slurm_use']
+    workers = NAMELIST['workers']
+    local_port = NAMELIST['local_port']
+    output_netcdf = NAMELIST['output_netcdf']
 
     #------------------------------------------
     # Create input and output dataset
     #------------------------------------------ 
-    IO = IOClass()
+    IO = IOClass(NAMELIST)
 
     # Measure time
     start_time = datetime.now()
@@ -110,7 +118,7 @@ def main():
                         print(cluster.job_script())
                         print("You are using SLURM!\n")
                         print(cluster)
-                        run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures)
+                        run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures, NAMELIST)
 
                 else:
                     with LocalCluster(scheduler_port=local_port, n_workers=workers, local_dir='logs/dask-worker-space', threads_per_worker=1, silence_logs=True) as cluster:
@@ -233,34 +241,36 @@ def main():
                 print('--------------------------------------------------------------')
                 print('\t SIMULATION WAS SUCCESSFUL')
                 print('--------------------------------------------------------------')
-         
-        df_tsl_stats.to_csv(os.path.join(data_path,'output','tsla_statistics.csv'))
+        if tsl_evaluation is True:
+            df_tsl_stats.to_csv(os.path.join(data_path,'output','tsla_statistics.csv'))
 
     # if run without lapse rate config    
     else:
-        IO = IOClass()
-        DATA = IO.create_data_file()
-        # Create global result and restart datasets
-        RESULT = IO.create_result_file()
-        RESTART = IO.create_restart_file()
-        futures = []
-        start_time = datetime.now()
-    #-----------------------------------------------
-    # Create a client for distributed calculations
-    #-----------------------------------------------
-        if (slurm_use):
+           IO = IOClass(NAMELIST)
+           DATA = IO.create_data_file()
+           RESULT = IO.create_result_file()
+           RESTART = IO.create_restart_file()
+           futures =  []
+           start_time = datetime.now()
+           #-----------------------------------------------
+           # Create a client for distributed calculations
+           #-----------------------------------------------
+           if (slurm_use) :
 
-            with SLURMCluster(scheduler_port=port, cores=cores, processes=processes, memory=memory, shebang=shebang, name=name, job_extra=slurm_parameters, local_directory='logs/dask-worker-space') as cluster:
-                cluster.scale(processes * nodes)
-                print(cluster.job_script())
-                print("You are using SLURM!\n")
-                print(cluster)
-                run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures)
 
-        else:
-            with LocalCluster(scheduler_port=local_port, n_workers=workers, local_dir='logs/dask-worker-space', threads_per_worker=1, silence_logs=True) as cluster:
-                print(cluster)
-                run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures)
+
+
+                with SLURMCluster(scheduler_port=port, cores=cores, processes=processes, memory=memory, shebang=shebang, name=name, job_extra=slurm_parameters, local_directory='logs/dask-worker-space') as cluster:
+                    cluster.scale(processes * nodes)
+                    print(cluster.job_script())
+                    print("You are using SLURM!\n")
+                    print(cluster)
+                    run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures)
+
+            else:
+                with LocalCluster(scheduler_port=local_port, n_workers=workers, local_dir='logs/dask-worker-space', threads_per_worker=1, silence_logs=True) as cluster:
+                    print(cluster)
+                    run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures)
 
         print('\n')
         print('--------------------------------------------------------------')
@@ -368,6 +378,8 @@ def main():
     #-----------------------------------------------
     # Stop time measurement
     #-----------------------------------------------
+        if tsl_evaluation is True:
+            df_tsl_stats.to_csv(os.path.join(data_path,'output','tsla_statistics.csv'))
         duration_run = datetime.now() - start_time
         duration_run_writing = datetime.now() - start_writing
 
@@ -382,8 +394,20 @@ def main():
 
     
 
+def run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures, NAMELIST):
 
-def run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures):
+    # Unpack the namelist
+    data_path = NAMELIST['data_path']
+    restart = NAMELIST['restart']
+    stake_evaluation = NAMELIST['stake_evaluation']
+    stakes_loc_file = NAMELIST['stakes_loc_file']
+    stakes_data_file = NAMELIST['stakes_data_file']
+    obs_type = NAMELIST['obs_type']
+    WRF = NAMELIST['WRF']
+    northing = NAMELIST['northing']
+    easting = NAMELIST['easting']
+    slurm_use = NAMELIST['slurm_use']
+    workers = NAMELIST['workers']
 
     with Client(cluster) as client:
         print('--------------------------------------------------------------')
@@ -465,12 +489,12 @@ def run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures):
                     if np.isnan(DATA.sel(south_north=y, west_east=x).to_array()).any():
                         print('ERROR!!!!!!!!!!! There are NaNs in the dataset')
                         sys.exit()
-                    futures.append(client.submit(cosipy_core, DATA.sel(south_north=y, west_east=x), y, x, stake_names=stake_names, stake_data=df_stakes_data))
+                    futures.append(client.submit(cosipy_core, DATA.sel(south_north=y, west_east=x), y, x, NAMELIST, stake_names=stake_names, stake_data=df_stakes_data))
                 elif ((mask==1) & (restart==True)):
                     if np.isnan(DATA.sel(south_north=y, west_east=x).to_array()).any():
                         print('ERROR!!!!!!!!!!! There are NaNs in the dataset')
                         sys.exit()
-                    futures.append(client.submit(cosipy_core, DATA.sel(south_north=y, west_east=x), y, x, 
+                    futures.append(client.submit(cosipy_core, DATA.sel(south_north=y, west_east=x), y, x, NAMELIST, 
                                              GRID_RESTART=IO.create_grid_restart().sel(south_north=y, west_east=x), 
                                              stake_names=stake_names, stake_data=df_stakes_data))
             else:
@@ -480,16 +504,16 @@ def run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures):
                     if np.isnan(DATA.isel(lat=y,lon=x).to_array()).any():
                         print('ERROR!!!!!!!!!!! There are NaNs in the dataset')
                         sys.exit()
-                    futures.append(client.submit(cosipy_core, DATA.isel(lat=y, lon=x), y, x, stake_names=stake_names, stake_data=df_stakes_data))
+                    futures.append(client.submit(cosipy_core, DATA.isel(lat=y, lon=x), y, x, NAMELIST, stake_names=stake_names, stake_data=df_stakes_data))
                 elif ((mask==1) & (restart==True)):
                     if np.isnan(DATA.isel(lat=y,lon=x).to_array()).any():
                         print('ERROR!!!!!!!!!!! There are NaNs in the dataset')
                         sys.exit()
-                    futures.append(client.submit(cosipy_core, DATA.isel(lat=y, lon=x), y, x, 
+                    futures.append(client.submit(cosipy_core, DATA.isel(lat=y, lon=x), y, x, NAMELIST, 
                                              GRID_RESTART=IO.create_grid_restart().isel(lat=y, lon=x), 
                                              stake_names=stake_names, stake_data=df_stakes_data))
         # Finally, do the calculations and print the progress
-        #progress(futures)
+        progress(futures)
 
         #---------------------------------------
         # Guarantee that restart file is closed

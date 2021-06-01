@@ -1,11 +1,16 @@
 import numpy as np
-from constants import zero_temperature, spec_heat_ice, ice_density, \
-                      water_density, lat_heat_melting
+
 from numba import njit
 
 @njit
-def refreezing(GRID):
+def refreezing(GRID, CONST):
 
+    # Unpack namelist
+    zero_temperature = CONST['zero_temperature']
+    spec_heat_ice = CONST['spec_heat_ice']
+    ice_density = CONST['ice_density']
+    water_density = CONST['water_density']
+    lat_heat_melting = CONST['lat_heat_melting']
     # water refreezed
     water_refreezed = 0.0
     LWCref = 0.0
