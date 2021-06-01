@@ -52,7 +52,6 @@ def updateAlbedo(
             f'{", ".join(albedo_allowed)}',
         )
         raise ValueError(" ".join(error_message))
-
     return alphaMod, albedo_snow
 
 
