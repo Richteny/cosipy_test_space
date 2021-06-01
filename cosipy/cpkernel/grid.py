@@ -1,6 +1,5 @@
 import numpy as np
-from constants import *
-from config import *
+
 from cosipy.cpkernel.node import *
 import os
 
@@ -11,6 +10,8 @@ from numba.experimental import jitclass
 node_type = Node.class_type.instance_type
 
 spec = OrderedDict()
+spec['CONST'] = types.DictType(types.unicode_type, types.float64)
+spec['PARAMS'] = types.DictType(types.unicode_type, types.unicode_type)
 spec['layer_heights'] = float64[:]
 spec['layer_densities'] = float64[:]
 spec['layer_temperatures'] = float64[:]
@@ -21,11 +22,21 @@ spec['new_snow_height'] = float64
 spec['new_snow_timestamp'] = float64
 spec['old_snow_timestamp'] = float64
 spec['grid'] = types.ListType(node_type)     
+spec['remesh_method'] = types.string
+spec['minimum_snow_layer_height'] = float64
+spec['first_layer_height'] = float64
+spec['layer_stretching'] = float64
+spec['merge_max'] = float64
+spec['density_threshold_merging'] = float64
+spec['temperature_threshold_merging'] = float64
+spec['snow_ice_threshold'] = float64
+spec['water_density'] = float64
+spec['ice_density'] = float64
 
 @jitclass(spec)
 class Grid:
 
-    def __init__(self, layer_heights, layer_densities, layer_temperatures, layer_liquid_water_content, layer_ice_fraction=None,
+    def __init__(self,layer_heights, layer_densities, layer_temperatures, layer_liquid_water_content, CONST, PARAMS, layer_ice_fraction=None,
         new_snow_height=None, new_snow_timestamp=None, old_snow_timestamp=None):
         """ The Grid-class controls the numerical mesh. 
         
@@ -35,6 +46,9 @@ class Grid:
 
         Parameters
         ----------
+            NAMELIST : dict
+                Dictionary used to pass config/constant variables through the
+                model
             layer_heights : float
                 Height of the snowpack layers [:math:`m`]
             layer_densities : float
@@ -49,6 +63,10 @@ class Grid:
             Node : :py:class:`cosipy.cpkernel.grid` object
 
         """
+        # Set CONST and PARAMS and class attributes since we're gonna need them
+        # in a lot of the sub functions.
+        self.CONST = CONST
+        self.PARAMS = PARAMS
         # Set class variables
         self.layer_heights = layer_heights
         self.layer_densities = layer_densities
@@ -59,6 +77,20 @@ class Grid:
         # Number of total nodes
         self.number_nodes = len(layer_heights)
 
+        # Unpack what we need from the dicts
+        # Params (strings)
+        self.remesh_method = PARAMS['remesh_method']
+        # Constants (floats)
+        self.minimum_snow_layer_height = CONST['minimum_snow_layer_height']
+        self.first_layer_height = CONST['first_layer_height']
+        self.layer_stretching = CONST['layer_stretching']
+        self.merge_max = CONST['merge_max']
+        self.density_threshold_merging = CONST['density_threshold_merging']
+        self.temperature_threshold_merging =\
+            CONST['temperature_threshold_merging']
+        self.snow_ice_threshold = CONST['snow_ice_threshold']
+        self.water_density = CONST['water_density']
+        self.ice_density = CONST['ice_density']
         # Track the fresh snow layer (new_snow_height, new_snow_timestamp) as well as the old
         # snow layer age (old_snow_timestamp)
         if (new_snow_height is not None) and (new_snow_timestamp is not None) and \
@@ -86,7 +118,7 @@ class Grid:
             if self.layer_ice_fraction is not None:
                 layer_IF = self.layer_ice_fraction[idxNode]
             self.grid.append(Node(self.layer_heights[idxNode], self.layer_densities[idxNode],
-                self.layer_temperatures[idxNode], self.layer_liquid_water_content[idxNode], layer_IF))
+                self.layer_temperatures[idxNode], self.layer_liquid_water_content[idxNode], self.CONST, self.PARAMS, layer_IF))
 
 
     def add_fresh_snow(self, height, density, temperature, liquid_water_content):
@@ -105,7 +137,7 @@ class Grid:
         """
 	
         # Add new node
-        self.grid.insert(0, Node(height, density, temperature, liquid_water_content, None))
+        self.grid.insert(0, Node(height, density, temperature, liquid_water_content, self.CONST, self.PARAMS, None))
 
         # Increase node counter
         self.number_nodes += 1
@@ -208,9 +240,9 @@ class Grid:
 
         # Merge subsequent layer with underlying layers until height of the layer is greater than the given height
         while ((total_height<min_height) & (idx+1<self.get_number_layers())):
-            if (self.get_node_density(idx)<snow_ice_threshold) & (self.get_node_density(idx+1)<snow_ice_threshold):
+            if (self.get_node_density(idx)<self.snow_ice_threshold) & (self.get_node_density(idx+1)<self.snow_ice_threshold):
                 self.merge_nodes(idx)
-            elif (self.get_node_density(idx)>=snow_ice_threshold) & (self.get_node_density(idx+1)>=snow_ice_threshold):
+            elif (self.get_node_density(idx)>=self.snow_ice_threshold) & (self.get_node_density(idx+1)>=self.snow_ice_threshold):
                 self.merge_nodes(idx)
             else:
                 break
@@ -259,7 +291,7 @@ class Grid:
 
             # Update node properties
             self.update_node(idx, h0, T0, if0, lwc0)
-            self.grid.insert(idx+1, Node(h1, self.get_node_density(idx), T1, lwc1, if1))
+            self.grid.insert(idx+1, Node(h1, self.get_node_density(idx), T1, lwc1, self.CONST, self.PARAMS, if1))
 
             # Update node counter
             self.number_nodes += 1
@@ -269,12 +301,12 @@ class Grid:
         """ Logarithmic re-meshing. 
         
         The logirithmic algorithm re-meshes the layer heights (numerical grid) using a stretching
-        factor and a given first layer height. The latter one is provided by the first_layer_height
+        factor and a given first layer height. The latter one is provided by the self.first_layer_height
         constant defined in the config.py. The layer_stretching variable defines the streching
         factor, e.g. 1.1 corresponds to a 10% streching from one layer to the next.
         
         """
-        last_layer_height = first_layer_height
+        last_layer_height = self.first_layer_height
 
         # Total snowheight
         hsnow = self.get_total_snowheight()
@@ -295,7 +327,7 @@ class Grid:
                 hrest = hrest - last_layer_height
 
                 # Height for the next layer
-                last_layer_height = layer_stretching*last_layer_height
+                last_layer_height = self.layer_stretching*last_layer_height
 
             # if the last layer is smaller than the required height, then merge
             # with the previous layer
@@ -321,7 +353,7 @@ class Grid:
                 hrest = hrest - last_layer_height
 
                 # Height for the next layer
-                last_layer_height = layer_stretching*last_layer_height
+                last_layer_height = self.layer_stretching*last_layer_height
 
             # if the last layer is smaller than the required height, then merge
             # with the previous layer
@@ -352,17 +384,17 @@ class Grid:
             dT = np.abs(self.get_node_temperature(idx)-self.get_node_temperature(idx+1))
             dRho = np.abs(self.get_node_density(idx)-self.get_node_density(idx+1))
 
-            if ((dT<=temperature_threshold_merging) & (dRho<=density_threshold_merging) & (self.get_node_height(idx)<=0.1) & (merge_counter<=merge_max)):
+            if ((dT<=self.temperature_threshold_merging) & (dRho<=self.density_threshold_merging) & (self.get_node_height(idx)<=0.1) & (merge_counter<=self.merge_max)):
                 self.merge_nodes(idx)
                 merge_counter = merge_counter + 1
-            #elif ((self.get_node_height(idx)<=minimum_snow_layer_height) & (dRho<=density_threshold_merging)):
-            elif ((self.get_node_height(idx)<=minimum_snow_layer_height)):
+            #elif ((self.get_node_height(idx)<=self.minimum_snow_layer_height) & (dRho<=self.density_threshold_merging)):
+            elif ((self.get_node_height(idx)<=self.minimum_snow_layer_height)):
                 self.remove_node([idx])
             else:
                 idx += 1
 
         # Correct first layer
-        self.correct_layer(0 ,first_layer_height)
+        self.correct_layer(0 ,self.first_layer_height)
 
 
 
@@ -379,7 +411,7 @@ class Grid:
                 Index of the node to be splitted.        
         """
         self.grid.insert(pos+1, Node(self.get_node_height(pos)/2.0, self.get_node_density(pos), self.get_node_temperature(pos), \
-                                     self.get_node_liquid_water_content(pos)/2.0, self.get_node_ice_fraction(pos)))
+                                     self.get_node_liquid_water_content(pos)/2.0, self.CONST, self.PARAMS, self.get_node_ice_fraction(pos)))
         self.update_node(pos, self.get_node_height(pos)/2.0, self.get_node_temperature(pos), \
                                      self.get_node_ice_fraction(pos), self.get_node_liquid_water_content(pos)/2.0)
 
@@ -458,13 +490,13 @@ class Grid:
         #-------------------------------------------------------------------------
         # Remeshing options
         #-------------------------------------------------------------------------
-        if (remesh_method=='log_profile'):
+        if (self.remesh_method=='log_profile'):
             self.log_profile()
-        elif (remesh_method=='adaptive_profile'):
+        elif (self.remesh_method=='adaptive_profile'):
             self.adaptive_profile()
 
         # if first layer becomes very small, remove it
-        if (self.get_node_height(0)<minimum_snow_layer_height):
+        if (self.get_node_height(0)<self.minimum_snow_layer_height):
             self.remove_node([0])
 
 
@@ -479,11 +511,11 @@ class Grid:
             idx : int
                 Index of the snow layer.
         """
-        if (self.get_node_density(idx) < snow_ice_threshold) & (self.get_node_density(idx+1) >= snow_ice_threshold):
+        if (self.get_node_density(idx) < self.snow_ice_threshold) & (self.get_node_density(idx+1) >= self.snow_ice_threshold):
 
             # Update node properties
-            first_layer_height = self.get_node_height(idx)*(self.get_node_density(idx)/ice_density)
-            self.update_node(idx+1, self.get_node_height(idx+1)+first_layer_height, self.get_node_temperature(idx+1), self.get_node_ice_fraction(idx+1), 0.0)
+            self.first_layer_height = self.get_node_height(idx)*(self.get_node_density(idx)/self.ice_density)
+            self.update_node(idx+1, self.get_node_height(idx+1)+self.first_layer_height, self.get_node_temperature(idx+1), self.get_node_ice_fraction(idx+1), 0.0)
 
             # Remove the second layer
             self.remove_node([idx])
@@ -509,10 +541,10 @@ class Grid:
 
         while melt>0:
             # Get SWE of layer
-            SWE = self.get_node_height(idx) * (self.get_node_density(idx)/water_density)
+            SWE = self.get_node_height(idx) * (self.get_node_density(idx)/self.water_density)
             # Remove melt from layer and set new snowheight
             if (melt<SWE):
-                self.set_node_height(idx, (SWE-melt)/(self.get_node_density(idx)/water_density))
+                self.set_node_height(idx, (SWE-melt)/(self.get_node_density(idx)/self.water_density))
                 melt = 0.0
             # remove layer otherwise and continue loop
             elif (melt>=SWE):
@@ -695,7 +727,7 @@ class Grid:
 
     def get_ice_heights(self):
         """ Returns the heights of the ice layers """
-        return [self.grid[idx].get_layer_height() for idx in range(self.number_nodes) if (self.get_node_density(idx)>=snow_ice_threshold)]
+        return [self.grid[idx].get_layer_height() for idx in range(self.number_nodes) if (self.get_node_density(idx)>=self.snow_ice_threshold)]
 
 
     def get_node_height(self, idx):
@@ -808,8 +840,8 @@ class Grid:
 
 
     def get_total_snowheight(self, verbose=False):
-        """ Get the total snowheight (density<snow_ice_threshold)"""
-        snowheights = [self.grid[idx].get_layer_height() for idx in range(self.number_nodes) if self.get_node_density(idx)<snow_ice_threshold]
+        """ Get the total snowheight (density<self.snow_ice_threshold)"""
+        snowheights = [self.grid[idx].get_layer_height() for idx in range(self.number_nodes) if self.get_node_density(idx)<self.snow_ice_threshold]
         return np.sum(np.array(snowheights))	#numba needs to be able to determine type of list contents 
  
     
@@ -820,8 +852,8 @@ class Grid:
 
 
     def get_number_snow_layers(self):
-        """ Get the number of snow layers (density<snow_ice_threshold)"""
-        nlayers = [1 for idx in range(self.number_nodes) if self.get_node_density(idx)<snow_ice_threshold]
+        """ Get the number of snow layers (density<self.snow_ice_threshold)"""
+        nlayers = [1 for idx in range(self.number_nodes) if self.get_node_density(idx)<self.snow_ice_threshold]
         return int(np.sum(np.array(nlayers)))
     
 
