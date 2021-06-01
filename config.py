@@ -8,7 +8,7 @@
 #-----------------------------------
 # Abramov
 time_start = '1982-10-01T00:00'
-time_end   = '1992-09-30T00:00' #2010 01010
+time_end   = '1999-09-30T00:00' #2010 01010
 
 # Hintereisferner
 #time_start = '2018-09-17T08:00'
@@ -24,7 +24,7 @@ data_path = './data/'
 
 # agg version ->  'Abramov/Abramov_120m_ERA5L_fix_no_lr_prcp_2000_2018'
 input_netcdf= 'Abramov/Abramov_300m_ERA5L_fix_no_lr_1983_2000.nc'
-output_netcdf = 'kronenberg_Abramov_300m_ERA5L_fix_lr_prcp_MB_'+time_start_str+'-'+time_end_str+'.nc'
+output_netcdf = 'kronenberg_Abramov_300m_ERA5L_fix_lr_prcp_MB_prcp068_'+time_start_str+'-'+time_end_str+'.nc'
 
 # Hintereisferner example
 #input_netcdf = 'HEF/HEF_input.nc'
@@ -39,7 +39,7 @@ restart = False                                             # set to true if you
 # Concatenate restarted outputs
 #-----------------------------------
 merge = False                                              # set to true if you want to concatenate outputs
-time_start_old_file = "19991001"                           # requires string of start time from previous file
+time_start_old_file = "19821001"                           # requires string of start time from previous file
 
 #-----------------------------------
 # STAKE DATA 

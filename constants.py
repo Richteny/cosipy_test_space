@@ -43,7 +43,7 @@ zlt2 = 0.1					                    # Second depth for temperature interpolation 
 ' MODEL CONSTANTS '
 center_snow_transfer_function = 1.0             # center (50/50) when total precipitation is transferred to snow and rain
 spread_snow_transfer_function = 1               # 1: +-2.5
-mult_factor_RRR = 0.65                          # multiplication factor for RRR
+mult_factor_RRR = 0.68 #065                          # multiplication factor for RRR
 
 minimum_snow_layer_height = 0.001               # minimum layer height
 minimum_snowfall = 0.001                        # minimum snowfall per time step in m which is added as new snow
