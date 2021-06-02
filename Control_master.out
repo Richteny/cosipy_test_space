@@ -50,7 +50,7 @@ JOB_ID=${SLURM_JOB_ID%;*}
 
 
 
-/programs/anaconda/2019.07/bin/python -m distributed.cli.dask_worker tcp://192.168.1.15:8786 --nthreads 0 --nprocs 20 --memory-limit 3.00GB --name WoEraAbr--${JOB_ID}-- --death-timeout 60 --local-directory logs/dask-worker-space
+/programs/anaconda/2019.07/bin/python -m distributed.cli.dask_worker tcp://192.168.1.14:8786 --nthreads 0 --nprocs 20 --memory-limit 3.00GB --name WoEraAbr--${JOB_ID}-- --death-timeout 60 --local-directory logs/dask-worker-space
 
 You are using SLURM!
 
@@ -61,5 +61,5 @@ SLURMCluster(cores=0, memory=0 B, workers=0/0, jobs=0/0)
 -------------------------------------------------------------- 
 
 SLURMCluster(cores=0, memory=0 B, workers=0/240, jobs=0/12)
-<Client: scheduler='tcp://192.168.1.15:8786' processes=0 cores=0>
+<Client: scheduler='tcp://192.168.1.14:8786' processes=0 cores=0>
 999 240 4
