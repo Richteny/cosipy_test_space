@@ -28,6 +28,90 @@ class IOClass:
         self.internal = self.get_output_variables(Config.output_internal)
         self.full = self.get_output_variables(Config.output_full)
 
+        # Unpack the namelist to class variables.
+        self.time_start = NAMELIST['time_start']
+        self.time_end = NAMELIST['time_end']
+        self.data_path = NAMELIST['data_path']
+        self.restart = NAMELIST['restart']
+        self.stake_evaluation = NAMELIST['stake_evaluation']
+        self.WRF = NAMELIST['WRF']
+        self.northing = NAMELIST['northing']
+        self.easting = NAMELIST['easting']
+        self.compression_level = NAMELIST['compression_level']
+        self.slurm_use = NAMELIST['slurm_use']
+        self.full_field = NAMELIST['full_field']
+        self.force_use_TP = NAMELIST['force_use_TP']
+        self.force_use_N = NAMELIST['force_use_N']
+        self.tile = NAMELIST['tile']
+        self.xstart = NAMELIST['xstart']
+        self.xend = NAMELIST['xend']
+        self.ystart = NAMELIST['ystart']
+        self.yend = NAMELIST['yend']
+        self.dt = NAMELIST['dt']
+        self.max_layers = NAMELIST['max_layers']
+        self.z = NAMELIST['z']
+        self.stability_correction = NAMELIST['stability_correction']
+        self.albedo_method = NAMELIST['albedo_method']
+        self.densification_method = NAMELIST['densification_method']
+        self.penetrating_method = NAMELIST['penetrating_method']
+        self.roughness_method = NAMELIST['roughness_method']
+        self.saturation_water_vapour_method =\
+            NAMELIST['saturation_water_vapour_method']
+        self.initial_snowheight_constant =\
+            NAMELIST['initial_snowheight_constant']
+        self.initial_snow_layer_heights =\
+            NAMELIST['initial_snow_layer_heights']
+        self.initial_glacier_height = NAMELIST['initial_glacier_height']
+        self.initial_glacier_layer_heights =\
+            NAMELIST['initial_glacier_layer_heights']
+        self.initial_top_density_snowpack =\
+            NAMELIST['initial_top_density_snowpack']
+        self.initial_bottom_density_snowpack =\
+            NAMELIST['initial_bottom_density_snowpack']
+        self.temperature_bottom = NAMELIST['temperature_bottom']
+        self.const_init_temp = NAMELIST['const_init_temp']
+        self.center_snow_transfer_function =\
+            NAMELIST['center_snow_transfer_function']
+        self.spread_snow_transfer_function =\
+            NAMELIST['spread_snow_transfer_function']
+        self.mult_factor_RRR = NAMELIST['mult_factor_RRR']
+        self.minimum_snow_layer_height = NAMELIST['minimum_snow_layer_height']
+        self.minimum_snowfall = NAMELIST['minimum_snowfall']
+        self.remesh_method = NAMELIST['remesh_method']
+        self.first_layer_height = NAMELIST['first_layer_height']
+        self.layer_stretching = NAMELIST['layer_stretching']
+        self.merge_max = NAMELIST['merge_max']
+        self.density_threshold_merging = NAMELIST['density_threshold_merging']
+        self.temperature_threshold_merging =\
+            NAMELIST['temperature_threshold_merging']
+        self.constant_density = NAMELIST['constant_density']
+        self.albedo_fresh_snow = NAMELIST['albedo_fresh_snow']
+        self.albedo_firn = NAMELIST['albedo_firn']
+        self.albedo_ice = NAMELIST['albedo_ice']
+        self.albedo_mod_snow_aging = NAMELIST['albedo_mod_snow_aging']
+        self.albedo_mod_snow_depth = NAMELIST['albedo_mod_snow_depth']
+        self.roughness_fresh_snow = NAMELIST['roughness_fresh_snow']
+        self.roughness_ice = NAMELIST['roughness_ice']
+        self.roughness_firn = NAMELIST['roughness_firn']
+        self.aging_factor_roughness = NAMELIST['aging_factor_roughness']
+        self.snow_ice_threshold = NAMELIST['snow_ice_threshold']
+        self.lat_heat_melting = NAMELIST['lat_heat_melting']
+        self.lat_heat_vaporize = NAMELIST['lat_heat_vaporize']
+        self.lat_heat_sublimation = NAMELIST['lat_heat_sublimation']
+        self.spec_heat_air = NAMELIST['spec_heat_air']
+        self.spec_heat_ice = NAMELIST['spec_heat_ice']
+        self.spec_heat_water = NAMELIST['spec_heat_water']
+        self.k_i = NAMELIST['k_i']
+        self.k_w = NAMELIST['k_w']
+        self.k_a = NAMELIST['k_a']
+        self.water_density = NAMELIST['water_density']
+        self.ice_density = NAMELIST['ice_density']
+        self.air_density = NAMELIST['air_density']
+        self.sigma = NAMELIST['sigma']
+        self.zero_temperature = NAMELIST['zero_temperature']
+        self.surface_emission_coeff = NAMELIST['surface_emission_coeff']
+        self.input_netcdf = NAMELIST['input_netcdf']
+
         # Initialize data
         self.DATA = DATA
         self.RESTART = None
@@ -525,7 +609,6 @@ class IOClass:
         self.RESULT.attrs["sigma"] = Constants.sigma
         self.RESULT.attrs["zero_temperature"] = Constants.zero_temperature
         self.RESULT.attrs["Surface_emission_coeff"] = Constants.surface_emission_coeff
-
         # Variables given by the input dataset
         spatial, spatiotemporal = self.get_input_metadata()
 
@@ -581,7 +664,6 @@ class IOClass:
             max_layers = Constants.max_layers  # faster lookup
             for full_field_var in self.full:
                 self.init_full_field_attribute(full_field_var, max_layers)
-
     def copy_local_to_global(
         self,
         y: int,
@@ -728,7 +810,6 @@ class IOClass:
         print(f"Restart dataset ... ok\n{'-'*62}\n")
 
         return self.RESTART
-
     def create_global_restart_arrays(self):
         """Initialise the global numpy arrays to store layer profiles.
 
