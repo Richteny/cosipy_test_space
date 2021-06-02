@@ -264,31 +264,28 @@ def main():
 
     # if run without lapse rate config    
     else:
-           IO = IOClass(NAMELIST)
-           DATA = IO.create_data_file()
-           RESULT = IO.create_result_file()
-           RESTART = IO.create_restart_file()
-           futures =  []
-           start_time = datetime.now()
+        IO = IOClass(NAMELIST)
+        DATA = IO.create_data_file()
+        RESULT = IO.create_result_file()
+        RESTART = IO.create_restart_file()
+        futures =  []
+        start_time = datetime.now()
            #-----------------------------------------------
            # Create a client for distributed calculations
            #-----------------------------------------------
-           if (slurm_use) :
+        if (slurm_use) :
 
+             with SLURMCluster(scheduler_port=port, cores=cores, processes=processes, memory=memory, shebang=shebang, name=name, job_extra=slurm_parameters, local_directory='logs/dask-worker-space') as cluster:
+                 cluster.scale(processes * nodes)
+                 print(cluster.job_script())
+                 print("You are using SLURM!\n")
+                 print(cluster)
+                 run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures)
 
-
-
-                with SLURMCluster(scheduler_port=port, cores=cores, processes=processes, memory=memory, shebang=shebang, name=name, job_extra=slurm_parameters, local_directory='logs/dask-worker-space') as cluster:
-                    cluster.scale(processes * nodes)
-                    print(cluster.job_script())
-                    print("You are using SLURM!\n")
-                    print(cluster)
-                    run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures)
-
-            else:
-                with LocalCluster(scheduler_port=local_port, n_workers=workers, local_dir='logs/dask-worker-space', threads_per_worker=1, silence_logs=True) as cluster:
-                    print(cluster)
-                    run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures)
+        else:
+             with LocalCluster(scheduler_port=local_port, n_workers=workers, local_dir='logs/dask-worker-space', threads_per_worker=1, silence_logs=True) as cluster:
+                 print(cluster)
+                 run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures)
 
         print('\n')
         print('--------------------------------------------------------------')
