@@ -1,5 +1,6 @@
 import sys
 import numpy as np
+
 from cosipy.cpkernel.grid import *
 
 def init_snowpack(DATA, NAMELIST, CONST, PARAMS):
