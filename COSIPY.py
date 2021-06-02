@@ -131,7 +131,7 @@ def main():
                 else:
                     with LocalCluster(scheduler_port=local_port, n_workers=workers, local_dir='logs/dask-worker-space', threads_per_worker=1, silence_logs=True) as cluster:
                         print(cluster)
-                        run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures)
+                        run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures, NAMELIST)
 
                 print('\n')
                 print('--------------------------------------------------------------')
