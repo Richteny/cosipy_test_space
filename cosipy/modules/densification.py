@@ -2,7 +2,7 @@ import numpy as np
 
 from numba import njit
 
-def densification(GRID,SLOPE,dt, NNAMELIST, CONST):
+def densification(GRID,SLOPE,dt, NAMELIST, CONST):
     """ Densification of the snowpack
     Args:
         GRID    ::  GRID-Structure
