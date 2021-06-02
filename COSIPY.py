@@ -53,18 +53,12 @@ def main():
     start_logging()
     # Unpack variables from namelist
     data_path = NAMELIST['data_path']
-    restart = NAMELIST['restart']
     compression_level = NAMELIST['compression_level']
     slurm_use = NAMELIST['slurm_use']
     workers = NAMELIST['workers']
     local_port = NAMELIST['local_port']
     output_netcdf = NAMELIST['output_netcdf']
-    lapse_rate_config = NAMELIST['lapse_rate_config']
-    lapse_T_range = NAMELIST['lapse_T_range']
-    lapse_RRR_range = NAMELIST['lapse_RRR_range']
-    merge = NAMELIST['merge']
-    tsl_evaluation = NAMELIST['tsl_evaluation']
-    station_altitude = NAMELIST['station_altitude']
+
     #------------------------------------------
     # Create input and output dataset
     #------------------------------------------
@@ -81,53 +75,9 @@ def main():
 
     # Auxiliary variables for futures
     #futures = []
-
     # Measure time
     start_time = datetime.now()
-    if lapse_rate_config:
-        #here lapse rate changes
-        #if run_multiple_lapse_rates:
-        df_tsl_stats = pd.DataFrame(columns={'LR_T2':[],
-                                             'LR_RRR':[],
-                                             'RMSE':[],
-                                             'R2':[],
-                                             'MBE':[],
-                                             'MAE':[]})
-        #check if lapse rate in aws2cosipy - 
-        from utilities.aws2cosipy.aws2cosipyConfig import lapse_T, lapse_RRR
-        if lapse_T != 0:
-            print("Attention! AWS2cosipy contains a temperature lapse rate that is not zero. \nPlease be sure the input file is not constructed with a lapse rate.")
-        else:
-            print("No temperature lapse rate used in AWS2cosipy.")    
 
-        if lapse_RRR != 0:
-            print("Attention! AWS2cosipy contains a precipitation lapse rate that is not zero. \nPlease be sure the input file is not constructed with a lapse rate.")
-        else:
-            print("No precipitation lapse rate used in AWS2cosipy.") 
-    
-        for lapse_T in lapse_T_range:
-    
-            for lapse_RRR in lapse_RRR_range:
-                lapse_T = float(lapse_T)
-                lapse_RRR = float(lapse_RRR)
-                #------------------------------------------
-                # Create input and output dataset
-                #------------------------------------------ 
-                if (restart == True):
-                    DATA = IO.create_data_file(suffix="_lrT_{}_lrRRR_{}".format(abs(lapse_T),lapse_RRR))
-                else:
-                    DATA = IO.create_data_file()
-                # Create global result and restart datasets
-                RESULT = IO.create_result_file() 
-                RESTART = IO.create_restart_file()
-                # Auxiliary variables for futures
-                futures= []
-                #adjust lapse rates 
-                print("Starting run with lapse rates:", lapse_T, "and:", lapse_RRR) 
-                for t in range(len(DATA.time)):
-                    DATA.T2[t,:,:] = DATA.T2[t,:,:]+ (DATA.HGT - station_altitude)*lapse_T
-                    DATA.RRR[t,:,:] = np.maximum(DATA.RRR[t,:,:]+ (DATA.HGT - station_altitude)*lapse_RRR, 0.0)
-        
     #-----------------------------------------------
     # Create a client for distributed calculations
     #-----------------------------------------------
@@ -272,34 +222,16 @@ def main():
 
     # if run without lapse rate config    
     else:
-        IO = IOClass(NAMELIST)
-        DATA = IO.create_data_file()
-        RESULT = IO.create_result_file()
-        RESTART = IO.create_restart_file()
-        futures =  []
-        start_time = datetime.now()
-           #-----------------------------------------------
-           # Create a client for distributed calculations
-           #-----------------------------------------------
-        if (slurm_use) :
+        with LocalCluster(scheduler_port=local_port, n_workers=workers, local_dir='logs/dask-worker-space', threads_per_worker=1, silence_logs=True) as cluster:
+            print(cluster)
+            run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures, NAMELIST)
 
-             with SLURMCluster(scheduler_port=port, cores=cores, processes=processes, memory=memory, shebang=shebang, name=name, job_extra=slurm_parameters, local_directory='logs/dask-worker-space') as cluster:
-                 cluster.scale(processes * nodes)
-                 print(cluster.job_script())
-                 print("You are using SLURM!\n")
-                 print(cluster)
-                 run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures)
+    print('\n')
+    print('--------------------------------------------------------------')
+    print('Write results ...')
+    print('-------------------------------------------------------------- \n')
+    start_writing = datetime.now()
 
-        else:
-             with LocalCluster(scheduler_port=local_port, n_workers=workers, local_dir='logs/dask-worker-space', threads_per_worker=1, silence_logs=True) as cluster:
-                 print(cluster)
-                 run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures)
-
-        print('\n')
-        print('--------------------------------------------------------------')
-        print('Write results ...')
-        print('-------------------------------------------------------------- \n')
-        start_writing = datetime.now()
     #-----------------------------------------------
     # Write results and restart files
     #-----------------------------------------------
@@ -333,10 +265,8 @@ def main():
 
     # Stop time measurement
     #-----------------------------------------------
-        if tsl_evaluation is True:
-            df_tsl_stats.to_csv(os.path.join(data_path,'output','tsla_statistics.csv'))
-        duration_run = datetime.now() - start_time
-        duration_run_writing = datetime.now() - start_writing
+    duration_run = datetime.now() - start_time
+    duration_run_writing = datetime.now() - start_writing
 
     #-----------------------------------------------
     # Print out some information
@@ -466,7 +396,7 @@ def run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures):
                         )
                     )
         # Finally, do the calculations and print the progress
-        #progress(futures)
+        progress(futures)
 
         #---------------------------------------
         # Guarantee that restart file is closed
@@ -566,6 +496,7 @@ def set_output_netcdf_path() -> str:
     output_path = f"{Config.output_prefix}_{time_start}-{time_end}.nc"
 
     return output_path
+
 
 def start_logging():
     """Start the python logging"""
