@@ -53,12 +53,18 @@ def main():
     start_logging()
     # Unpack variables from namelist
     data_path = NAMELIST['data_path']
+    restart = NAMELIST['restart']
     compression_level = NAMELIST['compression_level']
     slurm_use = NAMELIST['slurm_use']
     workers = NAMELIST['workers']
     local_port = NAMELIST['local_port']
     output_netcdf = NAMELIST['output_netcdf']
-
+    lapse_rate_config = NAMELIST['lapse_rate_config']
+    lapse_T_range = NAMELIST['lapse_T_range']
+    lapse_RRR_range = NAMELIST['lapse_RRR_range']
+    merge = NAMELIST['merge']
+    tsl_evaluation = NAMELIST['tsl_evaluation']
+    station_altitude = NAMELIST['station_altitude']
     #------------------------------------------
     # Create input and output dataset
     #------------------------------------------
@@ -102,6 +108,8 @@ def main():
         for lapse_T in lapse_T_range:
     
             for lapse_RRR in lapse_RRR_range:
+                lapse_T = float(lapse_T)
+                lapse_RRR = float(lapse_RRR)
                 #------------------------------------------
                 # Create input and output dataset
                 #------------------------------------------ 
@@ -458,7 +466,7 @@ def run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures):
                         )
                     )
         # Finally, do the calculations and print the progress
-        progress(futures)
+        #progress(futures)
 
         #---------------------------------------
         # Guarantee that restart file is closed
