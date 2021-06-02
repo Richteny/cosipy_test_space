@@ -10,8 +10,6 @@ import numpy as np
 import time
 from datetime import timedelta
 from cosipy.modules.radCor import correctRadiation
-from constants import *
-from config import * 
 import configparser
 
 class IOClass:

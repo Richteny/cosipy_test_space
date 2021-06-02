@@ -1,18 +1,11 @@
 /programs/anaconda/2019.07/lib/python3.7/site-packages/dask_jobqueue/config.py:12: YAMLLoadWarning: calling yaml.load() without Loader=... is deprecated, as the default Loader is unsafe. Please read https://msg.pyyaml.org/load for full details.
   defaults = yaml.load(f)
 INFO:__main__:COSIPY simulation started
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/worker.py:3177: UserWarning: Large object of size 9.54 MB detected in task graph: 
-  [<xarray.Dataset>
-Dimensions:  (time: 148993)
-Coor ... 2 261.6, 1, 22]
-Consider scattering large objects ahead of time
-with client.scatter to reduce scheduler burden and 
-keep data on workers
-
-    future = client.submit(func, big_data)    # bad
-
-    big_future = client.scatter(big_data)     # good
-    future = client.submit(func, big_future)  # good
-  % (format_bytes(len(b)), s)
+Traceback (most recent call last):
+  File "/data/scratch/richteny/thesis/cosipy_test_space/COSIPY.py", line 629, in <module>
+    main()
+  File "/data/scratch/richteny/thesis/cosipy_test_space/COSIPY.py", line 65, in main
+    IO = IOClass(NAMELIST)
+  File "/data/scratch/richteny/thesis/cosipy_test_space/cosipy/cpkernel/io.py", line 34, in __init__
+    self.time = self.DATA.dims['time']
+AttributeError: 'dict' object has no attribute 'dims'
