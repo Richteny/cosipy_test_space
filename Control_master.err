@@ -4,11 +4,11 @@ INFO:__main__:COSIPY simulation started
 /programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
   "diagnostics_port has been deprecated. "
 Traceback (most recent call last):
-  File "/data/scratch/richteny/thesis/cosipy_test_space/COSIPY.py", line 637, in <module>
+  File "/data/scratch/richteny/thesis/cosipy_test_space/COSIPY.py", line 386, in <module>
     main()
-  File "/data/scratch/richteny/thesis/cosipy_test_space/COSIPY.py", line 129, in main
+  File "/data/scratch/richteny/thesis/cosipy_test_space/COSIPY.py", line 92, in main
     run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures, NAMELIST)
-  File "/data/scratch/richteny/thesis/cosipy_test_space/COSIPY.py", line 544, in run_cosipy
+  File "/data/scratch/richteny/thesis/cosipy_test_space/COSIPY.py", line 292, in run_cosipy
     LAYER_IRREDUCIBLE_WATER,LAYER_REFREEZE,stake_names,stat,df_eval = future.result()
   File "/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/client.py", line 221, in result
     six.reraise(*result)
