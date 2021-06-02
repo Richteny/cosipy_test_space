@@ -1,6 +1,8 @@
 import numpy as np
 import pandas as pd
 
+
+
 from cosipy.modules.albedo import updateAlbedo
 from cosipy.modules.heatEquation import solveHeatEquation
 from cosipy.modules.penetratingRadiation import penetrating_radiation
@@ -8,7 +10,7 @@ from cosipy.modules.percolation import percolation
 from cosipy.modules.refreezing import refreezing
 from cosipy.modules.roughness import updateRoughness
 from cosipy.modules.densification import densification
-from cosipy.modules.evaluation import evaluate
+from cosipy.modules.evaluation import evaluate, resample_output, calculate_tsl, eval_tsl
 from cosipy.modules.surfaceTemperature import update_surface_temperature
 
 from cosipy.cpkernel.init import init_snowpack, load_snowpack
@@ -69,6 +71,7 @@ def cosipy_core(DATA, indY, indX, NAMELIST, GRID_RESTART=None, stake_names=None,
 
 
     # Replace values from constants.py if coupled
+
     if WRF_X_CSPY:
         dt = int(DATA.DT.values)
         max_layers = int(DATA.max_layers.values)
