@@ -396,7 +396,7 @@ def run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures):
                         )
                     )
         # Finally, do the calculations and print the progress
-        progress(futures)
+        # progress(futures)
 
         #---------------------------------------
         # Guarantee that restart file is closed
