@@ -1,1 +1,65 @@
 20
+No temperature lapse rate used in AWS2cosipy.
+No precipitation lapse rate used in AWS2cosipy.
+
+ Maximum available time interval from 1982-10-01T00:00 until 1999-09-30T23:00. Time steps: 149016 
+
+
+--------------------------------------------------------------
+	 Integration from 1982-10-01T00:00 to 1983-09-30T00:00
+--------------------------------------------------------------
+
+--------------------------------------------------------------
+Checking input data .... 
+
+Temperature data (T2) ... ok 
+Relative humidity data (RH2) ... ok 
+Shortwave data (G) ... ok 
+Wind velocity data (U2) ... ok 
+Precipitation data (RRR) ... ok 
+Pressure data (PRES) ... ok 
+Incoming longwave data (LWin) ... ok 
+Please check the input data, its seems they are out of range Lwin MAX: 349.29 MIN: 113.23 
+
+
+ Glacier gridpoints: 287 
+
+
+
+
+Output dataset ... ok
+Restart ddataset ... ok 
+
+--------------------------------------------------------------
+
+Starting run with lapse rates: -0.0061 and: 0.0013
+#!/bin/bash
+
+#!/usr/bin/env bash
+#SBATCH -J WoEraAbr
+#SBATCH -n 1
+#SBATCH --cpus-per-task=1
+#SBATCH --mem=56G
+#SBATCH -t 00:30:00
+#SBATCH --qos=short
+#SBATCH --output=Output_nodes.output
+#SBATCH --error=Error_nodes.err
+#SBATCH --time=1-00:00:00
+#SBATCH --account=morsanat
+JOB_ID=${SLURM_JOB_ID%;*}
+
+
+
+/programs/anaconda/2019.07/bin/python -m distributed.cli.dask_worker tcp://192.168.1.15:8786 --nthreads 0 --nprocs 20 --memory-limit 3.00GB --name WoEraAbr--${JOB_ID}-- --death-timeout 60 --local-directory logs/dask-worker-space
+
+You are using SLURM!
+
+SLURMCluster(cores=0, memory=0 B, workers=0/0, jobs=0/0)
+--------------------------------------------------------------
+	 Starting clients and submit jobs ... 
+
+-------------------------------------------------------------- 
+
+SLURMCluster(cores=0, memory=0 B, workers=0/240, jobs=0/12)
+<Client: scheduler='tcp://192.168.1.15:8786' processes=0 cores=0>
+999 240 4

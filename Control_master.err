@@ -1,11 +1,25 @@
 /programs/anaconda/2019.07/lib/python3.7/site-packages/dask_jobqueue/config.py:12: YAMLLoadWarning: calling yaml.load() without Loader=... is deprecated, as the default Loader is unsafe. Please read https://msg.pyyaml.org/load for full details.
   defaults = yaml.load(f)
 INFO:__main__:COSIPY simulation started
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
 Traceback (most recent call last):
-  File "/data/scratch/richteny/thesis/cosipy_test_space/COSIPY.py", line 629, in <module>
+  File "/data/scratch/richteny/thesis/cosipy_test_space/COSIPY.py", line 637, in <module>
     main()
-  File "/data/scratch/richteny/thesis/cosipy_test_space/COSIPY.py", line 65, in main
-    IO = IOClass(NAMELIST)
-  File "/data/scratch/richteny/thesis/cosipy_test_space/cosipy/cpkernel/io.py", line 34, in __init__
-    self.time = self.DATA.dims['time']
-AttributeError: 'dict' object has no attribute 'dims'
+  File "/data/scratch/richteny/thesis/cosipy_test_space/COSIPY.py", line 129, in main
+    run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures, NAMELIST)
+  File "/data/scratch/richteny/thesis/cosipy_test_space/COSIPY.py", line 544, in run_cosipy
+    LAYER_IRREDUCIBLE_WATER,LAYER_REFREEZE,stake_names,stat,df_eval = future.result()
+  File "/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/client.py", line 221, in result
+    six.reraise(*result)
+  File "/programs/anaconda/2019.07/lib/python3.7/site-packages/six.py", line 692, in reraise
+    raise value.with_traceback(tb)
+  File "/data/scratch/richteny/thesis/cosipy_test_space/cosipy/cpkernel/cosipy_core.py", line 127, in cosipy_core
+    GRID = init_snowpack(DATA, NAMELIST, CONST, PARAMS)
+  File "/data/scratch/richteny/thesis/cosipy_test_space/cosipy/cpkernel/init.py", line 75, in init_snowpack
+    CONST, PARAMS, None, None, None, None)
+  File "/programs/anaconda/2019.07/lib/python3.7/site-packages/numba/experimental/jitclass/base.py", line 122, in __call__
+    return cls._ctor(*bind.args[1:], **bind.kwargs)
+  File "/programs/anaconda/2019.07/lib/python3.7/site-packages/numba/typed/dictobject.py", line 735, in impl
+    raise KeyError()
+KeyError
