@@ -1,7 +1,6 @@
 import numpy as np
 import pandas as pd
 from scipy import stats
-from config import eval_method, obs_type, min_snowheight, time_col_obs, tsla_col_obs
 
 
 def evaluate(stake_names, stake_data, df_):
