@@ -385,7 +385,7 @@ def eb_fluxes(GRID, T0, dt, z, z0, T2, rH2, p, u2, RAIN, SLOPE, B_Ts, LWin=None,
         Ri = 0
         if u2 != 0:
             Ri = ( (9.81 * (T2 - T0) * z) / (T2 * np.power(u2, 2)) ).item() #numba can't compare literal & array below
-
+        
         # Stability correction
         phi = 1
         if 0.01 < Ri <= 0.2:

@@ -6,8 +6,8 @@ tsl_method = Config.tsl_method
 tsl_normalize = Config.tsl_normalize
 
 import numpy as np
-import pandas as pd
-from scipy import stats
+#import pandas as pd
+#from scipy import stats
 
 
 
@@ -57,6 +57,8 @@ def rmse(stake_names: list, stake_data, df) -> float:
 
     return rmse
 
+
+'''
 def resample_output(cos_output):
 
     ds = cos_output
@@ -115,3 +117,4 @@ def eval_tsl(tsl_obs, tsl_mod):
     mae = (1/len(tsl_observed[tsla_col_obs].values)) * sum(abs(tsl_observed[tsla_col_obs].values - tsl_modelled['Med_TSL'].values))
 
     return rmse,r2,mbe,mae
+'''
