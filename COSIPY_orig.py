@@ -65,6 +65,7 @@ def main():
     merge = NAMELIST['merge']
     tsl_evaluation = NAMELIST['tsl_evaluation']
     station_altitude = NAMELIST['station_altitude']
+    min_snowheight = NAMELIST['min_snowheight']
     #------------------------------------------
     # Create input and output dataset
     #------------------------------------------ 
@@ -225,7 +226,7 @@ def main():
                         tsl_csv_name = 'tsla_'+results_output_name.split('.nc')[0].lower()+'.csv'    
                         tsla_observations = pd.read_csv(tsl_data_file)
                         resampled_out = resample_output(IO.get_result())
-                        tsl_out = calculate_tsl(resampled_out, min_snowheight)     
+                        tsl_out = calculate_tsl(resampled_out, min_snowheight)
                         tsla_stats = eval_tsl(tsla_observations,tsl_out)
                         print("TSLA Observed vs. Modelled RMSE: " + str(tsla_stats[0])+ "; R-squared: " + str(tsla_stats[1]))
                         tsl_out.to_csv(os.path.join(data_path,'output',tsl_csv_name))
