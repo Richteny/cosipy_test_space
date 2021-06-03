@@ -18,9 +18,9 @@ def init_config():
 
     # Set bools
     config['restart'] = cp.as_bool('restart')
-    config['merge'] = cp.as_bool('merge')
-    config['tsl_evaluation'] = cp.as_bool('tsl_evaluation')
-    config['lapse_rate_config'] = cp.as_bool('lapse_rate_config')
+    #config['merge'] = cp.as_bool('merge')
+    #config['tsl_evaluation'] = cp.as_bool('tsl_evaluation')
+    #config['lapse_rate_config'] = cp.as_bool('lapse_rate_config')
     config['stake_evaluation'] = cp.as_bool('stake_evaluation')
     config['WRF'] = cp.as_bool('WRF')
     config['WRF_X_CSPY'] = cp.as_bool('WRF_X_CSPY')
@@ -31,12 +31,12 @@ def init_config():
     config['tile'] = cp.as_bool('tile')
 
     # Set floats
-    config['min_snowheight'] = cp.as_float('min_snowheight')
-    config['station_altitude'] = cp.as_float('station_altitude')
+    #config['min_snowheight'] = cp.as_float('min_snowheight')
+    #config['station_altitude'] = cp.as_float('station_altitude')
 
     # Set lists
-    config['lapse_T_range'] = cp.as_list('lapse_T_range')
-    config['lapse_RRR_range'] = cp.as_list('lapse_RRR_range')
+    #config['lapse_T_range'] = cp.as_list('lapse_T_range')
+    #config['lapse_RRR_range'] = cp.as_list('lapse_RRR_range')
 
     # Set ints
     config['compression_level'] = cp.as_int('compression_level')
@@ -66,7 +66,7 @@ def init_config():
 
     config['time_start_str'] = config['time_start'][0:10].replace('-', '')
     config['time_end_str'] = config['time_end'][0:10].replace('-', '')
-    config['output_netcdf'] = 'Abramov_300m_ERA5L_fix_lr_MB' + config['time_start_str'] +\
+    config['output_netcdf'] = 'Test_MZA_namelist_' + config['time_start_str'] +\
                               '-' + config['time_end_str'] + '.nc'
 
     return config
