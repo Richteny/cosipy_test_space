@@ -13,9 +13,9 @@ def update_surface_temperature(GRID, dt, alpha, z, z0, T2, rH2, p, G, u2, RAIN,
 
         GRID    ::  Grid structure
         T0      ::  Surface temperature [K]
-	    dt      ::  Integration time [s] -- can vary in WRF_X_CSPY
+	dt      ::  Integration time [s] -- can vary in WRF_X_CSPY
         alpha   ::  Albedo [-]
-	    z       ::  Measurement height [m] -- varies in WRF_X_CSPY
+	z       ::  Measurement height [m] -- varies in WRF_X_CSPY
         z0      ::  Roughness length [m]
         T2      ::  Air temperature [K]
         rH2     ::  Relative humidity [%]
@@ -287,7 +287,7 @@ def eb_fluxes(GRID, T0, dt, alpha, z, z0, T2, rH2, p, G, u2, RAIN, SLOPE, B_Ts,
         Ri = 0
         if (u2!=0):
             Ri = ( (9.81 * (T2 - T0) * z) / (T2 * np.power(u2, 2)) ).item() #numba can't compare literal & array below
-
+        
         # Stability correction
         phi = 1
         if (Ri > 0.01) & (Ri <= 0.2):
@@ -350,7 +350,7 @@ def phi_tq(z,L):
         if ((z/L)>0.0) & ((z/L)<=1.0):
             return (-5*z/L)
         elif ((z/L)>1.0):
-            return (1-5) * (1+np.log(z/L)) - (z/L) 
+            return (1-5) * (1+np.log(z/L)) - (z/L) 		
     elif L<0:
         x = np.power((1-19.3*z/L),0.25)
         return 2*np.log((1+np.power(x,2.0))/2.0)
