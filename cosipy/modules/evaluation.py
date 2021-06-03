@@ -1,6 +1,6 @@
 import numpy as np
-import pandas as pd
-from scipy import stats
+#import pandas as pd
+#from scipy import stats
 
 
 def evaluate(stake_names, stake_data, df_, NAMELIST):
@@ -24,6 +24,8 @@ def rmse(stake_names, stake_data, df_, NAMELIST):
         rmse = ((stake_data[stake_names].subtract(df_['snowheight'],axis=0))**2).mean()**.5
     return rmse
 
+
+'''
 def resample_output(cos_output):
 
     ds = cos_output
@@ -82,3 +84,4 @@ def eval_tsl(tsl_obs, tsl_mod):
     mae = (1/len(tsl_observed[tsla_col_obs].values)) * sum(abs(tsl_observed[tsla_col_obs].values - tsl_modelled['Med_TSL'].values))
 
     return rmse,r2,mbe,mae
+'''
