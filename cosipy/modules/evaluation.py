@@ -6,8 +6,8 @@ tsl_method = Config.tsl_method
 tsl_normalize = Config.tsl_normalize
 
 import numpy as np
-#import pandas as pd
-#from scipy import stats
+import pandas as pd
+from scipy import stats
 
 
 
@@ -58,7 +58,7 @@ def rmse(stake_names: list, stake_data, df) -> float:
     return rmse
 
 
-'''
+
 def resample_output(cos_output):
 
     ds = cos_output
@@ -102,9 +102,8 @@ def mbe_score(y_obs, y_pred):
     mbe = np.mean(diff)
     return mbe
  
-def eval_tsl(tsl_obs, tsl_mod):
+def eval_tsl(tsl_obs, tsl_mod, time_col_obs, tsla_col_obs):
     
-    print(time_col_obs)
     tsl_obs[time_col_obs] = pd.to_datetime(tsl_obs[time_col_obs])
     #first get only modelled values where observation is present
     tsl_modelled = tsl_mod[tsl_mod['time'].isin(tsl_obs[time_col_obs])]
@@ -117,4 +116,4 @@ def eval_tsl(tsl_obs, tsl_mod):
     mae = (1/len(tsl_observed[tsla_col_obs].values)) * sum(abs(tsl_observed[tsla_col_obs].values - tsl_modelled['Med_TSL'].values))
 
     return rmse,r2,mbe,mae
-'''
+
