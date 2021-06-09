@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #SBATCH --job-name="MaEraAbr"
-#SBATCH --qos=short
+#SBATCH --qos=medium
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=20
 #SBATCH --chdir=/data/scratch/richteny/thesis/cosipy_test_space/
