@@ -1,0 +1,14 @@
+-------------------------------------------
+Create input 
+
+Read input file ../../data/input/Abramov/Abramov_ERA5L_fix_1982_2019.csv
+Read static file ../../data/static/Abramov_300m_static.nc 
+
+LWin in data
+Interpolate CR file to grid
+Number of glacier cells: 999
+Number of glacier cells: 287
+Run the radiation module
+Input file created 
+
+-------------------------------------------
