@@ -1,7 +1,8 @@
- # This is the COSIPY configuration (init) file.
- # Please make your changes here. This is a pure textfile,
- # no python. Everything will be parsed as strings and later cast to
- # correct types.
+"""
+ This is the COSIPY configuration (init) file.
+ Please make your changes here.
+"""
+
 
 #-----------------------------------
 # SIMULATION PERIOD 
@@ -18,8 +19,8 @@ time_end   = "2019-09-30T00:00"
 # FILENAMES AND PATHS 
 #-----------------------------------
 
-# time_start_str=(time_start[0:10]).replace('-','')
-# time_end_str=(time_end[0:10]).replace('-','')
+time_start_str=(time_start[0:10]).replace('-','')
+time_end_str=(time_end[0:10]).replace('-','')
 
 data_path = './data/'
 
@@ -27,7 +28,7 @@ data_path = './data/'
 input_netcdf= 'Abramov/Abramov_300m_ERA5L_fix_no_lr_2000_2019.nc'
 
 
-#output_netcdf = 'kronenberg_Abramov_300m_ERA5L_fix_lr_prcp_MB_prcp068_'+time_start_str+'-'+time_end_str+'.nc'
+output_netcdf = 'kronenberg_Abramov_300m_ERA5L_fix_lr_prcp_MB_prcp068_'+time_start_str+'-'+time_end_str+'.nc'
 
 
 
@@ -77,9 +78,9 @@ WRF = False                                                 # Set to True if you
 
 northing = 'lat'	                                    # name of dimension	in in- and -output
 easting = 'lon'					                        # name of dimension in in- and -output
-
-#northing = 'south_north'                                # name of dimension in WRF in- and output
-#easting = 'west_east'                                   # name of dimension in WRF in- and output
+if WRF:
+    northing = 'south_north'                                # name of dimension in WRF in- and output
+    easting = 'west_east'                                   # name of dimension in WRF in- and output
 
 # Interactive simulation with WRF
 WRF_X_CSPY = False
@@ -100,6 +101,8 @@ local_port = 8786                                           # port for local clu
 # WRITE FULL FIELDS 
 #-----------------------------------    
 full_field = False                                          # write full fields (2D data) to file
+if WRF_X_CSPY:
+    full_field = True
     
 #-----------------------------------
 # TOTAL PRECIPITATION  
@@ -121,3 +124,5 @@ xstart = 20
 xend = 40
 ystart = 20
 yend = 40
+
+

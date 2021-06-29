@@ -30,7 +30,7 @@ import itertools
 import logging
 import yaml
 
-
+from config import *
 from slurm_config import *
 from cosipy.cpkernel.cosipy_core import * 
 from cosipy.cpkernel.io import *
@@ -43,7 +43,7 @@ from dask.distributed import progress, wait, as_completed
 import dask
 from tornado import gen
 from dask_jobqueue import SLURMCluster
-from cfg import NAMELIST
+
 
 import scipy
 import cProfile
@@ -51,30 +51,11 @@ import cProfile
 def main(lr_T, lr_RRR, RRR_factor, alb_ice, alb_snow):
 
     start_logging()
-    NAMELIST['mult_factor_RRR'] = RRR_factor
-    NAMELIST['albedo_ice'] = alb_ice
-    NAMELIST['albedo_fresh_snow'] = alb_snow
-    # Unpack variables from namelist
-    data_path = NAMELIST['data_path']
-    restart = NAMELIST['restart']
-    compression_level = NAMELIST['compression_level']
-    slurm_use = NAMELIST['slurm_use']
-    workers = NAMELIST['workers']
-    local_port = NAMELIST['local_port']
-    output_netcdf = NAMELIST['output_netcdf']
-    merge = NAMELIST['merge']
-    tsl_evaluation = NAMELIST['tsl_evaluation']
-    min_snowheight = NAMELIST['min_snowheight']
-    tsl_data_file = NAMELIST['tsl_data_file']
-    time_start_old_file = NAMELIST['time_start_old_file']
-    time_col_obs = NAMELIST['time_col_obs']
-    tsla_col_obs = NAMELIST['tsla_col_obs']
-    tsl_data_file = NAMELIST['tsl_data_file']
-    station_altitude = NAMELIST['station_altitude']
+
     #------------------------------------------
     # Create input and output dataset
     #------------------------------------------ 
-    IO = IOClass(NAMELIST)
+    IO = IOClass()
     start_time = datetime.now()
     # Load Spotpy Params #
     lapse_T = float(lr_T)
@@ -107,12 +88,12 @@ def main(lr_T, lr_RRR, RRR_factor, alb_ice, alb_snow):
             print(cluster.job_script())
             print("You are using SLURM!\n")
             print(cluster)
-            run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures, NAMELIST)
+            run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures)
 
     else:
         with LocalCluster(scheduler_port=local_port, n_workers=workers, local_dir='logs/dask-worker-space', threads_per_worker=1, silence_logs=True) as cluster:
             print(cluster)
-            run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures, NAMELIST)
+            run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures)
 
     print('\n')
     print('--------------------------------------------------------------')
@@ -121,10 +102,10 @@ def main(lr_T, lr_RRR, RRR_factor, alb_ice, alb_snow):
     start_writing = datetime.now()
 
     #-----------------------------------------------
-    #Write results and restart files
+    # Write results and restart files
     #-----------------------------------------------
     timestamp = pd.to_datetime(str(IO.get_restart().time.values)).strftime('%Y-%m-%dT%H-%M')
-           
+   
     encoding = dict()
     for var in IO.get_result().data_vars:
         dataMin = IO.get_result()[var].min(skipna=True).values
@@ -223,20 +204,7 @@ def main(lr_T, lr_RRR, RRR_factor, alb_ice, alb_snow):
     return tsl_out
     
 
-def run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures, NAMELIST):
-
-    # Unpack the namelist
-    data_path = NAMELIST['data_path']
-    restart = NAMELIST['restart']
-    stake_evaluation = NAMELIST['stake_evaluation']
-    stakes_loc_file = NAMELIST['stakes_loc_file']
-    stakes_data_file = NAMELIST['stakes_data_file']
-    obs_type = NAMELIST['obs_type']
-    WRF = NAMELIST['WRF']
-    northing = NAMELIST['northing']
-    easting = NAMELIST['easting']
-    slurm_use = NAMELIST['slurm_use']
-    workers = NAMELIST['workers']
+def run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures):
 
     with Client(cluster) as client:
         print('--------------------------------------------------------------')
@@ -318,12 +286,12 @@ def run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures, NAMELIST):
                     if np.isnan(DATA.sel(south_north=y, west_east=x).to_array()).any():
                         print('ERROR!!!!!!!!!!! There are NaNs in the dataset')
                         sys.exit()
-                    futures.append(client.submit(cosipy_core, DATA.sel(south_north=y, west_east=x), y, x, NAMELIST, stake_names=stake_names, stake_data=df_stakes_data))
+                    futures.append(client.submit(cosipy_core, DATA.sel(south_north=y, west_east=x), y, x, stake_names=stake_names, stake_data=df_stakes_data))
                 elif ((mask==1) & (restart==True)):
                     if np.isnan(DATA.sel(south_north=y, west_east=x).to_array()).any():
                         print('ERROR!!!!!!!!!!! There are NaNs in the dataset')
                         sys.exit()
-                    futures.append(client.submit(cosipy_core, DATA.sel(south_north=y, west_east=x), y, x, NAMELIST, 
+                    futures.append(client.submit(cosipy_core, DATA.sel(south_north=y, west_east=x), y, x, 
                                              GRID_RESTART=IO.create_grid_restart().sel(south_north=y, west_east=x), 
                                              stake_names=stake_names, stake_data=df_stakes_data))
             else:
@@ -333,12 +301,12 @@ def run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures, NAMELIST):
                     if np.isnan(DATA.isel(lat=y,lon=x).to_array()).any():
                         print('ERROR!!!!!!!!!!! There are NaNs in the dataset')
                         sys.exit()
-                    futures.append(client.submit(cosipy_core, DATA.isel(lat=y, lon=x), y, x, NAMELIST, stake_names=stake_names, stake_data=df_stakes_data))
+                    futures.append(client.submit(cosipy_core, DATA.isel(lat=y, lon=x), y, x, stake_names=stake_names, stake_data=df_stakes_data))
                 elif ((mask==1) & (restart==True)):
                     if np.isnan(DATA.isel(lat=y,lon=x).to_array()).any():
                         print('ERROR!!!!!!!!!!! There are NaNs in the dataset')
                         sys.exit()
-                    futures.append(client.submit(cosipy_core, DATA.isel(lat=y, lon=x), y, x, NAMELIST, 
+                    futures.append(client.submit(cosipy_core, DATA.isel(lat=y, lon=x), y, x, 
                                              GRID_RESTART=IO.create_grid_restart().isel(lat=y, lon=x), 
                                              stake_names=stake_names, stake_data=df_stakes_data))
         # Finally, do the calculations and print the progress

@@ -1,27 +1,28 @@
-# from config import WRF_X_CSPY
-#     Declaration of constants
-#     Do not modify unless you are absolutely sure what you are doing.
-# 
-# GENERAL INFORMATION ' 
+#from config import WRF_X_CSPY
+"""
+    Declaration of constants
+    Do not modify unless you are absolutely sure what you are doing.
+"""
+
+# ' GENERAL INFORMATION ' 
 dt = 3600                                       # Time step in the input files [s]
 max_layers = 50                                # og. 200, Max. number of layers, just for the restart file
 z = 2.0                                         # Measurement height [m]
 
-# ' PARAMETERIZATIONS '
-stability_correction = "Ri"                     # possibilities: 'Ri','MO'
-albedo_method = "Oerlemans98"                   # possibilities: 'Oerlemans98'
-densification_method = "Boone"                  # possibilities: 'Boone','empirical','constant' TODO: solve error Vionnet
-penetrating_method = "Bintanja95"               # possibilities: 'Bintanja95'
-roughness_method = "Moelg12"                    # possibilities: 'Moelg12'
-saturation_water_vapour_method = "Sonntag90"    # possibilities: 'Sonntag90'
-thermal_conductivity_method = "bulk"            # possibilities: 'bulk', 'empirical'
-sfc_temperature_method = "SLSQP"                # possibilities: 'L-BFGS-B', 'SLSQP'(faster), 'Newton' (Secant, fastest)'
-
+' PARAMETERIZATIONS '
+stability_correction = 'Ri'                     # possibilities: 'Ri','MO'
+albedo_method = 'Oerlemans98'                   # possibilities: 'Oerlemans98'
+densification_method = 'Boone'                  # possibilities: 'Boone','empirical','constant' TODO: solve error Vionnet
+penetrating_method = 'Bintanja95'               # possibilities: 'Bintanja95'
+roughness_method = 'Moelg12'                    # possibilities: 'Moelg12'
+saturation_water_vapour_method = 'Sonntag90'    # possibilities: 'Sonntag90'
+thermal_conductivity_method = 'bulk'		    # possibilities: 'bulk', 'empirical'
+sfc_temperature_method = 'SLSQP'                # possibilities: 'L-BFGS-B', 'SLSQP'(faster), 'Newton' (Secant, fastest)'
 
 # WRF_X_CSPY: for efficiency and consistency
-# if WRF_X_CSPY:
-#     stability_correction = 'MO'
-#     sfc_temperature_method = 'Newton'
+if WRF_X_CSPY:
+    stability_correction = 'MO'
+    sfc_temperature_method = 'Newton'
 
 
 # ' INITIAL CONDITIONS '
