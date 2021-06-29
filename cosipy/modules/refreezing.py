@@ -1,16 +1,27 @@
 import numpy as np
-
+from constants import zero_temperature, spec_heat_ice, ice_density, \
+                      water_density, lat_heat_melting
 from numba import njit
+from cosipy.utils.options import read_opt
 
-@njit
-def refreezing(GRID, CONST):
+def refreezing(GRID, opt_dict=None):
 
-    # Unpack namelist
-    zero_temperature = CONST['zero_temperature']
-    spec_heat_ice = CONST['spec_heat_ice']
-    ice_density = CONST['ice_density']
-    water_density = CONST['water_density']
-    lat_heat_melting = CONST['lat_heat_melting']
+    # Read and set options
+    read_opt(opt_dict, globals())
+
+    refreezing_method = 'default'
+    refreezing_allowed = ['default']
+
+    if refreezing_method == 'default':
+        water_refreezed = refreezing_default(GRID)
+    else:
+        raise ValueError("Refreezing method = \"{:s}\" is not allowed, must be one of {:s}".format(refreezing_method, ", ".join(refreezing_allowed)))
+
+    return water_refreezed
+
+#@njit
+def refreezing_default(GRID):
+
     # water refreezed
     water_refreezed = 0.0
     LWCref = 0.0
