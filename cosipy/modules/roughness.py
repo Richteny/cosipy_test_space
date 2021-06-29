@@ -1,28 +1,28 @@
+from constants import roughness_method, roughness_fresh_snow, \
+                      roughness_firn, roughness_ice, snow_ice_threshold, \
+                      aging_factor_roughness
+from cosipy.utils.options import read_opt
+
+def updateRoughness(GRID, opt_dict=None):
+
+    # Read and set options
+    read_opt(opt_dict, globals())
 
 
-def updateRoughness(GRID, NAMELIST):
-
-    # Unpack the roughness_method
-    roughness_method = NAMELIST['roughness_method']
     roughness_allowed = ['Moelg12']
     if roughness_method == 'Moelg12':
-        sigma = method_Moelg(GRID, NAMELIST)
+        sigma = method_Moelg(GRID)
     else:
         raise ValueError("Roghness method = \"{:s}\" is not allowed, must be one of {:s}".format(roughness_method,", ".join(roughness_allowed)))
 
     return sigma
 
 
-def method_Moelg(GRID, NAMELIST):
+def method_Moelg(GRID):
 
     """ This method updates the roughness length (Moelg et al 2009, J.Clim.)"""
 
-    # Unpack constants from NAMELIST
-    roughness_fresh_snow = NAMELIST['roughness_fresh_snow']
-    roughness_firn = NAMELIST['roughness_firn']
-    roughness_ice = NAMELIST['roughness_ice']
-    snow_ice_threshold = NAMELIST['snow_ice_threshold']
-    aging_factor_roughness = NAMELIST['aging_factor_roughness']
+
     # Get hours since the last snowfall
     # First get fresh snow properties (height and timestamp)
     fresh_snow_height, fresh_snow_timestamp, _  = GRID.get_fresh_snow_props()
