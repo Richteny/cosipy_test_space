@@ -1,30 +1,24 @@
 import numpy as np
-
-
+from constants import penetrating_method, snow_ice_threshold, spec_heat_ice, \
+                      zero_temperature, ice_density, water_density, lat_heat_melting
 from numba import njit
+from cosipy.utils.options import read_opt
 
-def penetrating_radiation(GRID, SWnet, dt, NAMELIST, CONST):
+def penetrating_radiation(GRID, SWnet, dt, opt_dict=None):
 
-    # Unpack the penetrating method.
-    penetrating_method = NAMELIST['penetrating_method']
+    # Read and set options
+    read_opt(opt_dict, globals())
+
     penetrating_allowed = ['Bintanja95']
     if penetrating_method == 'Bintanja95':
-        subsurface_melt, Si = method_Bintanja(GRID, SWnet, dt, CONST)
+        subsurface_melt, Si = method_Bintanja(GRID, SWnet, dt)
     else:
         raise ValueError("Penetrating method = \"{:s}\" is not allowed, must be one of {:s}".format(penetrating_method, ", ".join(penetrating_allowed)))
 
     return subsurface_melt, Si
 
 @njit
-def method_Bintanja(GRID, SWnet, dt, CONST):
-
-    # Unpack the needed variables from the namelist.
-    snow_ice_threshold = CONST['snow_ice_threshold']
-    spec_heat_ice = CONST['spec_heat_ice']
-    zero_temperature = CONST['zero_temperature']
-    ice_density = CONST['ice_density']
-    water_density = CONST['water_density']
-    lat_heat_melting = CONST['lat_heat_melting']
+def method_Bintanja(GRID, SWnet, dt):
 
     # Total height of first layer
     total_height = 0.0

@@ -1,13 +1,17 @@
 import numpy as np
+from config import eval_method, obs_type
+from cosipy.utils.options import read_opt
 import pandas as pd
 from scipy import stats
 
 
-def evaluate(stake_names, stake_data, df_, NAMELIST):
+def evaluate(stake_names, stake_data, df_, opt_dict=None):
     """ This methods evaluates the simulation with the stake measurements
         stake_name  ::  """
-
-    if NAMELIST['eval_method'] == 'rmse':
+            
+    # Read and set options
+    read_opt(opt_dict, globals())
+    if eval_method == 'rmse':
         stat = rmse(stake_names, stake_data, df_)
     else:
         stat = None
@@ -15,9 +19,7 @@ def evaluate(stake_names, stake_data, df_, NAMELIST):
     return stat
 
 
-def rmse(stake_names, stake_data, df_, NAMELIST):
-
-    obs_type = NAMELIST['obs_type']
+def rmse(stake_names, stake_data, df_):
     if (obs_type=='mb'):
         rmse = ((stake_data[stake_names].subtract(df_['mb'],axis=0))**2).mean()**.5
     if (obs_type=='snowheight'):
