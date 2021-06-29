@@ -20,6 +20,7 @@ print("Time end: ", NAMELIST['time_end'])
 obs = obs[(obs['LS_DATE'] > NAMELIST['time_start']) & (obs['LS_DATE'] <= NAMELIST['time_end'])]
 obs.set_index('LS_DATE', inplace=True)
 
+#error in FAST algorithm parameter sensitivity, probably due to NaNs in simulation?
 
 class spot_setup:
     # defining all parameters and the distribution
