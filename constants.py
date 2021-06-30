@@ -26,7 +26,7 @@ if WRF_X_CSPY:
 
 
 # ' INITIAL CONDITIONS '
-initial_snowheight_constant = 0.2               # Initial snowheight
+initial_snowheight_constant = 0.5               # Initial snowheight
 initial_snow_layer_heights = 0.10               # Initial thickness of snow layers
 initial_glacier_height = 200.0                   # Initial glacier height without snowlayers
 initial_glacier_layer_heights = 0.5             # Initial thickness of glacier ice layers

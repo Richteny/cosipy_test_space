@@ -7,24 +7,30 @@ from spotpy.parameter import Uniform
 from spotpy.objectivefunctions import rmse
 from spotpy import analyser
 from COSIPY import main
-from cfg import NAMELIST
+from constants import *
+from config import *
 
 obs = pd.read_csv("./data/input/Abramov/snowlines/TSLA_Abramov_filtered_full.csv")
 obs['LS_DATE'] = pd.to_datetime(obs['LS_DATE'])
-print("Time start: ", NAMELIST['time_start'])
-print("Time end: ", NAMELIST['time_end'])
+time_start_dt = pd.to_datetime(time_start)
+time_end_dt = pd.to_datetime(time_end)
+print("Time start: ", time_start)
+print("Time end: ", time_end)
 #just for test run
-obs = obs[(obs['LS_DATE'] > NAMELIST['time_start']) & (obs['LS_DATE'] <= NAMELIST['time_end'])]
+obs = obs[(obs['LS_DATE'] > time_start_dt) & (obs['LS_DATE'] <= time_end_dt)]
 obs.set_index('LS_DATE', inplace=True)
+
+count=0
 
 class spot_setup:
 
-    param = lr_T, lr_RRR, RRR_factor, alb_ice, alb_snow = [
+    param = lr_T, lr_RRR, RRR_factor, alb_ice, alb_snow, alb_firn = [
         Uniform(low=-0.0064, high=-0.0057), #lrT
         Uniform(low=0, high=0.00013), #lrRRR
         Uniform(low=0.63, high=0.68), #RRR_factor
         Uniform(low=0.2, high=0.32), #alb_ice -> alb ice can never be below alb snow, implement that somehow
-        Uniform(low=0.75, high=0.9) #alb_snow
+        Uniform(low=0.75, high=0.9), #alb_snow
+        Uniform(low=0.4, high=0.6) #alb_firn
     ]
 
     #M = 4 #inference factor
@@ -37,7 +43,8 @@ class spot_setup:
 
     def simulation(self, x):
         sim = main(lr_T=x.lr_T, lr_RRR=x.lr_RRR, RRR_factor=x.RRR_factor,
-                     alb_ice = x.alb_ice, alb_snow = x.alb_snow)
+                   alb_ice = x.alb_ice, alb_snow = x.alb_snow,
+                   alb_firn = x.alb_firn, count=count)
         print("Got simulation.")
         sim = sim[sim['time'].isin(obs.index)]
         return sim.Med_TSL.values
@@ -66,7 +73,7 @@ class spot_setup:
     #    line=str(objectivefunctions)+','+str(parameter).strip('[]')+','+str(simulations).strip('[]')+'\n'
     #    self.database.write(line)
 
-rep = 1
+rep = 3
 spot_setup_class = spot_setup(obs)
 print("Created setup.")
 sampler = spotpy.algorithms.mc(spot_setup_class, dbname='no_simulations', dbformat='csv', save_sim=True)
