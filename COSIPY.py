@@ -63,7 +63,7 @@ def main(lr_T, lr_RRR, RRR_factor, alb_ice, alb_snow, alb_firn, count=""):
     # Create input and output dataset
     #------------------------------------------
     #setup IO with new values from dictionary 
-    IO = IOClass(opt_dict)
+    IO = IOClass(opt_dict=opt_dict)
     start_time = datetime.now() 
     if (restart == True):
         DATA = IO.create_data_file(suffix="{}_lrT_{}_lrRRR_{}_prcp_{}".format(count, round(abs(lapse_T),6),round(lapse_RRR,6),mult_factor_RRR))
