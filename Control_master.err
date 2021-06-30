@@ -1,2 +1,10 @@
-/programs/anaconda/2019.07/lib/python3.7/site-packages/dask_jobqueue/config.py:12: YAMLLoadWarning: calling yaml.load() without Loader=... is deprecated, as the default Loader is unsafe. Please read https://msg.pyyaml.org/load for full details.
-  defaults = yaml.load(f)
+Traceback (most recent call last):
+  File "/data/scratch/richteny/thesis/cosipy_test_space/sim_spot.py", line 9, in <module>
+    from COSIPY import main
+  File "/data/scratch/richteny/thesis/cosipy_test_space/COSIPY.py", line 35, in <module>
+    from cosipy.cpkernel.cosipy_core import * 
+  File "/data/scratch/richteny/thesis/cosipy_test_space/cosipy/cpkernel/cosipy_core.py", line 4, in <module>
+    from constants import mult_factor_RRR, densification_method, ice_density, water_density, \
+  File "/data/scratch/richteny/thesis/cosipy_test_space/constants.py", line 23, in <module>
+    if WRF_X_CSPY:
+NameError: name 'WRF_X_CSPY' is not defined
