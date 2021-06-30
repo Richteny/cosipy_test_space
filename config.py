@@ -28,7 +28,7 @@ data_path = './data/'
 input_netcdf= 'Abramov/Abramov_300m_ERA5L_fix_no_lr_2000_2019.nc'
 
 
-output_netcdf = 'kronenberg_Abramov_300m_ERA5L_fix_lr_prcp_MB_prcp068_'+time_start_str+'-'+time_end_str+'.nc'
+output_netcdf = 'Abramov_300m_ERA5L_fix_'+time_start_str+'-'+time_end_str+'.nc'
 
 
 

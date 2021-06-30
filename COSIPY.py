@@ -44,28 +44,29 @@ import dask
 from tornado import gen
 from dask_jobqueue import SLURMCluster
 
-
 import scipy
 import cProfile
 
-def main(lr_T, lr_RRR, RRR_factor, alb_ice, alb_snow):
+def main(lr_T, lr_RRR, RRR_factor, alb_ice, alb_snow, alb_firn, count=""):
 
     start_logging()
-
-    #------------------------------------------
-    # Create input and output dataset
-    #------------------------------------------ 
-    IO = IOClass()
-    start_time = datetime.now()
-    # Load Spotpy Params #
+    #Initialise dictionary and load Spotpy Params#
+    opt_dict = dict()
+    opt_dict['mult_factor_RRR'] = RRR_factor
+    opt_dict['albedo_ice'] = alb_ice
+    opt_dict['albedo_fresh_snow'] = alb_snow
+    opt_dict['albedo_firn'] = alb_firn
     lapse_T = float(lr_T)
     lapse_RRR = float(lr_RRR)
-    
-    # ------------------------------------------ 
+    #additionally initial snowheight constant, snow_layer heights, temperature bottom, albedo aging and depth
+    #------------------------------------------
     # Create input and output dataset
-    #------------------------------------------ 
+    #------------------------------------------
+    #setup IO with new values from dictionary 
+    IO = IOClass(opt_dict)
+    start_time = datetime.now() 
     if (restart == True):
-        DATA = IO.create_data_file(suffix="_lrT_{}_lrRRR_{}_albice_{}_albsnow_{}_prcp_{}".format(abs(lapse_T),lapse_RRR,NAMELIST['albedo_ice'], NAMELIST['albedo_fresh_snow'], NAMELIST['mult_factor_RRR']))
+        DATA = IO.create_data_file(suffix="{}_lrT_{}_lrRRR_{}_prcp_{}".format(count, round(abs(lapse_T),6),round(lapse_RRR,6),mult_factor_RRR))
     else:
         DATA = IO.create_data_file()
     # Create global result and restart datasets
@@ -116,7 +117,7 @@ def main(lr_T, lr_RRR, RRR_factor, alb_ice, alb_snow):
         #encoding[var] = dict(zlib=True, complevel=compression_level, dtype=dtype, scale_factor=scale_factor, add_offset=add_offset, _FillValue=FillValue)
         encoding[var] = dict(zlib=True, complevel=compression_level)
                     
-    results_output_name = output_netcdf.split('.nc')[0]+'_lrT_{}_lrRRR_{}_albice_{}_albsnow_{}_prcp_{}.nc'.format(abs(lapse_T), lapse_RRR, NAMELIST['albedo_ice'], NAMELIST['albedo_fresh_snow'],NAMELIST['mult_factor_RRR'])  
+    results_output_name = output_netcdf.split('.nc')[0]+'{}_lrT_{}_lrRRR_{}_prcp_{}.nc'.format(count, round(abs(lapse_T),6), round(lapse_RRR,6),mult_factor_RRR)  
     IO.get_result().to_netcdf(os.path.join(data_path,'output',results_output_name), encoding=encoding, mode = 'w')
     
     encoding = dict()
