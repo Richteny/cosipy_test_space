@@ -1,10 +1,47 @@
+/programs/anaconda/2019.07/lib/python3.7/site-packages/dask_jobqueue/config.py:12: YAMLLoadWarning: calling yaml.load() without Loader=... is deprecated, as the default Loader is unsafe. Please read https://msg.pyyaml.org/load for full details.
+  defaults = yaml.load(f)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/worker.py:3177: UserWarning: Large object of size 11.22 MB detected in task graph: 
+  [<xarray.Dataset>
+Dimensions:  (time: 175297)
+Coor ... 0 238.4, 1, 22]
+Consider scattering large objects ahead of time
+with client.scatter to reduce scheduler burden and 
+keep data on workers
+
+    future = client.submit(func, big_data)    # bad
+
+    big_future = client.scatter(big_data)     # good
+    future = client.submit(func, big_future)  # good
+  % (format_bytes(len(b)), s)
 Traceback (most recent call last):
-  File "/data/scratch/richteny/thesis/cosipy_test_space/sim_spot.py", line 9, in <module>
-    from COSIPY import main
-  File "/data/scratch/richteny/thesis/cosipy_test_space/COSIPY.py", line 35, in <module>
-    from cosipy.cpkernel.cosipy_core import * 
-  File "/data/scratch/richteny/thesis/cosipy_test_space/cosipy/cpkernel/cosipy_core.py", line 4, in <module>
-    from constants import mult_factor_RRR, densification_method, ice_density, water_density, \
-  File "/data/scratch/richteny/thesis/cosipy_test_space/constants.py", line 23, in <module>
-    if WRF_X_CSPY:
-NameError: name 'WRF_X_CSPY' is not defined
+  File "/data/scratch/richteny/thesis/cosipy_test_space/sim_spot.py", line 81, in <module>
+    sampler.sample(rep)
+  File "/programs/anaconda/2019.07/lib/python3.7/site-packages/spotpy/algorithms/mc.py", line 69, in sample
+    for rep, randompar, simulations in self.repeat(param_generator):
+  File "/programs/anaconda/2019.07/lib/python3.7/site-packages/spotpy/parallel/sequential.py", line 27, in __call__
+    data = self.process(job)
+  File "/programs/anaconda/2019.07/lib/python3.7/site-packages/spotpy/algorithms/_algorithm.py", line 467, in simulate
+    model_result = self.setup.simulation(self.partype(*all_params))
+  File "/data/scratch/richteny/thesis/cosipy_test_space/sim_spot.py", line 47, in simulation
+    alb_firn = x.alb_firn, count=count)
+  File "/data/scratch/richteny/thesis/cosipy_test_space/COSIPY.py", line 92, in main
+    run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures)
+  File "/data/scratch/richteny/thesis/cosipy_test_space/COSIPY.py", line 337, in run_cosipy
+    LAYER_IRREDUCIBLE_WATER,LAYER_REFREEZE,stake_names,stat,df_eval = future.result()
+  File "/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/client.py", line 221, in result
+    six.reraise(*result)
+  File "/programs/anaconda/2019.07/lib/python3.7/site-packages/six.py", line 692, in reraise
+    raise value.with_traceback(tb)
+  File "/data/scratch/richteny/thesis/cosipy_test_space/cosipy/cpkernel/cosipy_core.py", line 228, in cosipy_core
+    GRID.update_grid()
+  File "/programs/anaconda/2019.07/lib/python3.7/site-packages/numba/experimental/jitclass/boxing.py", line 60, in wrapper
+    return method(*args, **kwargs)
+  File "/programs/anaconda/2019.07/lib/python3.7/site-packages/numba/core/dispatcher.py", line 415, in _compile_for_args
+    error_rewrite(e, 'typing')
+  File "/programs/anaconda/2019.07/lib/python3.7/site-packages/numba/core/dispatcher.py", line 358, in error_rewrite
+    reraise(type(e), e, None)
+  File "/programs/anaconda/2019.07/lib/python3.7/site-packages/numba/core/utils.py", line 80, in reraise
+    raise value.with_traceback(tb)
+Exception: ('Long error message', <class 'numba.core.errors.TypingError'>, "Failed in nopython mode pipeline (step: nopython frontend)\n\x1b[1m\x1b[1m\x1b[1m\x1b[1m- Resolution failure for literal arguments:\n\x1b[1mFailed in nopython mode pipeline (step: nopython frontend)\n\x1b[1m\x1b[1m\x1b[1m\x1b[1m- Resolution failure for literal arguments:\n\x1b[1mFailed in nopython mode pipeline (step: nopython frontend)\n\x1b[1m\x1b[1m\x1b[1m\x1b[1m- Resolution failure for literal arguments:\n\x1b[1mFailed in nopython mode pipeline (step: nopython frontend)\n\x1b[1m\x1b[1mUnknown attribute 'snow_ice_threshold' of type instance.jitclass.Grid#1455af9d3950<layer_heights:array(float64, 1d, A),layer_densities:array(float64, 1d, A),layer_temperatures:array(float64, 1d, A),layer_liquid_water_content:array(float64, 1d, A),layer_ice_fraction:OptionalType(array(float64, 1d, A)) i.e. the type 'array(float64, 1d, A) or None',number_nodes:int64,new_snow_height:float64,new_snow_timestamp:float64,old_snow_timestamp:float64,grid:ListType[instance.jitclass.Node#1455af9b0650<height:float64,temperature:float64,liquid_water_content:float64,ice_f")
