@@ -1,1 +1,71 @@
 20
+Time start:  1999-10-01T00:00
+Time end:  2019-09-30T00:00
+Created setup.
+Got evaluation dataset.
+Starting sampling.
+Initializing the  Monte Carlo (MC) sampler  with  3  repetitions
+Starting the MC algorithm with 3 repetitions...
+ATTENTION: mult_factor_RRR is not a valid option. Default will be used!
+
+ Maximum available time interval from 1999-10-01T00:00 until 2019-09-30T23:00. Time steps: 175320 
+
+
+--------------------------------------------------------------
+	 Integration from 1999-10-01T00:00 to 2019-09-30T00:00
+--------------------------------------------------------------
+
+--------------------------------------------------------------
+Checking input data .... 
+
+Temperature data (T2) ... ok 
+Relative humidity data (RH2) ... ok 
+Shortwave data (G) ... ok 
+Wind velocity data (U2) ... ok 
+Precipitation data (RRR) ... ok 
+Pressure data (PRES) ... ok 
+Incoming longwave data (LWin) ... ok 
+Please check the input data, its seems they are out of range Lwin MAX: 365.04 MIN: 86.83 
+
+
+ Glacier gridpoints: 287 
+
+
+
+
+Output dataset ... ok
+Restart ddataset ... ok 
+
+--------------------------------------------------------------
+
+Starting run with lapse rates: -0.005970952429339152 and: 2.2396670515716057e-05
+#!/bin/bash
+
+#!/usr/bin/env bash
+#SBATCH -J WoEraAbr
+#SBATCH -n 1
+#SBATCH --cpus-per-task=1
+#SBATCH --mem=56G
+#SBATCH -t 00:30:00
+#SBATCH --qos=short
+#SBATCH --output=Output_nodes.output
+#SBATCH --error=Error_nodes.err
+#SBATCH --time=1-00:00:00
+#SBATCH --account=morsanat
+JOB_ID=${SLURM_JOB_ID%;*}
+
+
+
+/programs/anaconda/2019.07/bin/python -m distributed.cli.dask_worker tcp://192.168.1.10:8786 --nthreads 0 --nprocs 20 --memory-limit 3.00GB --name WoEraAbr--${JOB_ID}-- --death-timeout 60 --local-directory logs/dask-worker-space
+
+You are using SLURM!
+
+SLURMCluster(cores=0, memory=0 B, workers=0/0, jobs=0/0)
+--------------------------------------------------------------
+	 Starting clients and submit jobs ... 
+
+-------------------------------------------------------------- 
+
+SLURMCluster(cores=0, memory=0 B, workers=0/100, jobs=0/5)
+<Client: scheduler='tcp://192.168.1.10:8786' processes=0 cores=0>
+999 100 9
