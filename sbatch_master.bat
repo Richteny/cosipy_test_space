@@ -18,6 +18,6 @@ echo $SLURM_CPUS_ON_NODE
 
 module load anaconda/2019.07
 
-python -u /data/scratch/richteny/thesis/spotpy_cosipy_test/cosipy_test_space.py #COSIPY.py
+python -u /data/scratch/richteny/thesis/cosipy_test_space/sim_spot.py #COSIPY.py
 
 
