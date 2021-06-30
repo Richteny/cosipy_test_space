@@ -213,9 +213,9 @@ class Grid:
 
         # Merge subsequent layer with underlying layers until height of the layer is greater than the given height
         while ((total_height<min_height) & (idx+1<self.get_number_layers())):
-            if (self.get_node_density(idx)<self.snow_ice_threshold) & (self.get_node_density(idx+1)<self.snow_ice_threshold):
+            if (self.get_node_density(idx)<snow_ice_threshold) & (self.get_node_density(idx+1)<snow_ice_threshold):
                 self.merge_nodes(idx)
-            elif (self.get_node_density(idx)>=self.snow_ice_threshold) & (self.get_node_density(idx+1)>=self.snow_ice_threshold):
+            elif (self.get_node_density(idx)>=snow_ice_threshold) & (self.get_node_density(idx+1)>=snow_ice_threshold):
                 self.merge_nodes(idx)
             else:
                 break
@@ -700,7 +700,7 @@ class Grid:
 
     def get_ice_heights(self):
         """ Returns the heights of the ice layers """
-        return [self.grid[idx].get_layer_height() for idx in range(self.number_nodes) if (self.get_node_density(idx)>=self.snow_ice_threshold)]
+        return [self.grid[idx].get_layer_height() for idx in range(self.number_nodes) if (self.get_node_density(idx)>=snow_ice_threshold)]
 
 
     def get_node_height(self, idx):
