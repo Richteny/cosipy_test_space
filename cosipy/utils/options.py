@@ -19,7 +19,10 @@ OPTIONS = {
     'time_end': time_end,
     'time_start': time_start,
     'input_netcdf': input_netcdf,
-    'output_netcdf': output_netcdf
+    'output_netcdf': output_netcdf,
+    'mult_factor_RRR': mult_factor_RRR,
+    'albedo_mod_snow_aging': albedo_mod_snow_aging,
+    'albedo_mod_snow_depth': albedo_mod_snow_depth
     }
 
 def read_opt(opt_dict, glob):
