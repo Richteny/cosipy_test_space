@@ -9,15 +9,10 @@ from spotpy_full import *
 import matplotlib.pyplot as plt 
 from COSIPY import main 
 
+count= 1248
+best_summary = psample(obs=obs,count=count, rep=300)
 
-obs = pd.read_csv("./data/input/Abramov/snowlines/TSLA_Abramov_filtered_full.csv")
-obs['LS_DATE'] = pd.to_datetime(obs['LS_DATE'])
-print("Time start: ", NAMELIST['time_start'])
-print("Time end: ", NAMELIST['time_end'])
-obs = obs[(obs['LS_DATE'] > NAMELIST['time_start']) & (obs['LS_DATE'] <= NAMELIST['time_end'])]
-obs.set_index('LS_DATE', inplace=True)
-
-best_summary = psample(obs=obs, rep=2)
+'''
 
 ## Sensitivity Analysis
 spotpy_setup = spot_setup(obs)  # only once
@@ -26,10 +21,10 @@ sampler = spotpy.algorithms.fast(spotpy_setup, dbname='COSIPY_FAST', dbformat="c
 sampler.sample(10)  # minimum 60 to run through,
 # ideal number of iterations: spot_setup.par_iter, immer wieder einzelne Zeilen "out of bounds"
 results = sampler.getdata()
-analyser.plot_fast_sensitivity(results, number_of_sensitiv_pars=5, fig_name="FAST_sensitivity_COSIPY.png")
+analyser.plot_fast_sensitivity(results, number_of_sensitiv_pars=6, fig_name="FAST_sensitivity_COSIPY.png")
 
 SI = spotpy.analyser.get_sensitivity_of_fast(results)  # Sensitivity indexes as dict
-
+'''
 '''
 def load_psample(path, max=True, cond1={'par1': 'parTT_rain', 'operator': 'lessthan', 'par2': 'parTT_snow'}):
     results = spotpy.analyser.load_csv_results(path)

@@ -8,7 +8,7 @@
 # SIMULATION PERIOD 
 #-----------------------------------
 # Abramov
-time_start = "1999-10-01T00:00"
+time_start = "1998-10-01T00:00"
 time_end   = "2019-09-30T00:00" 
 
 # Hintereisferner
@@ -25,10 +25,10 @@ time_end_str=(time_end[0:10]).replace('-','')
 data_path = './data/'
 
 
-input_netcdf= 'Abramov/Abramov_300m_ERA5L_fix_no_lr_2000_2019.nc'
+input_netcdf= 'Abramov/Abramov_300m_ERA5L_fix_oldprecp_no_lr_1983_2019.nc'
 
 
-output_netcdf = 'Abramov_300m_ERA5L_fix_'+time_start_str+'-'+time_end_str+'.nc'
+output_netcdf = 'Abramov_300m_ERA5L_fix_oldprecp_'+time_start_str+'-'+time_end_str+'.nc'
 
 
 
@@ -59,7 +59,7 @@ tsl_evaluation = True
 time_col_obs = 'LS_DATE'
 tsla_col_obs = 'SC_median'
 min_snowheight = 0.001                                         # Minimum snowheight in m
-tsl_data_file = './data/input/Abramov/snowlines/TSLA_Abramov_filtered_full.csv' # path to transient snow line altitudes dataset
+tsl_data_file = './data/input/Abramov/snowlines/TSLA_Abramov_filtered_jaso.csv' # path to transient snow line altitudes dataset
 
 #-----------------------------------
 # Run mutliple Lapse Rates
