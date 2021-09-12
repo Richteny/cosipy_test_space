@@ -49,7 +49,7 @@ import cProfile
 #Load constants for default function values
 from constants import *
 
-def main(lr_T=-0.0061, lr_RRR=0.000062, lr_RH=0, RRR_factor=mult_factor_RRR, alb_ice=albedo_ice,
+def main(lr_T=0, lr_RRR=0, lr_RH=0, RRR_factor=mult_factor_RRR, alb_ice=albedo_ice,
          alb_snow=albedo_fresh_snow,alb_firn=albedo_firn,albedo_aging=albedo_mod_snow_aging,
          albedo_depth=albedo_mod_snow_depth, count=""):
 
