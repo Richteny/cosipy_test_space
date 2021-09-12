@@ -46,8 +46,12 @@ from dask_jobqueue import SLURMCluster
 
 import scipy
 import cProfile
+#Load constants for default function values
+from constants import *
 
-def main(lr_T, lr_RRR, RRR_factor, alb_ice, alb_snow, alb_firn, count=""):
+def main(lr_T=-0.0061, lr_RRR=0.000062, lr_RH=0, RRR_factor=mult_factor_RRR, alb_ice=albedo_ice,
+         alb_snow=albedo_fresh_snow,alb_firn=albedo_firn,albedo_aging=albedo_mod_snow_aging,
+         albedo_depth=albedo_mod_snow_depth, count=""):
 
     start_logging()
     #Initialise dictionary and load Spotpy Params#
@@ -56,8 +60,11 @@ def main(lr_T, lr_RRR, RRR_factor, alb_ice, alb_snow, alb_firn, count=""):
     opt_dict['albedo_ice'] = alb_ice
     opt_dict['albedo_fresh_snow'] = alb_snow
     opt_dict['albedo_firn'] = alb_firn
+    opt_dict['albedo_mod_snow_aging'] = albedo_aging
+    opt_dict['albedo_mod_snow_depth'] = albedo_depth
     lapse_T = float(lr_T)
     lapse_RRR = float(lr_RRR)
+    lapse_RH = float(lr_RH)
     #additionally initial snowheight constant, snow_layer heights, temperature bottom, albedo aging and depth
     #------------------------------------------
     # Create input and output dataset
@@ -66,7 +73,7 @@ def main(lr_T, lr_RRR, RRR_factor, alb_ice, alb_snow, alb_firn, count=""):
     IO = IOClass(opt_dict=opt_dict)
     start_time = datetime.now() 
     if (restart == True):
-        DATA = IO.create_data_file(suffix="{}_lrT_{}_lrRRR_{}_prcp_{}".format(count, round(abs(lapse_T),6),round(lapse_RRR,6),mult_factor_RRR))
+        DATA = IO.create_data_file(suffix="_num{}_lrT_{}_lrRRR_{}_prcp_{}".format(count, round(abs(lapse_T),7),round(lapse_RRR,7),round(opt_dict['mult_factor_RRR'],5)))
     else:
         DATA = IO.create_data_file()
     # Create global result and restart datasets
@@ -74,10 +81,16 @@ def main(lr_T, lr_RRR, RRR_factor, alb_ice, alb_snow, alb_firn, count=""):
     RESTART = IO.create_restart_file()
     # Auxiliary variables for futures
     futures= []
-    #adjust lapse rates 
-    print("Starting run with lapse rates:", lapse_T, "and:", lapse_RRR) 
+    #adjust lapse rates
+    print("#--------------------------------------#") 
+    print("\nStarting run with lapse rates:", lapse_T, "and:", lapse_RRR) 
+    print("\nAlbedo ice, snow and firn:", opt_dict['albedo_ice'],",",opt_dict['albedo_fresh_snow'],"and", opt_dict['albedo_firn'])
+    print("\nRRR mult factor is:", opt_dict['mult_factor_RRR'])
+    print("\n#--------------------------------------#")
+
     for t in range(len(DATA.time)):
         DATA.T2[t,:,:] = DATA.T2[t,:,:]+ (DATA.HGT - station_altitude)*lapse_T
+        DATA.RH2[t,:,:] = DATA.RH2[t,:,:]+ (DATA.HGT - station_altitude)*lapse_RH
         DATA.RRR[t,:,:] = np.maximum(DATA.RRR[t,:,:]+ (DATA.HGT - station_altitude)*lapse_RRR, 0.0)
                 
     #-----------------------------------------------
@@ -89,12 +102,12 @@ def main(lr_T, lr_RRR, RRR_factor, alb_ice, alb_snow, alb_firn, count=""):
             print(cluster.job_script())
             print("You are using SLURM!\n")
             print(cluster)
-            run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures)
+            run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures, opt_dict=opt_dict)
 
     else:
         with LocalCluster(scheduler_port=local_port, n_workers=workers, local_dir='logs/dask-worker-space', threads_per_worker=1, silence_logs=True) as cluster:
             print(cluster)
-            run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures)
+            run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures,opt_dict=opt_dict)
 
     print('\n')
     print('--------------------------------------------------------------')
@@ -117,7 +130,7 @@ def main(lr_T, lr_RRR, RRR_factor, alb_ice, alb_snow, alb_firn, count=""):
         #encoding[var] = dict(zlib=True, complevel=compression_level, dtype=dtype, scale_factor=scale_factor, add_offset=add_offset, _FillValue=FillValue)
         encoding[var] = dict(zlib=True, complevel=compression_level)
                     
-    results_output_name = output_netcdf.split('.nc')[0]+'{}_lrT_{}_lrRRR_{}_prcp_{}.nc'.format(count, round(abs(lapse_T),6), round(lapse_RRR,6),mult_factor_RRR)  
+    results_output_name = output_netcdf.split('.nc')[0]+'_num{}_lrT_{}_lrRRR_{}_prcp_{}.nc'.format(count, round(abs(lapse_T),7), round(lapse_RRR,7),round(opt_dict['mult_factor_RRR'],5))  
     IO.get_result().to_netcdf(os.path.join(data_path,'output',results_output_name), encoding=encoding, mode = 'w')
     
     encoding = dict()
@@ -130,44 +143,44 @@ def main(lr_T, lr_RRR, RRR_factor, alb_ice, alb_snow, alb_firn, count=""):
         #encoding[var] = dict(zlib=True, complevel=compression_level, dtype=dtype, scale_factor=scale_factor, add_offset=add_offset, _FillValue=FillValue)
         encoding[var] = dict(zlib=True, complevel=compression_level)
                         
-    IO.get_restart().to_netcdf(os.path.join(data_path,'restart','restart_'+timestamp+'_lrT_{}_lrRRR_{}_albice_{}_albsnow_{}_prcp_{}.nc'.format(abs(lapse_T),lapse_RRR, NAMELIST['albedo_ice'], NAMELIST['albedo_fresh_snow'], NAMELIST['mult_factor_RRR'])), encoding=encoding)
+    IO.get_restart().to_netcdf(os.path.join(data_path,'restart','restart_'+timestamp+'_num{}_lrT_{}_lrRRR_{}_prcp_{}.nc'.format(count,round(abs(lapse_T),7), round(lapse_RRR,7),round(opt_dict['mult_factor_RRR'],5))), encoding=encoding)
     
     #----------------------------------------------
     # Implement TSL Extraction
     #----------------------------------------------
-    if (restart == True) and (merge == True):
-        print("Trying to concatenate files. Requires some time.")
-        #Get name of files 
-        previous_output_name = results_output_name.replace(time_start_str, time_start_old_file).replace(time_end_str, time_start_str)
-        merged_output_name = results_output_name.replace(time_start_str, time_start_old_file)
-        print("Merging with :", previous_output_name)
-        previous_output = xr.open_dataset(os.path.join(data_path,'output',previous_output_name))
+    #if (restart == True) and (merge == True):
+    #    print("Trying to concatenate files. Requires some time.")
+    #    #Get name of files 
+    #    previous_output_name = results_output_name.replace(time_start_str, time_start_old_file).replace(time_end_str, time_start_str)
+    #    merged_output_name = results_output_name.replace(time_start_str, time_start_old_file)
+    #    print("Merging with :", previous_output_name)
+    #    previous_output = xr.open_dataset(os.path.join(data_path,'output',previous_output_name))
         #Get variables to concat on
-        list_vars = list(IO.get_result().keys())
-        [list_vars.remove(x) for x in ['HGT','SLOPE','ASPECT','MASK','MB']]
+    #    list_vars = list(IO.get_result().keys())
+    #    [list_vars.remove(x) for x in ['HGT','SLOPE','ASPECT','MASK','MB']]
         #To prevent OOM-Kill Event split into multiple datasets and add variable
         #sub_lists = [list_vars[i:i+2] for i in range(0, len(list_vars),2)]
         #do subset to only those variables for now to avoid memory error
-        list_vars = [x for x in list_vars if x in ['surfM','surfMB']]
-        print(list_vars)
-        ds_merged = xr.concat([previous_output[['MB','SNOWHEIGHT']],IO.get_result()[['MB','SNOWHEIGHT']]], dim='time')
-        for var in list_vars:
-            print(var)
+    #    list_vars = [x for x in list_vars if x in ['surfM','surfMB']]
+    #    print(list_vars)
+    #    ds_merged = xr.concat([previous_output[['MB','SNOWHEIGHT']],IO.get_result()[['MB','SNOWHEIGHT']]], dim='time')
+    #    for var in list_vars:
+    #        print(var)
             #this produces memory error sometimes, why?
             #Reconstruct by hand?
-            var_concat = np.concatenate((previous_output[var].values,IO.get_result()[var].values))
-            ds_merged[var] = (('time','lat','lon'), var_concat)
-            ds_merged[var].attrs['units'] = IO.get_result()[var].attrs['units']
-            ds_merged[var].attrs['long_name'] = IO.get_result()[var].attrs['long_name']
-            ds_merged[var].encoding['_FillValue'] = -9999
-            del var_concat
-        print("Part 1/2 of concat done.")
+    #        var_concat = np.concatenate((previous_output[var].values,IO.get_result()[var].values))
+    #        ds_merged[var] = (('time','lat','lon'), var_concat)
+    #        ds_merged[var].attrs['units'] = IO.get_result()[var].attrs['units']
+    #        ds_merged[var].attrs['long_name'] = IO.get_result()[var].attrs['long_name']
+    #        ds_merged[var].encoding['_FillValue'] = -9999
+    #        del var_concat
+    #    print("Part 1/2 of concat done.")
                         
-        for var in ['HGT','MASK','SLOPE','ASPECT']:
-            ds_merged[var] = IO.get_result()[var]
-            print("Part 2/2 of concat done.")
-            ds_merged.to_netcdf(os.path.join(data_path,'output',merged_output_name))    
-            print("Concat successful.")
+    #    for var in ['HGT','MASK','SLOPE','ASPECT']:
+    #        ds_merged[var] = IO.get_result()[var]
+    #        print("Part 2/2 of concat done.")
+    #        ds_merged.to_netcdf(os.path.join(data_path,'output',merged_output_name))    
+    #        print("Concat successful.")
     if tsl_evaluation is True:
         tsla_observations = pd.read_csv(tsl_data_file)
         
@@ -205,7 +218,7 @@ def main(lr_T, lr_RRR, RRR_factor, alb_ice, alb_snow, alb_firn, count=""):
     return tsl_out
     
 
-def run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures):
+def run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures, opt_dict=None):
 
     with Client(cluster) as client:
         print('--------------------------------------------------------------')
@@ -287,14 +300,14 @@ def run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures):
                     if np.isnan(DATA.sel(south_north=y, west_east=x).to_array()).any():
                         print('ERROR!!!!!!!!!!! There are NaNs in the dataset')
                         sys.exit()
-                    futures.append(client.submit(cosipy_core, DATA.sel(south_north=y, west_east=x), y, x, stake_names=stake_names, stake_data=df_stakes_data))
+                    futures.append(client.submit(cosipy_core, DATA.sel(south_north=y, west_east=x), y, x, stake_names=stake_names, stake_data=df_stakes_data, opt_dict=opt_dict))
                 elif ((mask==1) & (restart==True)):
                     if np.isnan(DATA.sel(south_north=y, west_east=x).to_array()).any():
                         print('ERROR!!!!!!!!!!! There are NaNs in the dataset')
                         sys.exit()
                     futures.append(client.submit(cosipy_core, DATA.sel(south_north=y, west_east=x), y, x, 
                                              GRID_RESTART=IO.create_grid_restart().sel(south_north=y, west_east=x), 
-                                             stake_names=stake_names, stake_data=df_stakes_data))
+                                             stake_names=stake_names, stake_data=df_stakes_data, opt_dict=opt_dict))
             else:
                 mask = DATA.MASK.isel(lat=y, lon=x)
 	        # Provide restart grid if necessary
@@ -302,14 +315,14 @@ def run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures):
                     if np.isnan(DATA.isel(lat=y,lon=x).to_array()).any():
                         print('ERROR!!!!!!!!!!! There are NaNs in the dataset')
                         sys.exit()
-                    futures.append(client.submit(cosipy_core, DATA.isel(lat=y, lon=x), y, x, stake_names=stake_names, stake_data=df_stakes_data))
+                    futures.append(client.submit(cosipy_core, DATA.isel(lat=y, lon=x), y, x, stake_names=stake_names, stake_data=df_stakes_data, opt_dict=opt_dict))
                 elif ((mask==1) & (restart==True)):
                     if np.isnan(DATA.isel(lat=y,lon=x).to_array()).any():
                         print('ERROR!!!!!!!!!!! There are NaNs in the dataset')
                         sys.exit()
                     futures.append(client.submit(cosipy_core, DATA.isel(lat=y, lon=x), y, x, 
                                              GRID_RESTART=IO.create_grid_restart().isel(lat=y, lon=x), 
-                                             stake_names=stake_names, stake_data=df_stakes_data))
+                                             stake_names=stake_names, stake_data=df_stakes_data, opt_dict=opt_dict))
         # Finally, do the calculations and print the progress
         #progress(futures)
 
