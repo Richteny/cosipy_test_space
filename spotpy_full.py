@@ -179,3 +179,5 @@ def psample(obs, rep=10, count=None, dbname='cosipy_par_smpl', dbformat="csv", i
             'param': spot_setup.param,'opt_iter': spot_setup.par_iter,
             'sampling_plot': fig1} #'best_simulation': best_simulation, 'best_run_plot': fig2, 'par_uncertain_plot': fig3}
 
+#Plotting routine and most parts of script created by Phillip Schuster of HU Berlin
+#Thank you Phillip!
