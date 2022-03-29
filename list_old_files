@@ -1,0 +1,24 @@
+#!/bin/bash
+
+dir="/data/scratch/richteny/thesis/cosipy_test_space/data/output/"
+
+cd $dir
+pwd
+files=($(ls *.nc))
+for file in ${files[@]}
+do
+    filename=$(basename $file)
+    sub_file=${filename##*20190930_}
+    num=$(echo $sub_file | cut -f1 -d"_")
+    int=${num:3}
+    if (( ${#int} >0)); then
+        if (( $int < 948 )); then
+            echo $int
+            rm $file
+            #tsl file
+            tslfile=tsla_${file,,}
+            tslcsv=${tslfile%.*}.csv
+            rm $tslcsv
+        fi
+    fi
+done
