@@ -9,6 +9,6 @@ from spotpy_full import *
 import matplotlib.pyplot as plt 
 from COSIPY import main 
 
-count= 1248
-best_summary = psample(obs=obs,count=count, rep=300)
+count=1999
+best_summary = psample(obs=obs,count=count, rep=2)
 
