@@ -32,7 +32,11 @@ def resample_output(cos_output):
 
     ds = cos_output
     ds = ds[['SNOWHEIGHT','HGT']]
-    ds_daily = ds.resample(time='1d', keep_attrs=True).mean(dim='time')
+    #ds_daily = ds.resample(time='1d', keep_attrs=True).mean(dim='time')
+    df_daily = ds.to_dataframe().groupby([pd.Grouper(level='time',freq='1d'),
+                                          pd.Grouper(level='lat'),
+                                          pd.Grouper(level='lon')]).mean()
+    ds_daily = df_daily.to_xarray()
     return ds_daily
     
 def calculate_tsl(cos_output, min_snowheight):

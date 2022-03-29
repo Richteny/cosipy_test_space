@@ -87,12 +87,13 @@ def main(lr_T=0, lr_RRR=0, lr_RH=0, RRR_factor=mult_factor_RRR, alb_ice=albedo_i
     print("\nAlbedo ice, snow and firn:", opt_dict['albedo_ice'],",",opt_dict['albedo_fresh_snow'],"and", opt_dict['albedo_firn'])
     print("\nRRR mult factor is:", opt_dict['mult_factor_RRR'])
     print("\n#--------------------------------------#")
-
-    for t in range(len(DATA.time)):
-        DATA.T2[t,:,:] = DATA.T2[t,:,:]+ (DATA.HGT - station_altitude)*lapse_T
-        DATA.RH2[t,:,:] = DATA.RH2[t,:,:]+ (DATA.HGT - station_altitude)*lapse_RH
-        DATA.RRR[t,:,:] = np.maximum(DATA.RRR[t,:,:]+ (DATA.HGT - station_altitude)*lapse_RRR, 0.0)
-                
+    
+    start2 = datetime.now()
+    for t in range(len(DATA.time.values)):
+        DATA.T2.values[t,:,:] = DATA.T2.values[t,:,:]+ (DATA.HGT.values - station_altitude)*lapse_T
+        DATA.RH2.values[t,:,:] = DATA.RH2.values[t,:,:]+ (DATA.HGT.values - station_altitude)*lapse_RH
+        DATA.RRR.values[t,:,:] = np.maximum(DATA.RRR.values[t,:,:]+ (DATA.HGT.values - station_altitude)*lapse_RRR, 0.0)
+    print("Seconds needed for lapse rate:", (datetime.now()-start2).total_seconds())
     #-----------------------------------------------
     # Create a client for distributed calculations
     #-----------------------------------------------
