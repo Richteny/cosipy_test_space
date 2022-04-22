@@ -3,7 +3,8 @@ from config import eval_method, obs_type
 from cosipy.utils.options import read_opt
 import pandas as pd
 from scipy import stats
-
+from datetime import datetime
+from numba import njit
 
 def evaluate(stake_names, stake_data, df_, opt_dict=None):
     """ This methods evaluates the simulation with the stake measurements
@@ -29,7 +30,7 @@ def rmse(stake_names, stake_data, df_):
 
 
 def resample_output(cos_output):
-
+    times = datetime.now()
     ds = cos_output
     ds = ds[['SNOWHEIGHT','HGT']]
     #ds_daily = ds.resample(time='1d', keep_attrs=True).mean(dim='time')
@@ -37,10 +38,26 @@ def resample_output(cos_output):
                                           pd.Grouper(level='lat'),
                                           pd.Grouper(level='lon')]).mean()
     ds_daily = df_daily.to_xarray()
+    print("Required time for resample only: ", datetime.now()-times)
     return ds_daily
+
+@njit
+def resample_array_style(data):
+    times = datetime.now()
+    freq=24
+    if data.ndim == 3:
+        data = np.reshape(data[:-1,:,:],(freq,-1,data.shape[1],data.shape[2]))    
+    else:
+        data = np.reshape(data[:-1,:],(freq,-1,data.shape[1]))
+
+    res = np.nanmean(data,axis=0)
+    print("Required time for resample ony: ", datetime.now()-times)
+    return res
+
+
     
 def calculate_tsl(cos_output, min_snowheight):
-    
+    times = datetime.now()
     tsl_df = pd.DataFrame({'time': [],
                            'Med_TSL': [],
                            'Mean_TSL': [],
@@ -76,7 +93,7 @@ def calculate_tsl(cos_output, min_snowheight):
                                 'Max_TSL': tsl_max,
                                 'Min_TSL': tsl_min}, ignore_index=True)
         tsl_df['time'] = pd.to_datetime(tsl_df['time'])
-        
+    print("Time required for calculating TSL only :", datetime.now()-times)
     return tsl_df
 
 def mbe_score(y_obs, y_pred):
@@ -85,7 +102,7 @@ def mbe_score(y_obs, y_pred):
     return mbe
  
 def eval_tsl(tsl_obs, tsl_mod, time_col_obs, tsla_col_obs):
-    
+    times= datetime.now()
     tsl_obs[time_col_obs] = pd.to_datetime(tsl_obs[time_col_obs])
     #first get only modelled values where observation is present
     tsl_modelled = tsl_mod[tsl_mod['time'].isin(tsl_obs[time_col_obs])]
@@ -100,6 +117,6 @@ def eval_tsl(tsl_obs, tsl_mod, time_col_obs, tsla_col_obs):
     r2 = r_value**2 #other options to be filled in or print out multiple metrics
     mbe = mbe_score(tsl_observed[tsla_col_obs].values,tsl_modelled['Med_TSL'].values)
     mae = (1/len(tsl_observed[tsla_col_obs].values)) * sum(abs(tsl_observed[tsla_col_obs].values - tsl_modelled['Med_TSL'].values))
-
+    print("Time required for calculating TSL stats: ", datetime.now()-times)
     return rmse,r2,mbe,mae
 
