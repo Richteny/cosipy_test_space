@@ -1,13 +1,5 @@
 20
-TSL file: ./data/input/Abramov/snowlines/TSLA_Abramov_filtered_jaso.csv
-Time start:  1998-10-01T00:00
-Time end:  2019-09-30T00:00
-Initialised.
-Initializing the  Markov Chain Monte Carlo (MCMC) sampler  with  2  repetitions
-The objective function will be maximized
-Starting the MCMC algotrithm with 2 repetitions...
-Initialize  1  chain(s)...
-Count 2000
+Time required to load in opt_dic:  0:00:00.000007
 
  Maximum available time interval from 1982-10-01T00:00 until 2019-09-30T23:00. Time steps: 324336 
 
@@ -39,15 +31,22 @@ Restart ddataset ... ok
 
 --------------------------------------------------------------
 
+Time required to init IO, DATA, RESULT, RESTART:  0:00:15.406462
 #--------------------------------------#
 
-Starting run with lapse rates: -0.00669655034180313 and: 5.188573797349365e-05
+Starting run with lapse rates: -0.0065 and: 0.0
 
-Albedo ice, snow and firn: 0.3860195684003266 , 0.6879900430094809 and 0.4640326179124727
+Albedo ice, snow and firn: 0.3 , 0.85 and 0.55
 
-RRR mult factor is: 0.6328440950046836
+RRR mult factor is: 1.25
 
 #--------------------------------------#
+267.9687835822356
+(184057, 27, 37)
+267.5656478174724
+Assigning values back to DATA
+267.5656478174724
+Seconds needed for lapse rate: 0:00:04.936662
 #!/bin/bash
 
 #!/usr/bin/env bash
@@ -65,7 +64,7 @@ JOB_ID=${SLURM_JOB_ID%;*}
 
 
 
-/programs/anaconda/2019.07/bin/python -m distributed.cli.dask_worker tcp://192.168.1.13:8786 --nthreads 0 --nprocs 20 --memory-limit 3.00GB --name WoEraAbr--${JOB_ID}-- --death-timeout 60 --local-directory logs/dask-worker-space
+/programs/anaconda/2019.07/bin/python -m distributed.cli.dask_worker tcp://192.168.1.10:8786 --nthreads 0 --nprocs 20 --memory-limit 3.00GB --name WoEraAbr--${JOB_ID}-- --death-timeout 60 --local-directory logs/dask-worker-space
 
 You are using SLURM!
 
@@ -76,9 +75,9 @@ SLURMCluster(cores=0, memory=0 B, workers=0/0, jobs=0/0)
 -------------------------------------------------------------- 
 
 SLURMCluster(cores=0, memory=0 B, workers=0/200, jobs=0/10)
-<Client: scheduler='tcp://192.168.1.13:8786' processes=0 cores=0>
+<Client: scheduler='tcp://192.168.1.10:8786' processes=0 cores=0>
 999 200 4
-	 Time required to do calculations:   15 minutes 10.6928 seconds 
+	 Time required to do calculations:   15 minutes 33.5034 seconds 
 
 
 
@@ -86,58 +85,4 @@ SLURMCluster(cores=0, memory=0 B, workers=0/200, jobs=0/10)
 Write results ...
 -------------------------------------------------------------- 
 
-TSLA Observed vs. Modelled RMSE: 250.63127383817294; R-squared: 0.39036605555479514
-	 Time required to write restart and output files:    8 minutes 3.56893 seconds 
-
-	 Total run duration:   28 minutes 11.7426 seconds 
-
---------------------------------------------------------------
-	 SIMULATION WAS SUCCESSFUL
---------------------------------------------------------------
-RMSE is:  -269.63301147432435
-1 of 2, maximal objective function=-269.633, time remaining: 00:00:00
-Initialize database...
-['csv', 'hdf5', 'ram', 'sql', 'custom', 'noData']
-* Database file 'cosipy_par_smpl.csv' created.
-Beginn of Random Walk
-Count 2001
-
- Maximum available time interval from 1982-10-01T00:00 until 2019-09-30T23:00. Time steps: 324336 
-
-
---------------------------------------------------------------
-	 Integration from 1998-10-01T00:00 to 2019-09-30T00:00
---------------------------------------------------------------
-
---------------------------------------------------------------
-Checking input data .... 
-
-Temperature data (T2) ... ok 
-Relative humidity data (RH2) ... ok 
-Shortwave data (G) ... ok 
-Wind velocity data (U2) ... ok 
-Precipitation data (RRR) ... ok 
-Pressure data (PRES) ... ok 
-Incoming longwave data (LWin) ... ok 
-Please check the input data, its seems they are out of range Lwin MAX: 365.04 MIN: 86.83 
-
-
- Glacier gridpoints: 287 
-
-
-
-
-Output dataset ... ok
-Restart ddataset ... ok 
-
---------------------------------------------------------------
-
-#--------------------------------------#
-
-Starting run with lapse rates: -0.006609138288967256 and: 3.8145453099217666e-05
-
-Albedo ice, snow and firn: 0.36092295625458687 , 0.688774696828314 and 0.4702376751815272
-
-RRR mult factor is: 0.6390957453685334
-
-#--------------------------------------#
+Starting TSL eval.

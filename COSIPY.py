@@ -48,12 +48,15 @@ import scipy
 import cProfile
 #Load constants for default function values
 from constants import *
+from numba import njit
 
-def main(lr_T=0, lr_RRR=0, lr_RH=0, RRR_factor=mult_factor_RRR, alb_ice=albedo_ice,
+
+def main(lr_T=-0.0065, lr_RRR=0, lr_RH=0, RRR_factor=mult_factor_RRR, alb_ice=albedo_ice,
          alb_snow=albedo_fresh_snow,alb_firn=albedo_firn,albedo_aging=albedo_mod_snow_aging,
          albedo_depth=albedo_mod_snow_depth, count=""):
 
     start_logging()
+    times = datetime.now()
     #Initialise dictionary and load Spotpy Params#
     opt_dict = dict()
     opt_dict['mult_factor_RRR'] = RRR_factor
@@ -65,11 +68,13 @@ def main(lr_T=0, lr_RRR=0, lr_RH=0, RRR_factor=mult_factor_RRR, alb_ice=albedo_i
     lapse_T = float(lr_T)
     lapse_RRR = float(lr_RRR)
     lapse_RH = float(lr_RH)
+    print("Time required to load in opt_dic: ", datetime.now()-times)
     #additionally initial snowheight constant, snow_layer heights, temperature bottom, albedo aging and depth
     #------------------------------------------
     # Create input and output dataset
     #------------------------------------------
     #setup IO with new values from dictionary 
+    times = datetime.now()
     IO = IOClass(opt_dict=opt_dict)
     start_time = datetime.now() 
     if (restart == True):
@@ -79,6 +84,7 @@ def main(lr_T=0, lr_RRR=0, lr_RH=0, RRR_factor=mult_factor_RRR, alb_ice=albedo_i
     # Create global result and restart datasets
     RESULT = IO.create_result_file() 
     RESTART = IO.create_restart_file()
+    print("Time required to init IO, DATA, RESULT, RESTART: ", datetime.now()-times)
     # Auxiliary variables for futures
     futures= []
     #adjust lapse rates
@@ -89,11 +95,19 @@ def main(lr_T=0, lr_RRR=0, lr_RH=0, RRR_factor=mult_factor_RRR, alb_ice=albedo_i
     print("\n#--------------------------------------#")
     
     start2 = datetime.now()
-    for t in range(len(DATA.time.values)):
-        DATA.T2.values[t,:,:] = DATA.T2.values[t,:,:]+ (DATA.HGT.values - station_altitude)*lapse_T
-        DATA.RH2.values[t,:,:] = DATA.RH2.values[t,:,:]+ (DATA.HGT.values - station_altitude)*lapse_RH
-        DATA.RRR.values[t,:,:] = np.maximum(DATA.RRR.values[t,:,:]+ (DATA.HGT.values - station_altitude)*lapse_RRR, 0.0)
-    print("Seconds needed for lapse rate:", (datetime.now()-start2).total_seconds())
+    t2 = DATA.T2.values
+    rh2 = DATA.RH2.values
+    rrr = DATA.RRR.values
+    hgt = DATA.HGT.values
+    print(np.nanmean(t2))
+    t2, rh2, rrr = online_lapse_rate(t2,rh2,rrr,hgt,lapse_T,lapse_RH, lapse_RRR)
+    print(np.nanmean(t2))
+    print("Assigning values back to DATA")
+    DATA['T2'] = (('time','lat','lon'), t2)
+    DATA['RH2'] = (('time','lat','lon'), rh2)
+    DATA['RRR'] = (('time','lat','lon'), rrr)
+    print(np.nanmean(DATA.T2.values))
+    print("Seconds needed for lapse rate:", datetime.now()-start2)
     #-----------------------------------------------
     # Create a client for distributed calculations
     #-----------------------------------------------
@@ -182,7 +196,10 @@ def main(lr_T=0, lr_RRR=0, lr_RH=0, RRR_factor=mult_factor_RRR, alb_ice=albedo_i
     #        print("Part 2/2 of concat done.")
     #        ds_merged.to_netcdf(os.path.join(data_path,'output',merged_output_name))    
     #        print("Concat successful.")
+    times = datetime.now()
     if tsl_evaluation is True:
+        print("Starting TSL eval.")
+        #times = datetime.now()
         tsla_observations = pd.read_csv(tsl_data_file)
         
         if (restart == True) and (merge == True):
@@ -196,11 +213,18 @@ def main(lr_T=0, lr_RRR=0, lr_RH=0, RRR_factor=mult_factor_RRR, alb_ice=albedo_i
         else:
             tsl_csv_name = 'tsla_'+results_output_name.split('.nc')[0].lower()+'.csv'    
             tsla_observations = pd.read_csv(tsl_data_file)
-            resampled_out = resample_output(IO.get_result())
+            #resampled_out = resample_output(IO.get_result())
+            for var in ['SNOWHEIGHT','HGT']:
+                vals = resample_array_style(IO.get_result()[var].values)
+            print(IO.get_result()['HGT'])
+            resampled_out = construct_resampled_ds(IO.get_result(),vals)
+            resampled_out['HGT'] = (('lat','lon'), IO.get_result()['HGT'])
+
             tsl_out = calculate_tsl(resampled_out, min_snowheight)
             tsla_stats = eval_tsl(tsla_observations,tsl_out, time_col_obs, tsla_col_obs)
             print("TSLA Observed vs. Modelled RMSE: " + str(tsla_stats[0])+ "; R-squared: " + str(tsla_stats[1]))
             tsl_out.to_csv(os.path.join(data_path,'output',tsl_csv_name))
+        print("Time required for TSL EVAL: ", datetime.now()-times)
     #-----------------------------------------------
     # Stop time measurement
     #-----------------------------------------------
@@ -293,7 +317,7 @@ def run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures, opt_dict=None):
                         stake_names.append(stake_name)
             else:
                 stake_names = None
-                
+
             if WRF is True:
                 mask = DATA.MASK.sel(south_north=y, west_east=x)
 	        # Provide restart grid if necessary
@@ -431,6 +455,30 @@ def compute_scale_and_offset(min, max, n):
     add_offset = min + 2 ** (n - 1) * scale_factor
     return (scale_factor, add_offset)
 
+@njit
+def online_lapse_rate(t2,rh2,rrr,hgt,lapse_T,lapse_RH,lapse_RRR):
+    print(t2.shape)
+    for t in range(t2.shape[0]):
+        t2[t,:,:] = t2[t,:,:]+ (hgt - station_altitude)*lapse_T
+        rh2[t,:,:] = rh2[t,:,:]+ (hgt - station_altitude)*lapse_RH
+        rrr[t,:,:] = np.maximum(rrr[t,:,:]+ (hgt - station_altitude)*lapse_RRR, 0.0)
+    return t2,rh2,rrr
+
+def construct_resampled_ds(input_ds,vals):
+    times = [str(x) for x in input_ds.time.values]
+    time_vals = pd.daterange(times[0], times[-2], freq="1d")
+    data_vars = {'SNOWHEIGHT':(['time','lat','lon'], [vals],
+                               {'units': "m",
+                                'long_name': "snowheight"})}
+     
+
+    # define coordinates
+    coords = {'time': (['time'], [time_vals]),
+              'lat': (['lat'], [input_ds.lat.values]),
+              'lon': (['lon'], [input_ds.lon.values])}
+     
+    ds = xr.Dataset(data_vars=data_vars,coords=coords)
+    return ds
 
 @gen.coroutine
 def close_everything(scheduler):
@@ -441,4 +489,11 @@ def close_everything(scheduler):
 
 ''' MODEL EXECUTION '''
 if __name__ == "__main__":
+    import pstats
+    profiler = cProfile.Profile()
+    profiler.enable()
     main()
+    profiler.disable()
+    stats=pstats.Stats(profiler).sort_stats("tottime")
+    stats.print_stats()
+    
