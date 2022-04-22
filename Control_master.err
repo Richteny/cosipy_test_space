@@ -1,5 +1,6 @@
 /programs/anaconda/2019.07/lib/python3.7/site-packages/dask_jobqueue/config.py:12: YAMLLoadWarning: calling yaml.load() without Loader=... is deprecated, as the default Loader is unsafe. Please read https://msg.pyyaml.org/load for full details.
   defaults = yaml.load(f)
+INFO:__main__:COSIPY simulation started
 /programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
   "diagnostics_port has been deprecated. "
 /programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/worker.py:3177: UserWarning: Large object of size 11.78 MB detected in task graph: 
@@ -15,24 +16,9 @@ keep data on workers
     big_future = client.scatter(big_data)     # good
     future = client.submit(func, big_future)  # good
   % (format_bytes(len(b)), s)
-/programs/anaconda/2019.07/lib/python3.7/site-packages/numpy/lib/function_base.py:3405: RuntimeWarning: All-NaN slice encountered
-  r = func(a, **kwargs)
-/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:60: RuntimeWarning: Mean of empty slice
-  tsl_mean = np.nanmean(snowline_range.HGT)
-/programs/anaconda/2019.07/lib/python3.7/site-packages/numpy/lib/nanfunctions.py:1628: RuntimeWarning: Degrees of freedom <= 0 for slice.
-  keepdims=keepdims)
-/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:62: RuntimeWarning: All-NaN axis encountered
-  tsl_max = np.nanmax(snowline_range.HGT)
-/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:63: RuntimeWarning: All-NaN axis encountered
-  tsl_min = np.nanmin(snowline_range.HGT)
-/programs/anaconda/2019.07/lib/python3.7/site-packages/numpy/lib/function_base.py:3405: RuntimeWarning: All-NaN slice encountered
-  r = func(a, **kwargs)
-/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:60: RuntimeWarning: Mean of empty slice
-  tsl_mean = np.nanmean(snowline_range.HGT)
-/programs/anaconda/2019.07/lib/python3.7/site-packages/numpy/lib/nanfunctions.py:1628: RuntimeWarning: Degrees of freedom <= 0 for slice.
-  keepdims=keepdims)
-/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:62: RuntimeWarning: All-NaN axis encountered
-  tsl_max = np.nanmax(snowline_range.HGT)
-/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:63: RuntimeWarning: All-NaN axis encountered
-  tsl_min = np.nanmin(snowline_range.HGT)
-slurmstepd: error: *** JOB 153793 ON node13 CANCELLED AT 2022-03-12T16:25:26 ***
+Traceback (most recent call last):
+  File "/data/scratch/richteny/thesis/cosipy_test_space/COSIPY.py", line 495, in <module>
+    main()
+  File "/data/scratch/richteny/thesis/cosipy_test_space/COSIPY.py", line 218, in main
+    vals = resample_array_style(IO.get_result()[var].values)
+NameError: name 'resample_array_style' is not defined
