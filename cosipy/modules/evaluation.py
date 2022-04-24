@@ -41,17 +41,18 @@ def resample_output(cos_output):
     print("Required time for resample only: ", datetime.now()-times)
     return ds_daily
 
-@njit
-def resample_array_style(data):
-    times = datetime.now()
-    freq=24
-    if data.ndim == 3:
-        data = np.reshape(data[:-1,:,:],(freq,-1,data.shape[1],data.shape[2]))    
-    else:
-        data = np.reshape(data[:-1,:],(freq,-1,data.shape[1]))
 
-    res = np.nanmean(data,axis=0)
-    print("Required time for resample ony: ", datetime.now()-times)
+def resample_array_style(data):
+    freq=24
+    lats = data.shape[1]
+    lons = data.shape[2]
+    if data.ndim == 3:
+        #res = np.reshape(data[:-1,:,:],(freq,-1,lats,lons))
+        res = data[:-1,:,:].reshape(freq,-1,lats,lons)    
+    else:
+        #res = np.reshape(data[:-1,:],(freq,-1,lats))
+        res = data[:-1,:].reshape(freq,-1,lats)
+    res = np.nanmean(res,axis=0)
     return res
 
 
