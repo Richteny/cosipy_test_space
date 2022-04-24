@@ -309,6 +309,8 @@ class IOClass:
         # Variables given by the input dataset
         self.add_variable_along_latlon(self.RESULT, self.DATA.HGT, 'HGT', 'm', 'Elevation')
         self.add_variable_along_latlon(self.RESULT, self.DATA.MASK, 'MASK', 'boolean', 'Glacier mask')
+        if ('N_Points' in self.DATA):
+            self.add_variable_along_latlon(self.RESULT, self.DATA.N_POINTS,'N_Points', 'count', 'Number of points in each bin')
         if ('SLOPE' in self.DATA):
             self.add_variable_along_latlon(self.RESULT, self.DATA.SLOPE, 'SLOPE', 'degrees', 'Terrain slope')
         if ('ASPECT' in self.DATA):
