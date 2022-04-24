@@ -46,14 +46,12 @@ def resample_array_style(data):
     times = datetime.now()
     freq=24
     if data.ndim == 3:
-    	lats = data.shape[1]
-    	lons = data.shape[2]
-        #res = np.reshape(data[:-1,:,:],(freq,-1,lats,lons))
-        res = data[:-1,:,:].reshape(freq,-1,lats,lons)    
+        lats = data.shape[1]
+        lons = data.shape[2]
+        res = data[:-1,:,:].reshape(freq,-1,lats,lons)
     else:
         point = data.shape[1]
-        #res = np.reshape(data[:-1,:],(freq,-1,point))
-        res = data[:-1,:].reshape(freq,-1,lats)
+        res = data[:-1,:].reshape(freq,-1,points)
     res = np.nanmean(res,axis=0)
     return res
 

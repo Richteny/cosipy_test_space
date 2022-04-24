@@ -9,7 +9,7 @@
 #-----------------------------------
 # Abramov
 time_start = "2009-10-01T00:00"
-time_end   = "2019-09-30T00:00" 
+time_end   = "2019-12-31T00:00" 
 
 # Hintereisferner
 #time_start = '2018-09-17T08:00'
@@ -25,7 +25,7 @@ time_end_str=(time_end[0:10]).replace('-','')
 data_path = './data/'
 
 
-input_netcdf= 'Abramov/Abramov_300m_ERA5L_fix_no_lr_1983_2019.nc'
+input_netcdf= 'Abramov/Abramov_300m_ERA5L_1999_2019.nc'
 
 
 output_netcdf = 'Abramov_300m_ERA5L_fix_'+time_start_str+'-'+time_end_str+'.nc'
