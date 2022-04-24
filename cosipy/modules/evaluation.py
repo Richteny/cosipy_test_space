@@ -43,14 +43,16 @@ def resample_output(cos_output):
 
 
 def resample_array_style(data):
+    times = datetime.now()
     freq=24
-    lats = data.shape[1]
-    lons = data.shape[2]
     if data.ndim == 3:
+    	lats = data.shape[1]
+    	lons = data.shape[2]
         #res = np.reshape(data[:-1,:,:],(freq,-1,lats,lons))
         res = data[:-1,:,:].reshape(freq,-1,lats,lons)    
     else:
-        #res = np.reshape(data[:-1,:],(freq,-1,lats))
+        point = data.shape[1]
+        #res = np.reshape(data[:-1,:],(freq,-1,point))
         res = data[:-1,:].reshape(freq,-1,lats)
     res = np.nanmean(res,axis=0)
     return res
