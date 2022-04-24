@@ -1,12 +1,11 @@
 /programs/anaconda/2019.07/lib/python3.7/site-packages/dask_jobqueue/config.py:12: YAMLLoadWarning: calling yaml.load() without Loader=... is deprecated, as the default Loader is unsafe. Please read https://msg.pyyaml.org/load for full details.
   defaults = yaml.load(f)
-INFO:__main__:COSIPY simulation started
 /programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
   "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/worker.py:3177: UserWarning: Large object of size 11.78 MB detected in task graph: 
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/worker.py:3177: UserWarning: Large object of size 5.61 MB detected in task graph: 
   [<xarray.Dataset>
-Dimensions:  (time: 184057)
-Coor ... 0 238.4, 1, 22]
+Dimensions:  (time: 87625)
+Coord ... 0 238.4, 1, 22]
 Consider scattering large objects ahead of time
 with client.scatter to reduce scheduler burden and 
 keep data on workers
@@ -16,9 +15,660 @@ keep data on workers
     big_future = client.scatter(big_data)     # good
     future = client.submit(func, big_future)  # good
   % (format_bytes(len(b)), s)
-Traceback (most recent call last):
-  File "/data/scratch/richteny/thesis/cosipy_test_space/COSIPY.py", line 495, in <module>
-    main()
-  File "/data/scratch/richteny/thesis/cosipy_test_space/COSIPY.py", line 218, in main
-    vals = resample_array_style(IO.get_result()[var].values)
-NameError: name 'resample_array_style' is not defined
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/evaluation.py:55: RuntimeWarning: Mean of empty slice
+  res = np.nanmean(res,axis=0)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
+  "diagnostics_port has been deprecated. "
+slurmstepd: error: *** JOB 434708 ON node09 CANCELLED AT 2022-04-24T17:09:52 ***
