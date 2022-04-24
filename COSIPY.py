@@ -51,7 +51,7 @@ from constants import *
 from numba import njit
 
 
-def main(lr_T=-0.0065, lr_RRR=0, lr_RH=0, RRR_factor=mult_factor_RRR, alb_ice=albedo_ice,
+def main(lr_T=0., lr_RRR=0., lr_RH=0., RRR_factor=mult_factor_RRR, alb_ice=albedo_ice,
          alb_snow=albedo_fresh_snow,alb_firn=albedo_firn,albedo_aging=albedo_mod_snow_aging,
          albedo_depth=albedo_mod_snow_depth, count=""):
 
@@ -99,14 +99,14 @@ def main(lr_T=-0.0065, lr_RRR=0, lr_RH=0, RRR_factor=mult_factor_RRR, alb_ice=al
     rh2 = DATA.RH2.values
     rrr = DATA.RRR.values
     hgt = DATA.HGT.values
-    print(np.nanmean(t2))
+    #print(np.nanmean(t2))
     t2, rh2, rrr = online_lapse_rate(t2,rh2,rrr,hgt,lapse_T,lapse_RH, lapse_RRR)
-    print(np.nanmean(t2))
+    #print(np.nanmean(t2))
     print("Assigning values back to DATA")
     DATA['T2'] = (('time','lat','lon'), t2)
     DATA['RH2'] = (('time','lat','lon'), rh2)
     DATA['RRR'] = (('time','lat','lon'), rrr)
-    print(np.nanmean(DATA.T2.values))
+    #print(np.nanmean(DATA.T2.values))
     print("Seconds needed for lapse rate:", datetime.now()-start2)
     #-----------------------------------------------
     # Create a client for distributed calculations
@@ -214,12 +214,12 @@ def main(lr_T=-0.0065, lr_RRR=0, lr_RH=0, RRR_factor=mult_factor_RRR, alb_ice=al
             tsl_csv_name = 'tsla_'+results_output_name.split('.nc')[0].lower()+'.csv'    
             tsla_observations = pd.read_csv(tsl_data_file)
             #resampled_out = resample_output(IO.get_result())
-            for var in ['SNOWHEIGHT','HGT']:
-                vals = resample_array_style(IO.get_result()[var].values)
-            print(IO.get_result()['HGT'])
+            times = datetime.now()
+            vals = resample_array_style(IO.get_result()['SNOWHEIGHT'].values)
+            #print(IO.get_result()['HGT'])
             resampled_out = construct_resampled_ds(IO.get_result(),vals)
             resampled_out['HGT'] = (('lat','lon'), IO.get_result()['HGT'])
-
+            print("Time required for resampling: ", datetime.now()-times)
             tsl_out = calculate_tsl(resampled_out, min_snowheight)
             tsla_stats = eval_tsl(tsla_observations,tsl_out, time_col_obs, tsla_col_obs)
             print("TSLA Observed vs. Modelled RMSE: " + str(tsla_stats[0])+ "; R-squared: " + str(tsla_stats[1]))
@@ -466,16 +466,16 @@ def online_lapse_rate(t2,rh2,rrr,hgt,lapse_T,lapse_RH,lapse_RRR):
 
 def construct_resampled_ds(input_ds,vals):
     times = [str(x) for x in input_ds.time.values]
-    time_vals = pd.daterange(times[0], times[-2], freq="1d")
-    data_vars = {'SNOWHEIGHT':(['time','lat','lon'], [vals],
+    time_vals = pd.date_range(times[0], times[-2], freq="1d")
+    data_vars = {'SNOWHEIGHT':(['time','lat','lon'], vals,
                                {'units': "m",
                                 'long_name': "snowheight"})}
      
 
     # define coordinates
-    coords = {'time': (['time'], [time_vals]),
-              'lat': (['lat'], [input_ds.lat.values]),
-              'lon': (['lon'], [input_ds.lon.values])}
+    coords = {'time': (['time'], time_vals.values),
+              'lat': (['lat'], input_ds.lat.values),
+              'lon': (['lon'], input_ds.lon.values)}
      
     ds = xr.Dataset(data_vars=data_vars,coords=coords)
     return ds
@@ -489,11 +489,11 @@ def close_everything(scheduler):
 
 ''' MODEL EXECUTION '''
 if __name__ == "__main__":
-    import pstats
-    profiler = cProfile.Profile()
-    profiler.enable()
+    #import pstats
+    #profiler = cProfile.Profile()
+    #profiler.enable()
     main()
-    profiler.disable()
-    stats=pstats.Stats(profiler).sort_stats("tottime")
-    stats.print_stats()
+    #profiler.disable()
+    #stats=pstats.Stats(profiler).sort_stats("tottime")
+    #stats.print_stats()
     

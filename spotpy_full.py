@@ -13,6 +13,7 @@ from spotpy.objectivefunctions import rmse
 from COSIPY import main
 from constants import *
 from config import *
+import random
 
 #Two options for obs dataset, Minimum TSL bodied TSLA_Abramov_filtered_full.csv or TSLA_Abramov_filtered_jaso.csv
 print("TSL file:", tsl_data_file)
@@ -37,8 +38,8 @@ class spot_setup:
             albedo_aging, albedo_depth = [
         Uniform(low=-0.007, high=-0.005),  # lr_temp
         Uniform(low=0, high=0.00017),  # lr_prec
-        Uniform(low=0, high=0.01), #lr RH2 -> in percent so from 0 to 1 % no prior knowledge for this factor
-        Uniform(low=0.63, high=0.68), #1.235, high=1.265
+        Uniform(low=0, high=0.1), #lr RH2 -> in percent so from 0 to 1 % no prior knowledge for this factor
+        Uniform(low=0.6, high=0.7), #1.235, high=1.265
         Uniform(low=0.18, high=0.4, step=0.01),  # alb ice
         Uniform(low=0.65, high=0.9, step=0.01),  # alb snow
         Uniform(low=0.4, high=0.65, step=0.01), #alb_firn
@@ -91,7 +92,10 @@ class spot_setup:
 def psample(obs, rep=10, count=None, dbname='cosipy_par_smpl', dbformat="csv", interf=4, freqst=2, ngs=2,
             algorithm='mcmc', savefig=True):
 
-    
+    #set seed to make results reproducable
+    np.random.seed(42)
+    random.seed(42)
+
     setup = spot_setup(obs, count=count)
 
     alg_selector = {'mc': spotpy.algorithms.mc, 'sceua': spotpy.algorithms.sceua, 'mcmc': spotpy.algorithms.mcmc,
@@ -102,7 +106,7 @@ def psample(obs, rep=10, count=None, dbname='cosipy_par_smpl', dbformat="csv", i
                     'rope': spotpy.algorithms.rope}
 
     #save_sim = True returns error
-    sampler = alg_selector[algorithm](setup, dbname=dbname, dbformat=dbformat,save_sim=True)
+    sampler = alg_selector[algorithm](setup, dbname=dbname, dbformat=dbformat,random_state=42,save_sim=True)
     sampler.sample(rep)
         
     results = sampler.getdata()
