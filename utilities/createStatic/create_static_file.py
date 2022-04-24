@@ -12,23 +12,24 @@ static_folder = '../../data/static/'
 
 tile = True
 aggregate = True
+elevation_test = True
 
 ### input digital elevation model (DEM)
 dem_path_tif = static_folder + 'DEM/ALOS_N039E071_AVE_DSM.tif'
 ### input shape of glacier or study area, e.g. from the Randolph glacier inventory
 shape_path = static_folder + 'Shapefiles/abramov_rgi6.shp'
 ### path were the static.nc file is saved
-output_path = static_folder + 'Abramov_1200m_static.nc'
+output_path = static_folder + 'Abramov_600m_static.nc'
 
 ### to shrink the DEM use the following lat/lon corners
 #for abramov
-longitude_upper_left = '71.4'
-latitude_upper_left = '39.76'
-longitude_lower_right = '71.70'
-latitude_lower_right = '39.50'
+longitude_upper_left = '71.52' #'71.4983'
+latitude_upper_left =  '39.66'#'39.659'
+longitude_lower_right = '71.57' #'71.6'
+latitude_lower_right =  '39.57' #'39.583'
 
 ### to aggregate the DEM to a coarser spatial resolution
-aggregate_degree = '0.01111111'
+aggregate_degree = '0.00555556'
 
 ### intermediate files, will be removed afterwards
 dem_path_tif_temp = static_folder + 'DEM_temp.tif'
@@ -114,6 +115,66 @@ def check_for_nan(ds,var=None):
                     sys.exit()
 check_for_nan(ds)
 ds.to_netcdf(output_path)
+
+### Create 1D Elevation Bins test data ###
+
+if elevation_test:
+
+    if aggregate == True:
+        print("Warning aggregation is active. You are not using the best available resolution.")
+        print("\nAggregation level: " + str(aggregate_degree))
+    else:
+        print("Starting calculation of elevation datasets with native resolution of DEM dataset.")
+ 
+#function for mean of circular values strongly inspired by http://webspace.ship.edu/pgmarr/Geo441/Lectures/Lec%201
+    def aspect_mean(aspects):
+        mean_sine = np.sum(np.sin(np.radians(aspects)))/len(aspects)
+        mean_cosine = np.sum(np.cos(np.radians(aspects)))/len(aspects)
+        r = np.sqrt(mean_cosine**2+mean_sine**2)
+        cos_mean = mean_cosine/r
+        sin_mean = mean_sine/r
+        mean_angle = np.arctan2(sin_mean, cos_mean)
+        return np.degrees(mean_angle)
+
+    #select only glacier fields
+    elev_bandsize = 50 #in m 
+    
+    elevations = ds.HGT.values.flatten()[ds.MASK.values.flatten() == 1]
+    slopes = ds.SLOPE.values.flatten()[ds.MASK.values.flatten() == 1]
+    aspects = ds.ASPECT.values.flatten()[ds.MASK.values.flatten() == 1]
+    bands = []
+    number_points = []
+    slope_means = []
+    aspect_means = []
+
+    for i in (np.arange(np.min(elevations),np.max(elevations),elev_bandsize)):
+        bands.append(i+elev_bandsize/2)
+        greater = elevations[elevations>=i]
+        number_points.append(len(greater[greater<i+elev_bandsize]))
+        slope_means.append(np.nanmean(slopes[np.logical_and(elevations >= i, elevations < i+elev_bandsize)]))
+        aspect_means.append(aspect_mean(aspects[np.logical_and(elevations >= i, elevations < i+elev_bandsize)]))
+
+    elev_ds = xr.Dataset()
+    elev_ds.coords['lon'] = np.arange(len(bands))
+    elev_ds.lon.attrs['standard_name'] = 'lon'
+    elev_ds.lon.attrs['long_name'] = 'longitude'
+    elev_ds.lon.attrs['units'] = 'index'
+
+    elev_ds.coords['lat'] = np.array([1])
+    elev_ds.lat.attrs['standard_name'] = 'lat'
+    elev_ds.lat.attrs['long_name'] = 'latitude'
+    elev_ds.lat.attrs['units'] = 'index'
+
+    mask_elev = np.ones_like(bands)
+    ### insert lists into dataset
+    insert_var(elev_ds, np.reshape(bands, (1, -1)), 'HGT', 'meters', 'Mean of elevation range per bin as meter above sea level')
+    insert_var(elev_ds, np.reshape(aspect_means, (1, -1)), 'ASPECT', 'degrees', 'Mean Aspect of slope')
+    insert_var(elev_ds, np.reshape(slope_means, (1, -1)), 'SLOPE', 'degrees', 'Mean Terrain slope')
+    insert_var(elev_ds, np.reshape(mask_elev, (1, -1)), 'MASK', 'boolean', 'Glacier mask')
+    insert_var(elev_ds, np.reshape(number_points, (1, -1)), 'N_Points', 'count', 'Number of Points in each bin')
+
+    elev_ds.to_netcdf(static_folder+'Abramov_1D_{}m_elev.nc'.format(elev_bandsize))
+
 print("Study area consists of ", np.nansum(mask[mask==1]), " glacier points")
 print("Done")
 

@@ -45,6 +45,7 @@ from tornado import gen
 from dask_jobqueue import SLURMCluster
 
 import scipy
+
 import cProfile
 #Load constants for default function values
 from constants import *
@@ -112,6 +113,7 @@ def main(lr_T=0., lr_RRR=0., lr_RH=0., RRR_factor=mult_factor_RRR, alb_ice=albed
     # Create a client for distributed calculations
     #-----------------------------------------------
     if (slurm_use):
+
         with SLURMCluster(scheduler_port=port, cores=cores, processes=processes, memory=memory, shebang=shebang, name=name, job_extra=slurm_parameters, local_directory='logs/dask-worker-space') as cluster:
             cluster.scale(processes * nodes)   
             print(cluster.job_script())
@@ -405,6 +407,7 @@ def run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures, opt_dict=None):
             # Save the statistics and the mass balance simulations at the stakes to files
             df_stat.to_csv(os.path.join(data_path,'output','stake_statistics.csv'),sep='\t', float_format='%.2f')
             df_val.to_csv(os.path.join(data_path,'output','stake_simulations.csv'),sep='\t', float_format='%.2f')
+
 
 
 def start_logging():
