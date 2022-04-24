@@ -8,7 +8,7 @@
 # SIMULATION PERIOD 
 #-----------------------------------
 # Abramov
-time_start = "1998-10-01T00:00"
+time_start = "2009-10-01T00:00"
 time_end   = "2019-09-30T00:00" 
 
 # Hintereisferner
