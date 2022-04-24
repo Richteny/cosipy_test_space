@@ -39,7 +39,7 @@ class spot_setup:
         Uniform(low=-0.007, high=-0.005),  # lr_temp
         Uniform(low=0, high=0.00017),  # lr_prec
         Uniform(low=0, high=0.1), #lr RH2 -> in percent so from 0 to 1 % no prior knowledge for this factor
-        Uniform(low=0.6, high=0.7), #1.235, high=1.265
+        Uniform(low=0.6, high=0.7,  step=0.01), #1.235, high=1.265
         Uniform(low=0.18, high=0.4, step=0.01),  # alb ice
         Uniform(low=0.65, high=0.9, step=0.01),  # alb snow
         Uniform(low=0.4, high=0.65, step=0.01), #alb_firn
