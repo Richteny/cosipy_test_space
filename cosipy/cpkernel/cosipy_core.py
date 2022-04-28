@@ -14,7 +14,7 @@ from cosipy.modules.percolation import percolation
 from cosipy.modules.refreezing import refreezing
 from cosipy.modules.roughness import updateRoughness
 from cosipy.modules.densification import densification
-from cosipy.modules.evaluation import evaluate, resample_output, calculate_tsl, eval_tsl, resample_array_style
+from cosipy.modules.evaluation import evaluate, resample_output, calculate_tsl, create_tsl_df, eval_tsl, resample_by_hand
 from cosipy.modules.surfaceTemperature import update_surface_temperature
 
 from cosipy.cpkernel.init import init_snowpack, load_snowpack
