@@ -217,12 +217,14 @@ def main(lr_T=0., lr_RRR=0., lr_RH=0., RRR_factor=mult_factor_RRR, alb_ice=albed
             tsla_observations = pd.read_csv(tsl_data_file)
             #resampled_out = resample_output(IO.get_result())
             times = datetime.now()
-            vals = resample_array_style(IO.get_result()['SNOWHEIGHT'].values)
-            #print(IO.get_result()['HGT'])
-            resampled_out = construct_resampled_ds(IO.get_result(),vals)
+            dates,clean_day_vals,secs,holder = prereq_res(IO.get_result())
+            resampled_array = resample_by_hand(holder, IO.get_result().SNOWHEIGHT.values, secs, clean_day_vals)
+            resampled_out = construct_resampled_ds(IO.get_result(),resampled_array,dates.values)
+            #Need HGT values as 2D, ensured with following line of code.
             resampled_out['HGT'] = (('lat','lon'), IO.get_result()['HGT'])
-            print("Time required for resampling: ", datetime.now()-times)
-            tsl_out = calculate_tsl(resampled_out, min_snowheight)
+            #print("Time required for resampling: ", datetime.now()-times)
+            tsl_out = create_tsl_df(resampled_out, min_snowheight)
+            #tsl_out = calculate_tsl(resampled_out, min_snowheight)
             tsla_stats = eval_tsl(tsla_observations,tsl_out, time_col_obs, tsla_col_obs)
             print("TSLA Observed vs. Modelled RMSE: " + str(tsla_stats[0])+ "; R-squared: " + str(tsla_stats[1]))
             tsl_out.to_csv(os.path.join(data_path,'output',tsl_csv_name))
@@ -467,21 +469,29 @@ def online_lapse_rate(t2,rh2,rrr,hgt,lapse_T,lapse_RH,lapse_RRR):
         rrr[t,:,:] = np.maximum(rrr[t,:,:]+ (hgt - station_altitude)*lapse_RRR, 0.0)
     return t2,rh2,rrr
 
-def construct_resampled_ds(input_ds,vals):
-    times = [str(x) for x in input_ds.time.values]
-    time_vals = pd.date_range(times[0], times[-2], freq="1d")
+def construct_resampled_ds(input_ds,vals,time_vals):
     data_vars = {'SNOWHEIGHT':(['time','lat','lon'], vals,
                                {'units': "m",
                                 'long_name': "snowheight"})}
      
 
     # define coordinates
-    coords = {'time': (['time'], time_vals.values),
+    coords = {'time': (['time'], time_vals),
               'lat': (['lat'], input_ds.lat.values),
               'lon': (['lon'], input_ds.lon.values)}
      
     ds = xr.Dataset(data_vars=data_vars,coords=coords)
     return ds
+
+def prereq_res(ds):
+    time_vals = pd.to_datetime(ds.time.values)
+    holder = np.zeros((len(np.unique(time_vals.date)), ds.SNOWHEIGHT.values.shape[1], ds.SNOWHEIGHT.values.shape[2]))
+    # Integer seconds since epoch for numba
+    secs = np.array([time_vals.astype('int64')]).ravel()
+    dates = pd.to_datetime(np.unique(time_vals.date))
+    clean_day_vals = np.array(dates.astype('int64'))
+
+    return (dates,clean_day_vals,secs,holder)
 
 @gen.coroutine
 def close_everything(scheduler):
