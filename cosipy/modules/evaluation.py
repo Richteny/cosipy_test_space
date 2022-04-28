@@ -41,22 +41,63 @@ def resample_output(cos_output):
     print("Required time for resample only: ", datetime.now()-times)
     return ds_daily
 
+@njit
+def resample_by_hand(holder,vals,secs,time_vals):
+    i=0
+    for ts in time_vals:
+        idx = np.argwhere((secs>=ts) & (secs<ts+24*3600000000000)).ravel()
+        subset = vals[idx[0]:idx[-1]+1,:,:]
+        latlon = np.zeros((vals.shape[1],vals.shape[2]))
+        j = np.arange(0,vals.shape[1])
+        k = np.arange(0,vals.shape[2])
+        for j in np.arange(0,vals.shape[1]):
+            for k in np.arange(0,vals.shape[2]):
+                latlon[j,k] = np.nanmean(subset[:,j,k])
+        holder[i,:,:] = latlon
+        i+=1
+    return holder
 
-def resample_array_style(data):
-    times = datetime.now()
-    freq=24
-    if data.ndim == 3:
-        lats = data.shape[1]
-        lons = data.shape[2]
-        res = data[:-1,:,:].reshape(freq,-1,lats,lons)
-    else:
-        point = data.shape[1]
-        res = data[:-1,:].reshape(freq,-1,points)
-    res = np.nanmean(res,axis=0)
-    return res
-
-
+@njit
+def calculate_tsl_byhand(snowheights,hgts,min_snowheight):
     
+    amed = np.zeros(snowheights.shape[0])
+    amean = np.zeros(snowheights.shape[0])
+    astd = np.zeros(snowheights.shape[0])
+    amax = np.zeros(snowheights.shape[0])
+    amin = np.zeros(snowheights.shape[0])
+    for i in np.arange(0,snowheights.shape[0]):
+
+        filtered_elev_vals = np.where(snowheights[i,:,:]>min_snowheight,hgts,np.nan).ravel()
+        #filtered_elev_vals = filtered_elev_vals[~np.isnan(filtered_elev_vals)]
+        snowline_range = filtered_elev_vals[filtered_elev_vals < np.nanpercentile(filtered_elev_vals,2)]
+        
+        try:
+            amed[i] = np.nanmedian(snowline_range)
+            amean[i]= np.nanmean(snowline_range)
+            astd[i] = np.nanstd(snowline_range)
+            amax[i] = np.nanmax(snowline_range)
+            amin[i] = np.nanmin(snowline_range)
+        except:
+            amed[i] = np.nan
+            amean[i] = np.nan
+            astd[i] = np.nan
+            amax[i] = np.nan
+            amin[i] = np.nan
+        
+    return (amed,amean,astd,amax,amin)
+
+def create_tsl_df(cos_output,min_snowheight):
+    times = datetime.now()
+    amed,amean,astd,amax,amin = calculate_tsl_byhand(cos_output.SNOWHEIGHT.values, cos_output.HGT.values, min_snowheight)        
+    tsl_df = pd.DataFrame({'time':pd.to_datetime(cos_output.time.values),
+                            'Med_TSL':amed,
+                            'Mean_TSL':amean,
+                            'Std_TSL':astd,
+                            'Max_TSL':amax,
+                            'Min_TSL':amin})
+    print("Time required for calculating TSL only :", datetime.now()-times)
+    return tsl_df
+
 def calculate_tsl(cos_output, min_snowheight):
     times = datetime.now()
     tsl_df = pd.DataFrame({'time': [],
