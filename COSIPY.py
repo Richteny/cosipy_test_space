@@ -52,7 +52,7 @@ from constants import *
 from numba import njit
 
 
-def main(lr_T=0., lr_RRR=0., lr_RH=0., RRR_factor=mult_factor_RRR, alb_ice=albedo_ice,
+def main(lr_T=-0.006, lr_RRR=0, lr_RH=0, RRR_factor=mult_factor_RRR, alb_ice=albedo_ice,
          alb_snow=albedo_fresh_snow,alb_firn=albedo_firn,albedo_aging=albedo_mod_snow_aging,
          albedo_depth=albedo_mod_snow_depth, count=""):
 
@@ -107,6 +107,9 @@ def main(lr_T=0., lr_RRR=0., lr_RH=0., RRR_factor=mult_factor_RRR, alb_ice=albed
     DATA['T2'] = (('time','lat','lon'), t2)
     DATA['RH2'] = (('time','lat','lon'), rh2)
     DATA['RRR'] = (('time','lat','lon'), rrr)
+    print(np.nanmax(DATA.RH2.values))
+    print(np.min(DATA.RH2.values))
+    print(rh2.shape)
     #print(np.nanmean(DATA.T2.values))
     print("Seconds needed for lapse rate:", datetime.now()-start2)
     #-----------------------------------------------
@@ -220,6 +223,7 @@ def main(lr_T=0., lr_RRR=0., lr_RH=0., RRR_factor=mult_factor_RRR, alb_ice=albed
             dates,clean_day_vals,secs,holder = prereq_res(IO.get_result())
             resampled_array = resample_by_hand(holder, IO.get_result().SNOWHEIGHT.values, secs, clean_day_vals)
             resampled_out = construct_resampled_ds(IO.get_result(),resampled_array,dates.values)
+            print("Time required for resampling of output: ", datetime.now()-times)
             #Need HGT values as 2D, ensured with following line of code.
             resampled_out['HGT'] = (('lat','lon'), IO.get_result()['HGT'])
             #print("Time required for resampling: ", datetime.now()-times)
@@ -228,7 +232,7 @@ def main(lr_T=0., lr_RRR=0., lr_RH=0., RRR_factor=mult_factor_RRR, alb_ice=albed
             tsla_stats = eval_tsl(tsla_observations,tsl_out, time_col_obs, tsla_col_obs)
             print("TSLA Observed vs. Modelled RMSE: " + str(tsla_stats[0])+ "; R-squared: " + str(tsla_stats[1]))
             tsl_out.to_csv(os.path.join(data_path,'output',tsl_csv_name))
-        print("Time required for TSL EVAL: ", datetime.now()-times)
+        print("Time required for full TSL EVAL: ", datetime.now()-times)
     #-----------------------------------------------
     # Stop time measurement
     #-----------------------------------------------
@@ -466,6 +470,8 @@ def online_lapse_rate(t2,rh2,rrr,hgt,lapse_T,lapse_RH,lapse_RRR):
     for t in range(t2.shape[0]):
         t2[t,:,:] = t2[t,:,:]+ (hgt - station_altitude)*lapse_T
         rh2[t,:,:] = rh2[t,:,:]+ (hgt - station_altitude)*lapse_RH
+        rh2[t,:,:] = np.where(rh2[t,:,:] > 100, 100, rh2[t,:,:])
+        rh2[t,:,:] = np.where(rh2[t,:,:] < 0, 0, rh2[t,:,:])
         rrr[t,:,:] = np.maximum(rrr[t,:,:]+ (hgt - station_altitude)*lapse_RRR, 0.0)
     return t2,rh2,rrr
 
