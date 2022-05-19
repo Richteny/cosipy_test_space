@@ -6,7 +6,7 @@
 
 port = 8786                                                     # with this port, the monitoring webpage can be accessed
 processes = 20                                                  # grid points submitted in one sbatch script -> 20 max per node, if many small tasks on many nodes consider setting lower
-nodes = 17                                                      # processes multiplied by the number of workers -> nodes * processes = amount of grid points processed at same time
+nodes = 15                                                      # processes multiplied by the number of workers -> nodes * processes = amount of grid points processed at same time
 cores = 1                                                       # One grid point per core, do not change
 name = 'WoEraAbr'                                               # equivalent to slurm parameter --job-name
 memory_per_process = 3

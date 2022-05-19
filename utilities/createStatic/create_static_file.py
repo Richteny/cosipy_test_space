@@ -7,6 +7,7 @@ import xarray as xr
 import numpy as np
 from itertools import product
 import richdem as rd
+import pandas as pd
 
 static_folder = '../../data/static/'
 
@@ -92,6 +93,12 @@ def insert_var(ds, var, name, units, long_name):
     ds[name].attrs['long_name'] = long_name
     ds[name].attrs['_FillValue'] = -9999
 
+### function to assign attributes to variable
+def assign_attrs(ds, name, units, long_name):
+    ds[name].attrs['units'] = units
+    ds[name].attrs['long_name'] = long_name
+    ds[name].attrs['_FillValue'] = -9999
+
 ### insert needed static variables
 insert_var(ds, dem.Band1.values,'HGT','meters','meter above sea level')
 insert_var(ds, aspect,'ASPECT','degrees','Aspect of slope')
@@ -137,7 +144,7 @@ if elevation_test:
         return np.degrees(mean_angle)
 
     #select only glacier fields
-    elev_bandsize = 30 #in m 
+    elev_bandsize = 50 #in m 
     
     elevations = ds.HGT.values.flatten()[ds.MASK.values.flatten() == 1]
     slopes = ds.SLOPE.values.flatten()[ds.MASK.values.flatten() == 1]
@@ -146,35 +153,57 @@ if elevation_test:
     number_points = []
     slope_means = []
     aspect_means = []
+    lat_means = []
+    lon_means = []
 
     for i in (np.arange(np.min(elevations),np.max(elevations),elev_bandsize)):
         print(i)
         print(np.max(elevations))
         bands.append(i+elev_bandsize/2)
         greater = elevations[elevations>=i]
+        #get mean lat and lon of relevant pixel in glacier mask in elev band
+        sub = ds.where((ds.MASK == 1) & (ds.HGT >= i) & (ds.HGT < i + elev_bandsize), drop=True)
+        lat_means.append(np.nanmean(sub.lat.values))
+        lon_means.append(np.nanmean(sub.lon.values))
         number_points.append(len(greater[greater<i+elev_bandsize]))
         slope_means.append(np.nanmean(slopes[np.logical_and(elevations >= i, elevations < i+elev_bandsize)]))
         aspect_means.append(aspect_mean(aspects[np.logical_and(elevations >= i, elevations < i+elev_bandsize)]))
 
-    elev_ds = xr.Dataset()
-    elev_ds.coords['lon'] = np.arange(len(bands))
+    full_data = False #This is the crudest and most simplest try and here I want to avoid having a 26x26 grid filled with NaNs due to computational time
+    mask_elev = np.ones_like(bands)
+    ## Suggest all points on glacier
+    if full_data:
+        df = pd.DataFrame({'lat': lat_means,
+                           'lon': lon_means,
+                           'HGT': bands,
+                           'ASPECT': aspect_means,
+                           'SLOPE': slope_means,
+                           'MASK': mask_elev,
+                           'N_Points': number_points})
+    else:
+        df = pd.DataFrame({'lat':lat_means,
+                           'lon': np.mean(lon_means), #just assign the same value for now for simplicity
+                           'HGT': bands,
+                           'ASPECT': aspect_means,
+                           'SLOPE': slope_means,
+                           'MASK': mask_elev,
+                           'N_Points': number_points})
+
+    df.set_index(['lat','lon'], inplace=True)
+    elev_ds = df.to_xarray()
     elev_ds.lon.attrs['standard_name'] = 'lon'
     elev_ds.lon.attrs['long_name'] = 'longitude'
-    elev_ds.lon.attrs['units'] = 'index'
+    elev_ds.lon.attrs['units'] = 'Average Lon of elevation bands'
 
-    elev_ds.coords['lat'] = np.array([1])
     elev_ds.lat.attrs['standard_name'] = 'lat'
     elev_ds.lat.attrs['long_name'] = 'latitude'
-    elev_ds.lat.attrs['units'] = 'index'
-
-    mask_elev = np.ones_like(bands)
-    ### insert lists into dataset
-    insert_var(elev_ds, np.reshape(bands, (1, -1)), 'HGT', 'meters', 'Mean of elevation range per bin as meter above sea level')
-    insert_var(elev_ds, np.reshape(aspect_means, (1, -1)), 'ASPECT', 'degrees', 'Mean Aspect of slope')
-    insert_var(elev_ds, np.reshape(slope_means, (1, -1)), 'SLOPE', 'degrees', 'Mean Terrain slope')
-    insert_var(elev_ds, np.reshape(mask_elev, (1, -1)), 'MASK', 'boolean', 'Glacier mask')
-    insert_var(elev_ds, np.reshape(number_points, (1, -1)), 'N_Points', 'count', 'Number of Points in each bin')
-
+    elev_ds.lat.attrs['units'] = 'Average Lat of elevation bands'
+    assign_attrs(elev_ds, 'HGT','meters','Mean of elevation range per bin as meter above sea level')
+    assign_attrs(elev_ds, 'ASPECT','degrees','Mean Aspect of slope')
+    assign_attrs(elev_ds, 'SLOPE','degrees','Mean Terrain slope')
+    assign_attrs(elev_ds, 'MASK','boolean','Glacier mask')
+    assign_attrs(elev_ds, 'N_Points','count','Number of Points in each bin')
+    #Holds a lot of NaNs, is there a way to get rid of them?
     elev_ds.to_netcdf(static_folder+'Abramov_1D_{}m_elev.nc'.format(elev_bandsize))
 
 print("Study area consists of ", np.nansum(mask[mask==1]), " glacier points")
