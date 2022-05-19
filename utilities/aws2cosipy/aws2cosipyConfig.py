@@ -40,7 +40,7 @@ N_var = 'N'
 #------------------------
 aggregate = False
 aggregation_step = 'H'
-ELEV_model = False
+ELEV_model = True
 
 # Delimiter in csv file
 delimiter = ','
@@ -56,7 +56,7 @@ LUT = False                   # If there is already a Look-up-table for topograp
 
 dtstep = 3600*3               # time step (s)
 stationLat = 39.6485          # Latitude of station
-tcart = 0                    # Station time correction in hour angle units (1 is 4 min)
+tcart = 18.414                    # aka Timezone_Lon - lon of station (~71.586) Station time correction in hour angle units (1 is 4 min)
 timezone_lon = 90.0	      # Longitude of station
 #station or timezone?
 
