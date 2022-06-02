@@ -24,9 +24,9 @@ time_end_str=(time_end[0:10]).replace('-','')
 
 data_path = './data/'
 
-input_netcdf= "Abramov/Abramov_1D_50m_ERA5_1999_2021.nc" #"Abramov/Abramov_300m_ERA5_OldRad_1999_2021.nc" 
+input_netcdf= "Abramov/Abramov_300m_ERA5_Wohlfahrt2016_1999_2021.nc" #"Abramov/Abramov_300m_ERA5_OldRad_1999_2021.nc" 
 
-output_netcdf = 'Abramov_1D_50m_ERA5_Test_'+time_start_str+'-'+time_end_str+'.nc'
+output_netcdf = 'Abramov_300m_ERA5_Wohlfahrt_'+time_start_str+'-'+time_end_str+'.nc'
 
 
 

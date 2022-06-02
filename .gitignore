@@ -6,6 +6,7 @@ cosipy/__pycache__/
 cosipy/modules/__pycache__/
 cosipy/cpkernel/__pycache__/
 utilities/__pycache__/
+logs/*
 debug*
 info*
 error*
