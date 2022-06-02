@@ -473,10 +473,8 @@ def create_2D_input(cs_file, cosipy_file, static_file, start_date, end_date, x0=
             for i in range(len(ds.lat)):
                 for j in range(len(ds.lon)):
                     if (mask[i, j] == 1):
-                        if radiationModule == 'old':
-                            G_interp[t, i, j] = np.maximum(0.0, correctRadiation(lats[i], lons[j], timezone_lon, doy, hour, slope[i, j], aspect[i, j], sw[t], zeni_thld))
-                        else:
-                            G_interp[t, i, j] = sw[t]
+                        G_interp[t, i, j] = np.maximum(0.0, correctRadiation(lats[i], lons[j], timezone_lon, doy, hour, slope[i, j], aspect[i, j], sw[t], zeni_thld))
+
 
     elif radiationModule == 'Moelg2009':
         print('Run the Radiation Module Moelg2009')
