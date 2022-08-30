@@ -12,22 +12,22 @@ import pandas as pd
 static_folder = '../../data/static/'
 
 tile = True
-aggregate = False
-elevation_test = True
+aggregate = True
+elevation_test = False
 
 ### input digital elevation model (DEM)
 dem_path_tif = static_folder + 'DEM/ALOS_N039E071_AVE_DSM.tif'
 ### input shape of glacier or study area, e.g. from the Randolph glacier inventory
 shape_path = static_folder + 'Shapefiles/abramov_rgi6.shp'
 ### path were the static.nc file is saved
-output_path = static_folder + 'Abramov_300m_static_test.nc'
+output_path = static_folder + 'Abramov_300m_static_LUT.nc'
 
 ### to shrink the DEM use the following lat/lon corners
 #for abramov
-longitude_upper_left = '71.4983'   #71.52 '71.4983'
-latitude_upper_left = '39.659' #39.66 '39.659'
-longitude_lower_right = '71.6' #71.57 '71.6'
-latitude_lower_right = '39.583' #39.57 '39.583'
+longitude_upper_left = '71.42'   #71.52 '71.4983'
+latitude_upper_left = '39.673' #39.66 '39.659'
+longitude_lower_right = '71.67' #71.57 '71.6'
+latitude_lower_right = '39.557' #39.57 '39.583'
 print(latitude_lower_right)
 ### to aggregate the DEM to a coarser spatial resolution
 aggregate_degree = '0.002777778' #300m
@@ -144,7 +144,7 @@ if elevation_test:
         return np.degrees(mean_angle)
 
     #select only glacier fields
-    elev_bandsize = 50 #in m 
+    elev_bandsize = 30 #in m 
     
     elevations = ds.HGT.values.flatten()[ds.MASK.values.flatten() == 1]
     slopes = ds.SLOPE.values.flatten()[ds.MASK.values.flatten() == 1]

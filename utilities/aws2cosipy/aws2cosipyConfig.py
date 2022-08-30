@@ -40,7 +40,7 @@ N_var = 'N'
 #------------------------
 aggregate = False
 aggregation_step = 'H'
-ELEV_model = False
+ELEV_model = True
 
 # Delimiter in csv file
 delimiter = ','
@@ -51,7 +51,7 @@ WRF = False
 #------------------------
 # Radiation module 
 #------------------------
-radiationModule = 'Wohlfahrt2016' # 'Moelg2009', 'Wohlfahrt2016', 'none'
+radiationModule = 'none' # 'Moelg2009', 'Wohlfahrt2016', 'none'
 LUT = False                   # If there is already a Look-up-table for topographic shading and sky-view-factor built for this area, set to True
 
 dtstep = 3600*3               # time step (s)
