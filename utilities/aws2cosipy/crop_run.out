@@ -1,0 +1,19 @@
+Read input file ../../data/input/Abramov/Abramov_300m_ERA5_NoRad_1999_2021.nc 
+
+Create cropped file.
+lon
+lat
+HGT
+ASPECT
+SLOPE
+MASK
+time
+T2
+RH2
+U2
+G
+PRES
+RRR
+N
+Performing checks.
+Writing cropped cosipy file.
