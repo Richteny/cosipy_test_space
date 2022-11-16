@@ -19,4 +19,5 @@
 conda activate cosipy_test
 #python aws2cosipy.py -c ../../data/input/Abramov/Abramov_ERA5L_1981_2019.csv -o ../../data/input/Abramov/Abramov_ERA5L_1981_2019.nc -s ../../data/static/Abramov_static.nc
 
-python aws2cosipy.py -c ../../data/input/Abramov/Abramov_ERA5_1999_2021.csv -o ../../data/input/Abramov/Abramov_1D_20m_ERA5_None_1999_2021.nc -s ../../data/static/Abramov_1D_20m_elev.nc -b 19990101 -e 20211231
+#python aws2cosipy_saveonlyG.py -c ../../data/input/Abramov/Abramov_ERA5_1999_2021.csv -o ../../data/input/Abramov/Abramov_30m_SW_Moelg2009_2009_2010.nc -s ../../data/static/Abramov_30m_static_25kmhrzd.nc -b 20100101 -e 20101231
+python createLUT_crop.py -c ../../data/input/Abramov/Abramov_ERA5_1999_2021.csv -o ../../data/input/Abramov/Abramov_30m_SW_Wohlfahrt2016_2009-2010.nc -s ../../data/static/Abramov_30m_static_25kmhrzd.nc -b 20090101 -e 20100101 

@@ -10,5 +10,5 @@ import matplotlib.pyplot as plt
 from COSIPY import main 
 
 count=0
-best_summary = psample(obs=obs,count=count, rep=500)
+best_summary = psample(obs=obs,count=count, rep=200)
 

@@ -24,144 +24,9 @@ from cosipy.modules.radCor import *
 
 import argparse
 
-def create_LUT_file(cs_file, cosipy_file, static_file, start_date, end_date, x0=None, x1=None, y0=None, y1=None):
-    print('-------------------------------------------')
-    print('Read input file %s' % (cs_file))
+from utilities.aws2cosipy.crop_file_to_glacier import bbox_2d_array
 
-    #-----------------------------------
-    # Read data
-    #-----------------------------------
-    date_parser = lambda x: dateutil.parser.parse(x, ignoretz=True)
-    df = pd.read_csv(cs_file, 
-        delimiter=delimiter, index_col=['TIMESTAMP'], parse_dates=['TIMESTAMP'],
-        na_values='NAN',date_parser=date_parser)
-
-    #-----------------------------------
-    # Select time slice
-    #-----------------------------------
-    if ((start_date != None) & (end_date !=None)): 
-        df = df.loc[start_date:end_date]
-
-    #-----------------------------------
-    # Load static data
-    #-----------------------------------
-    print('Read static file %s \n' % (static_file))
-    ds = xr.open_dataset(static_file)
-
-    #-----------------------------------
-    # Create subset
-    #-----------------------------------
-    ds = ds.sel(lat=slice(y0,y1), lon=slice(x0,x1))
-
-    if WRF:
-        dso = xr.Dataset()
-        x, y = np.meshgrid(ds.lon, ds.lat)
-        dso.coords['time'] = (('time'), df.index.values)
-        dso.coords['lat'] = (('south_north','west_east'), y)
-        dso.coords['lon'] = (('south_north','west_east'), x)
-
-    else:
-        dso = ds    
-        dso.coords['time'] = df.index.values
-
-    # Auxiliary variables
-    mask = ds.MASK.values
-    hgt = ds.HGT.values
-    slope = ds.SLOPE.values
-    aspect = ds.ASPECT.values
-    lats = ds.lat.values
-    lons = ds.lon.values
-    #sw = G.values
-
-    #-----------------------------------
-    # Run radiation module 
-    #-----------------------------------
-    if radiationModule == 'Wohlfahrt2016' or radiationModule == 'none':
-        print('Run the Radiation Module Wohlfahrt2016 or no Radiation Module.')
-
-        # Change aspect to south==0, east==negative, west==positive
-        aspect = ds['ASPECT'].values - 180.0
-        ds['ASPECT'] = (('lat', 'lon'), aspect)
-
-        for t in range(len(dso.time)):
-            doy = df.index[t].dayofyear
-            hour = df.index[t].hour
-            for i in range(len(ds.lat)):
-                for j in range(len(ds.lon)):
-                    if (mask[i, j] == 1):
-                        if radiationModule == 'Wohlfahrt2016':
-                            G_interp[t, i, j] = np.maximum(0.0, correctRadiation(lats[i], lons[j], timezone_lon, doy, hour, slope[i, j], aspect[i, j], sw[t], zeni_thld))
-                        else:
-                            G_interp[t, i, j] = sw[t]
-
-    elif radiationModule == 'Moelg2009':
-        print('Run the Radiation Module Moelg2009')
-
-        # Calculate solar Parameters
-        solPars, timeCorr = solpars(stationLat)
-
-        if LUT == True:
-            print('Read in look-up-tables')
-            ds_LUT = xr.open_dataset('../../data/static/LUT_Rad.nc')
-            shad1yr = ds_LUT.SHADING.values
-            svf = ds_LUT.SVF.values
-
-        else:
-            print('Build look-up-tables')
-
-            # Sky view factor
-            svf = LUTsvf(np.flipud(hgt), np.flipud(mask), np.flipud(slope), np.flipud(aspect), lats[::-1], lons)
-            print('Look-up-table sky view factor done')
-
-            # Topographic shading
-            shad1yr = LUTshad(solPars, timeCorr, stationLat, np.flipud(hgt), np.flipud(mask), lats[::-1], lons, dtstep, tcart)
-            print('Look-up-table topographic shading done')
-
-            # Save look-up tables
-            Nt = int(366 * (3600 / dtstep) * 24)  # number of time steps
-            Ny = len(lats)  # number of latitudes
-            Nx = len(lons)  # number of longitudes
-
-            f = nc.Dataset('../../data/static/LUT_Rad.nc', 'w')
-            f.createDimension('time', Nt)
-            f.createDimension('lat', Ny)
-            f.createDimension('lon', Nx)
-
-            LATS = f.createVariable('lat', 'f4', ('lat',))
-            LATS.units = 'degree'
-            LONS = f.createVariable('lon', 'f4', ('lon',))
-            LONS.units = 'degree'
-
-            LATS[:] = lats
-            LONS[:] = lons
-
-            shad = f.createVariable('SHADING', float, ('time', 'lat', 'lon'))
-            shad.long_name = 'Topographic shading'
-            shad[:] = shad1yr
-
-            SVF = f.createVariable('SVF', float, ('lat', 'lon'))
-            SVF.long_name = 'sky view factor'
-            SVF[:] = svf
-
-            f.close()
-
-        # In both cases, run the radiation model
-        #for t in range(len(dso.time)):
-        #    doy = df.index[t].dayofyear
-        #    hour = df.index[t].hour
-        #    G_interp[t, :, :] = calcRad(solPars, timeCorr, doy, hour, stationLat, T_interp[t, ::-1, :], P_interp[t, ::-1, :], RH_interp[t, ::-1, :], N_interp[t, ::-1, :], np.flipud(hgt), np.flipud(mask), np.flipud(slope), np.flipud(aspect), shad1yr, svf, dtstep, tcart)
-
-        # Change aspect to south == 0, east == negative, west == positive
-        aspect2 = ds['ASPECT'].values - 180.0
-        ds['ASPECT'] = (('lat', 'lon'), aspect2)
-
-    else:
-        print('Error! Radiation module not available.\nAvailable options are: Wohlfahrt2016, Moelg2009, none.')
-        sys.exit()
-
-
-
-def create_2D_input(cs_file, cosipy_file, static_file, start_date, end_date, x0=None, x1=None, y0=None, y1=None):
+def create_corrected_G(cs_file, cosipy_file, static_file, start_date, end_date, x0=None, x1=None, y0=None, y1=None):
     """ This function creates an input dataset from an offered csv file with input point data
         Here you need to define how to interpolate the data.
 
@@ -250,21 +115,67 @@ def create_2D_input(cs_file, cosipy_file, static_file, start_date, end_date, x0=
         dso.coords['lon'] = (('south_north','west_east'), x)
 
     else:
-        dso = ds    
+        #Crop ds file to minimum extent
+        dic_attrs= {'HGT': ('HGT', 'm', 'Elevation'),
+                    'ASPECT': ('ASPECT', 'degrees', 'Aspect of slope'),
+                    'SLOPE': ('SLOPE', 'degrees', 'Terrain slope'),
+                    'MASK': ('MASK', 'boolean', 'Glacier mask'),
+                    'T2': ('T2', 'K', 'Temperature at 2 m'),
+                    'RH2': ('RH2', '%', 'Relative humidity at 2 m'),
+                    'U2': ('U2', 'm s\u207b\xb9', 'Wind velocity at 2 m'),
+                    'G': ('G', 'W m\u207b\xb2', 'Incoming shortwave radiation'),
+                    'PRES': ('PRES', 'hPa', 'Atmospheric Pressure'),
+                    'N_Points': ('N_Points', 'count','Number of Points in each bin'),
+                    'RRR': ('RRR', 'mm', 'Total precipitation (liquid+solid)'),
+                    'SNOWFALL': ('SNOWFALL', 'm', 'Snowfall'),
+                    'LWin': ('LWin', 'W m\u207b\xb2', 'Incoming longwave radiation'),
+                    'N': ('N', '%', 'Cloud cover fraction')}
+
+        print(ds.ASPECT.shape)
+        dso_mod = xr.Dataset()
+        for var in list(ds.variables):
+            print(var)
+            arr = bbox_2d_array(ds.MASK.values, ds[var].values, var)
+            if var in ['lat','latitude','lon','longitude','time','Time']:
+                if var == "lat" or var == "latitude":
+                    dso_mod.coords['lat'] = arr
+                    dso_mod.lat.attrs['standard_name'] = 'lat'
+                    dso_mod.lat.attrs['long_name'] = 'latitude'
+                    dso_mod.lat.attrs['units'] = 'degrees_north'
+                    print(dso_mod.lat, "Success Lat.")
+                elif var == 'lon' or var == 'longitude':
+                    dso_mod.coords['lon'] = arr
+                    dso_mod.lon.attrs['standard_name'] = 'lon'
+                    dso_mod.lon.attrs['long_name'] = 'longitude'
+                    dso_mod.lon.attrs['units'] = 'degrees_east'
+                    print(dso_mod.lon, "Success Lon.")
+                else:
+                    dso_mod.coords['time'] = arr
+                    print("Success time.")
+            elif var in ['HGT','ASPECT','SLOPE','MASK','N_Points']:
+                print(var)
+                add_variable_along_latlon(dso_mod, arr, dic_attrs[var][0], dic_attrs[var][1], dic_attrs[var][2])
+                print(var, "success.")
+            else:
+                add_variable_along_timelatlon(dso_mod, arr, dic_attrs[var][0], dic_attrs[var][1], dic_attrs[var][2])
+                print(var, "also success.")
+        print(ds.ASPECT.shape)
+        print(dso_mod.ASPECT.shape)
+        ds = dso_mod
+        dso = ds
         dso.coords['time'] = df.index.values
 
     #-----------------------------------
     # Order variables
     #-----------------------------------
     df[T2_var] = df[T2_var].apply(pd.to_numeric, errors='coerce')
-    print(df[T2_var])
     df[RH2_var] = df[RH2_var].apply(pd.to_numeric, errors='coerce')
     df[U2_var] = df[U2_var].apply(pd.to_numeric, errors='coerce')
     df[G_var] = df[G_var].apply(pd.to_numeric, errors='coerce')
     df[PRES_var] = df[PRES_var].apply(pd.to_numeric, errors='coerce')
 
-    if (PRES_var not in df):
-        df[PRES_var] = 660.00
+    #if (PRES_var not in df):
+    #    df[PRES_var] = 660.00
 
     if (RRR_var in df):
         df[RRR_var] = df[RRR_var].apply(pd.to_numeric, errors='coerce')
@@ -295,7 +206,7 @@ def create_2D_input(cs_file, cosipy_file, static_file, start_date, end_date, x0=
         T2 = df[T2_var].values         # Temperature
     else:
         T2 = df[T2_var].values + 273.16      
-    print(T2)
+
     if np.nanmax(T2) > 373.16:
         print('Maximum temperature is: %s K please check the input temperature' % (np.nanmax(T2)))
         sys.exit()
@@ -306,7 +217,12 @@ def create_2D_input(cs_file, cosipy_file, static_file, start_date, end_date, x0=
     #-----------------------------------
     # Create numpy arrays for the 2D fields
     #-----------------------------------
+    #Fields too large at 30m res., need to crop to only glacier-extent  ?
+    #Crop to glacier extent only and see from there
+    
+ 
     T_interp = np.zeros([len(dso.time), len(ds.lat), len(ds.lon)])
+    T_interp_rad = np.zeros([len(dso.time), len(ds.lat), len(ds.lon)]) #new
     RH_interp = np.zeros([len(dso.time), len(ds.lat), len(ds.lon)])
     U_interp = np.zeros([len(dso.time), len(ds.lat), len(ds.lon)])
     G_interp = np.full([len(dso.time), len(ds.lat), len(ds.lon)], np.nan)
@@ -334,8 +250,10 @@ def create_2D_input(cs_file, cosipy_file, static_file, start_date, end_date, x0=
     print('Interpolate CR file to grid')
    
     # Interpolate data (T, RH, RRR, U)  to grid using lapse rates
+    rad_tlapse = -0.0065 #new to have default lapse rate for rad. scheme K per m 
     for t in range(len(dso.time)):
         T_interp[t,:,:] = (T2[t]) + (ds.HGT.values-stationAlt)*lapse_T
+        T_interp_rad[t,:,:] = (T2[t]) + (ds.HGT.values-stationAlt)*rad_tlapse
         RH_interp[t,:,:] = RH2[t] + (ds.HGT.values-stationAlt)*lapse_RH
         U_interp[t,:,:] = U2[t]
 
@@ -383,7 +301,7 @@ def create_2D_input(cs_file, cosipy_file, static_file, start_date, end_date, x0=
             hour = df.index[t].hour
             for i in range(len(ds.lat)):
                 for j in range(len(ds.lon)):
-                    if (mask[i, j] == 1):
+                    if (mask[i, j] == 1) or (mask[i, j] == 0): #added this to allow for regridding
                         if radiationModule == 'Wohlfahrt2016':
                             G_interp[t, i, j] = np.maximum(0.0, correctRadiation(lats[i], lons[j], timezone_lon, doy, hour, slope[i, j], aspect[i, j], sw[t], zeni_thld))
                         else:
@@ -444,8 +362,8 @@ def create_2D_input(cs_file, cosipy_file, static_file, start_date, end_date, x0=
         for t in range(len(dso.time)):
             doy = df.index[t].dayofyear
             hour = df.index[t].hour
-            G_interp[t, :, :] = calcRad(solPars, timeCorr, doy, hour, stationLat, T_interp[t, ::-1, :], P_interp[t, ::-1, :], RH_interp[t, ::-1, :], N_interp[t, ::-1, :], np.flipud(hgt), np.flipud(mask), np.flipud(slope), np.flipud(aspect), shad1yr, svf, dtstep, tcart)
-
+            G_interp[t, :, :] = calcRad(solPars, timeCorr, doy, hour, stationLat, T_interp_rad[t, ::-1, :], P_interp[t, ::-1, :], RH_interp[t, ::-1, :], N_interp[t, ::-1, :], np.flipud(hgt), np.flipud(mask), np.flipud(slope), np.flipud(aspect), shad1yr, svf, dtstep, tcart)
+            #changed t_interp field bc with calibration we assign 0 lapse rate by default.
         # Change aspect to south == 0, east == negative, west == positive
         aspect2 = ds['ASPECT'].values - 180.0
         ds['ASPECT'] = (('lat', 'lon'), aspect2)
@@ -611,7 +529,4 @@ if __name__ == "__main__":
     parser.add_argument('-yu', '-yu', dest='yu', type=float, const=None, help='upper latitude value of the subset')
 
     args = parser.parse_args()
-    if createLUT:
-        create_LUT_file(args.csv_file, args.cosipy_file, args.static_file, args.start_date, args.end_date) 
-    else:
-        create_2D_input(args.csv_file, args.cosipy_file, args.static_file, args.start_date, args.end_date, args.xl, args.xr, args.yl, args.yu) 
+    create_corrected_G(args.csv_file, args.cosipy_file, args.static_file, args.start_date, args.end_date, args.xl, args.xr, args.yl, args.yu) 
