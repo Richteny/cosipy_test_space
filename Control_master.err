@@ -4,8 +4,8 @@
   "diagnostics_port has been deprecated. "
 /programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/worker.py:3177: UserWarning: Large object of size 5.61 MB detected in task graph: 
   [<xarray.Dataset>
-Dimensions:   (time: 87649)
-Coor ... 3 0.6829, 0, 0]
+Dimensions:  (time: 87649)
+Coord ...  0.6829, 1, 22]
 Consider scattering large objects ahead of time
 with client.scatter to reduce scheduler burden and 
 keep data on workers
@@ -25,23 +25,12 @@ keep data on workers
   "diagnostics_port has been deprecated. "
 /programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
   "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/stealing.py:29: RuntimeWarning: coroutine 'TCP.close' was never awaited
-  self.stealable_all = [set() for i in range(15)]
-ERROR: base_events.default_exception_handler(): Task was destroyed but it is pending!
-task: <Task pending coro=<TCP.close() running at /programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/comm/tcp.py:271> cb=[IOLoop.add_future.<locals>.<lambda>() at /programs/anaconda/2019.07/lib/python3.7/site-packages/tornado/ioloop.py:690]>
-distributed.comm.tcp - WARNING - Closing dangling stream in <TCP  local=tcp://192.168.1.9:34252 remote=tcp://192.168.1.9:8786>
 /programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
   "diagnostics_port has been deprecated. "
 /programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
   "diagnostics_port has been deprecated. "
-ERROR: base_events.default_exception_handler(): Future exception was never retrieved
-future: <Future finished exception=TimeoutError('Timeout')>
-tornado.util.TimeoutError: Timeout
 /programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
   "diagnostics_port has been deprecated. "
-ERROR: base_events.default_exception_handler(): Future exception was never retrieved
-future: <Future finished exception=TimeoutError('Timeout')>
-tornado.util.TimeoutError: Timeout
 /programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
   "diagnostics_port has been deprecated. "
 /programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
@@ -106,9 +95,6 @@ tornado.util.TimeoutError: Timeout
   "diagnostics_port has been deprecated. "
 /programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
   "diagnostics_port has been deprecated. "
-ERROR: base_events.default_exception_handler(): Future exception was never retrieved
-future: <Future finished exception=TimeoutError('Timeout')>
-tornado.util.TimeoutError: Timeout
 /programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
   "diagnostics_port has been deprecated. "
 /programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
@@ -185,9 +171,6 @@ tornado.util.TimeoutError: Timeout
   "diagnostics_port has been deprecated. "
 /programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
   "diagnostics_port has been deprecated. "
-ERROR: base_events.default_exception_handler(): Future exception was never retrieved
-future: <Future finished exception=TimeoutError('Timeout')>
-tornado.util.TimeoutError: Timeout
 /programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
   "diagnostics_port has been deprecated. "
 /programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
@@ -214,9 +197,6 @@ tornado.util.TimeoutError: Timeout
   "diagnostics_port has been deprecated. "
 /programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
   "diagnostics_port has been deprecated. "
-ERROR: base_events.default_exception_handler(): Future exception was never retrieved
-future: <Future finished exception=TimeoutError('Timeout')>
-tornado.util.TimeoutError: Timeout
 /programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
   "diagnostics_port has been deprecated. "
 /programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
@@ -253,9 +233,6 @@ tornado.util.TimeoutError: Timeout
   "diagnostics_port has been deprecated. "
 /programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
   "diagnostics_port has been deprecated. "
-ERROR: base_events.default_exception_handler(): Future exception was never retrieved
-future: <Future finished exception=TimeoutError('Timeout')>
-tornado.util.TimeoutError: Timeout
 /programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
   "diagnostics_port has been deprecated. "
 /programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
@@ -264,9 +241,6 @@ tornado.util.TimeoutError: Timeout
   "diagnostics_port has been deprecated. "
 /programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
   "diagnostics_port has been deprecated. "
-ERROR: base_events.default_exception_handler(): Future exception was never retrieved
-future: <Future finished exception=TimeoutError('Timeout')>
-tornado.util.TimeoutError: Timeout
 /programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
   "diagnostics_port has been deprecated. "
 /programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
@@ -287,11 +261,6 @@ tornado.util.TimeoutError: Timeout
   "diagnostics_port has been deprecated. "
 /programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
   "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/stealing.py:29: RuntimeWarning: coroutine 'TCP.close' was never awaited
-  self.stealable_all = [set() for i in range(15)]
-ERROR: base_events.default_exception_handler(): Task was destroyed but it is pending!
-task: <Task pending coro=<TCP.close() running at /programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/comm/tcp.py:271> cb=[IOLoop.add_future.<locals>.<lambda>() at /programs/anaconda/2019.07/lib/python3.7/site-packages/tornado/ioloop.py:690]>
-distributed.comm.tcp - WARNING - Closing dangling stream in <TCP  local=tcp://192.168.1.9:57886 remote=tcp://192.168.1.9:8786>
 /programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
   "diagnostics_port has been deprecated. "
 /programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
@@ -310,9 +279,6 @@ distributed.comm.tcp - WARNING - Closing dangling stream in <TCP  local=tcp://19
   "diagnostics_port has been deprecated. "
 /programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
   "diagnostics_port has been deprecated. "
-ERROR: base_events.default_exception_handler(): Future exception was never retrieved
-future: <Future finished exception=TimeoutError('Timeout')>
-tornado.util.TimeoutError: Timeout
 /programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
   "diagnostics_port has been deprecated. "
 /programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
@@ -361,16 +327,10 @@ tornado.util.TimeoutError: Timeout
   "diagnostics_port has been deprecated. "
 /programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
   "diagnostics_port has been deprecated. "
-ERROR: base_events.default_exception_handler(): Future exception was never retrieved
-future: <Future finished exception=TimeoutError('Timeout')>
-tornado.util.TimeoutError: Timeout
 /programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
   "diagnostics_port has been deprecated. "
 /programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
   "diagnostics_port has been deprecated. "
-ERROR: base_events.default_exception_handler(): Future exception was never retrieved
-future: <Future finished exception=TimeoutError('Timeout')>
-tornado.util.TimeoutError: Timeout
 /programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
   "diagnostics_port has been deprecated. "
 /programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
@@ -405,701 +365,6 @@ tornado.util.TimeoutError: Timeout
   "diagnostics_port has been deprecated. "
 /programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
   "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-ERROR: base_events.default_exception_handler(): Future exception was never retrieved
-future: <Future finished exception=TimeoutError('Timeout')>
-tornado.util.TimeoutError: Timeout
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/stealing.py:29: RuntimeWarning: coroutine 'TCP.close' was never awaited
-  self.stealable_all = [set() for i in range(15)]
-ERROR: base_events.default_exception_handler(): Task was destroyed but it is pending!
-task: <Task pending coro=<TCP.close() running at /programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/comm/tcp.py:271> cb=[IOLoop.add_future.<locals>.<lambda>() at /programs/anaconda/2019.07/lib/python3.7/site-packages/tornado/ioloop.py:690]>
-distributed.comm.tcp - WARNING - Closing dangling stream in <TCP  local=tcp://192.168.1.9:41470 remote=tcp://192.168.1.9:8786>
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-ERROR: base_events.default_exception_handler(): Future exception was never retrieved
-future: <Future finished exception=TimeoutError('Timeout')>
-tornado.util.TimeoutError: Timeout
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-ERROR: base_events.default_exception_handler(): Future exception was never retrieved
-future: <Future finished exception=TimeoutError('Timeout')>
-tornado.util.TimeoutError: Timeout
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-ERROR: base_events.default_exception_handler(): Future exception was never retrieved
-future: <Future finished exception=TimeoutError('Timeout')>
-tornado.util.TimeoutError: Timeout
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/stealing.py:29: RuntimeWarning: coroutine 'TCP.close' was never awaited
-  self.stealable_all = [set() for i in range(15)]
-ERROR: base_events.default_exception_handler(): Task was destroyed but it is pending!
-task: <Task pending coro=<TCP.close() running at /programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/comm/tcp.py:271> cb=[IOLoop.add_future.<locals>.<lambda>() at /programs/anaconda/2019.07/lib/python3.7/site-packages/tornado/ioloop.py:690]>
-distributed.comm.tcp - WARNING - Closing dangling stream in <TCP  local=tcp://192.168.1.9:53490 remote=tcp://192.168.1.9:8786>
-ERROR: base_events.default_exception_handler(): Future exception was never retrieved
-future: <Future finished exception=TimeoutError('Timeout')>
-tornado.util.TimeoutError: Timeout
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-ERROR: base_events.default_exception_handler(): Future exception was never retrieved
-future: <Future finished exception=TimeoutError('Timeout')>
-tornado.util.TimeoutError: Timeout
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-ERROR: base_events.default_exception_handler(): Future exception was never retrieved
-future: <Future finished exception=TimeoutError('Timeout')>
-tornado.util.TimeoutError: Timeout
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-ERROR: base_events.default_exception_handler(): Future exception was never retrieved
-future: <Future finished exception=TimeoutError('Timeout')>
-tornado.util.TimeoutError: Timeout
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-ERROR: base_events.default_exception_handler(): Future exception was never retrieved
-future: <Future finished exception=TimeoutError('Timeout')>
-tornado.util.TimeoutError: Timeout
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/stealing.py:29: RuntimeWarning: coroutine 'TCP.close' was never awaited
-  self.stealable_all = [set() for i in range(15)]
-ERROR: base_events.default_exception_handler(): Task was destroyed but it is pending!
-task: <Task pending coro=<TCP.close() running at /programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/comm/tcp.py:271> cb=[IOLoop.add_future.<locals>.<lambda>() at /programs/anaconda/2019.07/lib/python3.7/site-packages/tornado/ioloop.py:690]>
-distributed.comm.tcp - WARNING - Closing dangling stream in <TCP  local=tcp://192.168.1.9:35472 remote=tcp://192.168.1.9:8786>
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/scheduler.py:1132: RuntimeWarning: coroutine 'TCP.close' was never awaited
-  ext(self)
-ERROR: base_events.default_exception_handler(): Task was destroyed but it is pending!
-task: <Task pending coro=<TCP.close() running at /programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/comm/tcp.py:271> cb=[IOLoop.add_future.<locals>.<lambda>() at /programs/anaconda/2019.07/lib/python3.7/site-packages/tornado/ioloop.py:690]>
-distributed.comm.tcp - WARNING - Closing dangling stream in <TCP  local=tcp://192.168.1.9:36674 remote=tcp://192.168.1.9:8786>
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-distributed.comm.tcp - WARNING - Closing dangling stream in <TCP  local=tcp://192.168.1.9:37676 remote=tcp://192.168.1.9:8786>
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-ERROR: base_events.default_exception_handler(): Future exception was never retrieved
-future: <Future finished exception=TimeoutError('Timeout')>
-tornado.util.TimeoutError: Timeout
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-ERROR: base_events.default_exception_handler(): Future exception was never retrieved
-future: <Future finished exception=TimeoutError('Timeout')>
-tornado.util.TimeoutError: Timeout
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-ERROR: base_events.default_exception_handler(): Future exception was never retrieved
-future: <Future finished exception=TimeoutError('Timeout')>
-tornado.util.TimeoutError: Timeout
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-ERROR: base_events.default_exception_handler(): Future exception was never retrieved
-future: <Future finished exception=TimeoutError('Timeout')>
-tornado.util.TimeoutError: Timeout
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-ERROR: base_events.default_exception_handler(): Future exception was never retrieved
-future: <Future finished exception=TimeoutError('Timeout')>
-tornado.util.TimeoutError: Timeout
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-ERROR: base_events.default_exception_handler(): Future exception was never retrieved
-future: <Future finished exception=TimeoutError('Timeout')>
-tornado.util.TimeoutError: Timeout
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-ERROR: base_events.default_exception_handler(): Future exception was never retrieved
-future: <Future finished exception=TimeoutError('Timeout')>
-tornado.util.TimeoutError: Timeout
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-ERROR: base_events.default_exception_handler(): Future exception was never retrieved
-future: <Future finished exception=TimeoutError('Timeout')>
-tornado.util.TimeoutError: Timeout
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/stealing.py:29: RuntimeWarning: coroutine 'TCP.close' was never awaited
-  self.stealable_all = [set() for i in range(15)]
-ERROR: base_events.default_exception_handler(): Task was destroyed but it is pending!
-task: <Task pending coro=<TCP.close() running at /programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/comm/tcp.py:271> cb=[IOLoop.add_future.<locals>.<lambda>() at /programs/anaconda/2019.07/lib/python3.7/site-packages/tornado/ioloop.py:690]>
-distributed.comm.tcp - WARNING - Closing dangling stream in <TCP  local=tcp://192.168.1.9:57502 remote=tcp://192.168.1.9:8786>
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-ERROR: base_events.default_exception_handler(): Future exception was never retrieved
-future: <Future finished exception=TimeoutError('Timeout')>
-tornado.util.TimeoutError: Timeout
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/stealing.py:29: RuntimeWarning: coroutine 'TCP.close' was never awaited
-  self.stealable_all = [set() for i in range(15)]
-ERROR: base_events.default_exception_handler(): Task was destroyed but it is pending!
-task: <Task pending coro=<TCP.close() running at /programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/comm/tcp.py:271> cb=[IOLoop.add_future.<locals>.<lambda>() at /programs/anaconda/2019.07/lib/python3.7/site-packages/tornado/ioloop.py:690]>
-distributed.comm.tcp - WARNING - Closing dangling stream in <TCP  local=tcp://192.168.1.9:37284 remote=tcp://192.168.1.9:8786>
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-ERROR: base_events.default_exception_handler(): Future exception was never retrieved
-future: <Future finished exception=TimeoutError('Timeout')>
-tornado.util.TimeoutError: Timeout
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-ERROR: base_events.default_exception_handler(): Future exception was never retrieved
-future: <Future finished exception=TimeoutError('Timeout')>
-tornado.util.TimeoutError: Timeout
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-ERROR: base_events.default_exception_handler(): Future exception was never retrieved
-future: <Future finished exception=TimeoutError('Timeout')>
-tornado.util.TimeoutError: Timeout
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
-  "diagnostics_port has been deprecated. "
-distributed.comm.tcp - WARNING - Closing dangling stream in <TCP  local=tcp://192.168.1.9:43694 remote=tcp://192.168.1.9:8786>
 /programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
   "diagnostics_port has been deprecated. "
 /programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
@@ -1156,7 +421,7 @@ To register the converters:
   warnings.warn(msg, FutureWarning)
 Traceback (most recent call last):
   File "/data/scratch/richteny/thesis/cosipy_test_space/run_spotpy_full.py", line 13, in <module>
-    best_summary = psample(obs=obs,count=count, rep=500)
+    best_summary = psample(obs=obs,count=count, rep=200)
   File "/data/scratch/richteny/thesis/cosipy_test_space/spotpy_full.py", line 217, in psample
     'param': spot_setup.param,'opt_iter': spot_setup.par_iter,
 AttributeError: type object 'spot_setup' has no attribute 'param'

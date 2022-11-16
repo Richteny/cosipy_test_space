@@ -1,474 +1,216 @@
-distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.3:43891'
-distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.3:39659'
-distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.3:42039'
-distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.3:33331'
-distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.3:46571'
-distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.3:44719'
-distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.3:33077'
-distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.3:45149'
-distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.3:40123'
-distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.3:34945'
-distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.3:37967'
-distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.3:34397'
-distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.3:34701'
-distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.3:37515'
-distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.3:33361'
-distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.3:46617'
-distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.3:45307'
-distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.3:43927'
-distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.3:41043'
-distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.3:39437'
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-vdymna3a', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-fin19bpb', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-w8xqitt8', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-d_2ucfjr', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-1hl_nhdi', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-dxsr1yud', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-qupffrs9', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-uvuk36uk', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-p51uwvd7', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-0yw95ynd', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-qzcrl9tw', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-nc_de4ac', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-n27znq_g', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-p8of7v4d', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-gfryr1lt', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-nxn1x52r', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-ik2puj1j', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-w4o9woeg', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-c11jr487', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-1pi5kjua', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-icp2cyop', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-7bxgdmrp', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-fxb23hsp', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-79z1mzk8', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-qqfbctrq', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-qzumtrs9', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-s_mf1r0k', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-y7y8vwys', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-r9v409dj', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-tftngg3u', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-ft8ljs01', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-tnrlbhz9', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-_rasr5q0', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-fhzvzi35', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-ywa59git', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-1gzb81qk', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-kq3bmjup', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-pof3ztpl', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-k3776rn6', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-j4auk90o', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-_sedr8jk', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-a1om4v_m', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-1w8sbha0', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-mjjldbbd', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-ywoudveo', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-zijttwkq', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-i7krd4b6', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-esdz4ofl', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-ftknhsnp', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-z5nbbubp', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-n2u3zs0k', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-e6l8m_7p', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-nxp9obxh', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-ablkzndp', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-2mnwez2h', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-a6c48wgm', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-ihj82r9v', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-3edmld1i', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-hcz_sidu', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-vpkkj7i3', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-np6e5jy0', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-8bupbtb4', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-lb6tusyo', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-ivnbhgsm', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-r5t4nngj', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-l1gfeeg9', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-842h6a64', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-6wc8if2p', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-xkl0ldy9', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-quxdc0ma', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-eshlybwd', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-jk_sweaf', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-r9q69xnr', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-0x6hk0_r', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-b7v1drgo', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-440krhbn', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-9ovxy1lk', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-a3fwknrr', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-wfibhph0', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-9eiyipit', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-dg2umjho', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-vwcaadi9', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-y61d4986', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-z9v0ihjf', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-pzpbf5sf', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-q_pkrs6u', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-hnsb6m47', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-6tzeompm', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-hv0e8m7z', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-uicepokg', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-cftuowgu', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-0lej6vq1', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-v8_k1nzu', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-95es7i57', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-22w6b2ng', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-1kfw117x', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-np7de2x3', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-t8bcbo27', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-qx1kmfax', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-pn568f0z', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-4prxzj3j', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-oz_w86tm', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-zrcxt0q8', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-2kj9_khx', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-7jf6z7w9', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-2ofp13xh', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-mfw8jbii', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-l1w667ld', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-j75pne1n', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-elmrl7uy', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-q9sosmnh', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-f69_102s', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-6tsgpbo2', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-dpr6rs0_', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-nh_5_4ou', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-_5qzce51', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-u_st6k39', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-zyrkq1os', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-3w7k8a3l', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-guan53vb', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-ldq_ni45', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-cgo8s60o', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-58v5asm8', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-uhbv0kez', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-j_vp4g9q', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-ewu3p1dz', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-zki8d1gd', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-l5uxht9h', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-31r7ta2o', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-j6c9wqjt', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-etp51u_7', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-iyd6gp0p', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-4b1kihpy', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-6tcgnhhq', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-e7k76kdn', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-t_oid5vv', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-oxq8vtkn', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-9a_esrj6', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-d9arhn8q', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-va6y0cfk', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-zbdnph3u', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-dq4yzgdi', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-02_d8k10', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-7bsq6uiu', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-kfwe56an', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-joxyfcg5', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-o373bduk', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-mjkccwr3', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-mjcns604', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-n4dc74q4', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-y1p7zsp2', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-k57ai7uw', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-qyjpla9p', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-8x4ei359', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-48sdeq17', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-nq3b1kud', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-71b74mu1', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-e7lywz3o', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-f6dxsmg8', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-qrswtb9j', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-fv_lt3tu', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-_x286wzn', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-zlqcbvsi', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-iolk8c9j', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-ljls4xpx', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-nk8cbcyb', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-0n4po0pk', purging
-distributed.worker - INFO -       Start worker at:    tcp://192.168.1.1:39385
-distributed.worker - INFO -          Listening to:    tcp://192.168.1.1:39385
-distributed.worker - INFO -          dashboard at:          192.168.1.1:37733
+distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.15:38405'
+distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.15:41447'
+distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.15:38801'
+distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.15:36627'
+distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.15:36229'
+distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.15:44869'
+distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.15:36299'
+distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.15:44405'
+distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.15:46811'
+distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.15:36867'
+distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.15:34491'
+distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.15:40705'
+distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.15:37607'
+distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.15:43625'
+distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.15:36659'
+distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.15:44329'
+distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.15:44217'
+distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.15:41963'
+distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.15:43013'
+distributed.nanny - INFO -         Start Nanny at: 'tcp://distributed.worker - INFO -       Start worker at:    tcp://192.168.1.6:46207
+distributed.worker - INFO -          Listening to:    tcp://192.168.1.6:46207
+distributed.worker - INFO -          dashboard at:          192.168.1.6:41891
+distributed.worker - INFO -       Start worker at:    tcp://192.168.1.6:35839
+distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
+distributed.worker - INFO -          Listening to:    tcp://192.168.1.6:35839
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -          dashboard at:          192.168.1.6:40351
+distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
+distributed.worker - INFO -               Threads:                          1
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -                Memory:                    3.00 GB
+distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-u4z9avpw
+distributed.worker - INFO -               Threads:                          1
+distributed.worker - INFO -                Memory:                    3.00 GB
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-p20fi2ir
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -       Start worker at:    tcp://192.168.1.6:42549
+distributed.worker - INFO -          Listening to:    tcp://192.168.1.6:42549
+distributed.worker - INFO -          dashboard at:          192.168.1.6:40533
 distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
 distributed.worker - INFO - -------------------------------------------------
 distributed.worker - INFO -               Threads:                          1
 distributed.worker - INFO -                Memory:                    3.00 GB
-distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-7n3mcxz1
-distributed.worker - INFO -       Start worker at:    tcp://192.168.1.1:44503
+distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-zimg9wo6
 distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO -          Listening to:    tcp://192.168.1.1:44503
-distributed.worker - INFO -          dashboard at:          192.168.1.1:35775
+distributed.worker - INFO -       Start worker at:    tcp://192.168.1.6:41635
+distributed.worker - INFO -          Listening to:    tcp://192.168.1.6:41635
+distributed.worker - INFO -          dashboard at:          192.168.1.6:42281
 distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
 distributed.worker - INFO - -------------------------------------------------
 distributed.worker - INFO -               Threads:                          1
 distributed.worker - INFO -                Memory:                    3.00 GB
-distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-j0zhuyu3
-distributed.worker - INFO -       Start worker at:    tcp://192.168.1.1:46297
-distributed.worker - INFO -       Start worker at:    tcp://192.168.1.1:42137
-distributed.worker - INFO -          Listening to:    tcp://192.168.1.1:46297
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-nxuan7t2', purging
+distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-8q8vqe5o
 distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO -          dashboard at:          192.168.1.1:45203
-distributed.worker - INFO -          Listening to:    tcp://192.168.1.1:42137
-distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
-distributed.worker - INFO -          dashboard at:          192.168.1.1:37449
-distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -       Start worker at:    tcp://192.168.1.6:36313
+distributed.worker - INFO -          Listening to:    tcp://192.168.1.6:36313
+distributed.worker - INFO -          dashboard at:          192.168.1.6:37029
 distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
 distributed.worker - INFO - -------------------------------------------------
 distributed.worker - INFO -               Threads:                          1
 distributed.worker - INFO -                Memory:                    3.00 GB
-distributed.worker - INFO -               Threads:                          1
-distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-hi2c4aoo
-distributed.worker - INFO -                Memory:                    3.00 GB
-distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-a0y25sp2
+distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-dpw29sck
 distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO -       Start worker at:    tcp://192.168.1.1:41305
-distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO -          Listening to:    tcp://192.168.1.1:41305
-distributed.worker - INFO -          dashboard at:          192.168.1.1:44415
+distributed.worker - INFO -       Start worker at:    tcp://192.168.1.6:36575
+distributed.worker - INFO -          Listening to:    tcp://192.168.1.6:36575
+distributed.worker - INFO -          dashboard at:          192.168.1.6:45529
 distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
 distributed.worker - INFO - -------------------------------------------------
 distributed.worker - INFO -               Threads:                          1
 distributed.worker - INFO -                Memory:                    3.00 GB
-distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-m4730nov
-distributed.worker - INFO -       Start worker at:    tcp://192.168.1.1:37611
+distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-xeubv89v
 distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO -          Listening to:    tcp://192.168.1.1:37611
-distributed.worker - INFO -          dashboard at:          192.168.1.1:36011
+distributed.worker - INFO -       Start worker at:    tcp://192.168.1.6:45731
+distributed.worker - INFO -       Start worker at:    tcp://192.168.1.6:34227
+distributed.worker - INFO -          Listening to:    tcp://192.168.1.6:45731
+distributed.worker - INFO -          Listening to:    tcp://192.168.1.6:34227
+distributed.worker - INFO -          dashboard at:          192.168.1.6:41979
+distributed.worker - INFO -       Start worker at:    tcp://192.168.1.6:35101
+distributed.worker - INFO -          dashboard at:          192.168.1.6:36229
+distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
+distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
+distributed.worker - INFO -          Listening to:    tcp://192.168.1.6:35101
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -          dashboard at:          192.168.1.6:42839
+distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
+distributed.worker - INFO -               Threads:                          1
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -               Threads:                          1
+distributed.worker - INFO -                Memory:                    3.00 GB
+distributed.worker - INFO -                Memory:                    3.00 GB
+distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-nzete6_i
+distributed.worker - INFO -               Threads:                          1
+distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-svjmav07
+distributed.worker - INFO -                Memory:                    3.00 GB
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
+distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-c5yyd7vh
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -       Start worker at:    tcp://192.168.1.6:34349
+distributed.worker - INFO -          Listening to:    tcp://192.168.1.6:34349
+distributed.worker - INFO -          dashboard at:          192.168.1.6:33375
+distributed.worker - INFO -       Start worker at:    tcp://192.168.1.6:32921
+distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -          Listening to:    tcp://192.168.1.6:32921
+distributed.worker - INFO -               Threads:                          1
+distributed.worker - INFO -          dashboard at:          192.168.1.6:32931
+distributed.worker - INFO -                Memory:                    3.00 GB
+distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
+distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-nmq6jvug
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -               Threads:                          1
+distributed.worker - INFO -                Memory:                    3.00 GB
+distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-98trasoj
+distributed.worker - INFO - -------------------------------------------------
+distributed.core - INFO - Starting established connection
+distributed.worker - INFO -       Start worker at:    tcp://192.168.1.6:37873
+distributed.worker - INFO -          Listening to:    tcp://192.168.1.6:37873
+distributed.worker - INFO -          dashboard at:          192.168.1.6:40937
 distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
 distributed.worker - INFO - -------------------------------------------------
 distributed.worker - INFO -               Threads:                          1
 distributed.worker - INFO -                Memory:                    3.00 GB
-distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-l18on2in
+distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-w9adsaj6
 distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO -       Start worker at:    tcp://192.168.1.1:46177
-distributed.worker - INFO -          Listening to:    tcp://192.168.1.1:46177
-distributed.worker - INFO -          dashboard at:          192.168.1.1:37397
+distributed.worker - INFO -       Start worker at:    tcp://192.168.1.6:33411
+distributed.worker - INFO -          Listening to:    tcp://192.168.1.6:33411
+distributed.worker - INFO -          dashboard at:          192.168.1.6:45781
 distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
 distributed.worker - INFO - -------------------------------------------------
 distributed.worker - INFO -               Threads:                          1
 distributed.worker - INFO -                Memory:                    3.00 GB
-distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-q0swvmpc
+distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-zn4svzng
 distributed.worker - INFO - -------------------------------------------------
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-w16i5n66', purging
-distributed.worker - INFO -       Start worker at:    tcp://192.168.1.1:38123
-distributed.worker - INFO -          Listening to:    tcp://192.168.1.1:38123
-distributed.worker - INFO -          dashboard at:          192.168.1.1:35383
+distributed.worker - INFO -       Start worker at:    tcp://192.168.1.6:42505
+distributed.worker - INFO -          Listening to:    tcp://192.168.1.6:42505
+distributed.worker - INFO -          dashboard at:          192.168.1.6:38329
 distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
 distributed.worker - INFO - -------------------------------------------------
 distributed.worker - INFO -               Threads:                          1
 distributed.worker - INFO -                Memory:                    3.00 GB
-distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-e773wh1k
+distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-dk310fqq
 distributed.worker - INFO - -------------------------------------------------
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-vtqcl1fj', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-05f76i8h', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-hjn3xrj6', purging
-distributed.worker - INFO -       Start worker at:    tcp://192.168.1.1:42439
-distributed.worker - INFO -          Listening to:    tcp://192.168.1.1:42439
-distributed.worker - INFO -          dashboard at:          192.168.1.1:45271
+distributed.worker - INFO -       Start worker at:    tcp://192.168.1.6:40777
+distributed.worker - INFO -          Listening to:    tcp://192.168.1.6:40777
+distributed.worker - INFO -          dashboard at:          192.168.1.6:41779
 distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
 distributed.worker - INFO - -------------------------------------------------
 distributed.worker - INFO -               Threads:                          1
 distributed.worker - INFO -                Memory:                    3.00 GB
-distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-y69rr7fn
+distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-mykqudja
 distributed.worker - INFO - -------------------------------------------------
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-xjnvo1kg', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-z3su8n51', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-8jfl83gm', purging
-distributed.worker - INFO -       Start worker at:    tcp://192.168.1.1:45207
-distributed.worker - INFO -          Listening to:    tcp://192.168.1.1:45207
-distributed.worker - INFO -          dashboard at:          192.168.1.1:44487
+distributed.worker - INFO -       Start worker at:    tcp://192.168.1.6:39899
+distributed.worker - INFO -          Listening to:    tcp://192.168.1.6:39899
+distributed.worker - INFO -          dashboard at:          192.168.1.6:36823
 distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
 distributed.worker - INFO - -------------------------------------------------
 distributed.worker - INFO -               Threads:                          1
 distributed.worker - INFO -                Memory:                    3.00 GB
-distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-f82u147w
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-rml5tjq0', purging
+distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-4um_a20_
 distributed.worker - INFO - -------------------------------------------------
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-pzxu2c__', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-jx53dc_x', purging
-distributed.worker - INFO -       Start worker at:    tcp://192.168.1.1:45545
-distributed.worker - INFO -          Listening to:    tcp://192.168.1.1:45545
-distributed.worker - INFO -          dashboard at:          192.168.1.1:44455
+distributed.worker - INFO -       Start worker at:    tcp://192.168.1.6:35007
+distributed.worker - INFO -          Listening to:    tcp://192.168.1.6:35007
+distributed.worker - INFO -          dashboard at:          192.168.1.6:34743
 distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
 distributed.worker - INFO - -------------------------------------------------
 distributed.worker - INFO -               Threads:                          1
 distributed.worker - INFO -                Memory:                    3.00 GB
-distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-m9eioow0
+distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-buzo0uw2
 distributed.worker - INFO - -------------------------------------------------
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-t2gy9axs', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-25_2nkeq', purging
-distributed.worker - INFO -       Start worker at:    tcp://192.168.1.1:42931
-distributed.worker - INFO -          Listening to:    tcp://192.168.1.1:42931
-distributed.worker - INFO -          dashboard at:          192.168.1.1:46459
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-qc3grtvz', purging
+distributed.worker - INFO -       Start worker at:    tcp://192.168.1.6:37133
+distributed.worker - INFO -          Listening to:    tcp://192.168.1.6:37133
+distributed.worker - INFO -          dashboard at:          192.168.1.6:42729
 distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
 distributed.worker - INFO - -------------------------------------------------
 distributed.worker - INFO -               Threads:                          1
 distributed.worker - INFO -                Memory:                    3.00 GB
-distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-m4xd9l6w
+distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-h6_jgu67
 distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO -       Start worker at:    tcp://192.168.1.1:40375
-distributed.worker - INFO -          Listening to:    tcp://192.168.1.1:40375
-distributed.worker - INFO -          dashboard at:          192.168.1.1:39939
-distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
-distributed.worker - INFO - -------------------------------------------------
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-33b88y3v', purging
-distributed.worker - INFO -               Threads:                          1
-distributed.worker - INFO -                Memory:                    3.00 GB
-distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-xnvvhulr
-distributed.worker - INFO - -------------------------------------------------
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-q7b_pee4', purging
-distributed.worker - INFO -       Start worker at:    tcp://192.168.1.1:46393
-distributed.worker - INFO -          Listening to:    tcp://192.168.1.1:46393
-distributed.worker - INFO -          dashboard at:          192.168.1.1:35401
+distributed.worker - INFO -       Start worker at:    tcp://192.168.1.6:46835
+distributed.worker - INFO -          Listening to:    tcp://192.168.1.6:46835
+distributed.worker - INFO -          dashboard at:          192.168.1.6:45999
 distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
 distributed.worker - INFO - -------------------------------------------------
 distributed.worker - INFO -               Threads:                          1
 distributed.worker - INFO -                Memory:                    3.00 GB
-distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-j0_cq91r
+distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-90tynux4
 distributed.worker - INFO - -------------------------------------------------
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-nox56y5n', purging
-distributed.worker - INFO -       Start worker at:    tcp://192.168.1.1:41871
-distributed.worker - INFO -          Listening to:    tcp://192.168.1.1:41871
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-p3zc8fbl', purging
-distributed.worker - INFO -          dashboard at:          192.168.1.1:33145
+distributed.worker - INFO -       Start worker at:    tcp://192.168.1.6:33167
+distributed.worker - INFO -          Listening to:    tcp://192.168.1.6:33167
+distributed.worker - INFO -          dashboard at:          192.168.1.6:37813
 distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
 distributed.worker - INFO - -------------------------------------------------
 distributed.worker - INFO -               Threads:                          1
 distributed.worker - INFO -                Memory:                    3.00 GB
-distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-tg07vjy0
+distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-8jxh497m
 distributed.worker - INFO - -------------------------------------------------
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-7f8xrd77', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-s732a5s8', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-20wzara4', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-s5hmq0t1', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-9kxs5gly', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-rkxwmaah', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-o1vnb41v', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-8u7ht8h_', purging
-distributed.worker - INFO -       Start worker at:    tcp://192.168.1.1:42799
-distributed.worker - INFO -          Listening to:    tcp://192.168.1.1:42799
-distributed.worker - INFO -          dashboard at:          192.168.1.1:35059
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-3xsw4zty', purging
-distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
+distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
 distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO -               Threads:                          1
-distributed.worker - INFO -                Memory:                    3.00 GB
-distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-3j6x27al
+distributed.core - INFO - Starting established connection
+distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
 distributed.worker - INFO - -------------------------------------------------
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-rtksyht7', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-ctpyhaa_', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-r4f0yhq4', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-ja6rfyj2', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-6u6ziwhu', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-ha66n0ty', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-sy2bd7op', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-z8vga5gz', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-3p31qy2d', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-zqpbdu27', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-kpcwyvqa', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-bn2cegqw', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-2j9dgkzi', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-g86wna24', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-2vfjyxk_', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-1apjrr3c', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-ilpk013s', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-hdjvvq4o', purging
-distributed.worker - INFO -       Start worker at:    tcp://192.168.1.1:45471
-distributed.worker - INFO -          Listening to:    tcp://192.168.1.1:45471
-distributed.worker - INFO -          dashboard at:          192.168.1.1:40373
-distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
+distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
 distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO -       Start worker at:    tcp://192.168.1.1:38319
-distributed.worker - INFO -               Threads:                          1
-distributed.worker - INFO -          Listening to:    tcp://192.168.1.1:38319
-distributed.worker - INFO -                Memory:                    3.00 GB
-distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-8dur5yk1
-distributed.worker - INFO -          dashboard at:          192.168.1.1:33555
+distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
+distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
 distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-a_jki1c7', purging
 distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO -               Threads:                          1
-distributed.worker - INFO -                Memory:                    3.00 GB
-distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-9njert5u
-distributed.worker - INFO - -------------------------------------------------
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-mfgwjoub', purging
-distributed.worker - INFO -       Start worker at:    tcp://192.168.1.1:42723
-distributed.worker - INFO -          Listening to:    tcp://192.168.1.1:42723
-distributed.worker - INFO -          dashboard at:          192.168.1.1:35867
-distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
-distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO -               Threads:                          1
-distributed.worker - INFO -                Memory:                    3.00 GB
-distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-kyfx8lh9
-distributed.worker - INFO - -------------------------------------------------
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-haudoxn8', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-t1pb6qu2', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-yx6bjcw5', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-mjw_qi15', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-ppbbta3u', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-u85rf1rx', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-ec54x72x', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-3zwutdkx', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-gllnqo1x', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-tz7s1vjo', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-qn1qeomp', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-u14qye56', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-63z7ucf3', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-ha68vbrp', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-v6ely50p', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-fjofrsou', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-xz0180bn', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-g14bb1iv', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-kggpk7e5', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-j_ukhg36', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-utjjnq58', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-ujgzkgtj', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-x9ydvkm5', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-muiz748r', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-tp3_q6zs', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-mkb8b78m', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-ia476qs8', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-h1em1t_o', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-hdtayzq1', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-axzujtqk', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-r_zobkd8', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-bxitheen', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-_tsuns38', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-1ma2y5pp', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-9da__nxj', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-af0mhaig', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-p9b7l27p', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-dpnpf7u0', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-0cis13jo', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-le2xp880', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-isrodvh8', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-pcb2c5vu', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-_fb07zt0', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-xxweutz3', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-z4e6tfz9', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-mjw1f21g', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-mwmkjqdv', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-o5knols3', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-msm21pnq', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-vctvw4kc', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-j099srgr', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-8atx18af', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-or_kx9cd', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-xbfdlyyn', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-wdw5uqjb', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-gsr2asds', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-7t18f5q_', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-fy4sodla', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-dc25pygw', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-rzprux0x', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-6j2872rh', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-fkx15_3b', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-c2fm628q', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-kfba5mdi', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-supl35sj', purging
-distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-rl88kun_', purging
 distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
 distributed.worker - INFO - -------------------------------------------------
 distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
@@ -480,37 +222,6 @@ distributed.worker - INFO - -------------------------------------------------
 distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
 distributed.worker - INFO - -------------------------------------------------
 distributed.core - INFO - Starting established connection
-distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
-distributed.worker - INFO - -------------------------------------------------
-distributed.core - INFO - Starting established connection
-distributed.core - INFO - Starting established connection
-distributed.core - INFO - Starting established connection
-distributed.core - INFO - Starting established connection
-distributed.core - INFO - Starting established connection
-distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
-distributed.worker - INFO - -------------------------------------------------
-distributed.core - INFO - Starting established connection
-distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
-distributed.worker - INFO - -------------------------------------------------
-distributed.core - INFO - Starting established connection
-distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
-distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
-distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
-distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
-distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
-distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
-distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
-distributed.core - INFO - Starting established connection
-distributed.worker - INFO - -------------------------------------------------
-distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
-distributed.worker - INFO - -------------------------------------------------
-distributed.core - INFO - Starting established connection
 distributed.core - INFO - Starting established connection
 distributed.core - INFO - Starting established connection
 distributed.core - INFO - Starting established connection
@@ -518,29 +229,265 @@ distributed.core - INFO - Starting established connection
 distributed.core - INFO - Starting established connection
 distributed.core - INFO - Starting established connection
 distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
-distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
-distributed.worker - INFO - -------------------------------------------------
 distributed.worker - INFO - -------------------------------------------------
 distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
 distributed.worker - INFO - -------------------------------------------------
 distributed.core - INFO - Starting established connection
+distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
+distributed.worker - INFO - -------------------------------------------------
+distributed.core - INFO - Starting established connection
+distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
+distributed.worker - INFO - -------------------------------------------------
 distributed.core - INFO - Starting established connection
 distributed.core - INFO - Starting established connection
-/programs/anaconda/2019.07/lib/python3.7/contextlib.py:119: UserWarning: Creating scratch directories is taking a surprisingly long time. This is often due to running workers on a network file system. Consider specifying a local-directory to point workers to write scratch data to a local disk.
-  next(self.gen)
-distributed.worker - INFO -       Start worker at:    tcp://192.168.1.1:38259
-distributed.worker - INFO -          Listening to:    tcp://192.168.1.1:38259
-distributed.worker - INFO -          dashboard at:          192.168.1.1:41447
+distributed.core - INFO - Starting established connection
+distributed.core - INFO - Starting established connection
+distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
+distributed.worker - INFO - -------------------------------------------------
+distributed.core - INFO - Starting established connection
+distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
+distributed.worker - INFO - -------------------------------------------------
+distributed.core - INFO - Starting established connection
+distributed.core - INFO - Starting established connection
+distributed.core - INFO - Starting established connection
+distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
+distributed.worker - INFO - -------------------------------------------------
+distributed.core - INFO - Starting established connection
+distributed.worker - INFO -       Start worker at:   tcp://192.168.1.12:36381
+distributed.worker - INFO -          Listening to:   tcp://192.168.1.12:36381
+distributed.worker - INFO -          dashboard at:         192.168.1.12:39547
 distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
 distributed.worker - INFO - -------------------------------------------------
 distributed.worker - INFO -               Threads:                          1
 distributed.worker - INFO -                Memory:                    3.00 GB
-distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-oc2fazpu
+distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-npxq2tsx
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -       Start worker at:   tcp://192.168.1.12:32851
+distributed.worker - INFO -          Listening to:   tcp://192.168.1.12:32851
+distributed.worker - INFO -          dashboard at:         192.168.1.12:37763
+distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -               Threads:                          1
+distributed.worker - INFO -                Memory:                    3.00 GB
+distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-3errzvm6
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -       Start worker at:   tcp://192.168.1.12:40285
+distributed.worker - INFO -          Listening to:   tcp://192.168.1.12:40285
+distributed.worker - INFO -          dashboard at:         192.168.1.12:42077
+distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -               Threads:                          1
+distributed.worker - INFO -                Memory:                    3.00 GB
+distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-7bbgzzkr
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -       Start worker at:   tcp://192.168.1.12:45859
+distributed.worker - INFO -       Start worker at:   tcp://192.168.1.12:36769
+distributed.worker - INFO -          Listening to:   tcp://192.168.1.12:36769
+distributed.worker - INFO -          dashboard at:         192.168.1.12:39801
+distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -          Listening to:   tcp://192.168.1.12:45859
+distributed.worker - INFO -               Threads:                          1
+distributed.worker - INFO -          dashboard at:         192.168.1.12:43553
+distributed.worker - INFO -                Memory:                    3.00 GB
+distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-uz78n8qw
+distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -               Threads:                          1
+distributed.worker - INFO -                Memory:                    3.00 GB
+distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-hl5jaxn2
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -       Start worker at:   tcp://192.168.1.12:37479
+distributed.worker - INFO -          Listening to:   tcp://192.168.1.12:37479
+distributed.worker - INFO -          dashboard at:         192.168.1.12:34417
+distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -               Threads:                          1
+distributed.worker - INFO -                Memory:                    3.00 GB
+distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-pmw2uzow
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -       Start worker at:   tcp://192.168.1.12:44469
+distributed.worker - INFO -          Listening to:   tcp://192.168.1.12:44469
+distributed.worker - INFO -          dashboard at:         192.168.1.12:45435
+distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -               Threads:                          1
+distributed.worker - INFO -                Memory:                    3.00 GB
+distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-9rf6vrf0
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -       Start worker at:   tcp://192.168.1.12:38691
+distributed.worker - INFO -          Listening to:   tcp://192.168.1.12:38691
+distributed.worker - INFO -          dashboard at:         192.168.1.12:34989
+distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -               Threads:                          1
+distributed.worker - INFO -                Memory:                    3.00 GB
+distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-omkj49mt
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -       Start worker at:   tcp://192.168.1.12:45227
+distributed.worker - INFO -          Listening to:   tcp://192.168.1.12:45227
+distributed.worker - INFO -          dashboard at:         192.168.1.12:46237
+distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -               Threads:                          1
+distributed.worker - INFO -                Memory:                    3.00 GB
+distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-flgz1cnj
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -       Start worker at:   tcp://192.168.1.12:37807
+distributed.worker - INFO -       Start worker at:   tcp://192.168.1.12:41823
+distributed.worker - INFO -          Listening to:   tcp://192.168.1.12:37807
+distributed.worker - INFO -          Listening to:   tcp://192.168.1.12:41823
+distributed.worker - INFO -          dashboard at:         192.168.1.12:39753
+distributed.worker - INFO -          dashboard at:         192.168.1.12:40255
+distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
+distributed.worker - INFO -               Threads:                          1
+distributed.worker - INFO -                Memory:                    3.00 GB
+distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-2g0vabaw
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -               Threads:                          1
+distributed.worker - INFO -                Memory:                    3.00 GB
+distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-gperri1s
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -       Start worker at:   tcp://192.168.1.12:41347
+distributed.worker - INFO -          Listening to:   tcp://192.168.1.12:41347
+distributed.worker - INFO -          dashboard at:         192.168.1.12:39227
+distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -               Threads:                          1
+distributed.worker - INFO -                Memory:                    3.00 GB
+distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-uqsmlvo7
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -       Start worker at:   tcp://192.168.1.12:33715
+distributed.worker - INFO -          Listening to:   tcp://192.168.1.12:33715
+distributed.worker - INFO -          dashboard at:         192.168.1.12:37659
+distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -               Threads:                          1
+distributed.worker - INFO -                Memory:                    3.00 GB
+distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-9pzzng6a
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -       Start worker at:   tcp://192.168.1.12:42623
+distributed.worker - INFO -          Listening to:   tcp://192.168.1.12:42623
+distributed.worker - INFO -          dashboard at:         192.168.1.12:40669
+distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -               Threads:                          1
+distributed.worker - INFO -                Memory:                    3.00 GB
+distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-0w071u7s
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -       Start worker at:   tcp://192.168.1.12:43353
+distributed.worker - INFO -          Listening to:   tcp://192.168.1.12:43353
+distributed.worker - INFO -          dashboard at:         192.168.1.12:34733
+distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
+distributed.worker - INFO -       Start worker at:   tcp://192.168.1.12:39659
+distributed.worker - INFO -          Listening to:   tcp://192.168.1.12:39659
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -          dashboard at:         192.168.1.12:37865
+distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
+distributed.worker - INFO -               Threads:                          1
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -                Memory:                    3.00 GB
+distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-6_2rxfpm
+distributed.worker - INFO -               Threads:                          1
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -                Memory:                    3.00 GB
+distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-f3_e3suc
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -       Start worker at:   tcp://192.168.1.12:41863
+distributed.worker - INFO -          Listening to:   tcp://192.168.1.12:41863
+distributed.worker - INFO -          dashboard at:         192.168.1.12:46619
+distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -               Threads:                          1
+distributed.worker - INFO -                Memory:                    3.00 GB
+distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-27j5j9s9
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -       Start worker at:   tcp://192.168.1.12:34083
+distributed.worker - INFO -          Listening to:   tcp://192.168.1.12:34083
+distributed.worker - INFO -          dashboard at:         192.168.1.12:44629
+distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -               Threads:                          1
+distributed.worker - INFO -                Memory:                    3.00 GB
+distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-9oyr4q66
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -       Start worker at:   tcp://192.168.1.12:44927
+distributed.worker - INFO -          Listening to:   tcp://192.168.1.12:44927
+distributed.worker - INFO -          dashboard at:         192.168.1.12:33347
+distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -               Threads:                          1
+distributed.worker - INFO -                Memory:                    3.00 GB
+distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-b9n2srfl
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -       Start worker at:   tcp://192.168.1.12:34971
+distributed.worker - INFO -          Listening to:   tcp://192.168.1.12:34971
+distributed.worker - INFO -          dashboard at:         192.168.1.12:40519
+distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -               Threads:                          1
+distributed.worker - INFO -                Memory:                    3.00 GB
+distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-vw05uzmg
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
 distributed.worker - INFO - -------------------------------------------------
 distributed.worker - INFO -         Registered to:     tcp://192.168.1.9:8786
 distributed.worker - INFO - -------------------------------------------------
 distributed.core - INFO - Starting established connection
-slurmstepd: error: *** JOB 743427 ON node14 CANCELLED AT 2022-08-25T00:22:14 ***
-slurmstepd: error: *** JOB 743429 ON node16 CANCELLED AT 2022-08-25T00:22:14 ***
-slurmstepd: error: *** JOB 743430 ON node01 CANCELLED AT 2022-08-25T00:22:14 ***
-slurmstepd: error: *** JOB 743428 ON node15 CANCELLED AT 2022-08-25T00:22:14 ***
+distributed.core - INFO - Starting est Threads:                          1
+distributed.worker - INFO -                Memory:                    3.00 GB
+distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-z9w0yiiq
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -          Listening to:    tcp://192.168.1.1:42061
+distributed.worker - INFO -          dashboard at:          192.168.1.1:38347
+distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -               Threads:                          1
+distributed.worker - INFO -                Memory:                    3.00 GB
+distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-jkbvgtnd
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -       Start worker at:    tcp://192.168.1.1:36179
+distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-0obfvyfb', purging
+distributed.worker - INFO -          Listening to:    tcp://192.168.1.1:36179
+distributed.worker - INFO -          dashboard at:          192.168.1.1:46807
+distributed.worker - INFO -       Start worker at:    tcp://192.168.1.1:45583
+distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
+distributed.worker - INFO -          Listening to:    tcp://192.168.1.1:45583
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -          dashboard at:          192.168.1.1:46333
+distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -               Threads:                          1
+distributed.worker - INFO -                Memory:                    3.00 GB
+distributed.worker - INFO -               Threads:                          1
+distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-w_ssdiug
+distributed.worker - INFO -                Memory:                    3.00 GB
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-3f343j9e
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -       Start worker at:    tcp://192.168.1.1:46157
+distributed.worker - INFO -          Listening to:    tcp://192.168.1.1:46157
+distributed.worker - INFO -          dashboard at:          192.168.1.1:46139
+distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -       Start worker at:    tcp://192.168.1.1:46475
+distributed.worker - INFO -          Listening to:    tcp://192.168.1.1:46475
+distributed.worker - INFO -               Threads:                          1
+distributed.worker - INFO -          dashboard at:          192.168.1.1:35009
+distributed.worker - INFO - Waiting to connect to:     tcp://192.168.1.9:8786
+distributed.worker - INFO -                Memory:                    3.00 GB
+distributed.worker - INFO - -------------------------------------------------
+distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/worker-v5msy_u4
+distributed.worker - INFO -               Threads:            slurmstepd: error: *** JOB 750396 ON node01 CANCELLED AT 2022-10-21T17:07:36 ***
+slurmstepd: error: *** JOB 750410 ON node16 CANCELLED AT 2022-10-21T17:07:36 ***
+slurmstepd: error: *** JOB 750406 ON node12 CANCELLED AT 2022-10-21T17:07:36 ***

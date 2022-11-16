@@ -396,6 +396,7 @@ def create_2D_input(cs_file, cosipy_file, static_file, start_date, end_date, x0=
     # Create numpy arrays for the 2D fields
     #-----------------------------------
     T_interp = np.zeros([len(dso.time), len(ds.lat), len(ds.lon)])
+    T_interp_rad = np.zeros([len(dso.time), len(ds.lat), len(ds.lon)]) #new
     RH_interp = np.zeros([len(dso.time), len(ds.lat), len(ds.lon)])
     U_interp = np.zeros([len(dso.time), len(ds.lat), len(ds.lon)])
     G_interp = np.full([len(dso.time), len(ds.lat), len(ds.lon)], np.nan)
@@ -423,8 +424,10 @@ def create_2D_input(cs_file, cosipy_file, static_file, start_date, end_date, x0=
     print('Interpolate CR file to grid')
    
     # Interpolate data (T, RH, RRR, U)  to grid using lapse rates
+    rad_tlapse = -0.0065 #new to have default lapse rate for rad. scheme K per m 
     for t in range(len(dso.time)):
         T_interp[t,:,:] = (T2[t]) + (ds.HGT.values-stationAlt)*lapse_T
+        T_interp_rad[t,:,:] = (T2[t]) + ds.HGT.values-stationAlt)*rad_tlapse
         RH_interp[t,:,:] = RH2[t] + (ds.HGT.values-stationAlt)*lapse_RH
         U_interp[t,:,:] = U2[t]
 
@@ -533,8 +536,8 @@ def create_2D_input(cs_file, cosipy_file, static_file, start_date, end_date, x0=
         for t in range(len(dso.time)):
             doy = df.index[t].dayofyear
             hour = df.index[t].hour
-            G_interp[t, :, :] = calcRad(solPars, timeCorr, doy, hour, stationLat, T_interp[t, ::-1, :], P_interp[t, ::-1, :], RH_interp[t, ::-1, :], N_interp[t, ::-1, :], np.flipud(hgt), np.flipud(mask), np.flipud(slope), np.flipud(aspect), shad1yr, svf, dtstep, tcart)
-
+            G_interp[t, :, :] = calcRad(solPars, timeCorr, doy, hour, stationLat, T_interp_rad[t, ::-1, :], P_interp[t, ::-1, :], RH_interp[t, ::-1, :], N_interp[t, ::-1, :], np.flipud(hgt), np.flipud(mask), np.flipud(slope), np.flipud(aspect), shad1yr, svf, dtstep, tcart)
+            #changed t_interp field bc with calibration we assign 0 lapse rate by default.
         # Change aspect to south == 0, east == negative, west == positive
         aspect2 = ds['ASPECT'].values - 180.0
         ds['ASPECT'] = (('lat', 'lon'), aspect2)
