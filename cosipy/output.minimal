@@ -1,0 +1,4 @@
+[vars]
+atm=ALBEDO,TS
+internal=surfMB,MB,REFREEZE,SNOWHEIGHT
+full=

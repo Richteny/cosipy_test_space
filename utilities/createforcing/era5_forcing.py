@@ -20,8 +20,8 @@ import argparse
 
 ## Paths ##
 data_path = "/data/scratch/richteny/ERA5_HMA/"
-glacier_outline = "../../data/static/Shapefiles/abramov_rgi6.shp"
-dem = "../../data/static/DEM/ALOS_N039E071_AVE_DSM.tif"
+glacier_outline = "../../data/static/Shapefiles/gangotri_glacier.shp"
+dem = "../../data/static/DEM/N030E079_AVE_DSM.tif"
 
 dic_cosipy_vars = {}
 
@@ -145,7 +145,7 @@ print(glac_forc)
 fig = glac_forc.plot(subplots=True, figsize=(16,12))
 plt.savefig("g.png")
 glac_forc.reset_index(inplace=True)
-glac_forc.to_csv("Abramov_ERA5_1999_2021.csv")
+glac_forc.to_csv("Gangotri_ERA5_1999_2021.csv")
 
 '''
 if __name__ == "__main__":
