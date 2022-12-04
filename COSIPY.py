@@ -226,8 +226,9 @@ def main(lr_T=-0.006, lr_RRR=0, lr_RH=0, RRR_factor=mult_factor_RRR, alb_ice=alb
             print("Time required for resampling of output: ", datetime.now()-times)
             #Need HGT values as 2D, ensured with following line of code.
             resampled_out['HGT'] = (('lat','lon'), IO.get_result()['HGT'])
+            resampled_out['MASK'] = (('lat','lon'), IO.get_result()['MASK'])
             #print("Time required for resampling: ", datetime.now()-times)
-            tsl_out = create_tsl_df(resampled_out, min_snowheight)
+            tsl_out = create_tsl_df(resampled_out, min_snowheight, tsl_method, tsl_normalize)
             #tsl_out = calculate_tsl(resampled_out, min_snowheight)
             tsla_stats = eval_tsl(tsla_observations,tsl_out, time_col_obs, tsla_col_obs)
             print("TSLA Observed vs. Modelled RMSE: " + str(tsla_stats[0])+ "; R-squared: " + str(tsla_stats[1]))
