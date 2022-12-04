@@ -36,6 +36,7 @@ obs.set_index('LS_DATE', inplace=True)
 param_list = pd.read_csv('/data/scratch/richteny/thesis/cosipy_test_space/param_files/2D_Wohlfahrt/cosipy_par_smpl.csv')
 print(param_list.head(3))
 fromlist=True
+#tsl_normalize=True
 
 class spot_setup:
     # defining all parameters and the distribution
@@ -110,7 +111,11 @@ class spot_setup:
         # SPOTPY expects to get one or multiple values back,
         # that define the performance of the model run
         if not self.obj_func:
-            eval = np.delete(evaluation.SC_median.values, np.argwhere(np.isnan(simulation)))
+            if tsl_normalize:
+                print("Using normalized values.")
+                eval = np.delete(evaluation.TSL_normalized.values, np.argwhere(np.isnan(simulation)))
+            else:
+                eval = np.delete(evaluation.SC_median.values, np.argwhere(np.isnan(simulation)))
             sim = simulation[~np.isnan(simulation)]
             like = -rmse(eval, sim) #set minus before rmse if trying to maximize, depends on algorithm
             like2 = -mae(eval,sim)
@@ -197,7 +202,7 @@ def psample(obs, rep=10, count=None, dbname='cosipy_par_smpl', dbformat="csv", i
     ax.legend()
     if savefig:
         plt.savefig(dbname + '_par_uncertain_plot.png')
-    
+'''    
     fig4 = plt.figure(figsize=(9, 9))
     ax = plt.subplot(1, 1, 1)
     ax.scatter(obs.SC_median, best_simulation)
@@ -216,6 +221,6 @@ def psample(obs, rep=10, count=None, dbname='cosipy_par_smpl', dbformat="csv", i
     return {'best_param': best_param, 'best_index': bestindex, 'best_model_run': best_model_run, 'best_objf': bestobjf,
             'param': spot_setup.param,'opt_iter': spot_setup.par_iter,
             'sampling_plot': fig1} #'best_simulation': best_simulation, 'best_run_plot': fig2, 'par_uncertain_plot': fig3}
-
+'''
 #Plotting routine and most parts of script created by Phillip Schuster of HU Berlin
 #Thank you Phillip!

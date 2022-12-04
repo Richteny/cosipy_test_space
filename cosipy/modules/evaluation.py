@@ -1,5 +1,5 @@
 import numpy as np
-from config import eval_method, obs_type
+from config import eval_method, obs_type, tsl_method, tsl_normalize
 from cosipy.utils.options import read_opt
 import pandas as pd
 from scipy import stats
@@ -32,7 +32,7 @@ def rmse(stake_names, stake_data, df_):
 def resample_output(cos_output):
     times = datetime.now()
     ds = cos_output
-    ds = ds[['SNOWHEIGHT','HGT']]
+    ds = ds[['SNOWHEIGHT','HGT','MASK']]
     #ds_daily = ds.resample(time='1d', keep_attrs=True).mean(dim='time')
     df_daily = ds.to_dataframe().groupby([pd.Grouper(level='time',freq='1d'),
                                           pd.Grouper(level='lat'),
@@ -58,43 +58,183 @@ def resample_by_hand(holder,vals,secs,time_vals):
     return holder
 
 @njit
-def calculate_tsl_byhand(snowheights,hgts,min_snowheight):
-    
+def tsl_method_mantra(snowheights, hgts, mask, min_snowheight):
     amed = np.zeros(snowheights.shape[0])
     amean = np.zeros(snowheights.shape[0])
     astd = np.zeros(snowheights.shape[0])
     amax = np.zeros(snowheights.shape[0])
     amin = np.zeros(snowheights.shape[0])
-    for i in np.arange(0,snowheights.shape[0]):
+    flag = np.zeros(snowheights.shape[0])
 
-        filtered_elev_vals = np.where(snowheights[i,:,:]>min_snowheight,hgts,np.nan).ravel()
+    for n in np.arange(0, snowheights.shape[0]):
+        filtered_elev_vals = np.where(snowheights[n,:,:]>min_snowheight, hgts, np.nan).ravel()
         #filtered_elev_vals = filtered_elev_vals[~np.isnan(filtered_elev_vals)]
-        snowline_range = filtered_elev_vals[filtered_elev_vals < np.nanpercentile(filtered_elev_vals,2)]
-        
-        try:
-            amed[i] = np.nanmedian(snowline_range)
-            amean[i]= np.nanmean(snowline_range)
-            astd[i] = np.nanstd(snowline_range)
-            amax[i] = np.nanmax(snowline_range)
-            amin[i] = np.nanmin(snowline_range)
-        except:
-            amed[i] = np.nan
-            amean[i] = np.nan
-            astd[i] = np.nan
-            amax[i] = np.nan
-            amin[i] = np.nan
-        
-    return (amed,amean,astd,amax,amin)
+        snowline_range = filtered_elev_vals[filtered_elev_vals < np.nanpercentile(filtered_elev_vals, 2)]
+        if np.nanmin(snowline_range) == np.nanmin(np.where(mask==1, hgts, np.nan)):
+            #print("Glacier is most likely fully snow-covered. Marking timestep {} as flagged.".format(n))
+            flag[n] = 1
+        elif snowline_range.size == 0:
+            print("Snowline range is empty. Glacier is most likely snow-free. Marking timestep as flagged.")
+            print(snowline_range.size)
+            snowline_range = np.array([np.nanmax(np.where(mask==1, hgts, np.nan))]) #Assign max elevation
+#            snowline_range = np.nanmax(np.where(mask==1, hgts, np.nan)) #Assign max elevation
+        amed[n] = np.nanmedian(snowline_range)
+        amean[n] = np.nanmean(snowline_range)
+        astd[n] = np.nanstd(snowline_range)
+        amax[n] = np.nanmax(snowline_range)
+        amin[n] = np.nanmin(snowline_range)
 
-def create_tsl_df(cos_output,min_snowheight):
+
+    return (amed, amean, astd, amax, amin, flag)
+
+@njit 
+def tsl_method_conservative(snowheights, hgts, mask, min_snowheight):
+    amed = np.zeros(snowheights.shape[0])
+    amean = np.zeros(snowheights.shape[0])
+    astd = np.zeros(snowheights.shape[0])
+    amax = np.zeros(snowheights.shape[0])
+    amin = np.zeros(snowheights.shape[0])
+    flag = np.zeros(snowheights.shape[0])
+
+    for n in np.arange(0, snowheights.shape[0]):
+        #min altitude of snow
+        filtered_elev_snow = np.nanmin(np.where(snowheights[n,:,:]>min_snowheight, hgts, np.nan).ravel())
+        #this line is basically redudant, ensures that snowline altitude cannot fall below glacier altitude
+        filtered_elev_snow = np.nanmax(np.append(filtered_elev_snow, np.nanmin(np.where(mask==1, hgts, np.nan)))) #numba does not support np.maximum
+        #now for snow-free surfaces
+        filtered_elev_nosnow = np.nanmax(np.where(snowheights[n,:,:]<min_snowheight, hgts, np.nan))
+        if np.isnan(filtered_elev_nosnow):
+            #print("Glacier seems to be fully snow-covered. Assigning minimum elevation.")
+            filtered_elev_nosnow = np.nanmin(np.where(mask==1, hgts, np.nan))
+            #print(filtered_elev_nosnow,"m a.s.l.")
+            flag[n] = 1
+        else:
+            #technically also redudant, ascertain that max. elevation of glacier is not exceeded
+            filtered_elev_nosnow = np.nanmin(np.append(filtered_elev_nosnow, np.nanmax(np.where(mask==1, hgts, np.nan)))) #numba does not support minimum/maximum of numpy
+    amed = np.nanmedian(np.append(filtered_elev_snow, filtered_elev_nosnow))
+    amean = np.nanmean(np.append(filtered_elev_snow, filtered_elev_nosnow))
+    astd = np.nanstd(np.append(filtered_elev_snow, filtered_elev_nosnow)) #might be a bit large.. std of all values essentially function of resolution  
+    amax = np.nanmax(np.append(filtered_elev_snow, filtered_elev_nosnow))
+    amin = np.nanmin(np.append(filtered_elev_snow, filtered_elev_nosnow))
+
+    return (amed, amean, astd, amax, amin, flag)
+
+@njit
+def tsl_method_gridsearch(snowheights, hgts, mask, min_snowheight):
+    amed = np.zeros(snowheights.shape[0])
+    amean = np.zeros(snowheights.shape[0])
+    astd = np.zeros(snowheights.shape[0])
+    amax = np.zeros(snowheights.shape[0])
+    amin = np.zeros(snowheights.shape[0])
+    flag = np.zeros(snowheights.shape[0])
+
+    for n in np.arange(0,snowheights.shape[0]):
+        snowmask = np.where(snowheights[n,:,:] > min_snowheight, 1, 0)
+        #Mask to glacier extent. Values out of mask are set to NaN
+        sno_arr = np.where(mask==1, snowmask, np.nan)
+        #Check if snow-free or fully snow-covered
+        #array slicing via [] does not seem to work, np.delete also does not
+        #sno_arr_check = sno_arr[~np.isnan(sno_arr)]
+        #sno_arr_check = np.delete(sno_arr, np.argwhere(np.isnan(sno_arr)))
+        #print(sno_arr_check)
+        if np.nanmin(sno_arr) == 0 and np.nanmax(sno_arr) == 0:
+            #all values are 0 -> snow-free. Set maximum elevation
+            elev_list = np.array(np.nanmax(np.where(mask==1, hgts, np.nan)))
+            elev_list_snow = np.array(np.nanmax(np.where(mask==1, hgts, np.nan)))
+            flag[n] = 1
+        elif np.nanmin(sno_arr) == 1 and np.nanmax(sno_arr) == 1:
+            #all values are 1 -> fully snow-covered
+            elev_list = np.array(np.nanmin(np.where(mask==1, hgts, np.nan)))
+            elev_list_snow = np.array(np.nanmin(np.where(mask==1, hgts, np.nan)))
+            flag[n] = 1
+            #TODO: List uncertainties here.. maybe 1 grid cell in elev. ?
+        else:
+            ilist = []
+            ilist_snow = []
+            for i in np.arange(0, sno_arr.shape[0]):
+                for j in np.arange(0, sno_arr.shape[1]):
+                    if sno_arr[i,j] == 1:
+                        #get slice of grid cell to the left and right but also ceck down!
+                        slices = sno_arr[i:i+2, j-1:j+2]
+                        #first check left
+                        if slices[0,0] == 0:
+                            #create unique identifier
+                            idx = i*1000 + (j-1)
+                            #print(idx)
+                            ilist.append(idx)
+                            ilist_snow.append(i*1000 + (j))
+                        #then check right
+                        if slices[0,2] == 0:
+                            idx = i*1000 + (j+1)
+                            #print(idx)
+                            ilist.append(idx)
+                            ilist_snow.append(i*1000 + (j))
+                        #then check below
+                        if slices[1,1] == 0:
+                            idx = (i+1)*1000 + (j)
+                            #print(idx)
+                            ilist.append(idx)
+                            ilist_snow.append(i*1000+(j))
+            #Values in list describe border values that are in glacier mask, where next grid cell is snow-covered
+            #Can take metrics from these grid points, what happens if there is a "hole" in the data? Have to ignore it for now
+            #np.array append is slow because it copies an array each time
+            #this numba version does not support string lists to array .. workaround with numbers?
+            ilist = np.unique(np.array(ilist))
+            ilist_snow = np.unique(np.array(ilist_snow))
+            elev_list = []
+            for ix in ilist:
+                i = int(round(ix, -3) / 1000)
+                j = int(ix - i*1000)
+                elev_list.append(hgts[i,j])
+            elev_list_snow = [] 
+            for ix in ilist_snow:
+                i = int(round(ix, -3) / 1000)
+                j= int(ix - i*1000)
+                elev_list_snow.append(hgts[i,j])
+
+            elev_list = np.array(elev_list)
+            elev_list_snow = np.array(elev_list_snow)
+            #There are multiple options now on how to implement the end result. Lazy one chosen for now.
+            amed[n] = np.nanmedian(np.append(elev_list, elev_list_snow))
+            amean[n] = np.nanmean(np.append(elev_list, elev_list_snow))
+            astd[n] = np.nanstd(np.append(elev_list, elev_list_snow))
+            amax[n] = np.nanmax(np.append(elev_list, elev_list_snow))
+            amin[n] = np.nanmin(np.append(elev_list, elev_list_snow))
+    return (amed, amean, astd, amax, amin, flag)
+
+
+def calculate_tsl_byhand(snowheights,hgts,mask, min_snowheight,tsl_method, tsl_normalize):
+    max_elev = np.nanmax(np.where(mask==1, hgts, np.nan))
+    min_elev = np.nanmin(np.where(mask==1, hgts, np.nan))
+    print("Calculating TSLA using {}. Normalization is set to {}.".format(tsl_method, tsl_normalize))
+    if tsl_method == 'mantra':
+        amed, amean, astd, amax, amin, flag = tsl_method_mantra(snowheights, hgts, mask, min_snowheight)
+    elif tsl_method == 'conservative':
+        amed, amean, astd, amax, amin, flag = tsl_method_conservative(snowheights, hgts, mask, min_snowheight)
+    else:
+        amed, amean, astd, amax, amin, flag = tsl_method_gridsearch(snowheights, hgts, mask, min_snowheight)
+    if tsl_normalize:
+        #Start normalizing:
+        amed_norm = (amed - min_elev) / (max_elev - min_elev)
+        amean_norm = (amean - min_elev) / (max_elev - min_elev)
+        astd_norm = (astd - min_elev) / (max_elev - min_elev)
+        amax_norm = (amax - min_elev) / (max_elev - min_elev)
+        amin_norm = (amin - min_elev) / (max_elev - min_elev)
+        return (amed_norm, amean_norm, astd_norm, amax_norm, amin_norm, flag)
+    else:
+        return (amed, amean, astd, amax, amin, flag)
+        
+
+def create_tsl_df(cos_output,min_snowheight, tsl_method, tsl_normalize):
     times = datetime.now()
-    amed,amean,astd,amax,amin = calculate_tsl_byhand(cos_output.SNOWHEIGHT.values, cos_output.HGT.values, min_snowheight)        
+    amed,amean,astd,amax,amin,flag = calculate_tsl_byhand(cos_output.SNOWHEIGHT.values, cos_output.HGT.values, cos_output.MASK.values, min_snowheight, tsl_method, tsl_normalize)
     tsl_df = pd.DataFrame({'time':pd.to_datetime(cos_output.time.values),
                             'Med_TSL':amed,
                             'Mean_TSL':amean,
                             'Std_TSL':astd,
                             'Max_TSL':amax,
-                            'Min_TSL':amin})
+                            'Min_TSL':amin,
+                            'Flag': flag})
     print("Time required for calculating TSL only :", datetime.now()-times)
     return tsl_df
 
