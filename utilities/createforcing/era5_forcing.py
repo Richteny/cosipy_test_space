@@ -20,8 +20,9 @@ import argparse
 
 ## Paths ##
 data_path = "/data/scratch/richteny/ERA5_HMA/"
-glacier_outline = "../../data/static/Shapefiles/gangotri_glacier.shp"
-dem = "../../data/static/DEM/N030E079_AVE_DSM.tif"
+glacier_outline = "../../data/static/Shapefiles/parlung4_rgi6.shp"
+#dem = "../../data/static/DEM/N030E079_AVE_DSM.tif"
+dem = "/data/projects/topoclif/input-data/DEMs/HMA_alos-jaxa.tif"
 
 dic_cosipy_vars = {}
 
