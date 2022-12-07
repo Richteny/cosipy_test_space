@@ -1,7 +1,7 @@
 20
 TSL file: ./data/input/Abramov/snowlines/TSLA_Abramov_filtered_jaso.csv
 Time start:  2010-01-01T00:00
-Time end:  2012-01-01T00:00
+Time end:  2020-01-01T00:00
    like1  like2   parlr_T  ...  simulation_83  simulation_84  chain
 0 -241.4 -202.1 -0.005615  ...         3752.0         3752.0    1.0
 1 -273.8 -224.1 -0.005330  ...         3752.0         3752.0    1.0
@@ -10,27 +10,27 @@ Time end:  2012-01-01T00:00
 [3 rows x 97 columns]
 Getting parameters from list.
 Initialised.
-Initializing the  Monte Carlo (MC) sampler  with  2  repetitions
-Starting the MC algorithm with 2 repetitions...
+Initializing the  Monte Carlo (MC) sampler  with  1  repetitions
+Starting the MC algorithm with 1 repetitions...
 Count 1
-Time required to load in opt_dic:  0:00:00.000022
+Time required to load in opt_dic:  0:00:00.000007
 
  Maximum available time interval from 1999-01-01T06:00 until 2021-12-31T23:00. Time steps: 201618 
 
 
 --------------------------------------------------------------
-	 Integration from 2010-01-01T00:00 to 2012-01-01T00:00
+	 Integration from 2010-01-01T00:00 to 2020-01-01T00:00
 --------------------------------------------------------------
 
 --------------------------------------------------------------
 Checking input data .... 
 
 Temperature data (T2) ... ok 
-Please check the input data, its seems they are out of range T2 MAX: 288.61 MIN: 234.96 
+Please check the input data, its seems they are out of range T2 MAX: 288.90 MIN: 234.74 
 
 Relative humidity data (RH2) ... ok 
 Shortwave data (G) ... ok 
-Please check the input data, its seems they are out of range G MAX: 1612.90 MIN: 0.00 
+Please check the input data, its seems they are out of range G MAX: 1720.44 MIN: 0.00 
 
 Wind velocity data (U2) ... ok 
 Precipitation data (RRR) ... ok 
@@ -47,7 +47,7 @@ Restart ddataset ... ok
 
 --------------------------------------------------------------
 
-Time required to init IO, DATA, RESULT, RESTART:  0:00:01.714208
+Time required to init IO, DATA, RESULT, RESTART:  0:00:08.271298
 #--------------------------------------#
 
 Starting run with lapse rates: -0.005615 and: 0.00015130000000000002
@@ -57,12 +57,12 @@ Albedo ice, snow and firn: 0.3362 , 0.8535 and 0.552
 RRR mult factor is: 1.455
 
 #--------------------------------------#
-(17521, 26, 36)
+(87649, 26, 36)
 Assigning values back to DATA
 100.0
 0.0
-(17521, 26, 36)
-Seconds needed for lapse rate: 0:00:02.260155
+(87649, 26, 36)
+Seconds needed for lapse rate: 0:00:03.276414
 #!/bin/bash
 
 #!/usr/bin/env bash
@@ -80,7 +80,7 @@ JOB_ID=${SLURM_JOB_ID%;*}
 
 
 
-/programs/anaconda/2019.07/bin/python -m distributed.cli.dask_worker tcp://192.168.1.12:8786 --nthreads 0 --nprocs 20 --memory-limit 3.00GB --name WoEraAbr--${JOB_ID}-- --death-timeout 60 --local-directory logs/dask-worker-space
+/programs/anaconda/2019.07/bin/python -m distributed.cli.dask_worker tcp://192.168.1.9:8786 --nthreads 0 --nprocs 20 --memory-limit 3.00GB --name WoEraAbr--${JOB_ID}-- --death-timeout 60 --local-directory logs/dask-worker-space
 
 You are using SLURM!
 
@@ -90,10 +90,10 @@ SLURMCluster(cores=0, memory=0 B, workers=0/0, jobs=0/0)
 
 -------------------------------------------------------------- 
 
-SLURMCluster(cores=0, memory=0 B, workers=0/300, jobs=0/15)
-<Client: scheduler='tcp://192.168.1.12:8786' processes=0 cores=0>
-936 300 3
-	 Time required to do calculations:    3 minutes 9.59077 seconds 
+SLURMCluster(cores=0, memory=0 B, workers=0/200, jobs=0/10)
+<Client: scheduler='tcp://192.168.1.9:8786' processes=0 cores=0>
+936 200 4
+	 Time required to do calculations:    7 minutes 54.0833 seconds 
 
 
 
@@ -102,149 +102,42 @@ Write results ...
 -------------------------------------------------------------- 
 
 Starting TSL eval.
-Time required for resampling of output:  0:00:01.664992
-Calculating TSLA using grid. Normalization is set to True.
-Time required for calculating TSL only : 0:00:06.773353
-Time required for calculating TSL stats:  0:00:00.020655
-TSLA Observed vs. Modelled RMSE: 2.6169485894769013; R-squared: 0.16376993999756514
-Time required for full TSL EVAL:  0:00:08.514741
-	 Time required to write restart and output files:    0 minutes 46.9264 seconds 
+Time required for resampling of output:  0:00:02.833383
+Calculating TSLA using mantra. Normalization is set to True.
+Time required for calculating TSL only : 0:00:06.183938
+Time required for calculating TSL stats:  0:00:00.005063
+TSLA Observed vs. Modelled RMSE: 0.20702749237009327; R-squared: 0.10557230792379765
+Time required for full TSL EVAL:  0:00:09.069477
+	 Time required to write restart and output files:    3 minutes 19.0773 seconds 
 
-	 Total run duration:    4 minutes 2.66625 seconds 
+	 Total run duration:   11 minutes 27.6757 seconds 
 
 --------------------------------------------------------------
 	 SIMULATION WAS SUCCESSFUL
 --------------------------------------------------------------
 Using normalized values.
-RMSE is:  -2.6169485894769013
-MAE is:  -2.043091978051518
-1 of 2, min objf=-2.61695, max objf=-2.61695, time remaining: 00:00:00
+RMSE is:  -0.20702749237009327
+MAE is:  -0.1757477029308982
+1 of 1, min objf=-0.207027, max objf=-0.207027, time remaining: 23:54:16
 Initialize database...
 ['csv', 'hdf5', 'ram', 'sql', 'custom', 'noData']
 * Database file 'cosipy_par_smpl.csv' created.
-Count 2
-Time required to load in opt_dic:  0:00:00.000007
-
- Maximum available time interval from 1999-01-01T06:00 until 2021-12-31T23:00. Time steps: 201618 
-
-
---------------------------------------------------------------
-	 Integration from 2010-01-01T00:00 to 2012-01-01T00:00
---------------------------------------------------------------
-
---------------------------------------------------------------
-Checking input data .... 
-
-Temperature data (T2) ... ok 
-Please check the input data, its seems they are out of range T2 MAX: 288.61 MIN: 234.96 
-
-Relative humidity data (RH2) ... ok 
-Shortwave data (G) ... ok 
-Please check the input data, its seems they are out of range G MAX: 1612.90 MIN: 0.00 
-
-Wind velocity data (U2) ... ok 
-Precipitation data (RRR) ... ok 
-Cloud cover data (N) ... ok 
-Pressure data (PRES) ... ok 
-
- Glacier gridpoints: 285 
-
-
-
-
-Output dataset ... ok
-Restart ddataset ... ok 
-
---------------------------------------------------------------
-
-Time required to init IO, DATA, RESULT, RESTART:  0:00:01.629104
-#--------------------------------------#
-
-Starting run with lapse rates: -0.00533 and: 6.979999999999999e-05
-
-Albedo ice, snow and firn: 0.3804 , 0.8955 and 0.626
-
-RRR mult factor is: 1.432
-
-#--------------------------------------#
-(17521, 26, 36)
-Assigning values back to DATA
-100.0
-0.0
-(17521, 26, 36)
-Seconds needed for lapse rate: 0:00:00.345467
-#!/bin/bash
-
-#!/usr/bin/env bash
-#SBATCH -J WoEraAbr
-#SBATCH -n 1
-#SBATCH --cpus-per-task=1
-#SBATCH --mem=56G
-#SBATCH -t 00:30:00
-#SBATCH --qos=short
-#SBATCH --output=Output_nodes.output
-#SBATCH --error=Error_nodes.err
-#SBATCH --time=1-00:00:00
-#SBATCH --account=morsanat
-JOB_ID=${SLURM_JOB_ID%;*}
-
-
-
-/programs/anaconda/2019.07/bin/python -m distributed.cli.dask_worker tcp://192.168.1.12:8786 --nthreads 0 --nprocs 20 --memory-limit 3.00GB --name WoEraAbr--${JOB_ID}-- --death-timeout 60 --local-directory logs/dask-worker-space
-
-You are using SLURM!
-
-SLURMCluster(cores=0, memory=0 B, workers=0/0, jobs=0/0)
---------------------------------------------------------------
-	 Starting clients and submit jobs ... 
-
--------------------------------------------------------------- 
-
-SLURMCluster(cores=0, memory=0 B, workers=0/300, jobs=0/15)
-<Client: scheduler='tcp://192.168.1.12:8786' processes=0 cores=0>
-936 300 3
-	 Time required to do calculations:    2 minutes 40.197 seconds 
-
-
-
---------------------------------------------------------------
-Write results ...
--------------------------------------------------------------- 
-
-Starting TSL eval.
-Time required for resampling of output:  0:00:00.112097
-Calculating TSLA using grid. Normalization is set to True.
-Time required for calculating TSL only : 0:00:00.015809
-Time required for calculating TSL stats:  0:00:00.004887
-TSLA Observed vs. Modelled RMSE: 3.5284914530489364; R-squared: 0.0
-Time required for full TSL EVAL:  0:00:00.144958
-	 Time required to write restart and output files:    0 minutes 36.5207 seconds 
-
-	 Total run duration:    3 minutes 20.7541 seconds 
-
---------------------------------------------------------------
-	 SIMULATION WAS SUCCESSFUL
---------------------------------------------------------------
-Using normalized values.
-RMSE is:  -3.5284914530489364
-MAE is:  -3.5263817201961554
-2 of 2, min objf=-3.52849, max objf=-2.61695, time remaining: 23:57:32
 
 *** Final SPOTPY summary ***
-Total Duration: 443.74 seconds
-Total Repetitions: 2
-Minimal objective value: -3.52849
+Total Duration: 688.85 seconds
+Total Repetitions: 1
+Minimal objective value: -0.207027
 Corresponding parameter setting:
-lr_T: -0.00533
-lr_RRR: 6.98e-05
-lr_RH: 0.0801
-RRR_factor: 1.432
-alb_ice: 0.3804
-alb_snow: 0.8955
-alb_firn: 0.626
-albedo_aging: 8.98
-albedo_depth: 3.37
-Maximal objective value: -2.61695
+lr_T: -0.005615
+lr_RRR: 0.0001513
+lr_RH: 0.05807
+RRR_factor: 1.455
+alb_ice: 0.3362
+alb_snow: 0.8535
+alb_firn: 0.552
+albedo_aging: 20.25
+albedo_depth: 3.625
+Maximal objective value: -0.207027
 Corresponding parameter setting:
 lr_T: -0.005615
 lr_RRR: 0.0001513
@@ -257,7 +150,3 @@ albedo_aging: 20.25
 albedo_depth: 3.625
 ******************************
 
-Best parameter set:
-lr_T=-0.005615, lr_RRR=0.0001513, lr_RH=0.05807, RRR_factor=1.455, alb_ice=0.3362, alb_snow=0.8535, alb_firn=0.552, albedo_aging=20.25, albedo_depth=3.625
-Best param: [(-0.005615, 0.0001513, 0.05807, 1.455, 0.3362, 0.8535, 0.552, 20.25, 3.625)]
-Run number 0 has the highest objectivefunction with: -2.617

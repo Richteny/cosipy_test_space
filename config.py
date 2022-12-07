@@ -9,7 +9,7 @@
 #-----------------------------------
 # Abramov
 time_start = "2010-01-01T00:00"
-time_end   = "2012-01-01T00:00" 
+time_end   = "2020-01-01T00:00" 
 
 # Hintereisferner
 #time_start = '2018-09-17T08:00'
@@ -58,7 +58,7 @@ time_col_obs = 'LS_DATE'
 #tsla_col_obs = 'SC_median'
 tsla_col_obs = 'TSL_normalized'
 min_snowheight = 0.001                                         # Minimum snowheight in m
-tsl_method='grid'
+tsl_method='mantra'
 tsl_normalize=True
 tsl_data_file = './data/input/Abramov/snowlines/TSLA_Abramov_filtered_jaso.csv' # path to transient snow line altitudes dataset
 
