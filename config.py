@@ -9,7 +9,7 @@
 #-----------------------------------
 # Abramov
 time_start = "2010-01-01T00:00"
-time_end   = "2020-01-01T00:00" 
+time_end   = "2012-01-01T00:00" 
 
 # Hintereisferner
 #time_start = '2018-09-17T08:00'
@@ -53,7 +53,7 @@ obs_type = 'snowheight'                                     # What kind of stake
 #-----------------------------------
 # TRANSIENT SNOWLINE DATA
 #-----------------------------------
-tsl_evaluation = True
+tsl_evaluation = False 
 time_col_obs = 'LS_DATE'
 #tsla_col_obs = 'SC_median'
 tsla_col_obs = 'TSL_normalized'

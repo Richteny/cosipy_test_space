@@ -15,12 +15,14 @@ import rasterio
 from rasterio.mask import mask
 from shapely.geometry import mapping
 import matplotlib.pyplot as plt
+from era5_calclapserate import calculate_lapse_rates
 sys.path.append('../../')
 import argparse
 
+
 ## Paths ##
 data_path = "/data/scratch/richteny/ERA5_HMA/"
-glacier_outline = "../../data/static/Shapefiles/parlung4_rgi6.shp"
+glacier_outline = "../../data/static/Shapefiles/abramov_rgi6.shp"
 #dem = "../../data/static/DEM/N030E079_AVE_DSM.tif"
 dem = "/data/projects/topoclif/input-data/DEMs/HMA_alos-jaxa.tif"
 
@@ -35,7 +37,7 @@ Rvat = 461.5250 #J K^-1 kg^-1
 g = 9.80665 #m/s²
 M =  0.0289644 #kg/mol Molar mass of air
 R = 8.3144598 #J/(mol*K) universal gas constant
-lapse_rate = 0.0065 #K/m
+#lapse_rate = 0.0065 #K/m
 T0 = 273.16 #K
 
 def select_nearest_latlon():
@@ -62,11 +64,10 @@ def get_glacier_elev(dem):
     with rasterio.open(dem) as src:
         out_image, out_transform = mask(src,geoms, crop=True)
     no_data=src.nodata
-    #for ALOS = 0
-    no_data = 0
+    #for ALOS subset was 0 but now -9999
     data = out_image[0,:,:]
     elev = np.extract(data != no_data, data)
-    elev = elev[elev != 0]
+    elev = elev[elev != no_data]
     mean_alt = np.nanmean(elev)
     return mean_alt
 
@@ -86,8 +87,9 @@ print(df)
 
 #lapse rates from surrounding ERA5 grid cells?
 #from .. import .. -> extra script doing that!
-lr_t2m = -0.0061 #K/m
-lr_d2m = -0.005
+lapse_rates = calculate_lapse_rates(glacier_outline)
+lr_t2m = lapse_rates[0] #-0.0061 #K/m
+lr_d2m = lapse_rates[1] #-0.005
 #Values should be same, but just in case
 era5_alt = np.nanmean(df['HGT'])
 height_diff = mean_glacier_alt - era5_alt
@@ -102,6 +104,7 @@ for fp in pathlib.Path(data_path).glob('ERA5_HMA*1999_2021*.nc'):
 print(df)
 
 ## Adjust temperature according to elevation ##
+#Required for RH2 calculation, later again for RF regression
 df['t2m_scaled'] = df['t2m'] + lr_t2m * height_diff
 df['d2m_scaled'] = df['d2m'] + lr_d2m * height_diff
 
@@ -146,7 +149,7 @@ print(glac_forc)
 fig = glac_forc.plot(subplots=True, figsize=(16,12))
 plt.savefig("g.png")
 glac_forc.reset_index(inplace=True)
-glac_forc.to_csv("Gangotri_ERA5_1999_2021.csv")
+glac_forc.to_csv("Abramov_ERA5_1999_2021.csv")
 
 '''
 if __name__ == "__main__":

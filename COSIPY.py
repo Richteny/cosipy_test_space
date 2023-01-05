@@ -54,7 +54,8 @@ from numba import njit
 
 def main(lr_T=-0.006, lr_RRR=0, lr_RH=0, RRR_factor=mult_factor_RRR, alb_ice=albedo_ice,
          alb_snow=albedo_fresh_snow,alb_firn=albedo_firn,albedo_aging=albedo_mod_snow_aging,
-         albedo_depth=albedo_mod_snow_depth, count=""):
+         albedo_depth=albedo_mod_snow_depth, center_snow_transfer_function=center_snow_transfer_function,
+         roughness_fresh_snow=roughness_fresh_snow,roughness_ice=roughness_ice,roughness_firn=roughness_firn,count=""):
 
     start_logging()
     times = datetime.now()
@@ -66,6 +67,10 @@ def main(lr_T=-0.006, lr_RRR=0, lr_RH=0, RRR_factor=mult_factor_RRR, alb_ice=alb
     opt_dict['albedo_firn'] = alb_firn
     opt_dict['albedo_mod_snow_aging'] = albedo_aging
     opt_dict['albedo_mod_snow_depth'] = albedo_depth
+    opt_dict['center_snow_transfer_function'] = center_snow_transfer_function
+    opt_dict['roughness_fresh_snow'] = roughness_fresh_snow
+    opt_dict['roughness_ice'] = roughness_ice
+    opt_dict['roughness_firn'] = roughness_firn
     lapse_T = float(lr_T)
     lapse_RRR = float(lr_RRR)
     lapse_RH = float(lr_RH)
@@ -151,8 +156,11 @@ def main(lr_T=-0.006, lr_RRR=0, lr_RH=0, RRR_factor=mult_factor_RRR, alb_ice=alb
         encoding[var] = dict(zlib=True, complevel=compression_level)
                     
     results_output_name = output_netcdf.split('.nc')[0]+'_num{}_lrT_{}_lrRRR_{}_prcp_{}.nc'.format(count, round(abs(lapse_T),7), round(lapse_RRR,7),round(opt_dict['mult_factor_RRR'],5))  
-    IO.get_result().to_netcdf(os.path.join(data_path,'output',results_output_name), encoding=encoding, mode = 'w')
-    
+    #IO.get_result().to_netcdf(os.path.join(data_path,'output',results_output_name), encoding=encoding, mode = 'w')
+    dataset = IO.get_result()
+    cmb_spatial_mean = dataset.MB.mean(dim=['lat','lon'], keep_attrs=True)
+    cmb_spatial_mean_cum = np.cumsum(cmb_spatial_mean)    
+
     encoding = dict()
     for var in IO.get_restart().data_vars:
         dataMin = IO.get_restart()[var].min(skipna=True).values
@@ -248,8 +256,9 @@ def main(lr_T=-0.006, lr_RRR=0, lr_RH=0, RRR_factor=mult_factor_RRR, alb_ice=alb
     print('--------------------------------------------------------------')
     print('\t SIMULATION WAS SUCCESSFUL')
     print('--------------------------------------------------------------')
-
-    return tsl_out
+    
+    return np.array([cmb_spatial_mean_cum[-1]])
+    #tsl_out
     
 
 def run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures, opt_dict=None):
