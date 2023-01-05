@@ -22,7 +22,8 @@ OPTIONS = {
     'output_netcdf': output_netcdf,
     'mult_factor_RRR': mult_factor_RRR,
     'albedo_mod_snow_aging': albedo_mod_snow_aging,
-    'albedo_mod_snow_depth': albedo_mod_snow_depth
+    'albedo_mod_snow_depth': albedo_mod_snow_depth,
+    'center_snow_transfer_function' : center_snow_transfer_function
     }
 
 def read_opt(opt_dict, glob):
