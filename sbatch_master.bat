@@ -18,7 +18,9 @@ echo $SLURM_CPUS_ON_NODE
 
 module load anaconda/2019.07
 
-python -u /data/scratch/richteny/thesis/cosipy_test_space/FAST_spotpy.py #COSIPY.py
+#python -u /data/scratch/richteny/thesis/cosipy_test_space/spotpy_tsla_full.py
+python -u /data/scratch/richteny/thesis/cosipy_test_space/spotpy_multobj_full.py
+#python -u /data/scratch/richteny/thesis/cosipy_test_space/FAST_spotpy.py 
 
 #python -u /data/scratch/richteny/thesis/cosipy_test_space/COSIPY.py
 

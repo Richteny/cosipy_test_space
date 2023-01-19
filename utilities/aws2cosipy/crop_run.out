@@ -1,19 +1,17 @@
-Read input file ../../data/input/Abramov/Abramov_300m_ERA5_NoRad_1999_2021.nc 
+-------------------------------------------
+Create input 
 
-Create cropped file.
-lon
-lat
-HGT
-ASPECT
-SLOPE
-MASK
-time
-T2
-RH2
-U2
-G
-PRES
-RRR
-N
-Performing checks.
-Writing cropped cosipy file.
+Read input file ../../data/input/Abramov/Abramov_ERA5mod_spinup_Forcing_2009-2020.csv
+Read static file ../../data/static/Abramov_hrzd1D_30m_elev.nc 
+
+Interpolate CR file to grid
+Number of glacier cells: 43
+Number of glacier cells: 43
+Run the Radiation Module Wohlfahrt2016 or no Radiation Module.
+Input file created 
+
+-------------------------------------------
+
+
+WARNING! Please check the data, its seems they are out of a reasonable range G MAX: 1821.68 MIN: 0.00 
+

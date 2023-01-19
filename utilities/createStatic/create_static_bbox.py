@@ -86,15 +86,15 @@ def curved_grid(domain, dist_search=50.0, ellps="sphere"):
 static_folder = '../../data/static/'
 
 tile = True
-aggregate = True
-elevation_test = False
+aggregate = False
+elevation_test = True
 
 ### input digital elevation model (DEM)
 dem_path_tif = static_folder + 'DEM/ALOS_N039E071_AVE_DSM.tif'
 ### input shape of glacier or study area, e.g. from the Randolph glacier inventory
 shape_path = static_folder + 'Shapefiles/abramov_rgi6.shp'
 ### path were the static.nc file is saved
-output_path = static_folder + 'Abramov_300m_static_test.nc'
+output_path = static_folder + 'Abramov_30m_static_test.nc'
 
 #get bbox
 shp = fiona.open(shape_path)
@@ -105,7 +105,7 @@ print(shp.bounds[1],shp.bounds[3])
 domain = {"lon_min": shp.bounds[0], "lon_max": shp.bounds[2],
           "lat_min": shp.bounds[1], "lat_max": shp.bounds[3]}
 
-dist_search = 1.0 # search distance for terrain shading [kilometre]
+dist_search = 25.0 # search distance for terrain shading [kilometre]
 ellps = "WGS84"
 
 # Copyright (c) 2022 ETH Zurich, Christian R. Steger
