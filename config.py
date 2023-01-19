@@ -8,8 +8,8 @@
 # SIMULATION PERIOD 
 #-----------------------------------
 # Abramov
-time_start = "2010-01-01T00:00"
-time_end   = "2012-01-01T00:00" 
+time_start = "2009-01-01T00:00"
+time_end   = "2020-01-01T00:00" 
 
 # Hintereisferner
 #time_start = '2018-09-17T08:00'
@@ -24,9 +24,9 @@ time_end_str=(time_end[0:10]).replace('-','')
 
 data_path = './data/'
 
-input_netcdf= "Abramov/Abramov_300m_ERA5_Wohlfahrt2016_1999_2021_crop.nc" #"Abramov/Abramov_300m_ERA5_OldRad_1999_2021.nc" 
+input_netcdf= "Abramov/Abramov_300m_ERA5mod_spinup_Wohlfahrt_2009-2020_crop.nc" #"Abramov/Abramov_300m_ERA5_OldRad_1999_2021.nc" 
 
-output_netcdf = 'Abramov_300m_ERA5_Wohlfahrt2016_'+time_start_str+'-'+time_end_str+'.nc'
+output_netcdf = 'Abramov_300m_ERA5mod_Wohlfahrt_'+time_start_str+'-'+time_end_str+'.nc'
 
 
 
@@ -53,22 +53,22 @@ obs_type = 'snowheight'                                     # What kind of stake
 #-----------------------------------
 # TRANSIENT SNOWLINE DATA
 #-----------------------------------
-tsl_evaluation = False 
+tsl_evaluation = True 
 time_col_obs = 'LS_DATE'
 #tsla_col_obs = 'SC_median'
-tsla_col_obs = 'TSL_normalized'
+tsla_col_obs = 'TSL_normalized'                                # SC_median for non-normalized and TSL_normalized for normalized
 min_snowheight = 0.001                                         # Minimum snowheight in m
-tsl_method='mantra'
+tsl_method='mantra'                                      # Possible options are mantra, conservative, grid_search, bare in mind that conservative algorithm assumes there is a spatial consistency in snow-cover
 tsl_normalize=True
-tsl_data_file = './data/input/Abramov/snowlines/TSLA_Abramov_filtered_jaso.csv' # path to transient snow line altitudes dataset
-
+#tsl_data_file = './data/input/Abramov/snowlines/TSLA_Abramov_filtered_jaso.csv' # path to transient snow line altitudes dataset
+tsl_data_file = './data/input/Abramov/snowlines/TSLA_Abramov_filtered_full.csv'
 #-----------------------------------
 # Run mutliple Lapse Rates
 #-----------------------------------
 #lapse_rate_config = True                                     #switch off to run COSIPY without online lapse rate calculation
 #lapse_T_range = -0.0061
 #lapse_RRR_range = 0.0009
-station_altitude = 4193.866
+station_altitude = 4102 #4193.866
 
 
 #-----------------------------------

@@ -8,8 +8,11 @@ import spotpy  # Load the SPOT package into your working storage
 from spotpy import analyser  # Load the Plotting extension
 
 res = pd.read_csv('FAST_sensitivity_parameters.csv')
-res = res.drop('parRRR_factor', axis=1)
+#res = res.drop(['parRRR_factor'], axis=1)
+res['like1'] = res['simulation_0']
+print(res)
 res.to_csv("mod_FAST_sensitivity_parameters.csv", index=False)
+#Need to put output (cum MB) into first row
 
 results = spotpy.analyser.load_csv_results('mod_FAST_sensitivity_parameters')
 
@@ -20,4 +23,4 @@ Si = spotpy.analyser.get_sensitivity_of_fast(results, like_index=1)
 print(Si)
 
 spotpy.analyser.plot_fast_sensitivity(results)
-#plt.savefig('FAST_plot.png')
+plt.savefig('FAST_plot.png')
