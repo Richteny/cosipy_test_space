@@ -2,7 +2,7 @@
  This is the configuration (init) file for the utility aws2cosipy.
  Please make your changes here.
 """
-createLUT = True
+createLUT = False
 #------------------------
 # Declare variable names 
 #------------------------
@@ -40,7 +40,7 @@ N_var = 'N'
 #------------------------
 aggregate = False
 aggregation_step = 'H'
-ELEV_model = False
+ELEV_model = True
 
 # Delimiter in csv file
 delimiter = ','
@@ -51,7 +51,7 @@ WRF = False
 #------------------------
 # Radiation module 
 #------------------------
-radiationModule = 'Moelg2009' # 'Moelg2009', 'Wohlfahrt2016', 'none'
+radiationModule = 'Wohlfahrt2016' # 'Moelg2009', 'Wohlfahrt2016', 'none'
 LUT = False                   # If there is already a Look-up-table for topographic shading and sky-view-factor built for this area, set to True
 
 dtstep = 3600*3               # time step (s)
@@ -75,7 +75,7 @@ hgt = 5665.0
 # Interpolation arguments 
 #------------------------
 stationName = 'Abramov'
-stationAlt = 4193.866
+stationAlt = 4102 #4193.866 #
 
 lapse_T         =  0.00    # Temp K per  m Barandun et al. 2018 -0.0048
 lapse_RH        =  0.000    # RH % per  m (0 to 1)

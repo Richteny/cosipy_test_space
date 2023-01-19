@@ -15,8 +15,8 @@
 # The batch system should use the current directory as working directory.
 
 
-#module load anaconda/2019.07 
-conda activate cosipy_test
-#python aws2cosipy.py -c ../../data/input/Abramov/Abramov_ERA5L_1981_2019.csv -o ../../data/input/Abramov/Abramov_ERA5L_1981_2019.nc -s ../../data/static/Abramov_static.nc
+module load anaconda/2019.07 
+#conda activate cosipy_test
+python aws2cosipy.py -c ../../data/input/Abramov/Abramov_ERA5mod_spinup_Forcing_2009-2020.csv -o ../../data/input/Abramov/Abramov_1D30m_ERA5mod_spinup_Wohlfahrt_2009-2020.nc -s ../../data/static/Abramov_hrzd1D_30m_elev.nc
 
-python crop_file_to_glacier.py -i ../../data/input/Abramov/Abramov_300m_ERA5_NoRad_1999_2021.nc -o ../../data/input/Abramov/Abramov_300m_ERA5_NoRad_1999_2021_crop.nc
+#python crop_file_to_glacier.py -i ../../data/input/Abramov/Abramov_300m_ERA5mod_spinup_Wohlfahrt_2009-2020.nc -o ../../data/input/Abramov/Abramov_300m_ERA5mod_spinup_Wohlfahrt_2009-2020_crop.nc

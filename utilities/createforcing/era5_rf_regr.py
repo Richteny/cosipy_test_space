@@ -252,7 +252,8 @@ def do_rf_prediction(var_to_predict, ev_thres, n_runs):
 
     label_dic = {'T2': 'Air temperature at 2m (°C)',
                  'U2': 'Wind speed at 2m (m/s)',
-                 'PRES': 'Air pressure (hPa)'}
+                 'PRES': 'Air pressure (hPa)',
+                 'RH2': 'Relative humidity at 2m (%)'}
 
     my_dpi = 300
     fig = plt.figure(figsize=(26,12), dpi=my_dpi)
@@ -279,11 +280,11 @@ for var in ['RH2','T2','U2','PRES']:
     if var == 'U2':
         do_rf_prediction(var_to_predict=var, ev_thres=0.469, n_runs=30)
     elif var == 'T2':
-        do_rf_prediction(var_to_predict=var, ev_thres=0.964, n_runs=30)
+        do_rf_prediction(var_to_predict=var, ev_thres=0.963, n_runs=30)
     elif var == 'RH2':
-        do_rf_prediction(var_to_predict=var, ev_thres=0.727, n_runs=30)
+        do_rf_prediction(var_to_predict=var, ev_thres=0.726, n_runs=30)
     else:
-        do_rf_prediction(var_to_predict=var, ev_thres=0.984, n_runs=30)
+        do_rf_prediction(var_to_predict=var, ev_thres=0.983, n_runs=30)
 
 print("Performed Random Forest Regression. Values are calculated at AWS elevation.")
 
