@@ -157,9 +157,21 @@ def main(lr_T=-0.006, lr_RRR=0, lr_RH=0, RRR_factor=mult_factor_RRR, alb_ice=alb
                     
     results_output_name = output_netcdf.split('.nc')[0]+'_num{}_lrT_{}_lrRRR_{}_prcp_{}.nc'.format(count, round(abs(lapse_T),7), round(lapse_RRR,7),round(opt_dict['mult_factor_RRR'],5))  
     #IO.get_result().to_netcdf(os.path.join(data_path,'output',results_output_name), encoding=encoding, mode = 'w')
-    dataset = IO.get_result()
-    cmb_spatial_mean = dataset.MB.mean(dim=['lat','lon'], keep_attrs=True)
-    cmb_spatial_mean_cum = np.cumsum(cmb_spatial_mean)    
+    #dataset = IO.get_result()
+    #calculate MB for geod. reference
+    spatial_mean = IO.get_result().MB.mean(dim=['lat','lon'], keep_attrs=True)
+    #spatial_mean = dataset.sel(time=slice("2010-01-01","2020-01-01").MB.mean(dim=['lat','lon'], keep_attrs=True)
+    #mean glacier-wide MB
+    #select timeframe from 2010 to 2020 (do not include first day of 2020)
+    geod_df = spatial_mean.sel(time=slice("2010-01-01","2019-12-31")).to_dataframe()
+    geod_df.reset_index(inplace=True)
+    geod_df['FY'] = geod_df.apply(lambda x: pd.datetime(x.time.year,1,1).year, axis=1)
+    mean_annual_df = pd.DataFrame(geod_df.groupby(['FY']).sum())
+    print("Geod. MB test.")
+    geod_mb = np.nanmean(mean_annual_df.MB.values)
+    print(mean_annual_df) 
+    print(geod_mb)
+    #cmb_spatial_mean_cum = np.cumsum(cmb_spatial_mean)    
 
     encoding = dict()
     for var in IO.get_restart().data_vars:
@@ -228,7 +240,7 @@ def main(lr_T=-0.006, lr_RRR=0, lr_RH=0, RRR_factor=mult_factor_RRR, alb_ice=alb
             tsla_observations = pd.read_csv(tsl_data_file)
             #resampled_out = resample_output(IO.get_result())
             times = datetime.now()
-            dates,clean_day_vals,secs,holder = prereq_res(IO.get_result())
+            dates,clean_day_vals,secs,holder = prereq_res(IO.get_result().sel(time=slice("2010-01-01","2019-12-31")))
             resampled_array = resample_by_hand(holder, IO.get_result().SNOWHEIGHT.values, secs, clean_day_vals)
             resampled_out = construct_resampled_ds(IO.get_result(),resampled_array,dates.values)
             print("Time required for resampling of output: ", datetime.now()-times)
@@ -257,9 +269,9 @@ def main(lr_T=-0.006, lr_RRR=0, lr_RH=0, RRR_factor=mult_factor_RRR, alb_ice=alb
     print('\t SIMULATION WAS SUCCESSFUL')
     print('--------------------------------------------------------------')
     
-    return np.array([cmb_spatial_mean_cum[-1]])
-    #tsl_out
-    
+    return (tsl_out,geod_mb)
+    #return geod_mb
+    #return tsl_out
 
 def run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures, opt_dict=None):
 

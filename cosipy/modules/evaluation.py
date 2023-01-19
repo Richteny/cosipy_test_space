@@ -65,19 +65,33 @@ def tsl_method_mantra(snowheights, hgts, mask, min_snowheight):
     amax = np.zeros(snowheights.shape[0])
     amin = np.zeros(snowheights.shape[0])
     flag = np.zeros(snowheights.shape[0])
-
+    #print("Starting loop.")
     for n in np.arange(0, snowheights.shape[0]):
         filtered_elev_vals = np.where(snowheights[n,:,:]>min_snowheight, hgts, np.nan).ravel()
-        #filtered_elev_vals = filtered_elev_vals[~np.isnan(filtered_elev_vals)]
-        snowline_range = filtered_elev_vals[filtered_elev_vals < np.nanpercentile(filtered_elev_vals, 2)]
-        if np.nanmin(snowline_range) == np.nanmin(np.where(mask==1, hgts, np.nan)):
-            #print("Glacier is most likely fully snow-covered. Marking timestep {} as flagged.".format(n))
-            flag[n] = 1
-        elif snowline_range.size == 0:
+        filtered_elev_vals = filtered_elev_vals[~np.isnan(filtered_elev_vals)]
+        # had to change to <= instead of < -> implications?
+        snowline_range = filtered_elev_vals[filtered_elev_vals <= np.nanpercentile(filtered_elev_vals, 2)]
+        #print("Calculated percentiles.")
+        #check if all array values are True / 1
+        flat = snowheights[n,:,:].ravel()
+        flat = flat[~np.isnan(flat)]
+        #Convert to boolean mask and check if all true
+        test = flat > min_snowheight
+        if snowline_range.size == 0:
             print("Snowline range is empty. Glacier is most likely snow-free. Marking timestep as flagged.")
-            print(snowline_range.size)
-            snowline_range = np.array([np.nanmax(np.where(mask==1, hgts, np.nan))]) #Assign max elevation
-#            snowline_range = np.nanmax(np.where(mask==1, hgts, np.nan)) #Assign max elevation
+            print("\n Assigning maximum elevation of glacier.")
+            snowline_range = np.array([np.nanmax(np.where(mask==1, hgts, np.nan))])
+            print(snowline_range)
+            flag[n] = 1
+        elif np.nanmin(snowline_range) == np.nanmin(np.where(mask==1, hgts, np.nan)):
+            #print("Glacier is most likely fully snow-covered. Marking timestep", n, "out of ", snowheights.shape[0])
+            #print("Checking if all grid cells snow-covered.", test.all())
+            if test.all() == True:
+                snowline_range = np.array([np.nanmin(snowline_range)])
+            #assign minimum value if all values are snow-covered
+            flag[n] = 1
+            
+
         amed[n] = np.nanmedian(snowline_range)
         amean[n] = np.nanmean(snowline_range)
         astd[n] = np.nanstd(snowline_range)
@@ -87,6 +101,7 @@ def tsl_method_mantra(snowheights, hgts, mask, min_snowheight):
 
     return (amed, amean, astd, amax, amin, flag)
 
+#Needs work? Method is not really reliable for a 2D distributed simulation due to large differences
 @njit 
 def tsl_method_conservative(snowheights, hgts, mask, min_snowheight):
     amed = np.zeros(snowheights.shape[0])
@@ -98,13 +113,17 @@ def tsl_method_conservative(snowheights, hgts, mask, min_snowheight):
 
     for n in np.arange(0, snowheights.shape[0]):
         #min altitude of snow
-        filtered_elev_snow = np.nanmin(np.where(snowheights[n,:,:]>min_snowheight, hgts, np.nan).ravel())
+        #print("Processing ", n, "out of ", snowheights.shape[0])
+        filtered_elev_snow = np.nanmin(np.where(snowheights[n,:,:]>=min_snowheight, hgts, np.nan).ravel())
+        #print(filtered_elev_snow)
         #this line is basically redudant, ensures that snowline altitude cannot fall below glacier altitude
         filtered_elev_snow = np.nanmax(np.append(filtered_elev_snow, np.nanmin(np.where(mask==1, hgts, np.nan)))) #numba does not support np.maximum
+        #print(filtered_elev_snow)
         #now for snow-free surfaces
         filtered_elev_nosnow = np.nanmax(np.where(snowheights[n,:,:]<min_snowheight, hgts, np.nan))
+        #print(filtered_elev_nosnow)
         if np.isnan(filtered_elev_nosnow):
-            #print("Glacier seems to be fully snow-covered. Assigning minimum elevation.")
+            print("Glacier seems to be fully snow-covered. Assigning minimum elevation.")
             filtered_elev_nosnow = np.nanmin(np.where(mask==1, hgts, np.nan))
             #print(filtered_elev_nosnow,"m a.s.l.")
             flag[n] = 1
