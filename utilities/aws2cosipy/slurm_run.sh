@@ -15,9 +15,10 @@
 # The batch system should use the current directory as working directory.
 
 
-#module load anaconda/2019.07 
-conda activate cosipy_test
-#python aws2cosipy.py -c ../../data/input/Abramov/Abramov_ERA5L_1981_2019.csv -o ../../data/input/Abramov/Abramov_ERA5L_1981_2019.nc -s ../../data/static/Abramov_static.nc
+module load anaconda/2019.07 
+#conda activate cosipy_test
+
+#python aws2cosipy.py -c ../../data/input/Abramov/Abramov_ERA5mod_spinup_Forcing_2009-2020.csv -o ../../data/input/Abramov/Abramov_300m_ERA5mod_spinup_2009-2020.nc -s ../../data/static/Abramov_300m_static_test.nc
 
 #python aws2cosipy_saveonlyG.py -c ../../data/input/Abramov/Abramov_ERA5_1999_2021.csv -o ../../data/input/Abramov/Abramov_30m_SW_Moelg2009_2009_2010.nc -s ../../data/static/Abramov_30m_static_25kmhrzd.nc -b 20100101 -e 20101231
-python createLUT_crop.py -c ../../data/input/Abramov/Abramov_ERA5_1999_2021.csv -o ../../data/input/Abramov/Abramov_30m_SW_Wohlfahrt2016_2009-2010.nc -s ../../data/static/Abramov_30m_static_25kmhrzd.nc -b 20090101 -e 20100101 
+python createLUT_crop.py -c ../../data/input/Abramov/Abramov_ERA5mod_spinup_Forcing_2009-2020.csv -o ../../data/input/Abramov/Abramov_30m_SW_Moelg_2014-2015.nc -s ../../data/static/Abramov_30m_static_25kmhrzd.nc -b 20140101 -e 20150101 

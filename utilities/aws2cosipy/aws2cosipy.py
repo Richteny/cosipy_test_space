@@ -427,7 +427,7 @@ def create_2D_input(cs_file, cosipy_file, static_file, start_date, end_date, x0=
     rad_tlapse = -0.0065 #new to have default lapse rate for rad. scheme K per m 
     for t in range(len(dso.time)):
         T_interp[t,:,:] = (T2[t]) + (ds.HGT.values-stationAlt)*lapse_T
-        T_interp_rad[t,:,:] = (T2[t]) + ds.HGT.values-stationAlt)*rad_tlapse
+        T_interp_rad[t,:,:] = (T2[t]) + (ds.HGT.values-stationAlt)*rad_tlapse
         RH_interp[t,:,:] = RH2[t] + (ds.HGT.values-stationAlt)*lapse_RH
         U_interp[t,:,:] = U2[t]
 
