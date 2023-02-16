@@ -43,7 +43,7 @@ zlt2 = 0.1					                    # Second depth for temperature interpolation 
 # ' MODEL CONSTANTS '
 center_snow_transfer_function = 1.0             # center (50/50) when total precipitation is transferred to snow and rain
 spread_snow_transfer_function = 1               # 1: +-2.5
-mult_factor_RRR = 1.25 #065                          # multiplication factor for RRR
+mult_factor_RRR = 1.75 #065                          # multiplication factor for RRR
 
 minimum_snow_layer_height = 0.001               # minimum layer height
 minimum_snowfall = 0.001                        # minimum snowfall per time step in m which is added as new snow
@@ -62,9 +62,9 @@ temperature_threshold_merging = 0.01            # If mering is true threshold fo
 # ' PHYSICAL CONSTANTS '
 constant_density = 300.                         # constant density of freshly fallen snow [kg m-3], if densification_method is set to 'constant'
 
-albedo_fresh_snow = 0.85                        # albedo of fresh snow [-] (Moelg et al. 2012, TC)
+albedo_fresh_snow = 0.77                        # albedo of fresh snow [-] (Moelg et al. 2012, TC)
 albedo_firn = 0.55                              # albedo of firn [-] (Moelg et al. 2012, TC)
-albedo_ice = 0.3                                # albedo of ice [-] (Moelg et al. 2012, TC)
+albedo_ice = 0.20                                # albedo of ice [-] (Moelg et al. 2012, TC)
 #albedo_mod_snow_aging = 22                      # effect of ageing on snow albedo [days] (Oerlemans and Knap 1998, J. Glaciol.)
 #albedo_mod_snow_depth = 3                       # effect of snow depth on albedo [cm] (Oerlemans and Knap 1998, J. Glaciol.)
 
