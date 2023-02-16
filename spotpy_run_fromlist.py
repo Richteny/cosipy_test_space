@@ -49,9 +49,12 @@ geod_ref = geod_ref[['dmdtda','err_dmdtda']]
 
 
 ## Load parameter list ##
-param_list = pd.read_csv('/data/scratch/richteny/thesis/cosipy_test_space/param_files/archived/2D_Wohlfahrt/cosipy_par_smpl.csv')
+param_list = pd.read_csv('/data/scratch/richteny/thesis/cosipy_test_space/cosipy_par_smpl.csv')
 print(param_list.head(3))
-fromlist=False
+param_list.sort_values(by='like1_1', ascending=False, inplace=True)
+param_list = param_list.iloc[:100] #select best 100
+print(param_list)
+fromlist=True
 #tsl_normalize=True
 
 class spot_setup:
@@ -161,7 +164,7 @@ class spot_setup:
 
  
 
-def psample(obs, rep=10, count=None, dbname='cosipy_par_smpl', dbformat="csv",algorithm='mcmc'):
+def psample(obs, rep=10, count=None, dbname='cosipy_100bestpar', dbformat="csv",algorithm='mcmc'):
     #try lhs which allows for multi-objective calibration which mcmc here does not
     #set seed to make results reproducable, -> for running from list only works with mc
     np.random.seed(42)
@@ -186,7 +189,7 @@ def psample(obs, rep=10, count=None, dbname='cosipy_par_smpl', dbformat="csv",al
     sampler.sample(rep)
 
 #mc to allow to read from list
-mcmc = psample(obs=(tsla_obs,geod_ref), count=1, rep=5000, algorithm='mcmc')
+mcmc = psample(obs=(tsla_obs,geod_ref), count=1, rep=100, algorithm='mc')
 
 #Plotting routine and most parts of script created by Phillip Schuster of HU Berlin
 #Thank you Phillip!
