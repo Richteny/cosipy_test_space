@@ -34,9 +34,10 @@ tsla_obs.set_index('LS_DATE', inplace=True)
 #count=-1
 
 ## Load parameter list ##
-param_list = pd.read_csv('/data/scratch/richteny/thesis/cosipy_test_space/param_files/2D_Wohlfahrt/cosipy_par_smpl.csv')
+#param_list = pd.read_csv('/data/scratch/richteny/thesis/cosipy_test_space/param_files/archived/2D_Wohlfahrt/cosipy_par_smpl.csv')
+param_list = pd.read_csv("/data/scratch/richteny/thesis/cosipy_test_space/param_files/current/2D_Wohlfahrt_fullTSLAopt.csv")
 print(param_list.head(3))
-fromlist=False
+fromlist=True
 #tsl_normalize=True
 
 class spot_setup:
@@ -122,10 +123,10 @@ class spot_setup:
                 eval = np.delete(evaluation.SC_median.values, np.argwhere(np.isnan(simulation[0])))
             sim_tsla = simulation[0][~np.isnan(simulation[0])]
             sim_mb = simulation[1][~np.isnan(simulation[1])]
-            print("Simulations")
-            print(sim_tsla)
-            print("Eval.")
-            print(eval)
+            #print("Simulations")
+            #print(sim_tsla)
+            #print("Eval.")
+            #print(eval)
             like = -rmse(eval, sim_tsla) #set minus before rmse if trying to maximize, depends on algorithm
             like2 = -mae(eval,sim_tsla)
             print("RMSE is: ", like)
@@ -161,7 +162,7 @@ def psample(obs, rep=10, count=None, dbname='cosipy_par_smpl', dbformat="csv", a
     sampler = alg_selector[algorithm](setup, dbname=dbname, dbformat=dbformat,random_state=42,save_sim=True)
     sampler.sample(rep)
 
-mcmc = psample(obs=tsla_obs, count=None, rep=500, algorithm='mcmc')
+mcmc = psample(obs=tsla_obs, count=None, rep=500, algorithm='mc')
 
 #Plotting routine and most parts of script created by Phillip Schuster of HU Berlin
 #Thank you Phillip!

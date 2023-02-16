@@ -86,15 +86,15 @@ def curved_grid(domain, dist_search=50.0, ellps="sphere"):
 static_folder = '../../data/static/'
 
 tile = True
-aggregate = False
-elevation_test = True
+aggregate = True
+elevation_test = False
 
 ### input digital elevation model (DEM)
 dem_path_tif = static_folder + 'DEM/ALOS_N039E071_AVE_DSM.tif'
 ### input shape of glacier or study area, e.g. from the Randolph glacier inventory
 shape_path = static_folder + 'Shapefiles/abramov_rgi6.shp'
 ### path were the static.nc file is saved
-output_path = static_folder + 'Abramov_30m_static_test.nc'
+output_path = static_folder + 'Abramov_90m_static_test.nc'
 
 #get bbox
 shp = fiona.open(shape_path)
@@ -128,7 +128,7 @@ longitude_lower_right = str(longitude_lower_right)
 latitude_lower_right = str(latitude_lower_right)
 
 ### to aggregate the DEM to a coarser spatial resolution
-aggregate_degree = '0.002777778' #300m
+aggregate_degree =  '0.000833333' #'0.002777778' #300m
 
 ### intermediate files, will be removed afterwards
 dem_path_tif_temp = static_folder + 'DEM_temp.tif'
