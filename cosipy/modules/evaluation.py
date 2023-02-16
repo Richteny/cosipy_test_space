@@ -226,6 +226,7 @@ def calculate_tsl_byhand(snowheights,hgts,mask, min_snowheight,tsl_method, tsl_n
     max_elev = np.nanmax(np.where(mask==1, hgts, np.nan))
     min_elev = np.nanmin(np.where(mask==1, hgts, np.nan))
     print("Calculating TSLA using {}. Normalization is set to {}.".format(tsl_method, tsl_normalize))
+    print("Max elev.", max_elev,".\n Min elev.", min_elev)
     if tsl_method == 'mantra':
         amed, amean, astd, amax, amin, flag = tsl_method_mantra(snowheights, hgts, mask, min_snowheight)
     elif tsl_method == 'conservative':
