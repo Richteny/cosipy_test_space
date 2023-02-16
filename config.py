@@ -8,8 +8,8 @@
 # SIMULATION PERIOD 
 #-----------------------------------
 # Abramov
-time_start = "2009-01-01T00:00"
-time_end   = "2020-01-01T00:00" 
+time_start = "2015-07-01T00:00"
+time_end   = "2015-07-08T23:00" 
 
 # Hintereisferner
 #time_start = '2018-09-17T08:00'
@@ -24,9 +24,9 @@ time_end_str=(time_end[0:10]).replace('-','')
 
 data_path = './data/'
 
-input_netcdf= "Abramov/Abramov_300m_ERA5mod_spinup_Wohlfahrt_2009-2020_crop.nc" #"Abramov/Abramov_300m_ERA5_OldRad_1999_2021.nc" 
+input_netcdf= 'Abramov/Abramov_1D30m_ERA5mod_spinup_Wohlfahrt_2009-2020.nc' #Abramov_300m_ERA5mod_spinup_Wohlfahrt_2009-2020.nc' #"Abramov/Abramov_300m_ERA5mod_spinup_Wohlfahrt_2009-2020_crop.nc" #"Abramov/Abramov_300m_ERA5_OldRad_1999_2021.nc" 
 
-output_netcdf = 'Abramov_300m_ERA5mod_Wohlfahrt_'+time_start_str+'-'+time_end_str+'.nc'
+output_netcdf = 'TEST_Abramov_1D30m_ERA5mod_Wohlfahrt_'+time_start_str+'-'+time_end_str+'.nc'
 
 
 
