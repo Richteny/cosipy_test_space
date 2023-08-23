@@ -1,0 +1,18 @@
+Traceback (most recent call last):
+  File "aws2cosipy.py", line 709, in <module>
+    create_2D_input(args.csv_file, args.cosipy_file, args.static_file, args.start_date, args.end_date, args.xl, args.xr, args.yl, args.yu) 
+  File "aws2cosipy.py", line 276, in create_2D_input
+    na_values='NAN',date_parser=date_parser)
+  File "/programs/anaconda/2019.07/lib/python3.7/site-packages/pandas/io/parsers.py", line 702, in parser_f
+    return _read(filepath_or_buffer, kwds)
+  File "/programs/anaconda/2019.07/lib/python3.7/site-packages/pandas/io/parsers.py", line 429, in _read
+    parser = TextFileReader(filepath_or_buffer, **kwds)
+  File "/programs/anaconda/2019.07/lib/python3.7/site-packages/pandas/io/parsers.py", line 895, in __init__
+    self._make_engine(self.engine)
+  File "/programs/anaconda/2019.07/lib/python3.7/site-packages/pandas/io/parsers.py", line 1122, in _make_engine
+    self._engine = CParserWrapper(self.f, **self.options)
+  File "/programs/anaconda/2019.07/lib/python3.7/site-packages/pandas/io/parsers.py", line 1853, in __init__
+    self._reader = parsers.TextReader(src, **kwds)
+  File "pandas/_libs/parsers.pyx", line 387, in pandas._libs.parsers.TextReader.__cinit__
+  File "pandas/_libs/parsers.pyx", line 705, in pandas._libs.parsers.TextReader._setup_parser_source
+FileNotFoundError: [Errno 2] File b'../../data/input/CS/metERA.csv' does not exist: b'../../data/input/CS/metERA.csv'
