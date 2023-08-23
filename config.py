@@ -8,8 +8,8 @@
 # SIMULATION PERIOD 
 #-----------------------------------
 # Abramov
-time_start = "2015-07-01T00:00"
-time_end   = "2015-07-08T23:00" 
+time_start = "1999-01-01T00:00"
+time_end   = "2005-01-01T00:00" 
 
 # Hintereisferner
 #time_start = '2018-09-17T08:00'
@@ -24,9 +24,9 @@ time_end_str=(time_end[0:10]).replace('-','')
 
 data_path = './data/'
 
-input_netcdf= 'Abramov/Abramov_1D30m_ERA5mod_spinup_Wohlfahrt_2009-2020.nc' #Abramov_300m_ERA5mod_spinup_Wohlfahrt_2009-2020.nc' #"Abramov/Abramov_300m_ERA5mod_spinup_Wohlfahrt_2009-2020_crop.nc" #"Abramov/Abramov_300m_ERA5_OldRad_1999_2021.nc" 
+input_netcdf= 'HEF/HEF_COSMO_300m_1999_2010.nc' #Abramov_300m_ERA5mod_spinup_Wohlfahrt_2009-2020.nc' #"Abramov/Abramov_300m_ERA5mod_spinup_Wohlfahrt_2009-2020_crop.nc" #"Abramov/Abramov_300m_ERA5_OldRad_1999_2021.nc" 
 
-output_netcdf = 'TEST_Abramov_1D30m_ERA5mod_Wohlfahrt_'+time_start_str+'-'+time_end_str+'.nc'
+output_netcdf = 'TEST_MELTOUT_'+time_start_str+'-'+time_end_str+'.nc'
 
 
 
@@ -58,17 +58,17 @@ time_col_obs = 'LS_DATE'
 #tsla_col_obs = 'SC_median'
 tsla_col_obs = 'TSL_normalized'                                # SC_median for non-normalized and TSL_normalized for normalized
 min_snowheight = 0.001                                         # Minimum snowheight in m
-tsl_method='mantra'                                      # Possible options are mantra, conservative, grid_search, bare in mind that conservative algorithm assumes there is a spatial consistency in snow-cover
+tsl_method='conservative'                                      # Possible options are mantra, conservative, grid_search, bare in mind that conservative algorithm assumes there is a spatial consistency in snow-cover
 tsl_normalize=True
 #tsl_data_file = './data/input/Abramov/snowlines/TSLA_Abramov_filtered_jaso.csv' # path to transient snow line altitudes dataset
-tsl_data_file = './data/input/Abramov/snowlines/TSLA_Abramov_filtered_full.csv'
+tsl_data_file = './data/input/HEF/snowlines/HEF-snowlines-1999-2010.csv'
 #-----------------------------------
 # Run mutliple Lapse Rates
 #-----------------------------------
 #lapse_rate_config = True                                     #switch off to run COSIPY without online lapse rate calculation
 #lapse_T_range = -0.0061
 #lapse_RRR_range = 0.0009
-station_altitude = 4102 #4193.866
+station_altitude = 3030.0283 #4193.866
 
 
 #-----------------------------------
@@ -101,7 +101,7 @@ local_port = 8786                                           # port for local clu
 #-----------------------------------
 # WRITE FULL FIELDS 
 #-----------------------------------    
-full_field = False                                          # write full fields (2D data) to file
+full_field = True                                          # write full fields (2D data) to file
 if WRF_X_CSPY:
     full_field = True
     

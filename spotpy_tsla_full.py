@@ -162,7 +162,7 @@ def psample(obs, rep=10, count=None, dbname='cosipy_par_smpl', dbformat="csv", a
     sampler = alg_selector[algorithm](setup, dbname=dbname, dbformat=dbformat,random_state=42,save_sim=True)
     sampler.sample(rep)
 
-mcmc = psample(obs=tsla_obs, count=None, rep=500, algorithm='mc')
+mcmc = psample(obs=tsla_obs, count=None, rep=5, algorithm='mc')
 
 #Plotting routine and most parts of script created by Phillip Schuster of HU Berlin
 #Thank you Phillip!
