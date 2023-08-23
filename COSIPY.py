@@ -51,6 +51,8 @@ import cProfile
 from constants import *
 from numba import njit
 
+#from dask_mpi import initialize
+#initialize(nanny=False)
 
 def main(lr_T=-0.0065, lr_RRR=0., lr_RH=0, RRR_factor=mult_factor_RRR, alb_ice=albedo_ice,
          alb_snow=albedo_fresh_snow,alb_firn=albedo_firn,albedo_aging=albedo_mod_snow_aging,
@@ -121,8 +123,8 @@ def main(lr_T=-0.0065, lr_RRR=0., lr_RH=0, RRR_factor=mult_factor_RRR, alb_ice=a
     # Create a client for distributed calculations
     #-----------------------------------------------
     if (slurm_use):
-
-        with SLURMCluster(scheduler_port=port, cores=cores, processes=processes, memory=memory, shebang=shebang, name=name, job_extra=slurm_parameters, local_directory='logs/dask-worker-space') as cluster:
+        #scheduler_port=port
+        with SLURMCluster(cores=cores, processes=processes, memory=memory, shebang=shebang, name=name, job_extra=slurm_parameters, local_directory='logs/dask-worker-space') as cluster:
             cluster.scale(processes * nodes)   
             print(cluster.job_script())
             print("You are using SLURM!\n")
@@ -130,7 +132,8 @@ def main(lr_T=-0.0065, lr_RRR=0., lr_RH=0, RRR_factor=mult_factor_RRR, alb_ice=a
             run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures, opt_dict=opt_dict)
 
     else:
-        with LocalCluster(scheduler_port=local_port, n_workers=workers, local_dir='logs/dask-worker-space', threads_per_worker=1, silence_logs=True) as cluster:
+        #scheduler_port=local_port
+        with LocalCluster(n_workers=workers, local_directory='logs/dask-worker-space', threads_per_worker=1, silence_logs=True) as cluster:
             print(cluster)
             run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures,opt_dict=opt_dict)
 
@@ -168,34 +171,33 @@ def main(lr_T=-0.0065, lr_RRR=0., lr_RH=0, RRR_factor=mult_factor_RRR, alb_ice=a
         weighted_mb_arr = dsmb['MB'].values * dsmb['N_Points'].values / np.sum(dsmb['N_Points'].values)
         print("time 1:", datetime.now()-times)
         print(weighted_mb_arr.shape)
-        time_vals = pd.to_datetime(dsmb.time.values)
-        secs = np.array([time_vals.astype('int64')]).ravel()
-        years = np.unique(time_vals.year)
+        #time_vals = pd.to_datetime(dsmb.time.values)
+        #secs = np.array([time_vals.astype('int64')]).ravel()
+        #years = np.unique(time_vals.year)
         #clean_year_vals = np.array([np.datetime64(pd.datetime(x,1,1,0,0,0)) for x in years])
         #clean_year_vals = clean_year_vals.astype('int64')
-        print(secs)
+        #print(secs)
         #print(clean_year_vals)
 
         dsmb['weighted_mb'] = (('time','lat','lon'), weighted_mb_arr)
         dfmb = dsmb[['weighted_mb']].to_dataframe()
-        dfmb.reset_index(inplace=True)
-        dfmb['FY'] =  dfmb.apply(lambda x: pd.datetime(x.time.year,1,1).year, axis=1)
-        mean_annual_df =  dfmb.groupby(['FY']).sum()
+        #dfmb.reset_index(inplace=True)
+        #dfmb['FY'] =  dfmb.apply(lambda x: pd.datetime(x.time.year,1,1).year, axis=1)
+        mean_annual_df =  dfmb.resample("1Y").sum()
         geod_mb = np.nanmean(mean_annual_df['weighted_mb'].values)
     else:
         print("2D case.")
-        spatial_mean = IO.get_result().MB.mean(dim=['lat','lon'], keep_attrs=True)
-        #spatial_mean = dataset.sel(time=slice("2010-01-01","2020-01-01").MB.mean(dim=['lat','lon'], keep_attrs=True)
+        spatial_mean = IO.get_result()['MB'].mean(dim=['lat','lon'], keep_attrs=True)
         #mean glacier-wide MB
         #select timeframe from 2010 to 2020 (do not include first day of 2020)
-        geod_df = spatial_mean.sel(time=slice("2010-01-01","2019-12-31")).to_dataframe()
-        geod_df.reset_index(inplace=True)
-        geod_df['FY'] = geod_df.apply(lambda x: pd.datetime(x.time.year,1,1).year, axis=1)
-        mean_annual_df = pd.DataFrame(geod_df.groupby(['FY']).sum())
+        geod_df = spatial_mean.sel(time=slice("2000-01-01","2009-12-31")).to_dataframe()
+        #geod_df = spatial_mean.sel(time=slice("2010-01-01","2019-12-31")).to_dataframe()
+        #geod_df['FY'] = geod_df.apply(lambda x: str(pd.to_datetime(str(x.time.year)+'-01-01').year), axis=1)
+        mean_annual_df = geod_df.resample("1Y").sum()
         geod_mb = np.nanmean(mean_annual_df.MB.values)
     print("Geod. MB test.") 
     print(geod_mb)
-    print("MB calculation took ", datetime.now()-times)
+    print("Time it took to calculate geod. MB ", datetime.now()-times)
     #cmb_spatial_mean_cum = np.cumsum(cmb_spatial_mean)    
 
     encoding = dict()
@@ -208,7 +210,7 @@ def main(lr_T=-0.0065, lr_RRR=0., lr_RH=0, RRR_factor=mult_factor_RRR, alb_ice=a
         #encoding[var] = dict(zlib=True, complevel=compression_level, dtype=dtype, scale_factor=scale_factor, add_offset=add_offset, _FillValue=FillValue)
         encoding[var] = dict(zlib=True, complevel=compression_level)
                         
-    IO.get_restart().to_netcdf(os.path.join(data_path,'restart','restart_'+timestamp+'_num{}_lrT_{}_lrRRR_{}_prcp_{}.nc'.format(count,round(abs(lapse_T),7), round(lapse_RRR,7),round(opt_dict['mult_factor_RRR'],5))), encoding=encoding)
+    #IO.get_restart().to_netcdf(os.path.join(data_path,'restart','restart_'+timestamp+'_num{}_lrT_{}_lrRRR_{}_prcp_{}.nc'.format(count,round(abs(lapse_T),7), round(lapse_RRR,7),round(opt_dict['mult_factor_RRR'],5))), encoding=encoding)
     
     #----------------------------------------------
     # Implement TSL Extraction
@@ -265,22 +267,25 @@ def main(lr_T=-0.0065, lr_RRR=0., lr_RH=0, RRR_factor=mult_factor_RRR, alb_ice=a
             tsla_observations = pd.read_csv(tsl_data_file)
             #a_resampled_out = resample_output(IO.get_result())
             times = datetime.now()
-            dates,clean_day_vals,secs,holder = prereq_res(IO.get_result().sel(time=slice("2010-01-01","2019-12-31")))
+            #dates,clean_day_vals,secs,holder = prereq_res(IO.get_result().sel(time=slice("2010-01-01","2019-12-31")))
+            dates,clean_day_vals,secs,holder = prereq_res(IO.get_result().sel(time=slice("2000-01-01","2009-12-31")))
             resampled_array = resample_by_hand(holder, IO.get_result().SNOWHEIGHT.values, secs, clean_day_vals)
             resampled_out = construct_resampled_ds(IO.get_result(),resampled_array,dates.values)
+            print(resampled_out)
             print("Time required for resampling of output: ", datetime.now()-times)
             #Need HGT values as 2D, ensured with following line of code.
             resampled_out['HGT'] = (('lat','lon'), IO.get_result()['HGT'])
             resampled_out['MASK'] = (('lat','lon'), IO.get_result()['MASK'])
-            #a_resampled_out['HGT'] = (('lat','lon'), IO.get_result()['HGT'])
-            #a_resampled_out['MASK'] = (('lat','lon'), IO.get_result()['MASK'])
             #print("Time required for resampling: ", datetime.now()-times)
             #a_tsl_out = create_tsl_df(a_resampled_out, min_snowheight, tsl_method, tsl_normalize)
             tsl_out = create_tsl_df(resampled_out, min_snowheight, tsl_method, tsl_normalize)
             #tsl_out = calculate_tsl(resampled_out, min_snowheight)
+            #print(tsla_observations)
+            print(tsl_out)
+            #print(np.nanmedian(tsl_out['Med_TSL']))
             tsla_stats = eval_tsl(tsla_observations,tsl_out, time_col_obs, tsla_col_obs)
             print("TSLA Observed vs. Modelled RMSE: " + str(tsla_stats[0])+ "; R-squared: " + str(tsla_stats[1]))
-            tsl_out.to_csv(os.path.join(data_path,'output',tsl_csv_name))
+            #tsl_out.to_csv(os.path.join(data_path,'output',tsl_csv_name))
             #a_tsl_out.to_csv(os.path.join(data_path,'output','test_for_resample.csv'))
         print("Time required for full TSL EVAL: ", datetime.now()-times)
     #-----------------------------------------------
