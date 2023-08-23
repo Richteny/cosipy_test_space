@@ -19,7 +19,7 @@ import random
 print("TSL file:", tsl_data_file)
 tsla_obs = pd.read_csv(tsl_data_file)
 tsla_obs['LS_DATE'] = pd.to_datetime(tsla_obs['LS_DATE'])
-time_start = "2010-01-01" #bc config starts with spinup -> need to add 1 year
+time_start = "2000-01-01" #bc config starts with spinup -> need to add 1 year
 time_start_dt = pd.to_datetime(time_start)
 time_end_dt = pd.to_datetime(time_end)
 print("Time start: ", time_start)
@@ -40,19 +40,22 @@ if tsl_normalize:
 
 #Load geod. MB observations
 path_to_geod = "/data/scratch/richteny/Hugonnet_21_MB/"
-rgi_id = "RGI60-13.18096"
+rgi_id = "RGI60-11.00897"
 rgi_region = rgi_id.split('-')[-1][:2]
 geod_ref = pd.read_csv(path_to_geod+"dh_{}_rgi60_pergla_rates.csv".format(rgi_region))
 geod_ref = geod_ref.loc[geod_ref['rgiid'] == rgi_id]
-geod_ref = geod_ref.loc[geod_ref['period'] == "2010-01-01_2020-01-01"]
+geod_ref = geod_ref.loc[geod_ref['period'] == "2000-01-01_2010-01-01"]
 geod_ref = geod_ref[['dmdtda','err_dmdtda']]
 
 
 ## Load parameter list ##
 param_list = pd.read_csv('/data/scratch/richteny/thesis/cosipy_test_space/cosipy_par_smpl.csv')
 print(param_list.head(3))
-param_list.sort_values(by='like1_1', ascending=False, inplace=True)
-param_list = param_list.iloc[:100] #select best 100
+#make selection here
+#param_list.sort_values(by='like1_1', ascending=False, inplace=True)
+#param_list = param_list.loc[param_list['like1_1'] >= np.nanpercentile(param_list['like1_1'], 98)] #select best 100
+param_list.sort_values(by='parRRR_factor', ascending=False, inplace=True)
+param_list = pd.concat([param_list.head(5),param_list.tail(5)])
 print(param_list)
 fromlist=True
 #tsl_normalize=True
@@ -87,15 +90,21 @@ class spot_setup:
         self.count = count
         if fromlist:
             print("Getting parameters from list.")
-            self.params = [spotpy.parameter.List('lr_T',param_list['parlr_T'].tolist()),
-                           spotpy.parameter.List('lr_RRR',param_list['parlr_RRR'].tolist()),
-                           spotpy.parameter.List('lr_RH',param_list['parlr_RH'].tolist()),
+            self.params = [spotpy.parameter.List('lr_RRR',param_list['parlr_RRR'].tolist()),
                            spotpy.parameter.List('RRR_factor',param_list['parRRR_factor'].tolist()),
                            spotpy.parameter.List('alb_ice',param_list['paralb_ice'].tolist()),
                            spotpy.parameter.List('alb_snow',param_list['paralb_snow'].tolist()),
                            spotpy.parameter.List('alb_firn',param_list['paralb_firn'].tolist()),
                            spotpy.parameter.List('albedo_aging',param_list['paralbedo_aging'].tolist()),
-                           spotpy.parameter.List('albedo_depth',param_list['paralbedo_depth'].tolist())]
+                           spotpy.parameter.List('albedo_depth',param_list['paralbedo_depth'].tolist()),
+                           spotpy.parameter.List('center_snow_transfer_function',param_list['parcenter_snow_transfer_function'].tolist()),
+                           spotpy.parameter.List('roughness_fresh_snow',param_list['parroughness_fresh_snow'].tolist()),
+                           spotpy.parameter.List('roughness_ice',param_list['parroughness_ice'].tolist())]
+
+
+
+
+
         #else:
         #    print("Setting parameters.")
         #    self.params = lr_T, lr_RRR, lr_RH, RRR_factor, alb_ice, alb_snow, alb_firn,\
@@ -121,9 +130,12 @@ class spot_setup:
         if isinstance(self.count,int):
             self.count += 1
         print("Count", self.count)
-        sim_tsla, sim_mb = main(lr_T=x.lr_T, lr_RRR=x.lr_RRR,lr_RH= x.lr_RH, RRR_factor=x.RRR_factor,
+        sim_tsla, sim_mb = main(lr_RRR=x.lr_RRR,RRR_factor=x.RRR_factor,
                                 alb_ice = x.alb_ice, alb_snow = x.alb_snow,alb_firn = x.alb_firn,
-                                albedo_aging = x.albedo_aging, albedo_depth = x.albedo_depth, count=self.count)
+                                albedo_aging = x.albedo_aging, albedo_depth = x.albedo_depth,
+                                center_snow_transfer_function = x.center_snow_transfer_function, 
+                                roughness_fresh_snow = x.roughness_fresh_snow, roughness_ice = x.roughness_ice,
+                                count=self.count)
         sim_tsla = sim_tsla[sim_tsla['time'].isin(tsla_obs.index)]
         return (sim_tsla.Med_TSL.values, np.array([sim_mb]))
 
@@ -149,12 +161,14 @@ class spot_setup:
             sim_mb = simulation[1][~np.isnan(simulation[1])]
             #print(sigma_tsla)
             #print(sim_tsla)
-            rmse = (((eval_tsla - sim_tsla)**2)/(sigma_tsla**2)).mean()**.5
+            mbe_tsla = (((eval_tsla - sim_tsla)**2) / (sigma_tsla**2)).mean()
+            #rmse = (((eval_tsla - sim_tsla)**2)/(sigma_tsla**2)).mean()**.5
+            print("Sim MB is: ", sim_mb)
             mbe = ((eval_mb - sim_mb)**2) / (sigma_mb**2)
-            cost = -(0.4*rmse + 0.6*mbe) 
+            cost = -(1*mbe_tsla + 1*mbe) 
             #like1 = -(rmse(eval_tsla, sim_tsla) #set minus before func if trying to maximize, depends on algorithm
             #like2 = -mae(eval_mb,sim_mb)
-            print("RMSE is: ", rmse)
+            print("MBE TSLA is: ", mbe_tsla)
             print("Bias MB is: ", mbe)
             print("Full value of cost function: ", cost)
         else:
@@ -164,7 +178,7 @@ class spot_setup:
 
  
 
-def psample(obs, rep=10, count=None, dbname='cosipy_100bestpar', dbformat="csv",algorithm='mcmc'):
+def psample(obs, rep=10, count=None, dbname='cosipy_subsurf', dbformat="csv",algorithm='mcmc'):
     #try lhs which allows for multi-objective calibration which mcmc here does not
     #set seed to make results reproducable, -> for running from list only works with mc
     np.random.seed(42)
@@ -189,7 +203,8 @@ def psample(obs, rep=10, count=None, dbname='cosipy_100bestpar', dbformat="csv",
     sampler.sample(rep)
 
 #mc to allow to read from list
-mcmc = psample(obs=(tsla_obs,geod_ref), count=1, rep=100, algorithm='mc')
+rep = len(param_list)
+mcmc = psample(obs=(tsla_obs,geod_ref), count=0, rep=rep, algorithm='mc')
 
 #Plotting routine and most parts of script created by Phillip Schuster of HU Berlin
 #Thank you Phillip!
