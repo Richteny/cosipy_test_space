@@ -1,9 +1,9 @@
-#!/bin/bash
+#!/bin/bash -l
 
-#SBATCH --job-name="MaEraAbr"
-#SBATCH --qos=long
+#SBATCH --job-name="FinalHEF"
+#SBATCH --qos=short
 #SBATCH --nodes=1
-#SBATCH --ntasks-per-node=10
+#SBATCH --ntasks-per-node=20
 #SBATCH --chdir=/data/scratch/richteny/thesis/cosipy_test_space/
 #SBATCH --account=morsanat
 #SBATCH --error=Control_master.err
@@ -16,12 +16,13 @@
 
 echo $SLURM_CPUS_ON_NODE
 
+#conda activate cspy
 module load anaconda/2019.07
 
-#python -u /data/scratch/richteny/thesis/cosipy_test_space/spotpy_tsla_full.py
+python -u /data/scratch/richteny/thesis/cosipy_test_space/COSIPY.py
 #python -u /data/scratch/richteny/thesis/cosipy_test_space/spotpy_multobj_full.py
 #python -u /data/scratch/richteny/thesis/cosipy_test_space/spotpy_run_fromlist.py
 #python -u /data/scratch/richteny/thesis/cosipy_test_space/FAST_spotpy.py 
 
-python -u /data/scratch/richteny/thesis/cosipy_test_space/COSIPY.py
+#mpirun -np 5 python -u /data/scratch/richteny/thesis/cosipy_test_space/spotpy_multobj_full.py
 

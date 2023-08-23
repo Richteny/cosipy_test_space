@@ -3,9 +3,34 @@
 INFO:__main__:COSIPY simulation started
 /programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/deploy/local.py:118: UserWarning: diagnostics_port has been deprecated. Please use `dashboard_address=` instead
   "diagnostics_port has been deprecated. "
-/programs/anaconda/2019.07/lib/python3.7/site-packages/scipy/stats/_stats_mstats_common.py:130: RuntimeWarning: invalid value encountered in double_scalars
-  slope = r_num / ssxm
-/programs/anaconda/2019.07/lib/python3.7/site-packages/scipy/stats/_stats_mstats_common.py:140: RuntimeWarning: invalid value encountered in sqrt
-  t = r * np.sqrt(df / ((1.0 - r + TINY)*(1.0 + r + TINY)))
-/programs/anaconda/2019.07/lib/python3.7/site-packages/scipy/stats/_stats_mstats_common.py:142: RuntimeWarning: invalid value encountered in double_scalars
-  sterrest = np.sqrt((1 - r**2) * ssym / ssxm / df)
+/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/worker.py:3177: UserWarning: Large object of size 3.37 MB detected in task graph: 
+  [<xarray.Dataset>
+Dimensions:  (time: 52616)
+Coord ...  1.0 1.0, 1, 5]
+Consider scattering large objects ahead of time
+with client.scatter to reduce scheduler burden and 
+keep data on workers
+
+    future = client.submit(func, big_data)    # bad
+
+    big_future = client.scatter(big_data)     # good
+    future = client.submit(func, big_future)  # good
+  % (format_bytes(len(b)), s)
+Traceback (most recent call last):
+  File "/data/scratch/richteny/thesis/cosipy_test_space/COSIPY.py", line 590, in <module>
+    main()
+  File "/data/scratch/richteny/thesis/cosipy_test_space/COSIPY.py", line 132, in main
+    run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures, opt_dict=opt_dict)
+  File "/data/scratch/richteny/thesis/cosipy_test_space/COSIPY.py", line 439, in run_cosipy
+    LAYER_IRREDUCIBLE_WATER,LAYER_REFREEZE,stake_names,stat,df_eval = future.result()
+  File "/programs/anaconda/2019.07/lib/python3.7/site-packages/distributed/client.py", line 221, in result
+    six.reraise(*result)
+  File "/programs/anaconda/2019.07/lib/python3.7/site-packages/six.py", line 692, in reraise
+    raise value.with_traceback(tb)
+  File "/data/scratch/richteny/thesis/cosipy_test_space/cosipy/cpkernel/cosipy_core.py", line 267, in cosipy_core
+    sw_radiation_net, U2[t], RAIN, SLOPE, N=N[t], opt_dict=opt_dict)
+  File "/data/scratch/richteny/thesis/cosipy_test_space/cosipy/modules/surfaceTemperature.py", line 57, in update_surface_temperature
+    B_Ts = interp_subT(GRID)
+  File "/programs/anaconda/2019.07/lib/python3.7/site-packages/numba/typed/listobject.py", line 635, in handle_index
+    raise IndexError("list index out of range")
+IndexError: list index out of range

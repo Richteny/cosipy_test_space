@@ -123,18 +123,18 @@ def tsl_method_conservative(snowheights, hgts, mask, min_snowheight):
         filtered_elev_nosnow = np.nanmax(np.where(snowheights[n,:,:]<min_snowheight, hgts, np.nan))
         #print(filtered_elev_nosnow)
         if np.isnan(filtered_elev_nosnow):
-            print("Glacier seems to be fully snow-covered. Assigning minimum elevation.")
+            #print("Glacier seems to be fully snow-covered. Assigning minimum elevation.")
             filtered_elev_nosnow = np.nanmin(np.where(mask==1, hgts, np.nan))
             #print(filtered_elev_nosnow,"m a.s.l.")
             flag[n] = 1
         else:
             #technically also redudant, ascertain that max. elevation of glacier is not exceeded
             filtered_elev_nosnow = np.nanmin(np.append(filtered_elev_nosnow, np.nanmax(np.where(mask==1, hgts, np.nan)))) #numba does not support minimum/maximum of numpy
-    amed = np.nanmedian(np.append(filtered_elev_snow, filtered_elev_nosnow))
-    amean = np.nanmean(np.append(filtered_elev_snow, filtered_elev_nosnow))
-    astd = np.nanstd(np.append(filtered_elev_snow, filtered_elev_nosnow)) #might be a bit large.. std of all values essentially function of resolution  
-    amax = np.nanmax(np.append(filtered_elev_snow, filtered_elev_nosnow))
-    amin = np.nanmin(np.append(filtered_elev_snow, filtered_elev_nosnow))
+        amed[n] = np.nanmedian(np.append(filtered_elev_snow, filtered_elev_nosnow))
+        amean[n] = np.nanmean(np.append(filtered_elev_snow, filtered_elev_nosnow))
+        astd[n] = np.nanstd(np.append(filtered_elev_snow, filtered_elev_nosnow)) #might be a bit large.. std of all values essentially function of resolution  
+        amax[n] = np.nanmax(np.append(filtered_elev_snow, filtered_elev_nosnow))
+        amin[n] = np.nanmin(np.append(filtered_elev_snow, filtered_elev_nosnow))
 
     return (amed, amean, astd, amax, amin, flag)
 
@@ -248,6 +248,7 @@ def calculate_tsl_byhand(snowheights,hgts,mask, min_snowheight,tsl_method, tsl_n
 def create_tsl_df(cos_output,min_snowheight, tsl_method, tsl_normalize):
     times = datetime.now()
     amed,amean,astd,amax,amin,flag = calculate_tsl_byhand(cos_output.SNOWHEIGHT.values, cos_output.HGT.values, cos_output.MASK.values, min_snowheight, tsl_method, tsl_normalize)
+    print(amed)
     tsl_df = pd.DataFrame({'time':pd.to_datetime(cos_output.time.values),
                             'Med_TSL':amed,
                             'Mean_TSL':amean,
