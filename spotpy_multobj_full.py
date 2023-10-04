@@ -31,7 +31,7 @@ tsla_obs.set_index('LS_DATE', inplace=True)
 #Normalize standard deviation as well
 if tsl_normalize:
     tsla_obs['SC_stdev'] = (tsla_obs['SC_stdev']) / (tsla_obs['glacier_DEM_max'] - tsla_obs['glacier_DEM_min'])
-    print(tsla_obs['SC_stdev'])
+    #print(tsla_obs['SC_stdev'])
 # Assign minimum TSLA where glacier seems fully snow-covered?
 #tsla_obs['SC_median'][tsla_obs['SC_min'] <= tsla_obs['glacier_DEM_min']] = tsla_obs['SC_min']
 #tsla_obs['TSL_normalized'] = (tsla_obs['SC_median'] - tsla_obs['glacier_DEM_min']) / (tsla_obs['glacier_DEM_max'] - tsla_obs['glacier_DEM_min'])
@@ -59,21 +59,23 @@ fromlist=False
 class spot_setup:
     if fromlist == False:
         print("Setting parameters not from a list")
-    # defining all parameters and the distribution except lrT and lrRH
-        param = lr_RRR, RRR_factor, alb_ice, alb_snow, alb_firn,\
-                albedo_aging, albedo_depth, center_snow_transfer_function, roughness_fresh_snow, roughness_ice = [
+    # defining all parameters and the distribution except lrT and lrRH and lrRRR
+        param = RRR_factor, alb_ice, alb_snow, alb_firn,\
+                albedo_aging, albedo_depth, center_snow_transfer_function, spread_snow_transfer_function,\
+                roughness_fresh_snow, roughness_ice = [
             #Uniform(low=-0.0075, high=-0.005),  # lr_temp
-            Uniform(low=0, high=0.0002),  # lr_prec
+            #Uniform(low=0, high=0.0002),  # lr_prec
             #Uniform(low=0, high=0.1), #lr RH2 -> in percent so from 0 to 1 % no prior knowledge for this factor
-            Uniform(low=0.5, high=2.), #1.235, high=1.265
-            Uniform(low=0.18, high=0.35),  # alb ice
-            Uniform(low=0.75, high=0.9),  # alb snow
-            Uniform(low=0.4, high=0.6), #alb_firn
-            Uniform(low=5, high=23, step=1), #effect of age on snow albedo (days)
-            Uniform(low=3, high=8, step=1), #effect of snow depth on albedo (cm) 
-            Uniform(low=0.1, high=1.5), #snow transfer function
-            Uniform(low=0.19, high=2.4), #fresh snow roughness
-            Uniform(low=0.45, high=4.5) #ice roughness
+            Uniform(low=0.3, high=4.), #1.235, high=1.265
+            Uniform(low=0.18, high=0.4),  # alb ice
+            Uniform(low=0.75, high=0.95),  # alb snow
+            Uniform(low=0.4, high=0.75), #alb_firn
+            Uniform(low=3, high=23), #effect of age on snow albedo (days)
+            Uniform(low=3, high=20), #effect of snow depth on albedo (cm) 
+            Uniform(low=-0.5, high=1.5), #snow transfer function
+            Uniform(low=0.2, high=3), #spread snow transfer function
+            Uniform(low=0.24, high=3.56), #fresh snow roughness
+            Uniform(low=0.1, high=7.0) #ice roughness
             ]
 
     # Number of needed parameter iterations for parametrization and sensitivity analysis
@@ -123,10 +125,11 @@ class spot_setup:
         if isinstance(self.count,int):
             self.count += 1
         print("Count", self.count)
-        sim_tsla, sim_mb = main(lr_RRR=x.lr_RRR,RRR_factor=x.RRR_factor,
+        sim_tsla, sim_mb = main(RRR_factor=x.RRR_factor,
                                 alb_ice = x.alb_ice, alb_snow = x.alb_snow,alb_firn = x.alb_firn,
                                 albedo_aging = x.albedo_aging, albedo_depth = x.albedo_depth,
                                 center_snow_transfer_function = x.center_snow_transfer_function, 
+                                spread_snow_transfer_function = x.spread_snow_transfer_function,
                                 roughness_fresh_snow = x.roughness_fresh_snow, roughness_ice = x.roughness_ice,
                                 count=self.count)
         sim_tsla = sim_tsla[sim_tsla['time'].isin(tsla_obs.index)]
@@ -193,10 +196,10 @@ def psample(obs, rep=10, count=None, dbname='cosipy_par_smpl', dbformat="csv",al
 
     #save_sim = True returns error
     sampler = alg_selector[algorithm](setup, dbname=dbname, dbformat=dbformat,random_state=42,save_sim=True)
-    sampler.sample(rep, nChains=5)
+    sampler.sample(rep, nChains=5, nCr=3, eps=10e-6, convergence_limit = 1.0)
 
 #mc to allow to read from list
-mcmc = psample(obs=(tsla_obs,geod_ref), count=1, rep=10, algorithm='demcz')
+mcmc = psample(obs=(tsla_obs,geod_ref), count=1, rep=10000, algorithm='dream')
 
 #Plotting routine and most parts of script created by Phillip Schuster of HU Berlin
 #Thank you Phillip!

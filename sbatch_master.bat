@@ -1,7 +1,7 @@
 #!/bin/bash -l
 
 #SBATCH --job-name="FinalHEF"
-#SBATCH --qos=short
+#SBATCH --qos=long
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=20
 #SBATCH --chdir=/data/scratch/richteny/thesis/cosipy_test_space/
@@ -19,8 +19,8 @@ echo $SLURM_CPUS_ON_NODE
 #conda activate cspy
 module load anaconda/2019.07
 
-python -u /data/scratch/richteny/thesis/cosipy_test_space/COSIPY.py
-#python -u /data/scratch/richteny/thesis/cosipy_test_space/spotpy_multobj_full.py
+#python -u /data/scratch/richteny/thesis/cosipy_test_space/COSIPY.py
+python -u /data/scratch/richteny/thesis/cosipy_test_space/spotpy_multobj_full.py
 #python -u /data/scratch/richteny/thesis/cosipy_test_space/spotpy_run_fromlist.py
 #python -u /data/scratch/richteny/thesis/cosipy_test_space/FAST_spotpy.py 
 
