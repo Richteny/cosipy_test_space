@@ -9,7 +9,7 @@
 #-----------------------------------
 # Abramov
 time_start = "1999-01-01T00:00"
-time_end   = "2005-01-01T00:00" 
+time_end   = "2010-01-01T00:00" 
 
 # Hintereisferner
 #time_start = '2018-09-17T08:00'
@@ -26,7 +26,7 @@ data_path = './data/'
 
 input_netcdf= 'HEF/HEF_COSMO_300m_1999_2010.nc' #Abramov_300m_ERA5mod_spinup_Wohlfahrt_2009-2020.nc' #"Abramov/Abramov_300m_ERA5mod_spinup_Wohlfahrt_2009-2020_crop.nc" #"Abramov/Abramov_300m_ERA5_OldRad_1999_2021.nc" 
 
-output_netcdf = 'TEST_MELTOUT_'+time_start_str+'-'+time_end_str+'.nc'
+output_netcdf = 'RUNS_DREAM_'+time_start_str+'-'+time_end_str+'.nc'
 
 
 
@@ -101,7 +101,7 @@ local_port = 8786                                           # port for local clu
 #-----------------------------------
 # WRITE FULL FIELDS 
 #-----------------------------------    
-full_field = True                                          # write full fields (2D data) to file
+full_field = False                                          # write full fields (2D data) to file
 if WRF_X_CSPY:
     full_field = True
     
@@ -114,7 +114,7 @@ force_use_TP = True                                        # If total precipitat
 #-----------------------------------
 # CLOUD COVER FRACTION  
 #-----------------------------------
-force_use_N = True                                         # If cloud cover fraction and incoming longwave radiation
+force_use_N = False                                         # If cloud cover fraction and incoming longwave radiation
                                                             # in input data use cloud cover fraction
 
 #-----------------------------------
