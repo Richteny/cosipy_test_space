@@ -54,10 +54,11 @@ from numba import njit
 #from dask_mpi import initialize
 #initialize(nanny=False)
 
-def main(lr_T=-0.0065, lr_RRR=0., lr_RH=0, RRR_factor=mult_factor_RRR, alb_ice=albedo_ice,
+def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=mult_factor_RRR, alb_ice=albedo_ice,
          alb_snow=albedo_fresh_snow,alb_firn=albedo_firn,albedo_aging=albedo_mod_snow_aging,
          albedo_depth=albedo_mod_snow_depth, center_snow_transfer_function=center_snow_transfer_function,
-         roughness_fresh_snow=roughness_fresh_snow,roughness_ice=roughness_ice,roughness_firn=roughness_firn,count=""):
+         spread_snow_transfer_function=spread_snow_transfer_function,roughness_fresh_snow=roughness_fresh_snow,
+         roughness_ice=roughness_ice,roughness_firn=roughness_firn,count=""):
 
     start_logging()
     times = datetime.now()
@@ -70,6 +71,7 @@ def main(lr_T=-0.0065, lr_RRR=0., lr_RH=0, RRR_factor=mult_factor_RRR, alb_ice=a
     opt_dict['albedo_mod_snow_aging'] = albedo_aging
     opt_dict['albedo_mod_snow_depth'] = albedo_depth
     opt_dict['center_snow_transfer_function'] = center_snow_transfer_function
+    opt_dict['spread_snow_transfer_function'] = spread_snow_transfer_function
     opt_dict['roughness_fresh_snow'] = roughness_fresh_snow
     opt_dict['roughness_ice'] = roughness_ice
     opt_dict['roughness_firn'] = roughness_firn
@@ -77,6 +79,12 @@ def main(lr_T=-0.0065, lr_RRR=0., lr_RH=0, RRR_factor=mult_factor_RRR, alb_ice=a
     lapse_RRR = float(lr_RRR)
     lapse_RH = float(lr_RH)
     print("Time required to load in opt_dic: ", datetime.now()-times)
+    print("#--------------------------------------#")
+    print("Starting simulations with the following parameters.")
+    [print("Parameter ", x,"=",opt_dict[x]) for x in opt_dict.keys()]
+    #for key in opt_dict.keys():
+    #    print("Parameter ", key,"=",opt_dict[key])
+    print("\n#--------------------------------------#")
     #additionally initial snowheight constant, snow_layer heights, temperature bottom, albedo aging and depth
     #------------------------------------------
     # Create input and output dataset
@@ -96,11 +104,11 @@ def main(lr_T=-0.0065, lr_RRR=0., lr_RH=0, RRR_factor=mult_factor_RRR, alb_ice=a
     # Auxiliary variables for futures
     futures= []
     #adjust lapse rates
-    print("#--------------------------------------#") 
-    print("\nStarting run with lapse rates:", lapse_T, "and:", lapse_RRR) 
-    print("\nAlbedo ice, snow and firn:", opt_dict['albedo_ice'],",",opt_dict['albedo_fresh_snow'],"and", opt_dict['albedo_firn'])
-    print("\nRRR mult factor is:", opt_dict['mult_factor_RRR'])
-    print("\n#--------------------------------------#")
+    #print("#--------------------------------------#") 
+    #print("\nStarting run with lapse rates:", lapse_T, "and:", lapse_RRR) 
+    #print("\nAlbedo ice, snow and firn:", opt_dict['albedo_ice'],",",opt_dict['albedo_fresh_snow'],"and", opt_dict['albedo_firn'])
+    #print("\nRRR mult factor is:", opt_dict['mult_factor_RRR'])
+    #print("\n#--------------------------------------#")
     
     start2 = datetime.now()
     t2 = DATA.T2.values
@@ -159,7 +167,7 @@ def main(lr_T=-0.0065, lr_RRR=0., lr_RH=0, RRR_factor=mult_factor_RRR, alb_ice=a
         encoding[var] = dict(zlib=True, complevel=compression_level)
                     
     results_output_name = output_netcdf.split('.nc')[0]+'_num{}_lrT_{}_lrRRR_{}_prcp_{}_albsnow_{}.nc'.format(count, round(abs(lapse_T),7), round(lapse_RRR,7),round(opt_dict['mult_factor_RRR'],5), opt_dict['albedo_fresh_snow'])  
-    IO.get_result().to_netcdf(os.path.join(data_path,'output',results_output_name), encoding=encoding, mode = 'w')
+    #IO.get_result().to_netcdf(os.path.join(data_path,'output',results_output_name), encoding=encoding, mode = 'w')
     #dataset = IO.get_result()
     #calculate MB for geod. reference
     #Check if 1D or 2D

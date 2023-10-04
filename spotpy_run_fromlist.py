@@ -90,7 +90,7 @@ class spot_setup:
         self.count = count
         if fromlist:
             print("Getting parameters from list.")
-            self.params = [spotpy.parameter.List('lr_RRR',param_list['parlr_RRR'].tolist()),
+            self.params = [ #spotpy.parameter.List('lr_RRR',param_list['parlr_RRR'].tolist()),
                            spotpy.parameter.List('RRR_factor',param_list['parRRR_factor'].tolist()),
                            spotpy.parameter.List('alb_ice',param_list['paralb_ice'].tolist()),
                            spotpy.parameter.List('alb_snow',param_list['paralb_snow'].tolist()),
@@ -98,8 +98,10 @@ class spot_setup:
                            spotpy.parameter.List('albedo_aging',param_list['paralbedo_aging'].tolist()),
                            spotpy.parameter.List('albedo_depth',param_list['paralbedo_depth'].tolist()),
                            spotpy.parameter.List('center_snow_transfer_function',param_list['parcenter_snow_transfer_function'].tolist()),
+                           spotpy.parameter.List('spread_snow_transfer_function',param_list['parspread_snow_transfer_function'].tolist()),
                            spotpy.parameter.List('roughness_fresh_snow',param_list['parroughness_fresh_snow'].tolist()),
-                           spotpy.parameter.List('roughness_ice',param_list['parroughness_ice'].tolist())]
+                           spotpy.parameter.List('roughness_ice',param_list['parroughness_ice'].tolist())
+                          ]
 
 
 
@@ -130,10 +132,11 @@ class spot_setup:
         if isinstance(self.count,int):
             self.count += 1
         print("Count", self.count)
-        sim_tsla, sim_mb = main(lr_RRR=x.lr_RRR,RRR_factor=x.RRR_factor,
+        sim_tsla, sim_mb = main(RRR_factor=x.RRR_factor,
                                 alb_ice = x.alb_ice, alb_snow = x.alb_snow,alb_firn = x.alb_firn,
                                 albedo_aging = x.albedo_aging, albedo_depth = x.albedo_depth,
-                                center_snow_transfer_function = x.center_snow_transfer_function, 
+                                center_snow_transfer_function = x.center_snow_transfer_function,
+                                spread_snow_transfer_function = x.spread_snow_transfer_function, 
                                 roughness_fresh_snow = x.roughness_fresh_snow, roughness_ice = x.roughness_ice,
                                 count=self.count)
         sim_tsla = sim_tsla[sim_tsla['time'].isin(tsla_obs.index)]
