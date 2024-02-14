@@ -9,7 +9,7 @@
 #-----------------------------------
 # Abramov
 time_start = "1999-01-01T00:00"
-time_end   = "2010-01-01T00:00" 
+time_end   = "2001-01-01T00:00" 
 
 # Hintereisferner
 #time_start = '2018-09-17T08:00'
@@ -26,7 +26,7 @@ data_path = './data/'
 
 input_netcdf= 'HEF/HEF_COSMO_300m_1999_2010.nc' #Abramov_300m_ERA5mod_spinup_Wohlfahrt_2009-2020.nc' #"Abramov/Abramov_300m_ERA5mod_spinup_Wohlfahrt_2009-2020_crop.nc" #"Abramov/Abramov_300m_ERA5_OldRad_1999_2021.nc" 
 
-output_netcdf = 'RUNS_DREAM_'+time_start_str+'-'+time_end_str+'.nc'
+output_netcdf = 'HEF_COSMO_300m_1999_2010_DREAM_'+time_start_str+'-'+time_end_str+'.nc'
 
 
 

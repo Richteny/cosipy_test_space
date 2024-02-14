@@ -62,6 +62,10 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=mult_factor_RRR, alb_ice=al
 
     start_logging()
     times = datetime.now()
+    #Load count variable 
+    if isinstance(count, int):
+        count = count + 1
+
     #Initialise dictionary and load Spotpy Params#
     opt_dict = dict()
     opt_dict['mult_factor_RRR'] = RRR_factor
@@ -132,8 +136,9 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=mult_factor_RRR, alb_ice=al
     #-----------------------------------------------
     if (slurm_use):
         #scheduler_port=port
-        with SLURMCluster(cores=cores, processes=processes, memory=memory, shebang=shebang, name=name, job_extra=slurm_parameters, local_directory='logs/dask-worker-space') as cluster:
-            cluster.scale(processes * nodes)   
+        with SLURMCluster(job_name=name, cores=cores, processes=cores, memory=memory, account=account,
+                          job_extra_directives=slurm_parameters, local_directory='logs/dask-worker-space') as cluster:
+            cluster.scale(nodes*cores)   
             print(cluster.job_script())
             print("You are using SLURM!\n")
             print(cluster)
@@ -166,8 +171,8 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=mult_factor_RRR, alb_ice=al
         #encoding[var] = dict(zlib=True, complevel=compression_level, dtype=dtype, scale_factor=scale_factor, add_offset=add_offset, _FillValue=FillValue)
         encoding[var] = dict(zlib=True, complevel=compression_level)
                     
-    results_output_name = output_netcdf.split('.nc')[0]+'_num{}_lrT_{}_lrRRR_{}_prcp_{}_albsnow_{}.nc'.format(count, round(abs(lapse_T),7), round(lapse_RRR,7),round(opt_dict['mult_factor_RRR'],5), opt_dict['albedo_fresh_snow'])  
-    #IO.get_result().to_netcdf(os.path.join(data_path,'output',results_output_name), encoding=encoding, mode = 'w')
+    results_output_name = output_netcdf.split('.nc')[0]+'_num{}.nc'.format(count)  
+    IO.get_result().to_netcdf(os.path.join(data_path,'output',results_output_name), encoding=encoding, mode = 'w')
     #dataset = IO.get_result()
     #calculate MB for geod. reference
     #Check if 1D or 2D
@@ -282,8 +287,8 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=mult_factor_RRR, alb_ice=al
             print(resampled_out)
             print("Time required for resampling of output: ", datetime.now()-times)
             #Need HGT values as 2D, ensured with following line of code.
-            resampled_out['HGT'] = (('lat','lon'), IO.get_result()['HGT'])
-            resampled_out['MASK'] = (('lat','lon'), IO.get_result()['MASK'])
+            resampled_out['HGT'] = (('lat','lon'), IO.get_result()['HGT'].data)
+            resampled_out['MASK'] = (('lat','lon'), IO.get_result()['MASK'].data)
             #print("Time required for resampling: ", datetime.now()-times)
             #a_tsl_out = create_tsl_df(a_resampled_out, min_snowheight, tsl_method, tsl_normalize)
             tsl_out = create_tsl_df(resampled_out, min_snowheight, tsl_method, tsl_normalize)
@@ -293,7 +298,7 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=mult_factor_RRR, alb_ice=al
             #print(np.nanmedian(tsl_out['Med_TSL']))
             tsla_stats = eval_tsl(tsla_observations,tsl_out, time_col_obs, tsla_col_obs)
             print("TSLA Observed vs. Modelled RMSE: " + str(tsla_stats[0])+ "; R-squared: " + str(tsla_stats[1]))
-            #tsl_out.to_csv(os.path.join(data_path,'output',tsl_csv_name))
+            tsl_out.to_csv(os.path.join(data_path,'output',tsl_csv_name))
             #a_tsl_out.to_csv(os.path.join(data_path,'output','test_for_resample.csv'))
         print("Time required for full TSL EVAL: ", datetime.now()-times)
     #-----------------------------------------------
@@ -311,7 +316,7 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=mult_factor_RRR, alb_ice=al
     print('\t SIMULATION WAS SUCCESSFUL')
     print('--------------------------------------------------------------')
     
-    return (tsl_out,geod_mb)
+    return (geod_mb,tsl_out)
     #return geod_mb
     #return tsl_out
 
@@ -326,15 +331,15 @@ def run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures, opt_dict=None):
         print(client)
 
         # Get dimensions of the whole domain
-        ny = DATA.dims[northing]
-        nx = DATA.dims[easting]
+        ny = DATA.sizes[northing]
+        nx = DATA.sizes[easting]
 
         cp = cProfile.Profile()
 
         # Get some information about the cluster/nodes
-        total_grid_points = DATA.dims[northing]*DATA.dims[easting]
+        total_grid_points = DATA.sizes[northing]*DATA.sizes[easting]
         if slurm_use is True:
-            total_cores = processes*nodes
+            total_cores = cores*nodes
             points_per_core = total_grid_points // total_cores
             print(total_grid_points, total_cores, points_per_core)
 
@@ -380,7 +385,7 @@ def run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures, opt_dict=None):
 
         # Distribute data and model to workers
         start_res = datetime.now()
-        for y,x in product(range(DATA.dims[northing]),range(DATA.dims[easting])):
+        for y,x in product(range(DATA.sizes[northing]),range(DATA.sizes[easting])):
             if stake_evaluation is True:
                 stake_names = []
                 # Check if the grid cell contain stakes and store the stake names in a list
