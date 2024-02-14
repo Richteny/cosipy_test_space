@@ -52,10 +52,15 @@ geod_ref = geod_ref[['dmdtda','err_dmdtda']]
 param_list = pd.read_csv('/data/scratch/richteny/thesis/cosipy_test_space/cosipy_par_smpl.csv')
 print(param_list.head(3))
 #make selection here
-#param_list.sort_values(by='like1_1', ascending=False, inplace=True)
+param_list.sort_values(by='like1_1', ascending=False, inplace=True)
+param_list = param_list.head(850)
+#take percentile based threshold
 #param_list = param_list.loc[param_list['like1_1'] >= np.nanpercentile(param_list['like1_1'], 98)] #select best 100
-param_list.sort_values(by='parRRR_factor', ascending=False, inplace=True)
-param_list = pd.concat([param_list.head(5),param_list.tail(5)])
+# probability concept would be to select samples from all runs .. create plot of this as well
+
+
+#param_list.sort_values(by='parRRR_factor', ascending=False, inplace=True)
+#param_list = pd.concat([param_list.head(5),param_list.tail(5)])
 print(param_list)
 fromlist=True
 #tsl_normalize=True
@@ -181,7 +186,7 @@ class spot_setup:
 
  
 
-def psample(obs, rep=10, count=None, dbname='cosipy_subsurf', dbformat="csv",algorithm='mcmc'):
+def psample(obs, rep=10, count=None, dbname='cosipy_bestpar', dbformat="csv",algorithm='mc'):
     #try lhs which allows for multi-objective calibration which mcmc here does not
     #set seed to make results reproducable, -> for running from list only works with mc
     np.random.seed(42)
