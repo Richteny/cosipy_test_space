@@ -15,9 +15,13 @@ penetrating_method = 'Bintanja95'               # possibilities: 'Bintanja95'
 roughness_method = 'Moelg12'                    # possibilities: 'Moelg12'
 saturation_water_vapour_method = 'Sonntag90'    # possibilities: 'Sonntag90'
 thermal_conductivity_method = 'bulk'		    # possibilities: 'bulk', 'empirical'
+<<<<<<< HEAD
 sfc_temperature_method = 'Newton'               # please use 'Newton' (Secant, fastest); the other options 'L-BFGS-B' and 'SLSQP'(faster) 
                                                 # lead to different results since the update in February 2024 and to a very long runtime; 
                                                 # problem with L-BFGS-B and SLSQP should be solved
+=======
+sfc_temperature_method = 'Newton'                # possibilities: 'L-BFGS-B', 'SLSQP'(faster), 'Newton' (Secant, fastest)'
+>>>>>>> 236b0b7 (feat: now works with pymc and starts to incorporate recent pushes to allow it to run with newer versions of xarray and dask distributed)
 
 # Now done in cfg.py
 # WRF_X_CSPY: for efficiency and consistency

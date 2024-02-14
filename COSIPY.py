@@ -67,6 +67,7 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
     if isinstance(count, int):
         count = count + 1
 
+<<<<<<< HEAD
     '''
     TEST TO PARSE A TUPLE OF PARAM VALUES AND NOT CALL IN DICTIONARY
     '''
@@ -99,6 +100,21 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
     #opt_dict['roughness_firn'] = roughness_firn
     #print(opt_dict)
     #print(typeof(opt_dict))
+=======
+    #Initialise dictionary and load Spotpy Params#
+    opt_dict = dict()
+    opt_dict['mult_factor_RRR'] = RRR_factor
+    opt_dict['albedo_ice'] = alb_ice
+    opt_dict['albedo_fresh_snow'] = alb_snow
+    opt_dict['albedo_firn'] = alb_firn
+    opt_dict['albedo_mod_snow_aging'] = albedo_aging
+    opt_dict['albedo_mod_snow_depth'] = albedo_depth
+    opt_dict['center_snow_transfer_function'] = center_snow_transfer_function
+    opt_dict['spread_snow_transfer_function'] = spread_snow_transfer_function
+    opt_dict['roughness_fresh_snow'] = roughness_fresh_snow
+    opt_dict['roughness_ice'] = roughness_ice
+    opt_dict['roughness_firn'] = roughness_firn
+>>>>>>> 236b0b7 (feat: now works with pymc and starts to incorporate recent pushes to allow it to run with newer versions of xarray and dask distributed)
     lapse_T = float(lr_T)
     lapse_RRR = float(lr_RRR)
     lapse_RH = float(lr_RH)
@@ -164,6 +180,7 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
     #-----------------------------------------------
     # Create a client for distributed calculations
     #-----------------------------------------------
+<<<<<<< HEAD
     if Config.slurm_use:
         SlurmConfig()
         with SLURMCluster(
@@ -176,6 +193,13 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
             local_directory=SlurmConfig.local_directory,
         ) as cluster:
             cluster.scale(SlurmConfig.nodes * SlurmConfig.cores)
+=======
+    if (slurm_use):
+        #scheduler_port=port
+        with SLURMCluster(job_name=name, cores=cores, processes=cores, memory=memory, account=account,
+                          job_extra_directives=slurm_parameters, local_directory='logs/dask-worker-space') as cluster:
+            cluster.scale(nodes*cores)   
+>>>>>>> 236b0b7 (feat: now works with pymc and starts to incorporate recent pushes to allow it to run with newer versions of xarray and dask distributed)
             print(cluster.job_script())
             print("You are using SLURM!\n")
             print(cluster)
@@ -203,6 +227,7 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
         # FillValue = -9999
         # scale_factor, add_offset = compute_scale_and_offset(dataMin, dataMax, 16)
         #encoding[var] = dict(zlib=True, complevel=compression_level, dtype=dtype, scale_factor=scale_factor, add_offset=add_offset, _FillValue=FillValue)
+<<<<<<< HEAD
         encoding[var] = dict(zlib=True, complevel=Config.compression_level)
     
     output_netcdf = set_output_netcdf_path()
@@ -219,6 +244,12 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
     print(np.nanmax(IO.get_result().ALBEDO))
     print(np.nanmin(IO.get_result().ALBEDO))
     print(np.nanmax(IO.get_result().Z0))
+=======
+        encoding[var] = dict(zlib=True, complevel=compression_level)
+                    
+    results_output_name = output_netcdf.split('.nc')[0]+'_num{}.nc'.format(count)  
+    IO.get_result().to_netcdf(os.path.join(data_path,'output',results_output_name), encoding=encoding, mode = 'w')
+>>>>>>> 236b0b7 (feat: now works with pymc and starts to incorporate recent pushes to allow it to run with newer versions of xarray and dask distributed)
     #dataset = IO.get_result()
     #calculate MB for geod. reference
     #Check if 1D or 2D
@@ -346,6 +377,7 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
             #print(np.nanmedian(tsl_out['Med_TSL']))
             tsla_stats = eval_tsl(tsla_observations,tsl_out, Config.time_col_obs, Config.tsla_col_obs)
             print("TSLA Observed vs. Modelled RMSE: " + str(tsla_stats[0])+ "; R-squared: " + str(tsla_stats[1]))
+<<<<<<< HEAD
             #tsl_out.to_csv(os.path.join(output_path,tsl_csv_name))
             ## Match to observation dates for pymc routine
             tsl_out_match = tsl_out.loc[tsl_out['time'].isin(tsla_observations['LS_DATE'])]
@@ -355,6 +387,9 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
             
             #if tsl_normalize:
             #    tsla_obs_v2['SC_stdev'] = (tsla_obs_v2['SC_stdev']) / (tsla_obs_v2['glacier_DEM_max'] - tsla_obs_v2['glacier_DEM_min'])
+=======
+            tsl_out.to_csv(os.path.join(data_path,'output',tsl_csv_name))
+>>>>>>> 236b0b7 (feat: now works with pymc and starts to incorporate recent pushes to allow it to run with newer versions of xarray and dask distributed)
             #a_tsl_out.to_csv(os.path.join(data_path,'output','test_for_resample.csv'))
             ### PUTTING TEST FOR COMB COST FUNCTION SCORE HERE ###
             #eval_tsla = np.delete(tsla_obs_v2.TSL_normalized.values, np.argwhere(np.isnan(tsl_out_match.Med_TSL.values)))
@@ -417,12 +452,24 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
     #-----------------------------------------------
     # Print out some information
     #-----------------------------------------------
+<<<<<<< HEAD
     get_time_required(
         action="write restart and output files", times=duration_run_writing
     )
     run_time = duration_run.total_seconds()
     print(f"\tTotal run duration: {run_time // 60.0:4g} minutes {run_time % 60.0:2g} seconds\n")
     print_notice(msg="\tSIMULATION WAS SUCCESSFUL")
+=======
+    print("\t Time required to write restart and output files: %4g minutes %2g seconds \n" % (duration_run_writing.total_seconds()//60.0,duration_run_writing.total_seconds()%60.0))
+    print("\t Total run duration: %4g minutes %2g seconds \n" % (duration_run.total_seconds()//60.0,duration_run.total_seconds()%60.0))
+    print('--------------------------------------------------------------')
+    print('\t SIMULATION WAS SUCCESSFUL')
+    print('--------------------------------------------------------------')
+    
+    return (geod_mb,tsl_out)
+    #return geod_mb
+    #return tsl_out
+>>>>>>> 236b0b7 (feat: now works with pymc and starts to incorporate recent pushes to allow it to run with newer versions of xarray and dask distributed)
 
     return (geod_mb,tsl_out_match)
 
@@ -437,15 +484,26 @@ def run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures, opt_dict=None):
         print(client)
 
         # Get dimensions of the whole domain
+<<<<<<< HEAD
         # ny = DATA.sizes[Config.northing]
         # nx = DATA.sizes[Config.easting]
+=======
+        ny = DATA.sizes[northing]
+        nx = DATA.sizes[easting]
+>>>>>>> 236b0b7 (feat: now works with pymc and starts to incorporate recent pushes to allow it to run with newer versions of xarray and dask distributed)
 
         # cp = cProfile.Profile()
 
         # Get some information about the cluster/nodes
+<<<<<<< HEAD
         total_grid_points = DATA.sizes[Config.northing]*DATA.sizes[Config.easting]
         if Config.slurm_use:
             total_cores = SlurmConfig.cores * SlurmConfig.nodes
+=======
+        total_grid_points = DATA.sizes[northing]*DATA.sizes[easting]
+        if slurm_use is True:
+            total_cores = cores*nodes
+>>>>>>> 236b0b7 (feat: now works with pymc and starts to incorporate recent pushes to allow it to run with newer versions of xarray and dask distributed)
             points_per_core = total_grid_points // total_cores
             print(total_grid_points, total_cores, points_per_core)
 
@@ -490,8 +548,13 @@ def run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures, opt_dict=None):
 
         # Distribute data and model to workers
         start_res = datetime.now()
+<<<<<<< HEAD
         for y,x in product(range(DATA.sizes[Config.northing]),range(DATA.sizes[Config.easting])):
             if Config.stake_evaluation:
+=======
+        for y,x in product(range(DATA.sizes[northing]),range(DATA.sizes[easting])):
+            if stake_evaluation is True:
+>>>>>>> 236b0b7 (feat: now works with pymc and starts to incorporate recent pushes to allow it to run with newer versions of xarray and dask distributed)
                 stake_names = []
                 # Check if the grid cell contain stakes and store the stake names in a list
                 for idx, (stake_loc_y, stake_loc_x, stake_name) in enumerate(stakes_list):

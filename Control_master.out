@@ -1,4 +1,5 @@
 20
+<<<<<<< HEAD
 Loading TSL file from: ./data/input/HEF/snowlines/HEF-snowlines-1999-2010_manual.csv
 Start date: 2000-01-01
 End date: 2000-12-31T23:00
@@ -27,12 +28,42 @@ Starting simulations with the following parameters.
 
 --------------------------------------------------------------
 	 Integration from 2000-01-01T00:00 to 2000-12-31T23:00
+=======
+Loading TSL file from: ./data/input/HEF/snowlines/HEF-snowlines-1999-2010.csv
+Start date: 2000-01-01
+End date: 2001-01-01T00:00
+Set priors.
+Modelled MB is: FromFunctionOp{run_cspy}.0
+Time required to load in opt_dic:  0:00:00.000010
+#--------------------------------------#
+Starting simulations with the following parameters.
+Parameter  mult_factor_RRR = 1.25
+Parameter  albedo_ice = 0.25
+Parameter  albedo_fresh_snow = 0.84
+Parameter  albedo_firn = 0.5549999999999999
+Parameter  albedo_mod_snow_aging = 1.1
+Parameter  albedo_mod_snow_depth = 1.1
+Parameter  center_snow_transfer_function = 0.0
+Parameter  spread_snow_transfer_function = 1
+Parameter  roughness_fresh_snow = 0.24
+Parameter  roughness_ice = 1.7
+Parameter  roughness_firn = 7.0
+
+#--------------------------------------#
+
+ Maximum available time interval from 1999-01-01T00:00 until 2010-01-01T00:00. Time steps: 96444 
+
+
+--------------------------------------------------------------
+	 Integration from 1999-01-01T00:00 to 2001-01-01T00:00
+>>>>>>> 236b0b7 (feat: now works with pymc and starts to incorporate recent pushes to allow it to run with newer versions of xarray and dask distributed)
 --------------------------------------------------------------
 
 --------------------------------------------------------------
 Checking input data .... 
 
 Temperature data (T2) ... ok 
+<<<<<<< HEAD
 Please check the input data, its seems they are out of range T2 MAX: 294.75 MIN: 242.19 
 
 Relative humidity data (RH2) ... ok 
@@ -50,11 +81,31 @@ Please check the input data, its seems they are out of range Snowfall MAX: 0.11 
 
 
  Glacier gridpoints: 129 
+=======
+Please check the input data, its seems they are out of range T2 MAX: 298.32 MIN: 240.52 
+
+Relative humidity data (RH2) ... ok 
+Shortwave data (G) ... ok 
+Please check the input data, its seems they are out of range G MAX: 2027.60 MIN: 0.00 
+
+Wind velocity data (U2) ... ok 
+Precipitation data (RRR) ... ok 
+Please check the input data, its seems they are out of range Rrr MAX: 126.14 MIN: 0.00 
+
+Cloud cover data (N) ... ok 
+Pressure data (PRES) ... ok 
+Incoming longwave data (LWin) ... ok 
+Please check the input data, its seems they are out of range Lwin MAX: 631.70 MIN: 0.00 
+
+
+ Glacier gridpoints: 120 
+>>>>>>> 236b0b7 (feat: now works with pymc and starts to incorporate recent pushes to allow it to run with newer versions of xarray and dask distributed)
 
 
 
 
 Output dataset ... ok
+<<<<<<< HEAD
 Restart dataset ... ok 
 
 --------------------------------------------------------------
@@ -69,12 +120,29 @@ Seconds needed for lapse rate: 0:00:03.168119
 #!/usr/bin/env bash
 
 #SBATCH -J SensHEF
+=======
+Restart ddataset ... ok 
+
+--------------------------------------------------------------
+
+Time required to init IO, DATA, RESULT, RESTART:  0:00:02.297780
+(17548, 14, 30)
+Assigning values back to DATA
+100.0
+0.04078483581542969
+(17548, 14, 30)
+Seconds needed for lapse rate: 0:00:03.079797
+#!/usr/bin/env bash
+
+#SBATCH -J WoEraAbr
+>>>>>>> 236b0b7 (feat: now works with pymc and starts to incorporate recent pushes to allow it to run with newer versions of xarray and dask distributed)
 #SBATCH -A morsanat
 #SBATCH -n 1
 #SBATCH --cpus-per-task=20
 #SBATCH --mem=56G
 #SBATCH -t 00:30:00
 #SBATCH --qos=short
+<<<<<<< HEAD
 #SBATCH --error=Error_nodes.err
 #SBATCH --output=Output_nodes.out
 #SBATCH --time=01:00:00
@@ -75433,12 +75501,167 @@ Starting simulations with the following parameters.
 
 --------------------------------------------------------------
 	 Integration from 2000-01-01T00:00 to 2000-12-31T23:00
+=======
+#SBATCH --output=Output_nodes.output
+#SBATCH --error=Error_nodes.err
+#SBATCH --time=1-00:00:00
+
+/data/scratch/richteny/miniconda3/envs/pymc_env/bin/python -m distributed.cli.dask_worker tcp://192.168.1.6:38059 --nthreads 1 --nworkers 20 --memory-limit 2.79GiB --name dummy-name --nanny --death-timeout 60 --local-directory logs/dask-worker-space
+
+You are using SLURM!
+
+SLURMCluster(215886e1, 'tcp://192.168.1.6:38059', workers=0, threads=0, memory=0 B)
+--------------------------------------------------------------
+	 Starting clients and submit jobs ... 
+
+-------------------------------------------------------------- 
+
+SLURMCluster(215886e1, 'tcp://192.168.1.6:38059', workers=0, threads=0, memory=0 B)
+<Client: 'tcp://192.168.1.6:38059' processes=0 threads=0, memory=0 B>
+420 60 7
+	 Time required to do calculations:    1 minutes 51.7809 seconds 
+
+
+
+--------------------------------------------------------------
+Write results ...
+-------------------------------------------------------------- 
+
+2D case.
+Geod. MB test.
+-0.05400473258714172
+Time it took to calculate geod. MB  0:00:00.085446
+Starting TSL eval.
+<xarray.Dataset>
+Dimensions:     (time: 367, lat: 14, lon: 30)
+Coordinates:
+  * time        (time) datetime64[ns] 2000-01-01 2000-01-02 ... 2001-01-01
+  * lat         (lat) float64 46.79 46.79 46.79 46.79 ... 46.82 46.82 46.82
+  * lon         (lon) float64 10.72 10.73 10.73 10.73 ... 10.8 10.8 10.8 10.8
+Data variables:
+    SNOWHEIGHT  (time, lat, lon) float64 nan nan nan nan nan ... nan nan nan nan
+Time required for resampling of output:  0:00:01.250288
+Calculating TSLA using conservative. Normalization is set to True.
+Max elev. 3656.1287 .
+ Min elev. 2442.7822
+[0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.00202742 0.00202742 0.00202742
+ 0.00202742 0.03639896 0.03639896 0.07016335 0.09192248 0.09192248
+ 0.09192248 0.09192248 0.11629919 0.11629919 0.18355391 0.18355391
+ 0.18365813 0.18365813 0.18765251 0.20484361 0.20484361 0.2243551
+ 0.27135525 0.27135525 0.28259066 0.29620229 0.29620229 0.31364481
+ 0.3159818  0.32160851 0.34835399 0.35181123 0.40179445 0.42848501
+ 0.42848501 0.         0.26560248 0.40091958 0.42848501 0.34414271
+ 0.33663295 0.42848501 0.50720009 0.50720009 0.50891563 0.50891563
+ 0.50891563 0.50891563 0.50891563 0.50891563 0.55455367 0.55455367
+ 0.55455367 0.55455367 0.55455367 0.55455367 0.55455367 0.55455367
+ 0.55455367 0.55455367 0.55455367 0.55455367 0.55455367 0.55455367
+ 0.55455367 0.58655252 0.58655252 0.58655252 0.58655252 0.53719556
+ 0.44273921 0.62457768 0.15178112 0.24170144 0.25293685 0.31238834
+ 0.33962669 0.37238522 0.40091958 0.32878013 0.2147483  0.19307448
+ 0.2147483  0.30521672 0.12055665 0.09111029 0.18365813 0.24170144
+ 0.         0.         0.         0.         0.09454006 0.16979821
+ 0.19155734 0.24923937 0.24923937 0.24923937 0.27803289 0.37132684
+ 0.37132684 0.37132684 0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.        ]
+Time required for calculating TSL only : 0:00:04.286439
+          time  Med_TSL  Mean_TSL  Std_TSL  Max_TSL  Min_TSL  Flag
+0   2000-01-01      0.0       0.0 -2.01326      0.0      0.0   1.0
+1   2000-01-02      0.0       0.0 -2.01326      0.0      0.0   1.0
+2   2000-01-03      0.0       0.0 -2.01326      0.0      0.0   1.0
+3   2000-01-04      0.0       0.0 -2.01326      0.0      0.0   1.0
+4   2000-01-05      0.0       0.0 -2.01326      0.0      0.0   1.0
+..         ...      ...       ...      ...      ...      ...   ...
+362 2000-12-28      0.0       0.0 -2.01326      0.0      0.0   1.0
+363 2000-12-29      0.0       0.0 -2.01326      0.0      0.0   1.0
+364 2000-12-30      0.0       0.0 -2.01326      0.0      0.0   1.0
+365 2000-12-31      0.0       0.0 -2.01326      0.0      0.0   1.0
+366 2001-01-01      0.0       0.0 -2.01326      0.0      0.0   1.0
+
+[367 rows x 7 columns]
+Time required for calculating TSL stats:  0:00:00.004338
+TSLA Observed vs. Modelled RMSE: 0.2189503294058646; R-squared: 0.11187036146234146
+Time required for full TSL EVAL:  0:00:05.556388
+	 Time required to write restart and output files:    0 minutes 23.9721 seconds 
+
+	 Total run duration:    2 minutes 21.394 seconds 
+
+--------------------------------------------------------------
+	 SIMULATION WAS SUCCESSFUL
+--------------------------------------------------------------
+Calculated MB is:  -0.05400473258714172
+Time required to load in opt_dic:  0:00:00.000008
+#--------------------------------------#
+Starting simulations with the following parameters.
+Parameter  mult_factor_RRR = 1.25
+Parameter  albedo_ice = 0.25
+Parameter  albedo_fresh_snow = 0.84
+Parameter  albedo_firn = 0.5549999999999999
+Parameter  albedo_mod_snow_aging = 1.1
+Parameter  albedo_mod_snow_depth = 1.1
+Parameter  center_snow_transfer_function = 0.0
+Parameter  spread_snow_transfer_function = 1
+Parameter  roughness_fresh_snow = 0.24
+Parameter  roughness_ice = 1.7
+Parameter  roughness_firn = 7.0
+
+#--------------------------------------#
+
+ Maximum available time interval from 1999-01-01T00:00 until 2010-01-01T00:00. Time steps: 96444 
+
+
+--------------------------------------------------------------
+	 Integration from 1999-01-01T00:00 to 2001-01-01T00:00
+>>>>>>> 236b0b7 (feat: now works with pymc and starts to incorporate recent pushes to allow it to run with newer versions of xarray and dask distributed)
 --------------------------------------------------------------
 
 --------------------------------------------------------------
 Checking input data .... 
 
 Temperature data (T2) ... ok 
+<<<<<<< HEAD
 Please check the input data, its seems they are out of range T2 MAX: 294.75 MIN: 242.19 
 
 Relative humidity data (RH2) ... ok 
@@ -75456,11 +75679,31 @@ Please check the input data, its seems they are out of range Snowfall MAX: 0.11 
 
 
  Glacier gridpoints: 129 
+=======
+Please check the input data, its seems they are out of range T2 MAX: 298.32 MIN: 240.52 
+
+Relative humidity data (RH2) ... ok 
+Shortwave data (G) ... ok 
+Please check the input data, its seems they are out of range G MAX: 2027.60 MIN: 0.00 
+
+Wind velocity data (U2) ... ok 
+Precipitation data (RRR) ... ok 
+Please check the input data, its seems they are out of range Rrr MAX: 126.14 MIN: 0.00 
+
+Cloud cover data (N) ... ok 
+Pressure data (PRES) ... ok 
+Incoming longwave data (LWin) ... ok 
+Please check the input data, its seems they are out of range Lwin MAX: 631.70 MIN: 0.00 
+
+
+ Glacier gridpoints: 120 
+>>>>>>> 236b0b7 (feat: now works with pymc and starts to incorporate recent pushes to allow it to run with newer versions of xarray and dask distributed)
 
 
 
 
 Output dataset ... ok
+<<<<<<< HEAD
 Restart dataset ... ok 
 
 --------------------------------------------------------------
@@ -75475,6 +75718,22 @@ Seconds needed for lapse rate: 0:00:00.053188
 #!/usr/bin/env bash
 
 #SBATCH -J SensHEF
+=======
+Restart ddataset ... ok 
+
+--------------------------------------------------------------
+
+Time required to init IO, DATA, RESULT, RESTART:  0:00:01.043026
+(17548, 14, 30)
+Assigning values back to DATA
+100.0
+0.04078483581542969
+(17548, 14, 30)
+Seconds needed for lapse rate: 0:00:00.139758
+#!/usr/bin/env bash
+
+#SBATCH -J WoEraAbr
+>>>>>>> 236b0b7 (feat: now works with pymc and starts to incorporate recent pushes to allow it to run with newer versions of xarray and dask distributed)
 #SBATCH -A morsanat
 #SBATCH -n 1
 #SBATCH --cpus-per-task=20
@@ -75482,6 +75741,7 @@ Seconds needed for lapse rate: 0:00:00.053188
 #SBATCH -t 00:30:00
 #SBATCH --qos=short
 #SBATCH --error=Error_nodes.err
+<<<<<<< HEAD
 #SBATCH --output=Output_nodes.out
 #SBATCH --time=01:00:00
 #SBATCH --reservation=PyMC
@@ -75500,6 +75760,24 @@ SLURMCluster(b9553320, 'tcp://192.168.1.7:41133', workers=0, threads=0, memory=0
 <Client: 'tcp://192.168.1.7:41133' processes=0 threads=0, memory=0 B>
 129 20 6
 	Time required to do calculations:    1 minutes 51.9257 seconds
+=======
+#SBATCH --time=1-00:00:00
+
+/data/scratch/richteny/miniconda3/envs/pymc_env/bin/python -m distributed.cli.dask_worker tcp://192.168.1.6:45455 --nthreads 1 --nworkers 20 --memory-limit 2.79GiB --name dummy-name --nanny --death-timeout 60 --local-directory logs/dask-worker-space
+
+You are using SLURM!
+
+SLURMCluster(58ec5ab6, 'tcp://192.168.1.6:45455', workers=0, threads=0, memory=0 B)
+--------------------------------------------------------------
+	 Starting clients and submit jobs ... 
+
+-------------------------------------------------------------- 
+
+SLURMCluster(58ec5ab6, 'tcp://192.168.1.6:45455', workers=0, threads=0, memory=0 B)
+<Client: 'tcp://192.168.1.6:45455' processes=0 threads=0, memory=0 B>
+420 60 7
+	 Time required to do calculations:    1 minutes 50.5858 seconds 
+>>>>>>> 236b0b7 (feat: now works with pymc and starts to incorporate recent pushes to allow it to run with newer versions of xarray and dask distributed)
 
 
 
@@ -75512,6 +75790,7 @@ Write results ...
 0.0017
 Compute area weighted MB for 1D case.
 Geod. MB test.
+<<<<<<< HEAD
 -2.485362490061848
 Time it took to calculate geod. MB  0:00:00.015304
 Starting TSL eval.
@@ -75543,6 +75822,125 @@ Count 1
 #--------------------------------------#
 Starting simulations with the following parameters.
 (0.97, 0.38764846794854413, 0.8306346497392542, 0.45506902194304033, 17.377539257408667, 21.402347566176893, 1.0, 1, 0.24, 1.7, 4.0, 0.0026)
+=======
+-0.05400473258714172
+Time it took to calculate geod. MB  0:00:00.085822
+Starting TSL eval.
+<xarray.Dataset>
+Dimensions:     (time: 367, lat: 14, lon: 30)
+Coordinates:
+  * time        (time) datetime64[ns] 2000-01-01 2000-01-02 ... 2001-01-01
+  * lat         (lat) float64 46.79 46.79 46.79 46.79 ... 46.82 46.82 46.82
+  * lon         (lon) float64 10.72 10.73 10.73 10.73 ... 10.8 10.8 10.8 10.8
+Data variables:
+    SNOWHEIGHT  (time, lat, lon) float64 nan nan nan nan nan ... nan nan nan nan
+Time required for resampling of output:  0:00:00.024579
+Calculating TSLA using conservative. Normalization is set to True.
+Max elev. 3656.1287 .
+ Min elev. 2442.7822
+[0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.00202742 0.00202742 0.00202742
+ 0.00202742 0.03639896 0.03639896 0.07016335 0.09192248 0.09192248
+ 0.09192248 0.09192248 0.11629919 0.11629919 0.18355391 0.18355391
+ 0.18365813 0.18365813 0.18765251 0.20484361 0.20484361 0.2243551
+ 0.27135525 0.27135525 0.28259066 0.29620229 0.29620229 0.31364481
+ 0.3159818  0.32160851 0.34835399 0.35181123 0.40179445 0.42848501
+ 0.42848501 0.         0.26560248 0.40091958 0.42848501 0.34414271
+ 0.33663295 0.42848501 0.50720009 0.50720009 0.50891563 0.50891563
+ 0.50891563 0.50891563 0.50891563 0.50891563 0.55455367 0.55455367
+ 0.55455367 0.55455367 0.55455367 0.55455367 0.55455367 0.55455367
+ 0.55455367 0.55455367 0.55455367 0.55455367 0.55455367 0.55455367
+ 0.55455367 0.58655252 0.58655252 0.58655252 0.58655252 0.53719556
+ 0.44273921 0.62457768 0.15178112 0.24170144 0.25293685 0.31238834
+ 0.33962669 0.37238522 0.40091958 0.32878013 0.2147483  0.19307448
+ 0.2147483  0.30521672 0.12055665 0.09111029 0.18365813 0.24170144
+ 0.         0.         0.         0.         0.09454006 0.16979821
+ 0.19155734 0.24923937 0.24923937 0.24923937 0.27803289 0.37132684
+ 0.37132684 0.37132684 0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.        ]
+Time required for calculating TSL only : 0:00:00.006568
+          time  Med_TSL  Mean_TSL  Std_TSL  Max_TSL  Min_TSL  Flag
+0   2000-01-01      0.0       0.0 -2.01326      0.0      0.0   1.0
+1   2000-01-02      0.0       0.0 -2.01326      0.0      0.0   1.0
+2   2000-01-03      0.0       0.0 -2.01326      0.0      0.0   1.0
+3   2000-01-04      0.0       0.0 -2.01326      0.0      0.0   1.0
+4   2000-01-05      0.0       0.0 -2.01326      0.0      0.0   1.0
+..         ...      ...       ...      ...      ...      ...   ...
+362 2000-12-28      0.0       0.0 -2.01326      0.0      0.0   1.0
+363 2000-12-29      0.0       0.0 -2.01326      0.0      0.0   1.0
+364 2000-12-30      0.0       0.0 -2.01326      0.0      0.0   1.0
+365 2000-12-31      0.0       0.0 -2.01326      0.0      0.0   1.0
+366 2001-01-01      0.0       0.0 -2.01326      0.0      0.0   1.0
+
+[367 rows x 7 columns]
+Time required for calculating TSL stats:  0:00:00.003012
+TSLA Observed vs. Modelled RMSE: 0.2189503294058646; R-squared: 0.11187036146234146
+Time required for full TSL EVAL:  0:00:00.047585
+	 Time required to write restart and output files:    0 minutes 18.4146 seconds 
+
+	 Total run duration:    2 minutes 10.3605 seconds 
+
+--------------------------------------------------------------
+	 SIMULATION WAS SUCCESSFUL
+--------------------------------------------------------------
+Calculated MB is:  -0.05400473258714172
+█ |----------------------------------------| 0.00% [0/1010 00:00<? Sampling chain 0, 0 divergences]Time required to load in opt_dic:  0:00:00.000007
+#--------------------------------------#
+Starting simulations with the following parameters.
+Parameter  mult_factor_RRR = 1.25
+Parameter  albedo_ice = 0.25
+Parameter  albedo_fresh_snow = 0.84
+Parameter  albedo_firn = 0.5549999999999999
+Parameter  albedo_mod_snow_aging = 1.1
+Parameter  albedo_mod_snow_depth = 1.1
+Parameter  center_snow_transfer_function = 0.0
+Parameter  spread_snow_transfer_function = 1
+Parameter  roughness_fresh_snow = 0.24
+Parameter  roughness_ice = 1.7
+Parameter  roughness_firn = 7.0
+>>>>>>> 236b0b7 (feat: now works with pymc and starts to incorporate recent pushes to allow it to run with newer versions of xarray and dask distributed)
 
 #--------------------------------------#
 
@@ -75550,13 +75948,18 @@ Starting simulations with the following parameters.
 
 
 --------------------------------------------------------------
+<<<<<<< HEAD
 	 Integration from 2000-01-01T00:00 to 2000-12-31T23:00
+=======
+	 Integration from 1999-01-01T00:00 to 2001-01-01T00:00
+>>>>>>> 236b0b7 (feat: now works with pymc and starts to incorporate recent pushes to allow it to run with newer versions of xarray and dask distributed)
 --------------------------------------------------------------
 
 --------------------------------------------------------------
 Checking input data .... 
 
 Temperature data (T2) ... ok 
+<<<<<<< HEAD
 Please check the input data, its seems they are out of range T2 MAX: 294.75 MIN: 242.19 
 
 Relative humidity data (RH2) ... ok 
@@ -75571,6 +75974,22 @@ Cloud cover data (N) ... ok
 Pressure data (PRES) ... ok 
 Snowfall data (SNOWFALL) ... ok 
 Please check the input data, its seems they are out of range Snowfall MAX: 0.11 MIN: 0.00 
+=======
+Please check the input data, its seems they are out of range T2 MAX: 298.32 MIN: 240.52 
+
+Relative humidity data (RH2) ... ok 
+Shortwave data (G) ... ok 
+Please check the input data, its seems they are out of range G MAX: 2027.60 MIN: 0.00 
+
+Wind velocity data (U2) ... ok 
+Precipitation data (RRR) ... ok 
+Please check the input data, its seems they are out of range Rrr MAX: 126.14 MIN: 0.00 
+
+Cloud cover data (N) ... ok 
+Pressure data (PRES) ... ok 
+Incoming longwave data (LWin) ... ok 
+Please check the input data, its seems they are out of range Lwin MAX: 631.70 MIN: 0.00 
+>>>>>>> 236b0b7 (feat: now works with pymc and starts to incorporate recent pushes to allow it to run with newer versions of xarray and dask distributed)
 
 
  Glacier gridpoints: 129 
@@ -75583,6 +76002,7 @@ Restart dataset ... ok
 
 --------------------------------------------------------------
 
+<<<<<<< HEAD
 Time required to init IO, DATA, RESULT, RESTART:  0:00:00.139286
 (8784, 129, 1)
 Assigning values back to DATA
@@ -75593,6 +76013,418 @@ Seconds needed for lapse rate: 0:00:00.053243
 #!/usr/bin/env bash
 
 #SBATCH -J SensHEF
+=======
+Time required to init IO, DATA, RESULT, RESTART:  0:00:01.036295
+(17548, 14, 30)
+Assigning values back to DATA
+100.0
+0.04078483581542969
+(17548, 14, 30)
+Seconds needed for lapse rate: 0:00:00.140293
+#!/usr/bin/env bash
+
+#SBATCH -J WoEraAbr
+#SBATCH -A morsanat
+#SBATCH -n 1
+#SBATCH --cpus-per-task=20
+#SBATCH --mem=56G
+#SBATCH -t 00:30:00
+#SBATCH --qos=short
+#SBATCH --output=Output_nodes.output
+#SBATCH --error=Error_nodes.err
+#SBATCH --time=1-00:00:00
+
+/data/scratch/richteny/miniconda3/envs/pymc_env/bin/python -m distributed.cli.dask_worker tcp://192.168.1.6:41023 --nthreads 1 --nworkers 20 --memory-limit 2.79GiB --name dummy-name --nanny --death-timeout 60 --local-directory logs/dask-worker-space
+
+You are using SLURM!
+
+SLURMCluster(76bfb065, 'tcp://192.168.1.6:41023', workers=0, threads=0, memory=0 B)
+--------------------------------------------------------------
+	 Starting clients and submit jobs ... 
+
+-------------------------------------------------------------- 
+
+SLURMCluster(76bfb065, 'tcp://192.168.1.6:41023', workers=0, threads=0, memory=0 B)
+<Client: 'tcp://192.168.1.6:41023' processes=0 threads=0, memory=0 B>
+420 60 7
+	 Time required to do calculations:    1 minutes 53.1593 seconds 
+
+
+
+--------------------------------------------------------------
+Write results ...
+-------------------------------------------------------------- 
+
+2D case.
+Geod. MB test.
+-0.05400473258714172
+Time it took to calculate geod. MB  0:00:00.072361
+Starting TSL eval.
+<xarray.Dataset>
+Dimensions:     (time: 367, lat: 14, lon: 30)
+Coordinates:
+  * time        (time) datetime64[ns] 2000-01-01 2000-01-02 ... 2001-01-01
+  * lat         (lat) float64 46.79 46.79 46.79 46.79 ... 46.82 46.82 46.82
+  * lon         (lon) float64 10.72 10.73 10.73 10.73 ... 10.8 10.8 10.8 10.8
+Data variables:
+    SNOWHEIGHT  (time, lat, lon) float64 nan nan nan nan nan ... nan nan nan nan
+Time required for resampling of output:  0:00:00.024328
+Calculating TSLA using conservative. Normalization is set to True.
+Max elev. 3656.1287 .
+ Min elev. 2442.7822
+[0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.00202742 0.00202742 0.00202742
+ 0.00202742 0.03639896 0.03639896 0.07016335 0.09192248 0.09192248
+ 0.09192248 0.09192248 0.11629919 0.11629919 0.18355391 0.18355391
+ 0.18365813 0.18365813 0.18765251 0.20484361 0.20484361 0.2243551
+ 0.27135525 0.27135525 0.28259066 0.29620229 0.29620229 0.31364481
+ 0.3159818  0.32160851 0.34835399 0.35181123 0.40179445 0.42848501
+ 0.42848501 0.         0.26560248 0.40091958 0.42848501 0.34414271
+ 0.33663295 0.42848501 0.50720009 0.50720009 0.50891563 0.50891563
+ 0.50891563 0.50891563 0.50891563 0.50891563 0.55455367 0.55455367
+ 0.55455367 0.55455367 0.55455367 0.55455367 0.55455367 0.55455367
+ 0.55455367 0.55455367 0.55455367 0.55455367 0.55455367 0.55455367
+ 0.55455367 0.58655252 0.58655252 0.58655252 0.58655252 0.53719556
+ 0.44273921 0.62457768 0.15178112 0.24170144 0.25293685 0.31238834
+ 0.33962669 0.37238522 0.40091958 0.32878013 0.2147483  0.19307448
+ 0.2147483  0.30521672 0.12055665 0.09111029 0.18365813 0.24170144
+ 0.         0.         0.         0.         0.09454006 0.16979821
+ 0.19155734 0.24923937 0.24923937 0.24923937 0.27803289 0.37132684
+ 0.37132684 0.37132684 0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.        ]
+Time required for calculating TSL only : 0:00:00.006100
+          time  Med_TSL  Mean_TSL  Std_TSL  Max_TSL  Min_TSL  Flag
+0   2000-01-01      0.0       0.0 -2.01326      0.0      0.0   1.0
+1   2000-01-02      0.0       0.0 -2.01326      0.0      0.0   1.0
+2   2000-01-03      0.0       0.0 -2.01326      0.0      0.0   1.0
+3   2000-01-04      0.0       0.0 -2.01326      0.0      0.0   1.0
+4   2000-01-05      0.0       0.0 -2.01326      0.0      0.0   1.0
+..         ...      ...       ...      ...      ...      ...   ...
+362 2000-12-28      0.0       0.0 -2.01326      0.0      0.0   1.0
+363 2000-12-29      0.0       0.0 -2.01326      0.0      0.0   1.0
+364 2000-12-30      0.0       0.0 -2.01326      0.0      0.0   1.0
+365 2000-12-31      0.0       0.0 -2.01326      0.0      0.0   1.0
+366 2001-01-01      0.0       0.0 -2.01326      0.0      0.0   1.0
+
+[367 rows x 7 columns]
+Time required for calculating TSL stats:  0:00:00.002539
+TSLA Observed vs. Modelled RMSE: 0.2189503294058646; R-squared: 0.11187036146234146
+Time required for full TSL EVAL:  0:00:00.046105
+	 Time required to write restart and output files:    0 minutes 18.2393 seconds 
+
+	 Total run duration:    2 minutes 12.7499 seconds 
+
+--------------------------------------------------------------
+	 SIMULATION WAS SUCCESSFUL
+--------------------------------------------------------------
+Calculated MB is:  -0.05400473258714172
+Time required to load in opt_dic:  0:00:00.000008
+#--------------------------------------#
+Starting simulations with the following parameters.
+Parameter  mult_factor_RRR = 1.25
+Parameter  albedo_ice = 0.25
+Parameter  albedo_fresh_snow = 0.7888971043595006
+Parameter  albedo_firn = 0.5549999999999999
+Parameter  albedo_mod_snow_aging = 1.1
+Parameter  albedo_mod_snow_depth = 1.1
+Parameter  center_snow_transfer_function = 0.0
+Parameter  spread_snow_transfer_function = 1
+Parameter  roughness_fresh_snow = 0.24
+Parameter  roughness_ice = 1.7
+Parameter  roughness_firn = 7.0
+
+#--------------------------------------#
+
+ Maximum available time interval from 1999-01-01T00:00 until 2010-01-01T00:00. Time steps: 96444 
+
+
+--------------------------------------------------------------
+	 Integration from 1999-01-01T00:00 to 2001-01-01T00:00
+--------------------------------------------------------------
+
+--------------------------------------------------------------
+Checking input data .... 
+
+Temperature data (T2) ... ok 
+Please check the input data, its seems they are out of range T2 MAX: 298.32 MIN: 240.52 
+
+Relative humidity data (RH2) ... ok 
+Shortwave data (G) ... ok 
+Please check the input data, its seems they are out of range G MAX: 2027.60 MIN: 0.00 
+
+Wind velocity data (U2) ... ok 
+Precipitation data (RRR) ... ok 
+Please check the input data, its seems they are out of range Rrr MAX: 126.14 MIN: 0.00 
+
+Cloud cover data (N) ... ok 
+Pressure data (PRES) ... ok 
+Incoming longwave data (LWin) ... ok 
+Please check the input data, its seems they are out of range Lwin MAX: 631.70 MIN: 0.00 
+
+
+ Glacier gridpoints: 120 
+
+
+
+
+Output dataset ... ok
+Restart ddataset ... ok 
+
+--------------------------------------------------------------
+
+Time required to init IO, DATA, RESULT, RESTART:  0:00:01.009378
+(17548, 14, 30)
+Assigning values back to DATA
+100.0
+0.04078483581542969
+(17548, 14, 30)
+Seconds needed for lapse rate: 0:00:00.140290
+#!/usr/bin/env bash
+
+#SBATCH -J WoEraAbr
+#SBATCH -A morsanat
+#SBATCH -n 1
+#SBATCH --cpus-per-task=20
+#SBATCH --mem=56G
+#SBATCH -t 00:30:00
+#SBATCH --qos=short
+#SBATCH --output=Output_nodes.output
+#SBATCH --error=Error_nodes.err
+#SBATCH --time=1-00:00:00
+
+/data/scratch/richteny/miniconda3/envs/pymc_env/bin/python -m distributed.cli.dask_worker tcp://192.168.1.6:36791 --nthreads 1 --nworkers 20 --memory-limit 2.79GiB --name dummy-name --nanny --death-timeout 60 --local-directory logs/dask-worker-space
+
+You are using SLURM!
+
+SLURMCluster(0ef8064f, 'tcp://192.168.1.6:36791', workers=0, threads=0, memory=0 B)
+--------------------------------------------------------------
+	 Starting clients and submit jobs ... 
+
+-------------------------------------------------------------- 
+
+SLURMCluster(0ef8064f, 'tcp://192.168.1.6:36791', workers=0, threads=0, memory=0 B)
+<Client: 'tcp://192.168.1.6:36791' processes=0 threads=0, memory=0 B>
+420 60 7
+	 Time required to do calculations:    1 minutes 50.4453 seconds 
+
+
+
+--------------------------------------------------------------
+Write results ...
+-------------------------------------------------------------- 
+
+2D case.
+Geod. MB test.
+-0.16106214977278757
+Time it took to calculate geod. MB  0:00:00.069475
+Starting TSL eval.
+<xarray.Dataset>
+Dimensions:     (time: 367, lat: 14, lon: 30)
+Coordinates:
+  * time        (time) datetime64[ns] 2000-01-01 2000-01-02 ... 2001-01-01
+  * lat         (lat) float64 46.79 46.79 46.79 46.79 ... 46.82 46.82 46.82
+  * lon         (lon) float64 10.72 10.73 10.73 10.73 ... 10.8 10.8 10.8 10.8
+Data variables:
+    SNOWHEIGHT  (time, lat, lon) float64 nan nan nan nan nan ... nan nan nan nan
+Time required for resampling of output:  0:00:00.024352
+Calculating TSLA using conservative. Normalization is set to True.
+Max elev. 3656.1287 .
+ Min elev. 2442.7822
+[0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.00202742 0.00202742 0.00202742 0.00202742 0.03639896
+ 0.07016335 0.07016335 0.09192248 0.09192248 0.09192248 0.11629919
+ 0.11629919 0.11629919 0.17523688 0.18355391 0.18365813 0.18765251
+ 0.20484361 0.2243551  0.2243551  0.27135525 0.27135525 0.28259066
+ 0.29620229 0.31259408 0.3159818  0.3159818  0.32160851 0.33332954
+ 0.34835399 0.35181123 0.40179445 0.40179445 0.50720009 0.50720009
+ 0.50720009 0.         0.28142061 0.40091958 0.4656351  0.34414271
+ 0.33663295 0.46735064 0.50891563 0.50891563 0.50891563 0.54438177
+ 0.55455367 0.55455367 0.55455367 0.55455367 0.55455367 0.55455367
+ 0.55455367 0.55455367 0.55455367 0.55455367 0.55455367 0.55455367
+ 0.58655252 0.62457768 0.62457768 0.62457768 0.62457768 0.62457768
+ 0.62457768 0.62457768 0.62457768 0.62457768 0.62457768 0.57522073
+ 0.47053815 0.62457768 0.18355391 0.27803289 0.25293685 0.31238834
+ 0.33962669 0.39611483 0.40091958 0.33962669 0.2147483  0.19307448
+ 0.2147483  0.30521672 0.12055665 0.09111029 0.18365813 0.24170144
+ 0.         0.         0.         0.         0.09454006 0.16979821
+ 0.19155734 0.24923937 0.24923937 0.24923937 0.27803289 0.45237891
+ 0.45237891 0.45237891 0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.        ]
+Time required for calculating TSL only : 0:00:00.006143
+          time  Med_TSL  Mean_TSL  Std_TSL  Max_TSL  Min_TSL  Flag
+0   2000-01-01      0.0       0.0 -2.01326      0.0      0.0   1.0
+1   2000-01-02      0.0       0.0 -2.01326      0.0      0.0   1.0
+2   2000-01-03      0.0       0.0 -2.01326      0.0      0.0   1.0
+3   2000-01-04      0.0       0.0 -2.01326      0.0      0.0   1.0
+4   2000-01-05      0.0       0.0 -2.01326      0.0      0.0   1.0
+..         ...      ...       ...      ...      ...      ...   ...
+362 2000-12-28      0.0       0.0 -2.01326      0.0      0.0   1.0
+363 2000-12-29      0.0       0.0 -2.01326      0.0      0.0   1.0
+364 2000-12-30      0.0       0.0 -2.01326      0.0      0.0   1.0
+365 2000-12-31      0.0       0.0 -2.01326      0.0      0.0   1.0
+366 2001-01-01      0.0       0.0 -2.01326      0.0      0.0   1.0
+
+[367 rows x 7 columns]
+Time required for calculating TSL stats:  0:00:00.002552
+TSLA Observed vs. Modelled RMSE: 0.2189503294058646; R-squared: 0.11187036146234146
+Time required for full TSL EVAL:  0:00:00.045973
+	 Time required to write restart and output files:    0 minutes 18.3176 seconds 
+
+	 Total run duration:    2 minutes 10.0853 seconds 
+
+--------------------------------------------------------------
+	 SIMULATION WAS SUCCESSFUL
+--------------------------------------------------------------
+Calculated MB is:  -0.16106214977278757
+Time required to load in opt_dic:  0:00:00.000007
+#--------------------------------------#
+Starting simulations with the following parameters.
+Parameter  mult_factor_RRR = 1.25
+Parameter  albedo_ice = 0.25
+Parameter  albedo_fresh_snow = 0.7459134393869128
+Parameter  albedo_firn = 0.5549999999999999
+Parameter  albedo_mod_snow_aging = 1.1
+Parameter  albedo_mod_snow_depth = 1.1
+Parameter  center_snow_transfer_function = 0.0
+Parameter  spread_snow_transfer_function = 1
+Parameter  roughness_fresh_snow = 0.24
+Parameter  roughness_ice = 1.7
+Parameter  roughness_firn = 7.0
+
+#--------------------------------------#
+
+ Maximum available time interval from 1999-01-01T00:00 until 2010-01-01T00:00. Time steps: 96444 
+
+
+--------------------------------------------------------------
+	 Integration from 1999-01-01T00:00 to 2001-01-01T00:00
+--------------------------------------------------------------
+
+--------------------------------------------------------------
+Checking input data .... 
+
+Temperature data (T2) ... ok 
+Please check the input data, its seems they are out of range T2 MAX: 298.32 MIN: 240.52 
+
+Relative humidity data (RH2) ... ok 
+Shortwave data (G) ... ok 
+Please check the input data, its seems they are out of range G MAX: 2027.60 MIN: 0.00 
+
+Wind velocity data (U2) ... ok 
+Precipitation data (RRR) ... ok 
+Please check the input data, its seems they are out of range Rrr MAX: 126.14 MIN: 0.00 
+
+Cloud cover data (N) ... ok 
+Pressure data (PRES) ... ok 
+Incoming longwave data (LWin) ... ok 
+Please check the input data, its seems they are out of range Lwin MAX: 631.70 MIN: 0.00 
+
+
+ Glacier gridpoints: 120 
+
+
+
+
+Output dataset ... ok
+Restart ddataset ... ok 
+
+--------------------------------------------------------------
+
+Time required to init IO, DATA, RESULT, RESTART:  0:00:01.013490
+(17548, 14, 30)
+Assigning values back to DATA
+100.0
+0.04078483581542969
+(17548, 14, 30)
+Seconds needed for lapse rate: 0:00:00.140109
+#!/usr/bin/env bash
+
+#SBATCH -J WoEraAbr
+>>>>>>> 236b0b7 (feat: now works with pymc and starts to incorporate recent pushes to allow it to run with newer versions of xarray and dask distributed)
 #SBATCH -A morsanat
 #SBATCH -n 1
 #SBATCH --cpus-per-task=20
@@ -75600,6 +76432,7 @@ Seconds needed for lapse rate: 0:00:00.053243
 #SBATCH -t 00:30:00
 #SBATCH --qos=short
 #SBATCH --error=Error_nodes.err
+<<<<<<< HEAD
 #SBATCH --output=Output_nodes.out
 #SBATCH --time=01:00:00
 #SBATCH --reservation=PyMC
@@ -75618,6 +76451,224 @@ SLURMCluster(afd1f5aa, 'tcp://192.168.1.7:43619', workers=0, threads=0, memory=0
 <Client: 'tcp://192.168.1.7:43619' processes=0 threads=0, memory=0 B>
 129 20 6
 	Time required to do calculations:    1 minutes 37.3253 seconds
+=======
+#SBATCH --time=1-00:00:00
+
+/data/scratch/richteny/miniconda3/envs/pymc_env/bin/python -m distributed.cli.dask_worker tcp://192.168.1.6:46593 --nthreads 1 --nworkers 20 --memory-limit 2.79GiB --name dummy-name --nanny --death-timeout 60 --local-directory logs/dask-worker-space
+
+You are using SLURM!
+
+SLURMCluster(57340315, 'tcp://192.168.1.6:46593', workers=0, threads=0, memory=0 B)
+--------------------------------------------------------------
+	 Starting clients and submit jobs ... 
+
+-------------------------------------------------------------- 
+
+SLURMCluster(57340315, 'tcp://192.168.1.6:46593', workers=0, threads=0, memory=0 B)
+<Client: 'tcp://192.168.1.6:46593' processes=0 threads=0, memory=0 B>
+420 60 7
+	 Time required to do calculations:    1 minutes 49.8477 seconds 
+
+
+
+--------------------------------------------------------------
+Write results ...
+-------------------------------------------------------------- 
+
+2D case.
+Geod. MB test.
+-0.25634817388634873
+Time it took to calculate geod. MB  0:00:00.086655
+Starting TSL eval.
+<xarray.Dataset>
+Dimensions:     (time: 367, lat: 14, lon: 30)
+Coordinates:
+  * time        (time) datetime64[ns] 2000-01-01 2000-01-02 ... 2001-01-01
+  * lat         (lat) float64 46.79 46.79 46.79 46.79 ... 46.82 46.82 46.82
+  * lon         (lon) float64 10.72 10.73 10.73 10.73 ... 10.8 10.8 10.8 10.8
+Data variables:
+    SNOWHEIGHT  (time, lat, lon) float64 nan nan nan nan nan ... nan nan nan nan
+Time required for resampling of output:  0:00:00.024318
+Calculating TSLA using conservative. Normalization is set to True.
+Max elev. 3656.1287 .
+ Min elev. 2442.7822
+[0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.00202742 0.00202742 0.00202742 0.03639896 0.07016335 0.07016335
+ 0.09192248 0.09192248 0.09192248 0.11629919 0.11629919 0.11629919
+ 0.15913977 0.18355391 0.18365813 0.18365813 0.20484361 0.2425245
+ 0.26380605 0.27135525 0.28259066 0.29620229 0.31259408 0.31364481
+ 0.3159818  0.3159818  0.33332954 0.33332954 0.34835399 0.39730872
+ 0.40179445 0.48050954 0.42848501 0.4656351  0.50720009 0.50891563
+ 0.50891563 0.         0.29421894 0.43020055 0.48243655 0.34414271
+ 0.33663295 0.48243655 0.55455367 0.55455367 0.55455367 0.55455367
+ 0.55455367 0.55455367 0.55455367 0.55455367 0.55455367 0.58655252
+ 0.62457768 0.59257884 0.62457768 0.62457768 0.62457768 0.62457768
+ 0.62457768 0.62457768 0.62457768 0.62457768 0.62457768 0.62457768
+ 0.62687885 0.62687885 0.62687885 0.62687885 0.62687885 0.57846659
+ 0.47053815 0.62687885 0.18355391 0.27803289 0.25293685 0.31238834
+ 0.33962669 0.39611483 0.41074178 0.33962669 0.2147483  0.19307448
+ 0.2147483  0.32079893 0.12055665 0.09111029 0.18765251 0.24170144
+ 0.         0.         0.         0.         0.09454006 0.16979821
+ 0.19155734 0.24923937 0.32795445 0.32795445 0.27803289 0.45237891
+ 0.45237891 0.45800562 0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.        ]
+Time required for calculating TSL only : 0:00:00.007355
+          time  Med_TSL  Mean_TSL  Std_TSL  Max_TSL  Min_TSL  Flag
+0   2000-01-01      0.0       0.0 -2.01326      0.0      0.0   1.0
+1   2000-01-02      0.0       0.0 -2.01326      0.0      0.0   1.0
+2   2000-01-03      0.0       0.0 -2.01326      0.0      0.0   1.0
+3   2000-01-04      0.0       0.0 -2.01326      0.0      0.0   1.0
+4   2000-01-05      0.0       0.0 -2.01326      0.0      0.0   1.0
+..         ...      ...       ...      ...      ...      ...   ...
+362 2000-12-28      0.0       0.0 -2.01326      0.0      0.0   1.0
+363 2000-12-29      0.0       0.0 -2.01326      0.0      0.0   1.0
+364 2000-12-30      0.0       0.0 -2.01326      0.0      0.0   1.0
+365 2000-12-31      0.0       0.0 -2.01326      0.0      0.0   1.0
+366 2001-01-01      0.0       0.0 -2.01326      0.0      0.0   1.0
+
+[367 rows x 7 columns]
+Time required for calculating TSL stats:  0:00:00.002551
+TSLA Observed vs. Modelled RMSE: 0.2215625504921051; R-squared: 0.10950773980107928
+Time required for full TSL EVAL:  0:00:00.046994
+	 Time required to write restart and output files:    0 minutes 18.3737 seconds 
+
+	 Total run duration:    2 minutes 9.55819 seconds 
+
+--------------------------------------------------------------
+	 SIMULATION WAS SUCCESSFUL
+--------------------------------------------------------------
+Calculated MB is:  -0.25634817388634873
+Time required to load in opt_dic:  0:00:00.000008
+#--------------------------------------#
+Starting simulations with the following parameters.
+Parameter  mult_factor_RRR = 1.25
+Parameter  albedo_ice = 0.25
+Parameter  albedo_fresh_snow = 0.7244757507911516
+Parameter  albedo_firn = 0.5549999999999999
+Parameter  albedo_mod_snow_aging = 1.1
+Parameter  albedo_mod_snow_depth = 1.1
+Parameter  center_snow_transfer_function = 0.0
+Parameter  spread_snow_transfer_function = 1
+Parameter  roughness_fresh_snow = 0.24
+Parameter  roughness_ice = 1.7
+Parameter  roughness_firn = 7.0
+
+#--------------------------------------#
+
+ Maximum available time interval from 1999-01-01T00:00 until 2010-01-01T00:00. Time steps: 96444 
+
+
+--------------------------------------------------------------
+	 Integration from 1999-01-01T00:00 to 2001-01-01T00:00
+--------------------------------------------------------------
+
+--------------------------------------------------------------
+Checking input data .... 
+
+Temperature data (T2) ... ok 
+Please check the input data, its seems they are out of range T2 MAX: 298.32 MIN: 240.52 
+
+Relative humidity data (RH2) ... ok 
+Shortwave data (G) ... ok 
+Please check the input data, its seems they are out of range G MAX: 2027.60 MIN: 0.00 
+
+Wind velocity data (U2) ... ok 
+Precipitation data (RRR) ... ok 
+Please check the input data, its seems they are out of range Rrr MAX: 126.14 MIN: 0.00 
+
+Cloud cover data (N) ... ok 
+Pressure data (PRES) ... ok 
+Incoming longwave data (LWin) ... ok 
+Please check the input data, its seems they are out of range Lwin MAX: 631.70 MIN: 0.00 
+
+
+ Glacier gridpoints: 120 
+
+
+
+
+Output dataset ... ok
+Restart ddataset ... ok 
+
+--------------------------------------------------------------
+
+Time required to init IO, DATA, RESULT, RESTART:  0:00:01.012517
+(17548, 14, 30)
+Assigning values back to DATA
+100.0
+0.04078483581542969
+(17548, 14, 30)
+Seconds needed for lapse rate: 0:00:00.139986
+#!/usr/bin/env bash
+
+#SBATCH -J WoEraAbr
+#SBATCH -A morsanat
+#SBATCH -n 1
+#SBATCH --cpus-per-task=20
+#SBATCH --mem=56G
+#SBATCH -t 00:30:00
+#SBATCH --qos=short
+#SBATCH --output=Output_nodes.output
+#SBATCH --error=Error_nodes.err
+#SBATCH --time=1-00:00:00
+
+/data/scratch/richteny/miniconda3/envs/pymc_env/bin/python -m distributed.cli.dask_worker tcp://192.168.1.6:37075 --nthreads 1 --nworkers 20 --memory-limit 2.79GiB --name dummy-name --nanny --death-timeout 60 --local-directory logs/dask-worker-space
+
+You are using SLURM!
+
+SLURMCluster(2a49865f, 'tcp://192.168.1.6:37075', workers=0, threads=0, memory=0 B)
+--------------------------------------------------------------
+	 Starting clients and submit jobs ... 
+
+-------------------------------------------------------------- 
+
+SLURMCluster(2a49865f, 'tcp://192.168.1.6:37075', workers=0, threads=0, memory=0 B)
+<Client: 'tcp://192.168.1.6:37075' processes=0 threads=0, memory=0 B>
+420 60 7
+	 Time required to do calculations:    1 minutes 51.4809 seconds 
+>>>>>>> 236b0b7 (feat: now works with pymc and starts to incorporate recent pushes to allow it to run with newer versions of xarray and dask distributed)
 
 
 
@@ -75630,6 +76681,7 @@ Write results ...
 0.0019378
 Compute area weighted MB for 1D case.
 Geod. MB test.
+<<<<<<< HEAD
 -0.9409066154819201
 Time it took to calculate geod. MB  0:00:00.015284
 Starting TSL eval.
@@ -75661,6 +76713,125 @@ Count 1
 #--------------------------------------#
 Starting simulations with the following parameters.
 (0.97, 0.20910671333081365, 0.7185525518626901, 0.4754182086328635, 5.640775144792333, 5.289209673033171, 1.0, 1, 0.24, 1.7, 4.0, 0.0026)
+=======
+-0.30576354653872956
+Time it took to calculate geod. MB  0:00:00.067583
+Starting TSL eval.
+<xarray.Dataset>
+Dimensions:     (time: 367, lat: 14, lon: 30)
+Coordinates:
+  * time        (time) datetime64[ns] 2000-01-01 2000-01-02 ... 2001-01-01
+  * lat         (lat) float64 46.79 46.79 46.79 46.79 ... 46.82 46.82 46.82
+  * lon         (lon) float64 10.72 10.73 10.73 10.73 ... 10.8 10.8 10.8 10.8
+Data variables:
+    SNOWHEIGHT  (time, lat, lon) float64 nan nan nan nan nan ... nan nan nan nan
+Time required for resampling of output:  0:00:00.024002
+Calculating TSLA using conservative. Normalization is set to True.
+Max elev. 3656.1287 .
+ Min elev. 2442.7822
+[0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.00202742 0.03639896 0.03639896 0.07016335 0.07016335 0.07016335
+ 0.09192248 0.11629919 0.11629919 0.11629919 0.11629919 0.18355391
+ 0.18355391 0.18365813 0.18365813 0.20484361 0.2425245  0.27135525
+ 0.27135525 0.28259066 0.31259408 0.31259408 0.31364481 0.3159818
+ 0.33332954 0.33332954 0.34835399 0.39730872 0.40179445 0.48050954
+ 0.48050954 0.48050954 0.42848501 0.48072101 0.50720009 0.54438177
+ 0.54438177 0.         0.29421894 0.43020055 0.50891563 0.34414271
+ 0.33663295 0.49260845 0.55455367 0.55455367 0.55455367 0.55455367
+ 0.55455367 0.55455367 0.55455367 0.58655252 0.62457768 0.62457768
+ 0.62457768 0.59749376 0.62457768 0.62457768 0.62457768 0.62457768
+ 0.62457768 0.62687885 0.62687885 0.62687885 0.62687885 0.62687885
+ 0.62687885 0.62687885 0.62687885 0.62687885 0.64554595 0.59792827
+ 0.47053815 0.65221413 0.18355391 0.27803289 0.25293685 0.31238834
+ 0.35583347 0.39611483 0.41074178 0.33962669 0.2147483  0.19307448
+ 0.2147483  0.32865175 0.12055665 0.09111029 0.18765251 0.24170144
+ 0.         0.         0.         0.         0.09454006 0.16979821
+ 0.24923937 0.32795445 0.32795445 0.32795445 0.27803289 0.45800562
+ 0.45800562 0.45800562 0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.        ]
+Time required for calculating TSL only : 0:00:00.005758
+          time  Med_TSL  Mean_TSL  Std_TSL  Max_TSL  Min_TSL  Flag
+0   2000-01-01      0.0       0.0 -2.01326      0.0      0.0   1.0
+1   2000-01-02      0.0       0.0 -2.01326      0.0      0.0   1.0
+2   2000-01-03      0.0       0.0 -2.01326      0.0      0.0   1.0
+3   2000-01-04      0.0       0.0 -2.01326      0.0      0.0   1.0
+4   2000-01-05      0.0       0.0 -2.01326      0.0      0.0   1.0
+..         ...      ...       ...      ...      ...      ...   ...
+362 2000-12-28      0.0       0.0 -2.01326      0.0      0.0   1.0
+363 2000-12-29      0.0       0.0 -2.01326      0.0      0.0   1.0
+364 2000-12-30      0.0       0.0 -2.01326      0.0      0.0   1.0
+365 2000-12-31      0.0       0.0 -2.01326      0.0      0.0   1.0
+366 2001-01-01      0.0       0.0 -2.01326      0.0      0.0   1.0
+
+[367 rows x 7 columns]
+Time required for calculating TSL stats:  0:00:00.002408
+TSLA Observed vs. Modelled RMSE: 0.2215625504921051; R-squared: 0.10950773980107928
+Time required for full TSL EVAL:  0:00:00.044594
+	 Time required to write restart and output files:    0 minutes 18.2376 seconds 
+
+	 Total run duration:    2 minutes 11.0492 seconds 
+
+--------------------------------------------------------------
+	 SIMULATION WAS SUCCESSFUL
+--------------------------------------------------------------
+Calculated MB is:  -0.30576354653872956
+Time required to load in opt_dic:  0:00:00.000007
+#--------------------------------------#
+Starting simulations with the following parameters.
+Parameter  mult_factor_RRR = 1.25
+Parameter  albedo_ice = 0.25
+Parameter  albedo_fresh_snow = 0.7155195870259925
+Parameter  albedo_firn = 0.5549999999999999
+Parameter  albedo_mod_snow_aging = 1.1
+Parameter  albedo_mod_snow_depth = 1.1
+Parameter  center_snow_transfer_function = 0.0
+Parameter  spread_snow_transfer_function = 1
+Parameter  roughness_fresh_snow = 0.24
+Parameter  roughness_ice = 1.7
+Parameter  roughness_firn = 7.0
+>>>>>>> 236b0b7 (feat: now works with pymc and starts to incorporate recent pushes to allow it to run with newer versions of xarray and dask distributed)
 
 #--------------------------------------#
 
@@ -75668,13 +76839,18 @@ Starting simulations with the following parameters.
 
 
 --------------------------------------------------------------
+<<<<<<< HEAD
 	 Integration from 2000-01-01T00:00 to 2000-12-31T23:00
+=======
+	 Integration from 1999-01-01T00:00 to 2001-01-01T00:00
+>>>>>>> 236b0b7 (feat: now works with pymc and starts to incorporate recent pushes to allow it to run with newer versions of xarray and dask distributed)
 --------------------------------------------------------------
 
 --------------------------------------------------------------
 Checking input data .... 
 
 Temperature data (T2) ... ok 
+<<<<<<< HEAD
 Please check the input data, its seems they are out of range T2 MAX: 294.75 MIN: 242.19 
 
 Relative humidity data (RH2) ... ok 
@@ -75689,6 +76865,22 @@ Cloud cover data (N) ... ok
 Pressure data (PRES) ... ok 
 Snowfall data (SNOWFALL) ... ok 
 Please check the input data, its seems they are out of range Snowfall MAX: 0.11 MIN: 0.00 
+=======
+Please check the input data, its seems they are out of range T2 MAX: 298.32 MIN: 240.52 
+
+Relative humidity data (RH2) ... ok 
+Shortwave data (G) ... ok 
+Please check the input data, its seems they are out of range G MAX: 2027.60 MIN: 0.00 
+
+Wind velocity data (U2) ... ok 
+Precipitation data (RRR) ... ok 
+Please check the input data, its seems they are out of range Rrr MAX: 126.14 MIN: 0.00 
+
+Cloud cover data (N) ... ok 
+Pressure data (PRES) ... ok 
+Incoming longwave data (LWin) ... ok 
+Please check the input data, its seems they are out of range Lwin MAX: 631.70 MIN: 0.00 
+>>>>>>> 236b0b7 (feat: now works with pymc and starts to incorporate recent pushes to allow it to run with newer versions of xarray and dask distributed)
 
 
  Glacier gridpoints: 129 
@@ -75701,6 +76893,7 @@ Restart dataset ... ok
 
 --------------------------------------------------------------
 
+<<<<<<< HEAD
 Time required to init IO, DATA, RESULT, RESTART:  0:00:00.139803
 (8784, 129, 1)
 Assigning values back to DATA
@@ -75711,6 +76904,218 @@ Seconds needed for lapse rate: 0:00:00.052711
 #!/usr/bin/env bash
 
 #SBATCH -J SensHEF
+=======
+Time required to init IO, DATA, RESULT, RESTART:  0:00:01.025807
+(17548, 14, 30)
+Assigning values back to DATA
+100.0
+0.04078483581542969
+(17548, 14, 30)
+Seconds needed for lapse rate: 0:00:00.140042
+#!/usr/bin/env bash
+
+#SBATCH -J WoEraAbr
+#SBATCH -A morsanat
+#SBATCH -n 1
+#SBATCH --cpus-per-task=20
+#SBATCH --mem=56G
+#SBATCH -t 00:30:00
+#SBATCH --qos=short
+#SBATCH --output=Output_nodes.output
+#SBATCH --error=Error_nodes.err
+#SBATCH --time=1-00:00:00
+
+/data/scratch/richteny/miniconda3/envs/pymc_env/bin/python -m distributed.cli.dask_worker tcp://192.168.1.6:34379 --nthreads 1 --nworkers 20 --memory-limit 2.79GiB --name dummy-name --nanny --death-timeout 60 --local-directory logs/dask-worker-space
+
+You are using SLURM!
+
+SLURMCluster(188d8049, 'tcp://192.168.1.6:34379', workers=0, threads=0, memory=0 B)
+--------------------------------------------------------------
+	 Starting clients and submit jobs ... 
+
+-------------------------------------------------------------- 
+
+SLURMCluster(188d8049, 'tcp://192.168.1.6:34379', workers=0, threads=0, memory=0 B)
+<Client: 'tcp://192.168.1.6:34379' processes=0 threads=0, memory=0 B>
+420 60 7
+	 Time required to do calculations:    1 minutes 49.4924 seconds 
+
+
+
+--------------------------------------------------------------
+Write results ...
+-------------------------------------------------------------- 
+
+2D case.
+Geod. MB test.
+-0.3261454621221806
+Time it took to calculate geod. MB  0:00:00.069100
+Starting TSL eval.
+<xarray.Dataset>
+Dimensions:     (time: 367, lat: 14, lon: 30)
+Coordinates:
+  * time        (time) datetime64[ns] 2000-01-01 2000-01-02 ... 2001-01-01
+  * lat         (lat) float64 46.79 46.79 46.79 46.79 ... 46.82 46.82 46.82
+  * lon         (lon) float64 10.72 10.73 10.73 10.73 ... 10.8 10.8 10.8 10.8
+Data variables:
+    SNOWHEIGHT  (time, lat, lon) float64 nan nan nan nan nan ... nan nan nan nan
+Time required for resampling of output:  0:00:00.022843
+Calculating TSLA using conservative. Normalization is set to True.
+Max elev. 3656.1287 .
+ Min elev. 2442.7822
+[0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.00202742
+ 0.00202742 0.03639896 0.03639896 0.07016335 0.07016335 0.09192248
+ 0.09192248 0.11629919 0.11629919 0.11629919 0.11629919 0.18355391
+ 0.18355391 0.18365813 0.20484361 0.2243551  0.2425245  0.27135525
+ 0.28259066 0.31259408 0.31259408 0.31364481 0.31364481 0.3159818
+ 0.33332954 0.33332954 0.39730872 0.39730872 0.48050954 0.48050954
+ 0.48050954 0.50720009 0.44847417 0.48072101 0.54266623 0.54438177
+ 0.54438177 0.         0.29421894 0.43020055 0.50891563 0.34414271
+ 0.33663295 0.49260845 0.55455367 0.55455367 0.55455367 0.55455367
+ 0.55455367 0.55455367 0.58655252 0.62457768 0.62457768 0.62457768
+ 0.62457768 0.59749376 0.62457768 0.62457768 0.62457768 0.62687885
+ 0.62687885 0.62687885 0.62687885 0.62687885 0.62687885 0.62687885
+ 0.62687885 0.64554595 0.64554595 0.64554595 0.64554595 0.60459646
+ 0.47053815 0.65221413 0.18355391 0.27803289 0.25293685 0.31238834
+ 0.35583347 0.40091958 0.41074178 0.33962669 0.2147483  0.19307448
+ 0.2147483  0.32865175 0.12055665 0.09111029 0.18765251 0.24170144
+ 0.         0.         0.         0.         0.09454006 0.16979821
+ 0.32795445 0.32795445 0.32795445 0.32795445 0.27803289 0.45800562
+ 0.45800562 0.45800562 0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.        ]
+Time required for calculating TSL only : 0:00:00.006364
+          time  Med_TSL  Mean_TSL  Std_TSL  Max_TSL  Min_TSL  Flag
+0   2000-01-01      0.0       0.0 -2.01326      0.0      0.0   1.0
+1   2000-01-02      0.0       0.0 -2.01326      0.0      0.0   1.0
+2   2000-01-03      0.0       0.0 -2.01326      0.0      0.0   1.0
+3   2000-01-04      0.0       0.0 -2.01326      0.0      0.0   1.0
+4   2000-01-05      0.0       0.0 -2.01326      0.0      0.0   1.0
+..         ...      ...       ...      ...      ...      ...   ...
+362 2000-12-28      0.0       0.0 -2.01326      0.0      0.0   1.0
+363 2000-12-29      0.0       0.0 -2.01326      0.0      0.0   1.0
+364 2000-12-30      0.0       0.0 -2.01326      0.0      0.0   1.0
+365 2000-12-31      0.0       0.0 -2.01326      0.0      0.0   1.0
+366 2001-01-01      0.0       0.0 -2.01326      0.0      0.0   1.0
+
+[367 rows x 7 columns]
+Time required for calculating TSL stats:  0:00:00.002900
+TSLA Observed vs. Modelled RMSE: 0.2215625504921051; R-squared: 0.10950773980107928
+Time required for full TSL EVAL:  0:00:00.045557
+	 Time required to write restart and output files:    0 minutes 18.2868 seconds 
+
+	 Total run duration:    2 minutes 9.11497 seconds 
+
+--------------------------------------------------------------
+	 SIMULATION WAS SUCCESSFUL
+--------------------------------------------------------------
+Calculated MB is:  -0.3261454621221806
+Time required to load in opt_dic:  0:00:00.000007
+#--------------------------------------#
+Starting simulations with the following parameters.
+Parameter  mult_factor_RRR = 1.25
+Parameter  albedo_ice = 0.25
+Parameter  albedo_fresh_snow = 0.7120581618917559
+Parameter  albedo_firn = 0.5549999999999999
+Parameter  albedo_mod_snow_aging = 1.1
+Parameter  albedo_mod_snow_depth = 1.1
+Parameter  center_snow_transfer_function = 0.0
+Parameter  spread_snow_transfer_function = 1
+Parameter  roughness_fresh_snow = 0.24
+Parameter  roughness_ice = 1.7
+Parameter  roughness_firn = 7.0
+
+#--------------------------------------#
+
+ Maximum available time interval from 1999-01-01T00:00 until 2010-01-01T00:00. Time steps: 96444 
+
+
+--------------------------------------------------------------
+	 Integration from 1999-01-01T00:00 to 2001-01-01T00:00
+--------------------------------------------------------------
+
+--------------------------------------------------------------
+Checking input data .... 
+
+Temperature data (T2) ... ok 
+Please check the input data, its seems they are out of range T2 MAX: 298.32 MIN: 240.52 
+
+Relative humidity data (RH2) ... ok 
+Shortwave data (G) ... ok 
+Please check the input data, its seems they are out of range G MAX: 2027.60 MIN: 0.00 
+
+Wind velocity data (U2) ... ok 
+Precipitation data (RRR) ... ok 
+Please check the input data, its seems they are out of range Rrr MAX: 126.14 MIN: 0.00 
+
+Cloud cover data (N) ... ok 
+Pressure data (PRES) ... ok 
+Incoming longwave data (LWin) ... ok 
+Please check the input data, its seems they are out of range Lwin MAX: 631.70 MIN: 0.00 
+
+
+ Glacier gridpoints: 120 
+
+
+
+
+Output dataset ... ok
+Restart ddataset ... ok 
+
+--------------------------------------------------------------
+
+Time required to init IO, DATA, RESULT, RESTART:  0:00:01.058426
+(17548, 14, 30)
+Assigning values back to DATA
+100.0
+0.04078483581542969
+(17548, 14, 30)
+Seconds needed for lapse rate: 0:00:00.140290
+#!/usr/bin/env bash
+
+#SBATCH -J WoEraAbr
+>>>>>>> 236b0b7 (feat: now works with pymc and starts to incorporate recent pushes to allow it to run with newer versions of xarray and dask distributed)
 #SBATCH -A morsanat
 #SBATCH -n 1
 #SBATCH --cpus-per-task=20
@@ -75718,6 +77123,7 @@ Seconds needed for lapse rate: 0:00:00.052711
 #SBATCH -t 00:30:00
 #SBATCH --qos=short
 #SBATCH --error=Error_nodes.err
+<<<<<<< HEAD
 #SBATCH --output=Output_nodes.out
 #SBATCH --time=01:00:00
 #SBATCH --reservation=PyMC
@@ -75736,6 +77142,24 @@ SLURMCluster(90329c86, 'tcp://192.168.1.7:33195', workers=0, threads=0, memory=0
 <Client: 'tcp://192.168.1.7:33195' processes=0 threads=0, memory=0 B>
 129 20 6
 	Time required to do calculations:    1 minutes 38.717 seconds
+=======
+#SBATCH --time=1-00:00:00
+
+/data/scratch/richteny/miniconda3/envs/pymc_env/bin/python -m distributed.cli.dask_worker tcp://192.168.1.6:39815 --nthreads 1 --nworkers 20 --memory-limit 2.79GiB --name dummy-name --nanny --death-timeout 60 --local-directory logs/dask-worker-space
+
+You are using SLURM!
+
+SLURMCluster(a6d57108, 'tcp://192.168.1.6:39815', workers=0, threads=0, memory=0 B)
+--------------------------------------------------------------
+	 Starting clients and submit jobs ... 
+
+-------------------------------------------------------------- 
+
+SLURMCluster(a6d57108, 'tcp://192.168.1.6:39815', workers=0, threads=0, memory=0 B)
+<Client: 'tcp://192.168.1.6:39815' processes=0 threads=0, memory=0 B>
+420 60 7
+	 Time required to do calculations:    1 minutes 48.9972 seconds 
+>>>>>>> 236b0b7 (feat: now works with pymc and starts to incorporate recent pushes to allow it to run with newer versions of xarray and dask distributed)
 
 
 
@@ -75748,6 +77172,7 @@ Write results ...
 0.0017
 Compute area weighted MB for 1D case.
 Geod. MB test.
+<<<<<<< HEAD
 -2.9571606701557784
 Time it took to calculate geod. MB  0:00:00.015469
 Starting TSL eval.
@@ -75779,6 +77204,125 @@ Count 1
 #--------------------------------------#
 Starting simulations with the following parameters.
 (0.97, 0.2326376719870823, 0.9396951085088117, 0.42236647953290557, 7.531885284086294, 8.180232003011248, 1.0, 1, 0.24, 1.7, 4.0, 0.0026)
+=======
+-0.33457763596678114
+Time it took to calculate geod. MB  0:00:00.065909
+Starting TSL eval.
+<xarray.Dataset>
+Dimensions:     (time: 367, lat: 14, lon: 30)
+Coordinates:
+  * time        (time) datetime64[ns] 2000-01-01 2000-01-02 ... 2001-01-01
+  * lat         (lat) float64 46.79 46.79 46.79 46.79 ... 46.82 46.82 46.82
+  * lon         (lon) float64 10.72 10.73 10.73 10.73 ... 10.8 10.8 10.8 10.8
+Data variables:
+    SNOWHEIGHT  (time, lat, lon) float64 nan nan nan nan nan ... nan nan nan nan
+Time required for resampling of output:  0:00:00.023207
+Calculating TSLA using conservative. Normalization is set to True.
+Max elev. 3656.1287 .
+ Min elev. 2442.7822
+[0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.00202742
+ 0.00202742 0.03639896 0.07016335 0.07016335 0.07016335 0.09192248
+ 0.09192248 0.11629919 0.11629919 0.11629919 0.18355391 0.18355391
+ 0.18365813 0.18365813 0.20484361 0.2243551  0.2425245  0.27135525
+ 0.28259066 0.31259408 0.31259408 0.31364481 0.3159818  0.3159818
+ 0.33332954 0.33332954 0.39730872 0.40179445 0.48050954 0.48050954
+ 0.48050954 0.50720009 0.44847417 0.48072101 0.54266623 0.54438177
+ 0.54438177 0.         0.29421894 0.43020055 0.51908753 0.34414271
+ 0.33663295 0.49260845 0.55455367 0.55455367 0.55455367 0.55455367
+ 0.55455367 0.58655252 0.58655252 0.62457768 0.62457768 0.62457768
+ 0.62457768 0.59749376 0.62457768 0.62457768 0.62457768 0.62687885
+ 0.62687885 0.62687885 0.62687885 0.62687885 0.62687885 0.62687885
+ 0.64554595 0.64554595 0.64554595 0.64554595 0.65221413 0.60459646
+ 0.47053815 0.65221413 0.18355391 0.27803289 0.25293685 0.31238834
+ 0.35583347 0.40091958 0.41800374 0.33962669 0.2147483  0.19307448
+ 0.2147483  0.32865175 0.12055665 0.09111029 0.19346675 0.24170144
+ 0.         0.         0.         0.07016335 0.09454006 0.16979821
+ 0.32795445 0.32795445 0.32795445 0.32795445 0.27803289 0.45800562
+ 0.45800562 0.45800562 0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.        ]
+Time required for calculating TSL only : 0:00:00.006384
+          time  Med_TSL  Mean_TSL  Std_TSL  Max_TSL  Min_TSL  Flag
+0   2000-01-01      0.0       0.0 -2.01326      0.0      0.0   1.0
+1   2000-01-02      0.0       0.0 -2.01326      0.0      0.0   1.0
+2   2000-01-03      0.0       0.0 -2.01326      0.0      0.0   1.0
+3   2000-01-04      0.0       0.0 -2.01326      0.0      0.0   1.0
+4   2000-01-05      0.0       0.0 -2.01326      0.0      0.0   1.0
+..         ...      ...       ...      ...      ...      ...   ...
+362 2000-12-28      0.0       0.0 -2.01326      0.0      0.0   1.0
+363 2000-12-29      0.0       0.0 -2.01326      0.0      0.0   1.0
+364 2000-12-30      0.0       0.0 -2.01326      0.0      0.0   1.0
+365 2000-12-31      0.0       0.0 -2.01326      0.0      0.0   1.0
+366 2001-01-01      0.0       0.0 -2.01326      0.0      0.0   1.0
+
+[367 rows x 7 columns]
+Time required for calculating TSL stats:  0:00:00.003070
+TSLA Observed vs. Modelled RMSE: 0.22390456642003626; R-squared: 0.10954866230552938
+Time required for full TSL EVAL:  0:00:00.047653
+	 Time required to write restart and output files:    0 minutes 18.2445 seconds 
+
+	 Total run duration:    2 minutes 8.62589 seconds 
+
+--------------------------------------------------------------
+	 SIMULATION WAS SUCCESSFUL
+--------------------------------------------------------------
+Calculated MB is:  -0.33457763596678114
+Time required to load in opt_dic:  0:00:00.000007
+#--------------------------------------#
+Starting simulations with the following parameters.
+Parameter  mult_factor_RRR = 1.25
+Parameter  albedo_ice = 0.25
+Parameter  albedo_fresh_snow = 0.710760963208266
+Parameter  albedo_firn = 0.5549999999999999
+Parameter  albedo_mod_snow_aging = 1.1
+Parameter  albedo_mod_snow_depth = 1.1
+Parameter  center_snow_transfer_function = 0.0
+Parameter  spread_snow_transfer_function = 1
+Parameter  roughness_fresh_snow = 0.24
+Parameter  roughness_ice = 1.7
+Parameter  roughness_firn = 7.0
+>>>>>>> 236b0b7 (feat: now works with pymc and starts to incorporate recent pushes to allow it to run with newer versions of xarray and dask distributed)
 
 #--------------------------------------#
 
@@ -75786,13 +77330,18 @@ Starting simulations with the following parameters.
 
 
 --------------------------------------------------------------
+<<<<<<< HEAD
 	 Integration from 2000-01-01T00:00 to 2000-12-31T23:00
+=======
+	 Integration from 1999-01-01T00:00 to 2001-01-01T00:00
+>>>>>>> 236b0b7 (feat: now works with pymc and starts to incorporate recent pushes to allow it to run with newer versions of xarray and dask distributed)
 --------------------------------------------------------------
 
 --------------------------------------------------------------
 Checking input data .... 
 
 Temperature data (T2) ... ok 
+<<<<<<< HEAD
 Please check the input data, its seems they are out of range T2 MAX: 294.75 MIN: 242.19 
 
 Relative humidity data (RH2) ... ok 
@@ -75807,6 +77356,22 @@ Cloud cover data (N) ... ok
 Pressure data (PRES) ... ok 
 Snowfall data (SNOWFALL) ... ok 
 Please check the input data, its seems they are out of range Snowfall MAX: 0.11 MIN: 0.00 
+=======
+Please check the input data, its seems they are out of range T2 MAX: 298.32 MIN: 240.52 
+
+Relative humidity data (RH2) ... ok 
+Shortwave data (G) ... ok 
+Please check the input data, its seems they are out of range G MAX: 2027.60 MIN: 0.00 
+
+Wind velocity data (U2) ... ok 
+Precipitation data (RRR) ... ok 
+Please check the input data, its seems they are out of range Rrr MAX: 126.14 MIN: 0.00 
+
+Cloud cover data (N) ... ok 
+Pressure data (PRES) ... ok 
+Incoming longwave data (LWin) ... ok 
+Please check the input data, its seems they are out of range Lwin MAX: 631.70 MIN: 0.00 
+>>>>>>> 236b0b7 (feat: now works with pymc and starts to incorporate recent pushes to allow it to run with newer versions of xarray and dask distributed)
 
 
  Glacier gridpoints: 129 
@@ -75819,6 +77384,7 @@ Restart dataset ... ok
 
 --------------------------------------------------------------
 
+<<<<<<< HEAD
 Time required to init IO, DATA, RESULT, RESTART:  0:00:00.245596
 (8784, 129, 1)
 Assigning values back to DATA
@@ -75829,6 +77395,418 @@ Seconds needed for lapse rate: 0:00:00.052976
 #!/usr/bin/env bash
 
 #SBATCH -J SensHEF
+=======
+Time required to init IO, DATA, RESULT, RESTART:  0:00:01.021129
+(17548, 14, 30)
+Assigning values back to DATA
+100.0
+0.04078483581542969
+(17548, 14, 30)
+Seconds needed for lapse rate: 0:00:00.140155
+#!/usr/bin/env bash
+
+#SBATCH -J WoEraAbr
+#SBATCH -A morsanat
+#SBATCH -n 1
+#SBATCH --cpus-per-task=20
+#SBATCH --mem=56G
+#SBATCH -t 00:30:00
+#SBATCH --qos=short
+#SBATCH --output=Output_nodes.output
+#SBATCH --error=Error_nodes.err
+#SBATCH --time=1-00:00:00
+
+/data/scratch/richteny/miniconda3/envs/pymc_env/bin/python -m distributed.cli.dask_worker tcp://192.168.1.6:45575 --nthreads 1 --nworkers 20 --memory-limit 2.79GiB --name dummy-name --nanny --death-timeout 60 --local-directory logs/dask-worker-space
+
+You are using SLURM!
+
+SLURMCluster(bf262a0f, 'tcp://192.168.1.6:45575', workers=0, threads=0, memory=0 B)
+--------------------------------------------------------------
+	 Starting clients and submit jobs ... 
+
+-------------------------------------------------------------- 
+
+SLURMCluster(bf262a0f, 'tcp://192.168.1.6:45575', workers=0, threads=0, memory=0 B)
+<Client: 'tcp://192.168.1.6:45575' processes=0 threads=0, memory=0 B>
+420 60 7
+	 Time required to do calculations:    1 minutes 49.875 seconds 
+
+
+
+--------------------------------------------------------------
+Write results ...
+-------------------------------------------------------------- 
+
+2D case.
+Geod. MB test.
+-0.33809751428188256
+Time it took to calculate geod. MB  0:00:00.073727
+Starting TSL eval.
+<xarray.Dataset>
+Dimensions:     (time: 367, lat: 14, lon: 30)
+Coordinates:
+  * time        (time) datetime64[ns] 2000-01-01 2000-01-02 ... 2001-01-01
+  * lat         (lat) float64 46.79 46.79 46.79 46.79 ... 46.82 46.82 46.82
+  * lon         (lon) float64 10.72 10.73 10.73 10.73 ... 10.8 10.8 10.8 10.8
+Data variables:
+    SNOWHEIGHT  (time, lat, lon) float64 nan nan nan nan nan ... nan nan nan nan
+Time required for resampling of output:  0:00:00.025288
+Calculating TSLA using conservative. Normalization is set to True.
+Max elev. 3656.1287 .
+ Min elev. 2442.7822
+[0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.00202742
+ 0.00202742 0.03639896 0.07016335 0.07016335 0.07016335 0.09192248
+ 0.09192248 0.11629919 0.11629919 0.11629919 0.18355391 0.18355391
+ 0.18355391 0.18365813 0.20484361 0.2243551  0.26826593 0.27135525
+ 0.28259066 0.31259408 0.31259408 0.31364481 0.3159818  0.32160851
+ 0.33332954 0.33332954 0.39730872 0.40179445 0.48050954 0.48050954
+ 0.48050954 0.50720009 0.44847417 0.48072101 0.54438177 0.54438177
+ 0.54438177 0.         0.29421894 0.43020055 0.51908753 0.34414271
+ 0.33663295 0.49260845 0.55455367 0.55455367 0.55455367 0.55455367
+ 0.55455367 0.58655252 0.62457768 0.62457768 0.62457768 0.62457768
+ 0.62457768 0.59749376 0.62457768 0.62457768 0.62687885 0.62687885
+ 0.62687885 0.62687885 0.62687885 0.62687885 0.62687885 0.62687885
+ 0.64554595 0.64554595 0.64554595 0.64554595 0.65221413 0.60459646
+ 0.47053815 0.65221413 0.18355391 0.27803289 0.25293685 0.31238834
+ 0.35583347 0.40091958 0.41800374 0.33962669 0.2147483  0.19307448
+ 0.2147483  0.32865175 0.12055665 0.09111029 0.19346675 0.24170144
+ 0.         0.         0.         0.07016335 0.09454006 0.16979821
+ 0.32795445 0.32795445 0.32795445 0.32795445 0.27803289 0.45800562
+ 0.45800562 0.45800562 0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.        ]
+Time required for calculating TSL only : 0:00:00.006531
+          time  Med_TSL  Mean_TSL  Std_TSL  Max_TSL  Min_TSL  Flag
+0   2000-01-01      0.0       0.0 -2.01326      0.0      0.0   1.0
+1   2000-01-02      0.0       0.0 -2.01326      0.0      0.0   1.0
+2   2000-01-03      0.0       0.0 -2.01326      0.0      0.0   1.0
+3   2000-01-04      0.0       0.0 -2.01326      0.0      0.0   1.0
+4   2000-01-05      0.0       0.0 -2.01326      0.0      0.0   1.0
+..         ...      ...       ...      ...      ...      ...   ...
+362 2000-12-28      0.0       0.0 -2.01326      0.0      0.0   1.0
+363 2000-12-29      0.0       0.0 -2.01326      0.0      0.0   1.0
+364 2000-12-30      0.0       0.0 -2.01326      0.0      0.0   1.0
+365 2000-12-31      0.0       0.0 -2.01326      0.0      0.0   1.0
+366 2001-01-01      0.0       0.0 -2.01326      0.0      0.0   1.0
+
+[367 rows x 7 columns]
+Time required for calculating TSL stats:  0:00:00.002718
+TSLA Observed vs. Modelled RMSE: 0.22390456642003626; R-squared: 0.10954866230552938
+Time required for full TSL EVAL:  0:00:00.048337
+	 Time required to write restart and output files:    0 minutes 18.4472 seconds 
+
+	 Total run duration:    2 minutes 9.66122 seconds 
+
+--------------------------------------------------------------
+	 SIMULATION WAS SUCCESSFUL
+--------------------------------------------------------------
+Calculated MB is:  -0.33809751428188256
+Time required to load in opt_dic:  0:00:00.000008
+#--------------------------------------#
+Starting simulations with the following parameters.
+Parameter  mult_factor_RRR = 1.25
+Parameter  albedo_ice = 0.25
+Parameter  albedo_fresh_snow = 0.710280461595862
+Parameter  albedo_firn = 0.5549999999999999
+Parameter  albedo_mod_snow_aging = 1.1
+Parameter  albedo_mod_snow_depth = 1.1
+Parameter  center_snow_transfer_function = 0.0
+Parameter  spread_snow_transfer_function = 1
+Parameter  roughness_fresh_snow = 0.24
+Parameter  roughness_ice = 1.7
+Parameter  roughness_firn = 7.0
+
+#--------------------------------------#
+
+ Maximum available time interval from 1999-01-01T00:00 until 2010-01-01T00:00. Time steps: 96444 
+
+
+--------------------------------------------------------------
+	 Integration from 1999-01-01T00:00 to 2001-01-01T00:00
+--------------------------------------------------------------
+
+--------------------------------------------------------------
+Checking input data .... 
+
+Temperature data (T2) ... ok 
+Please check the input data, its seems they are out of range T2 MAX: 298.32 MIN: 240.52 
+
+Relative humidity data (RH2) ... ok 
+Shortwave data (G) ... ok 
+Please check the input data, its seems they are out of range G MAX: 2027.60 MIN: 0.00 
+
+Wind velocity data (U2) ... ok 
+Precipitation data (RRR) ... ok 
+Please check the input data, its seems they are out of range Rrr MAX: 126.14 MIN: 0.00 
+
+Cloud cover data (N) ... ok 
+Pressure data (PRES) ... ok 
+Incoming longwave data (LWin) ... ok 
+Please check the input data, its seems they are out of range Lwin MAX: 631.70 MIN: 0.00 
+
+
+ Glacier gridpoints: 120 
+
+
+
+
+Output dataset ... ok
+Restart ddataset ... ok 
+
+--------------------------------------------------------------
+
+Time required to init IO, DATA, RESULT, RESTART:  0:00:01.014266
+(17548, 14, 30)
+Assigning values back to DATA
+100.0
+0.04078483581542969
+(17548, 14, 30)
+Seconds needed for lapse rate: 0:00:00.140073
+#!/usr/bin/env bash
+
+#SBATCH -J WoEraAbr
+#SBATCH -A morsanat
+#SBATCH -n 1
+#SBATCH --cpus-per-task=20
+#SBATCH --mem=56G
+#SBATCH -t 00:30:00
+#SBATCH --qos=short
+#SBATCH --output=Output_nodes.output
+#SBATCH --error=Error_nodes.err
+#SBATCH --time=1-00:00:00
+
+/data/scratch/richteny/miniconda3/envs/pymc_env/bin/python -m distributed.cli.dask_worker tcp://192.168.1.6:37781 --nthreads 1 --nworkers 20 --memory-limit 2.79GiB --name dummy-name --nanny --death-timeout 60 --local-directory logs/dask-worker-space
+
+You are using SLURM!
+
+SLURMCluster(f2f97331, 'tcp://192.168.1.6:37781', workers=0, threads=0, memory=0 B)
+--------------------------------------------------------------
+	 Starting clients and submit jobs ... 
+
+-------------------------------------------------------------- 
+
+SLURMCluster(f2f97331, 'tcp://192.168.1.6:37781', workers=0, threads=0, memory=0 B)
+<Client: 'tcp://192.168.1.6:37781' processes=0 threads=0, memory=0 B>
+420 60 7
+	 Time required to do calculations:    1 minutes 50.2079 seconds 
+
+
+
+--------------------------------------------------------------
+Write results ...
+-------------------------------------------------------------- 
+
+2D case.
+Geod. MB test.
+-0.33910745136076287
+Time it took to calculate geod. MB  0:00:00.064887
+Starting TSL eval.
+<xarray.Dataset>
+Dimensions:     (time: 367, lat: 14, lon: 30)
+Coordinates:
+  * time        (time) datetime64[ns] 2000-01-01 2000-01-02 ... 2001-01-01
+  * lat         (lat) float64 46.79 46.79 46.79 46.79 ... 46.82 46.82 46.82
+  * lon         (lon) float64 10.72 10.73 10.73 10.73 ... 10.8 10.8 10.8 10.8
+Data variables:
+    SNOWHEIGHT  (time, lat, lon) float64 nan nan nan nan nan ... nan nan nan nan
+Time required for resampling of output:  0:00:00.022079
+Calculating TSLA using conservative. Normalization is set to True.
+Max elev. 3656.1287 .
+ Min elev. 2442.7822
+[0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.00202742
+ 0.00202742 0.03639896 0.07016335 0.07016335 0.07016335 0.09192248
+ 0.09192248 0.11629919 0.11629919 0.11629919 0.18355391 0.18355391
+ 0.18355391 0.18365813 0.20484361 0.2243551  0.2425245  0.27135525
+ 0.28259066 0.31259408 0.31259408 0.31364481 0.3159818  0.32160851
+ 0.33332954 0.33332954 0.39730872 0.40179445 0.48050954 0.48050954
+ 0.48050954 0.50720009 0.44847417 0.48072101 0.54266623 0.54438177
+ 0.54438177 0.         0.29421894 0.43020055 0.51908753 0.34414271
+ 0.33663295 0.49260845 0.55455367 0.55455367 0.55455367 0.55455367
+ 0.55455367 0.58655252 0.62457768 0.62457768 0.62457768 0.62457768
+ 0.62457768 0.59749376 0.62457768 0.62457768 0.62687885 0.62687885
+ 0.62687885 0.62687885 0.62687885 0.62687885 0.62687885 0.62687885
+ 0.64554595 0.64554595 0.64554595 0.64554595 0.65221413 0.60459646
+ 0.47053815 0.65221413 0.18355391 0.27803289 0.25293685 0.31238834
+ 0.35583347 0.40091958 0.41800374 0.33962669 0.2147483  0.19307448
+ 0.2147483  0.32865175 0.12055665 0.09111029 0.19346675 0.24170144
+ 0.         0.         0.         0.07016335 0.09454006 0.16979821
+ 0.32795445 0.32795445 0.32795445 0.32795445 0.27803289 0.45800562
+ 0.45800562 0.45800562 0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.        ]
+Time required for calculating TSL only : 0:00:00.005963
+          time  Med_TSL  Mean_TSL  Std_TSL  Max_TSL  Min_TSL  Flag
+0   2000-01-01      0.0       0.0 -2.01326      0.0      0.0   1.0
+1   2000-01-02      0.0       0.0 -2.01326      0.0      0.0   1.0
+2   2000-01-03      0.0       0.0 -2.01326      0.0      0.0   1.0
+3   2000-01-04      0.0       0.0 -2.01326      0.0      0.0   1.0
+4   2000-01-05      0.0       0.0 -2.01326      0.0      0.0   1.0
+..         ...      ...       ...      ...      ...      ...   ...
+362 2000-12-28      0.0       0.0 -2.01326      0.0      0.0   1.0
+363 2000-12-29      0.0       0.0 -2.01326      0.0      0.0   1.0
+364 2000-12-30      0.0       0.0 -2.01326      0.0      0.0   1.0
+365 2000-12-31      0.0       0.0 -2.01326      0.0      0.0   1.0
+366 2001-01-01      0.0       0.0 -2.01326      0.0      0.0   1.0
+
+[367 rows x 7 columns]
+Time required for calculating TSL stats:  0:00:00.002443
+TSLA Observed vs. Modelled RMSE: 0.22390456642003626; R-squared: 0.10954866230552938
+Time required for full TSL EVAL:  0:00:00.043360
+	 Time required to write restart and output files:    0 minutes 18.2418 seconds 
+
+	 Total run duration:    2 minutes 9.7822 seconds 
+
+--------------------------------------------------------------
+	 SIMULATION WAS SUCCESSFUL
+--------------------------------------------------------------
+Calculated MB is:  -0.33910745136076287
+Time required to load in opt_dic:  0:00:00.000006
+#--------------------------------------#
+Starting simulations with the following parameters.
+Parameter  mult_factor_RRR = 1.25
+Parameter  albedo_ice = 0.25
+Parameter  albedo_fresh_snow = 0.8509640389061166
+Parameter  albedo_firn = 0.5549999999999999
+Parameter  albedo_mod_snow_aging = 1.1
+Parameter  albedo_mod_snow_depth = 1.1
+Parameter  center_snow_transfer_function = 0.0
+Parameter  spread_snow_transfer_function = 1
+Parameter  roughness_fresh_snow = 0.24
+Parameter  roughness_ice = 1.7
+Parameter  roughness_firn = 7.0
+
+#--------------------------------------#
+
+ Maximum available time interval from 1999-01-01T00:00 until 2010-01-01T00:00. Time steps: 96444 
+
+
+--------------------------------------------------------------
+	 Integration from 1999-01-01T00:00 to 2001-01-01T00:00
+--------------------------------------------------------------
+
+--------------------------------------------------------------
+Checking input data .... 
+
+Temperature data (T2) ... ok 
+Please check the input data, its seems they are out of range T2 MAX: 298.32 MIN: 240.52 
+
+Relative humidity data (RH2) ... ok 
+Shortwave data (G) ... ok 
+Please check the input data, its seems they are out of range G MAX: 2027.60 MIN: 0.00 
+
+Wind velocity data (U2) ... ok 
+Precipitation data (RRR) ... ok 
+Please check the input data, its seems they are out of range Rrr MAX: 126.14 MIN: 0.00 
+
+Cloud cover data (N) ... ok 
+Pressure data (PRES) ... ok 
+Incoming longwave data (LWin) ... ok 
+Please check the input data, its seems they are out of range Lwin MAX: 631.70 MIN: 0.00 
+
+
+ Glacier gridpoints: 120 
+
+
+
+
+Output dataset ... ok
+Restart ddataset ... ok 
+
+--------------------------------------------------------------
+
+Time required to init IO, DATA, RESULT, RESTART:  0:00:01.055242
+(17548, 14, 30)
+Assigning values back to DATA
+100.0
+0.04078483581542969
+(17548, 14, 30)
+Seconds needed for lapse rate: 0:00:00.139912
+#!/usr/bin/env bash
+
+#SBATCH -J WoEraAbr
+>>>>>>> 236b0b7 (feat: now works with pymc and starts to incorporate recent pushes to allow it to run with newer versions of xarray and dask distributed)
 #SBATCH -A morsanat
 #SBATCH -n 1
 #SBATCH --cpus-per-task=20
@@ -75836,6 +77814,7 @@ Seconds needed for lapse rate: 0:00:00.052976
 #SBATCH -t 00:30:00
 #SBATCH --qos=short
 #SBATCH --error=Error_nodes.err
+<<<<<<< HEAD
 #SBATCH --output=Output_nodes.out
 #SBATCH --time=01:00:00
 #SBATCH --reservation=PyMC
@@ -75846,3 +77825,20 @@ Seconds needed for lapse rate: 0:00:00.052976
 You are using SLURM!
 
 SLURMCluster(9c3ecdeb, 'tcp://192.168.1.7:43739', workers=0, threads=0, memory=0 B)
+=======
+#SBATCH --time=1-00:00:00
+
+/data/scratch/richteny/miniconda3/envs/pymc_env/bin/python -m distributed.cli.dask_worker tcp://192.168.1.6:36243 --nthreads 1 --nworkers 20 --memory-limit 2.79GiB --name dummy-name --nanny --death-timeout 60 --local-directory logs/dask-worker-space
+
+You are using SLURM!
+
+SLURMCluster(ca7c05b7, 'tcp://192.168.1.6:36243', workers=0, threads=0, memory=0 B)
+--------------------------------------------------------------
+	 Starting clients and submit jobs ... 
+
+-------------------------------------------------------------- 
+
+SLURMCluster(ca7c05b7, 'tcp://192.168.1.6:36243', workers=0, threads=0, memory=0 B)
+<Client: 'tcp://192.168.1.6:36243' processes=0 threads=0, memory=0 B>
+420 60 7
+>>>>>>> 236b0b7 (feat: now works with pymc and starts to incorporate recent pushes to allow it to run with newer versions of xarray and dask distributed)
