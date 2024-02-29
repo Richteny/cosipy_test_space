@@ -318,7 +318,7 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=mult_factor_RRR, alb_ice=al
     print('\t SIMULATION WAS SUCCESSFUL')
     print('--------------------------------------------------------------')
     
-    return (geod_mb,tsl_out)
+    return (geod_mb,tsl_out_match)
     #return geod_mb
     #return tsl_out
 
