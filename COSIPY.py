@@ -466,7 +466,7 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
     print('\t SIMULATION WAS SUCCESSFUL')
     print('--------------------------------------------------------------')
     
-    return (geod_mb,tsl_out)
+    return (geod_mb,tsl_out_match)
     #return geod_mb
     #return tsl_out
 >>>>>>> 236b0b7 (feat: now works with pymc and starts to incorporate recent pushes to allow it to run with newer versions of xarray and dask distributed)
