@@ -259,45 +259,6 @@ def create_tsl_df(cos_output,min_snowheight, tsl_method, tsl_normalize):
     print("Time required for calculating TSL only :", datetime.now()-times)
     return tsl_df
 
-def calculate_tsl(cos_output, min_snowheight):
-    times = datetime.now()
-    tsl_df = pd.DataFrame({'time': [],
-                           'Med_TSL': [],
-                           'Mean_TSL': [],
-                           'Std_TSL': [],
-                           'Max_TSL': [],
-                           'Min_TSL': []})
-
-    snow_ds = cos_output.where(cos_output.SNOWHEIGHT > min_snowheight)
-    #drop = true discards a lot of values, where there were NaNs because min snowheight is arbitrarily chosen 
-    for timestep in snow_ds.time.values:
-        subset = snow_ds.sel(time=timestep)
-        two_perc = np.nanpercentile(subset.HGT,2)
-        snowline_range = subset.where(subset.HGT < two_perc)
-        
-        try:
-            tsl_med = np.nanmedian(snowline_range.HGT)
-            tsl_mean = np.nanmean(snowline_range.HGT)
-            tsl_std = np.nanstd(snowline_range.HGT)
-            tsl_max = np.nanmax(snowline_range.HGT)
-            tsl_min = np.nanmin(snowline_range.HGT)
-        except:
-            print("Forced NaNs. Timestamp:", timestep)
-            tsl_med = np.nan
-            tsl_mean = np.nan
-            tsl_std = np.nan
-            tsl_max = np.nan
-            tsl_min = np.nan
-
-        tsl_df = tsl_df.append({'time': timestep,
-                                'Med_TSL': tsl_med,
-                                'Mean_TSL': tsl_mean,
-                                'Std_TSL': tsl_std,
-                                'Max_TSL': tsl_max,
-                                'Min_TSL': tsl_min}, ignore_index=True)
-        tsl_df['time'] = pd.to_datetime(tsl_df['time'])
-    print("Time required for calculating TSL only :", datetime.now()-times)
-    return tsl_df
 
 def mbe_score(y_obs, y_pred):
     diff = (y_obs-y_pred)
