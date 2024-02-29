@@ -282,8 +282,8 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=mult_factor_RRR, alb_ice=al
             times = datetime.now()
             #dates,clean_day_vals,secs,holder = prereq_res(IO.get_result().sel(time=slice("2010-01-01","2019-12-31")))
             dates,clean_day_vals,secs,holder = prereq_res(IO.get_result().sel(time=slice("2000-01-01","2009-12-31")))
-            resampled_array = resample_by_hand(holder, IO.get_result().SNOWHEIGHT.values, secs, clean_day_vals)
-            resampled_out = construct_resampled_ds(IO.get_result(),resampled_array,dates.values)
+            resampled_array = resample_by_hand(holder, IO.get_result().sel(time=slice("2000-01-01","2009-12-31")).SNOWHEIGHT.values, secs, clean_day_vals)
+            resampled_out = construct_resampled_ds(IO.get_result().sel(time=slice("2000-01-01","2009-12-31")),resampled_array,dates.values)
             print(resampled_out)
             print("Time required for resampling of output: ", datetime.now()-times)
             #Need HGT values as 2D, ensured with following line of code.
@@ -299,6 +299,8 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=mult_factor_RRR, alb_ice=al
             tsla_stats = eval_tsl(tsla_observations,tsl_out, time_col_obs, tsla_col_obs)
             print("TSLA Observed vs. Modelled RMSE: " + str(tsla_stats[0])+ "; R-squared: " + str(tsla_stats[1]))
             tsl_out.to_csv(os.path.join(data_path,'output',tsl_csv_name))
+            ## Match to observation dates for pymc routine
+            tsl_out_match = tsl_out.loc[tsl_out['time'].isin(tsla_observations['LS_DATE'])]
             #a_tsl_out.to_csv(os.path.join(data_path,'output','test_for_resample.csv'))
         print("Time required for full TSL EVAL: ", datetime.now()-times)
     #-----------------------------------------------
