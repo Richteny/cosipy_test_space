@@ -7,7 +7,7 @@
 #SBATCH --chdir=/data/scratch/richteny/thesis/cosipy_test_space/
 #SBATCH --account=morsanat
 #SBATCH --error=Control_master.err
-#SBATCH --partition=compute
+#SBATCH --partition=computehm
 #SBATCH --output=Control_master.out
 #SBATCH --mail-type=ALL
 
@@ -23,9 +23,9 @@ conda activate pymc_env
 
 #python -u /data/scratch/richteny/thesis/cosipy_test_space/COSIPY.py
 #python -u /data/scratch/richteny/thesis/cosipy_test_space/spotpy_multobj_full.py
-#python -u /data/scratch/richteny/thesis/cosipy_test_space/spotpy_run_fromlist.py
+python -u /data/scratch/richteny/thesis/cosipy_test_space/spotpy_run_fromlist.py
 #python -u /data/scratch/richteny/thesis/cosipy_test_space/FAST_spotpy.py 
 #python -u /data/scratch/richteny/thesis/cosipy_test_space/pymc3_calibration.py
-python -u /data/scratch/richteny/thesis/cosipy_test_space/pymc_calibration.py
+#python -u /data/scratch/richteny/thesis/cosipy_test_space/pymc_calibration.py
 #mpirun -np 5 python -u /data/scratch/richteny/thesis/cosipy_test_space/spotpy_multobj_full.py
 
