@@ -125,7 +125,7 @@ class spot_setup:
         if isinstance(self.count,int):
             self.count += 1
         print("Count", self.count)
-        sim_tsla, sim_mb = main(RRR_factor=x.RRR_factor,
+        sim_mb, sim_tsla = main(RRR_factor=x.RRR_factor,
                                 alb_ice = x.alb_ice, alb_snow = x.alb_snow,alb_firn = x.alb_firn,
                                 albedo_aging = x.albedo_aging, albedo_depth = x.albedo_depth,
                                 center_snow_transfer_function = x.center_snow_transfer_function, 
