@@ -137,7 +137,7 @@ class spot_setup:
         if isinstance(self.count,int):
             self.count += 1
         print("Count", self.count)
-        sim_tsla, sim_mb = main(RRR_factor=x.RRR_factor,
+        sim_mb, sim_tsla = main(RRR_factor=x.RRR_factor,
                                 alb_ice = x.alb_ice, alb_snow = x.alb_snow,alb_firn = x.alb_firn,
                                 albedo_aging = x.albedo_aging, albedo_depth = x.albedo_depth,
                                 center_snow_transfer_function = x.center_snow_transfer_function,
@@ -186,7 +186,7 @@ class spot_setup:
 
  
 
-def psample(obs, rep=10, count=None, dbname='cosipy_bestpar', dbformat="csv",algorithm='mc'):
+def psample(obs, rep=10, count=None, dbname='cosipy_bestparupdate_1d', dbformat="csv",algorithm='mc'):
     #try lhs which allows for multi-objective calibration which mcmc here does not
     #set seed to make results reproducable, -> for running from list only works with mc
     np.random.seed(42)
