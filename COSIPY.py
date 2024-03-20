@@ -180,10 +180,9 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=mult_factor_RRR, alb_ice=al
     #this takes 1min, make it faster!
     if 'N_Points' in list(IO.get_result().keys()):
         print("Compute area weighted MB for 1D case.")
-        dsmb = IO.get_result().sel(time=slice("2010-01-01", "2019-12-31"))
-        weighted_mb_arr = dsmb['MB'].values * dsmb['N_Points'].values / np.sum(dsmb['N_Points'].values)
+        dsmb = IO.get_result().sel(time=slice("2000-01-01", "2009-12-31"))
+        dsmb['weighted_mb'] = dsmb['MB'] * dsmb['N_Points'] / np.sum(dsmb['N_Points'])
         print("time 1:", datetime.now()-times)
-        print(weighted_mb_arr.shape)
         #time_vals = pd.to_datetime(dsmb.time.values)
         #secs = np.array([time_vals.astype('int64')]).ravel()
         #years = np.unique(time_vals.year)
@@ -191,9 +190,9 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=mult_factor_RRR, alb_ice=al
         #clean_year_vals = clean_year_vals.astype('int64')
         #print(secs)
         #print(clean_year_vals)
-
-        dsmb['weighted_mb'] = (('time','lat','lon'), weighted_mb_arr)
-        dfmb = dsmb[['weighted_mb']].to_dataframe()
+        #sum over glacier - all grid cell, why sum not mean?
+        spatial_mean = dsmb[['weighted_mb']].sum(dim=['lat','lon'])
+        dfmb = spatial_mean['weighted_mb'].to_dataframe()
         #dfmb.reset_index(inplace=True)
         #dfmb['FY'] =  dfmb.apply(lambda x: pd.datetime(x.time.year,1,1).year, axis=1)
         mean_annual_df =  dfmb.resample("1Y").sum()
@@ -301,7 +300,27 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=mult_factor_RRR, alb_ice=al
             tsl_out.to_csv(os.path.join(data_path,'output',tsl_csv_name))
             ## Match to observation dates for pymc routine
             tsl_out_match = tsl_out.loc[tsl_out['time'].isin(tsla_observations['LS_DATE'])]
+            #tsla_obs_v2 = tsla_observations.loc[tsla_observations['LS_DATE'].isin(tsl_out_match['time'])]
+            #if tsl_normalize:
+            #    tsla_obs_v2['SC_stdev'] = (tsla_obs_v2['SC_stdev']) / (tsla_obs_v2['glacier_DEM_max'] - tsla_obs_v2['glacier_DEM_min'])
             #a_tsl_out.to_csv(os.path.join(data_path,'output','test_for_resample.csv'))
+            ### PUTTING TEST FOR COMB COST FUNCTION SCORE HERE ###
+            #eval_tsla = np.delete(tsla_obs_v2.TSL_normalized.values, np.argwhere(np.isnan(tsl_out_match.Med_TSL.values)))
+            #path_to_geod = "/data/scratch/richteny/Hugonnet_21_MB/"
+            #rgi_id = "RGI60-11.00897"
+            #rgi_region = rgi_id.split('-')[-1][:2]
+            #geod_ref = pd.read_csv(path_to_geod+"dh_{}_rgi60_pergla_rates.csv".format(rgi_region))
+            #geod_ref = geod_ref.loc[geod_ref['rgiid'] == rgi_id]
+            #geod_ref = geod_ref.loc[geod_ref['period'] == "2000-01-01_2010-01-01"]
+            #geod_mb_ref = geod_ref[['dmdtda','err_dmdtda']]
+            #eval_mb = geod_mb_ref['dmdtda'].values
+            #sigma_mb = geod_mb_ref['err_dmdtda'].values
+            #sigma_tsla = np.delete(tsla_obs_v2.SC_stdev.values, np.argwhere(np.isnan(tsl_out_match.Med_TSL.values)))
+            #sim_tsla = tsl_out_match.Med_TSL.values[~np.isnan(tsl_out_match.Med_TSL.values)]
+            #mbe_tsla = (((eval_tsla - sim_tsla)**2) / (sigma_tsla**2)).mean() 
+            #mbe = ((eval_mb - geod_mb)**2) / (sigma_mb**2)
+            #cost = -(1*mbe_tsla + 1*mbe)
+            #print("Full cost function value is: ", cost)
         print("Time required for full TSL EVAL: ", datetime.now()-times)
     #-----------------------------------------------
     # Stop time measurement
