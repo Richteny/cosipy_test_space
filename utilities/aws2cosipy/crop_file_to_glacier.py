@@ -1,23 +1,15 @@
 import sys
 import xarray as xr
-import pandas as pd
 import numpy as np
-import netCDF4 as nc
-import time
-import dateutil
 from itertools import product
-import metpy.calc
-from metpy.units import units
 
 #np.warnings.filterwarnings('ignore')
 
 sys.path.append('../../')
-
 from utilities.aws2cosipy.aws2cosipyConfig import *
-#from cosipy.modules.radCor import *
 import argparse
 
-def crop_file_to_glacier(inputf,outputf):
+def crop_file_to_glacier(ds):
 
     dic_attrs= {'HGT': ('HGT', 'm', 'Elevation'),
                 'ASPECT': ('ASPECT', 'degrees', 'Aspect of slope'),
@@ -32,10 +24,15 @@ def crop_file_to_glacier(inputf,outputf):
                 'RRR': ('RRR', 'mm', 'Total precipitation (liquid+solid)'),
                 'SNOWFALL': ('SNOWFALL', 'm', 'Snowfall'),
                 'LWin': ('LWin', 'W m\u207b\xb2', 'Incoming longwave radiation'),
-                'N': ('N', '%', 'Cloud cover fraction')}
+                'N': ('N', '%', 'Cloud cover fraction'),
+                'sw_dir_cor': ('sw_dir_cor', '-', 'correction factor for direct downward shortwave radiation'),
+                'slope': ('slope','degrees', 'Horayzon Slope'),
+                'aspect': ('aspect','degrees','Horayzon Aspect measured clockwise from the North'),
+                'surf_enl_fac': ('surf_enl_fac','-','Surface enlargement factor'),
+                'elevation': ('elevation','m','Orthometric Height')}
 
-    print('Read input file %s \n' % (inputf))
-    dso = xr.open_dataset(inputf)
+
+    dso = ds 
 
     print('Create cropped file.')
     dso_mod = xr.Dataset()
@@ -55,7 +52,7 @@ def crop_file_to_glacier(inputf,outputf):
                 dso_mod.lon.attrs['units'] = 'degrees_east'
             else:
                 dso_mod.coords['time'] = arr
-        elif var in ['HGT','ASPECT','SLOPE','MASK','N_Points']:
+        elif var in ['HGT','ASPECT','SLOPE','MASK','N_Points','surf_enl_fac','slope','aspect','elevation']:
             add_variable_along_latlon(dso_mod, arr, dic_attrs[var][0], dic_attrs[var][1], dic_attrs[var][2])
         else:
             add_variable_along_timelatlon(dso_mod, arr, dic_attrs[var][0], dic_attrs[var][1], dic_attrs[var][2])
@@ -66,11 +63,16 @@ def crop_file_to_glacier(inputf,outputf):
     print("Performing checks.")
     check_for_nan(dso_mod)
 
-    check(dso_mod.T2,316.16,223.16)
-    check(dso_mod.RH2,100.0,0.0)
-    check(dso_mod.U2, 50.0, 0.0)
-    check(dso_mod.G,1600.0,0.0)
-    check(dso_mod.PRES,1080.0,200.0)
+    if (T2_var in list(dso_mod.variables)):
+        check(dso_mod.T2,316.16,223.16)
+    if (RH2_var in list(dso_mod.variables)):
+        check(dso_mod.RH2,100.0,0.0)
+    if (U2_var in list(dso_mod.variables)):
+        check(dso_mod.U2, 50.0, 0.0)
+    if (G_var in list(dso_mod.variables)):
+        check(dso_mod.G,1600.0,0.0)
+    if (PRES_var in list(dso_mod.variables)):
+        check(dso_mod.PRES,1080.0,200.0)
 
     if (RRR_var in list(dso_mod.variables)):
         check(dso_mod.RRR,25.0,0.0)
@@ -83,9 +85,9 @@ def crop_file_to_glacier(inputf,outputf):
 
     if (N_var in list(dso_mod.variables)):
         check(dso_mod.N, 1.0, 0.0)
-    ## write out to file ##
-    print("Writing cropped cosipy file.")
-    dso_mod.to_netcdf(outputf)
+
+    return dso_mod
+
 
 
 
@@ -178,4 +180,9 @@ if __name__ == "__main__":
     parser.add_argument('-o', '-cosipy_file', dest='cosipy_file', help='Name of resulting COSIPY file')
     
     args = parser.parse_args()
-    crop_file_to_glacier(args.input_file, args.cosipy_file)
+    print('Read input file %s \n' % (args.input_file))
+    ds = xr.open_dataset(args.input_file)
+    dso_mod = crop_file_to_glacier(ds)
+    ## write out to file ##
+    print("Writing cropped cosipy file.")
+    dso_mod.to_netcdf(args.cosipy_file)
