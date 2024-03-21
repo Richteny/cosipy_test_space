@@ -258,9 +258,14 @@ stationAlt = 3030.0283
 lapse_T  = -0.0065    # Temp K per  m
 cs_file = "../../data/input/HEF/COSMO_forcing_1999-2010.csv"
 cosipy_file = "../../data/input/HEF/HEF_COSMO_1D_30m_1999_2010.nc"
-static_file = "../../data/static/HEF/HEF_static_30m_elevbands.nc"
+static_file = "../../data/static/HEF/HEF_static_raw_crop.nc"
 start_date = "19990101"
-end_date = "20100101"
+end_date = "20000101"
+ELEV_model = False
+x0 = None
+x1 = None
+y0 = None
+y1 = None
 def create_2D_input(cs_file, cosipy_file, static_file, start_date, end_date, x0=None, x1=None, y0=None, y1=None):
     """ This function creates an input dataset from an offered csv file with input point data
         Here you need to define how to interpolate the data.
@@ -405,33 +410,54 @@ def create_2D_input(cs_file, cosipy_file, static_file, start_date, end_date, x0=
     #-----------------------------------
     # Create numpy arrays for the 2D fields
     #-----------------------------------
-    T_interp = np.zeros([len(dso.time), len(ds.lat), len(ds.lon)])
-    RH_interp = np.zeros([len(dso.time), len(ds.lat), len(ds.lon)])
-    U_interp = np.zeros([len(dso.time), len(ds.lat), len(ds.lon)])
-    G_interp = np.full([len(dso.time), len(ds.lat), len(ds.lon)], np.nan)
-    P_interp = np.zeros([len(dso.time), len(ds.lat), len(ds.lon)])
+    T_interp = np.memmap('memmappedT.dat', dtype=np.float64,
+              mode='w+', shape=(len(dso.time), len(ds.lat), len(ds.lon)))
+    #T_interp = np.zeros([len(dso.time), len(ds.lat), len(ds.lon)])
+    RH_interp = np.memmap('memmappedRH.dat', dtype=np.float64,
+              mode='w+', shape=(len(dso.time), len(ds.lat), len(ds.lon)))
+    #RH_interp = np.zeros([len(dso.time), len(ds.lat), len(ds.lon)])
+    U_interp = np.memmap('memmappedU.dat', dtype=np.float64,
+              mode='w+', shape=(len(dso.time), len(ds.lat), len(ds.lon)))
+    #U_interp = np.zeros([len(dso.time), len(ds.lat), len(ds.lon)])
+    G_interp = np.memmap('memmappedG.dat', dtype=np.float64,
+              mode='w+', shape=(len(dso.time), len(ds.lat), len(ds.lon)))
+    #G_interp = np.full([len(dso.time), len(ds.lat), len(ds.lon)], np.nan)
+    P_interp = np.memmap('memmappedP.dat', dtype=np.float64,
+              mode='w+', shape=(len(dso.time), len(ds.lat), len(ds.lon)))
+    #P_interp = np.zeros([len(dso.time), len(ds.lat), len(ds.lon)])
 
     if (RRR_var in df):
         RRR = df[RRR_var]       # Precipitation
-        RRR_interp = np.zeros([len(dso.time), len(ds.lat), len(ds.lon)])
+        RRR_interp = np.memmap('memmappedRRR.dat', dtype=np.float64,
+                  mode='w+', shape=(len(dso.time), len(ds.lat), len(ds.lon)))
+        #RRR_interp = np.zeros([len(dso.time), len(ds.lat), len(ds.lon)])
 
     if(SNOWFALL_var in df):
         SNOWFALL = df[SNOWFALL_var]      # Incoming longwave radiation
-        SNOWFALL_interp = np.zeros([len(dso.time), len(ds.lat), len(ds.lon)])
+        SNOWFALL_interp = np.memmap('memmappedSF.dat', dtype=np.float64,
+                  mode='w+', shape=(len(dso.time), len(ds.lat), len(ds.lon)))
+        #SNOWFALL_interp = np.zeros([len(dso.time), len(ds.lat), len(ds.lon)])
 
     if(LWin_var in df):
         LW = df[LWin_var]      # Incoming longwave radiation
-        LW_interp = np.zeros([len(dso.time), len(ds.lat), len(ds.lon)])
+        LW_interp = np.memmap('memmappedLW.dat', dtype=np.float64,
+                  mode='w+', shape=(len(dso.time), len(ds.lat), len(ds.lon)))
+        #LW_interp = np.zeros([len(dso.time), len(ds.lat), len(ds.lon)])
 
     if(N_var in df):
         N = df[N_var]        # Cloud cover fraction
-        N_interp = np.zeros([len(dso.time), len(ds.lat), len(ds.lon)])
+        N_interp = np.memmap('memmappedN.dat', dtype=np.float64,
+                  mode='w+', shape=(len(dso.time), len(ds.lat), len(ds.lon)))
+        #N_interp = np.zeros([len(dso.time), len(ds.lat), len(ds.lon)])
 
     #-----------------------------------
     # Interpolate point data to grid 
     #-----------------------------------
     print('Interpolate CR file to grid')
    
+    
+    print(sys.getsizeof(dso)/1e9)
+    print(sys.getsizeof(T_interp)/1e9)
     # Interpolate data (T, RH, RRR, U)  to grid using lapse rates from file
     lapse_T = df['lr_t2m']
     lapse_RH = df['lr_rh2']
@@ -464,6 +490,49 @@ def create_2D_input(cs_file, cosipy_file, static_file, start_date, end_date, x0=
         if(N_var in df):
             N_interp[t,:,:] = N[t]
 
+
+    
+    #-----------------------------------
+    # Check bounds for relative humidity 
+    #-----------------------------------
+    RH_interp[RH_interp > 100.0] = 100.0
+    RH_interp[RH_interp < 0.0] = 0.1
+    LW_interp[LW_interp < 0.0] = 0.0
+    
+    #-----------------------------------
+    # Add variables to file to already
+    #-----------------------------------
+    
+    add_variable_along_latlon(dso, ds.HGT.values, 'HGT', 'm', 'Elevation')
+    add_variable_along_latlon(dso, ds.ASPECT.values, 'ASPECT', 'degrees', 'Aspect of slope')
+    add_variable_along_latlon(dso, ds.SLOPE.values, 'SLOPE', 'degrees', 'Terrain slope')
+    add_variable_along_latlon(dso, ds.MASK.values, 'MASK', 'boolean', 'Glacier mask')
+    add_variable_along_timelatlon(dso, T_interp, 'T2', 'K', 'Temperature at 2 m')
+    del T_interp
+    add_variable_along_timelatlon(dso, RH_interp, 'RH2', '%', 'Relative humidity at 2 m')
+    del RH_interp
+    add_variable_along_timelatlon(dso, U_interp, 'U2', 'm s\u207b\xb9', 'Wind velocity at 2 m')
+    del U_interp
+    add_variable_along_timelatlon(dso, P_interp, 'PRES', 'hPa', 'Atmospheric Pressure')
+    del P_interp
+    
+    if ELEV_model:
+        add_variable_along_latlon(dso, ds.N_Points.values, 'N_Points', 'count','Number of Points in each bin')
+    
+    if (RRR_var in df):
+        add_variable_along_timelatlon(dso, RRR_interp, 'RRR', 'mm', 'Total precipitation (liquid+solid)')
+        del RRR_interp
+    
+    if(SNOWFALL_var in df):
+        add_variable_along_timelatlon(dso, SNOWFALL_interp, 'SNOWFALL', 'm', 'Snowfall')
+        del SNOWFALL_interp
+
+    if(LWin_var in df):
+        add_variable_along_timelatlon(dso, LW_interp, 'LWin', 'W m\u207b\xb2', 'Incoming longwave radiation')
+        del LW_interp
+    if(N_var in df):
+        add_variable_along_timelatlon(dso, N_interp, 'N', '%', 'Cloud cover fraction')
+        del N_interp
 
     print(('Number of glacier cells: %i') % (np.count_nonzero(~np.isnan(ds['MASK'].values))))
     print(('Number of glacier cells: %i') % (np.nansum(ds['MASK'].values)))
@@ -503,7 +572,7 @@ def create_2D_input(cs_file, cosipy_file, static_file, start_date, end_date, x0=
 
         # get correction factor which must be computed beforehand!
         try:
-            correction_factor = xr.open_dataset("../../data/static/HEF/LUT_HORAYZON_sw_dir_cor_1d.nc")
+            correction_factor = xr.open_dataset("../../data/static/HEF/LUT_HORAYZON_sw_dir_cor_raw.nc")
         except:
             print("HORAYZON Lookup Table is not available.")
             sys.exit()
@@ -601,38 +670,14 @@ def create_2D_input(cs_file, cosipy_file, static_file, start_date, end_date, x0=
         sys.exit()
 
     #-----------------------------------
-    # Check bounds for relative humidity 
-    #-----------------------------------
-    RH_interp[RH_interp > 100.0] = 100.0
-    RH_interp[RH_interp < 0.0] = 0.1
-    LW_interp[LW_interp < 0.0] = 0.0
-
-    #-----------------------------------
     # Add variables to file 
     #-----------------------------------
-    add_variable_along_latlon(dso, ds.HGT.values, 'HGT', 'm', 'Elevation')
-    add_variable_along_latlon(dso, ds.ASPECT.values, 'ASPECT', 'degrees', 'Aspect of slope')
-    add_variable_along_latlon(dso, ds.SLOPE.values, 'SLOPE', 'degrees', 'Terrain slope')
-    add_variable_along_latlon(dso, ds.MASK.values, 'MASK', 'boolean', 'Glacier mask')
-    add_variable_along_timelatlon(dso, T_interp, 'T2', 'K', 'Temperature at 2 m')
-    add_variable_along_timelatlon(dso, RH_interp, 'RH2', '%', 'Relative humidity at 2 m')
-    add_variable_along_timelatlon(dso, U_interp, 'U2', 'm s\u207b\xb9', 'Wind velocity at 2 m')
     add_variable_along_timelatlon(dso, G_interp, 'G', 'W m\u207b\xb2', 'Incoming shortwave radiation')
-    add_variable_along_timelatlon(dso, P_interp, 'PRES', 'hPa', 'Atmospheric Pressure')
+    del G_interp
     
-    if ELEV_model:
-        add_variable_along_latlon(dso, ds.N_Points.values, 'N_Points', 'count','Number of Points in each bin')
-    
-    if (RRR_var in df):
-        add_variable_along_timelatlon(dso, RRR_interp, 'RRR', 'mm', 'Total precipitation (liquid+solid)')
-    
-    if(SNOWFALL_var in df):
-        add_variable_along_timelatlon(dso, SNOWFALL_interp, 'SNOWFALL', 'm', 'Snowfall')
+    #Delete the created files from disk
+    os.system("rm memmapped*.dat")
 
-    if(LWin_var in df):
-        add_variable_along_timelatlon(dso, LW_interp, 'LWin', 'W m\u207b\xb2', 'Incoming longwave radiation')
-    if(N_var in df):
-        add_variable_along_timelatlon(dso, N_interp, 'N', '%', 'Cloud cover fraction')
 
     encoding = dict()
     # for var in IO.get_result().data_vars:
