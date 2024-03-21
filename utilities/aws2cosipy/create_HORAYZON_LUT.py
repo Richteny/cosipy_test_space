@@ -148,8 +148,8 @@ def construct_1d_dataset(df):
     return elev_ds
 
 # set paths
-regrid = True #regrid to coarser resolution
-elevation_profile = True ## 1D COSIPY
+regrid = False #regrid to coarser resolution
+elevation_profile = False ## 1D COSIPY
 elev_bandsize = 30 #in m 
 if elevation_profile == True:
     print("Routine check. Regrid Option is set to: ", regrid)
@@ -158,7 +158,7 @@ if elevation_profile == True:
     regrid = False
 ellps = "WGS84"  # Earth's surface approximation (sphere, GRS80 or WGS84)
 path_out = "../../data/static/HEF/"
-file_sw_dir_cor = "LUT_HORAYZON_sw_dir_cor_1d.nc"
+file_sw_dir_cor = "LUT_HORAYZON_sw_dir_cor_raw.nc"
 
 static_file = "../../data/static/HEF/HEF_static_raw.nc" #path to high resolution dataset
 coarse_static_file = "../../data/static/HEF/HEF_static_agg.nc" #Load coarse grid
@@ -504,7 +504,8 @@ if elevation_profile == True:
     combined.to_netcdf(path_out+file_sw_dir_cor)
     combined[['HGT','ASPECT','SLOPE','MASK','N_Points']].to_netcdf(path_out+"HEF_static_30m_elevbands.nc")
 else:
-    cropped_combined = crop_file_to_glacier(combined)
+    #cropped_combined = crop_file_to_glacier(combined) #results in +2 gridsize somehow
+    cropped_combined = combined.where(combined.MASK ==1, drop=True)
     cropped_combined.to_netcdf(path_out+file_sw_dir_cor)
 
 
