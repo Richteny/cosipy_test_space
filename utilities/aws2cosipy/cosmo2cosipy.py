@@ -1,4 +1,4 @@
-"""
+F"""
  This file reads the input data (model forcing) and write the output to netcdf file.  There is the create_1D_input
  (point model) and create_2D_input (distirbuted simulations) function. In case of the 1D input, the function works
  without a static file, in that file the static variables are created. For both cases, lapse rates can be determined
@@ -17,7 +17,6 @@ import metpy.calc
 from metpy.units import units
 
 #np.warnings.filterwarnings('ignore')
-os.chdir("/home/niki/Dokumente/cosipy_1d_testkit/utilities/aws2cosipy/")
 sys.path.append('../../')
 
 from utilities.aws2cosipy.aws2cosipyConfig import *
@@ -252,21 +251,7 @@ def create_1D_input(cs_file, cosipy_file, static_file, start_date, end_date):
     if (N_var in df):
         check(ds.N, 1.0, 0.0)
 
-radiationModule = 'Horayzon2022'
-stationName = 'HEF'
-stationAlt = 3030.0283
-lapse_T  = -0.0065    # Temp K per  m
-cs_file = "../../data/input/HEF/COSMO_forcing_1999-2010.csv"
-cosipy_file = "../../data/input/HEF/HEF_COSMO_1D_30m_1999_2010.nc"
-static_file = "../../data/static/HEF/HEF_static_raw_crop.nc"
-start_date = "19990101"
-end_date = "20000101"
-ELEV_model = False
-x0 = None
-x1 = None
-y0 = None
-y1 = None
-def create_2D_input(cs_file, cosipy_file, static_file, start_date, end_date, x0=None, x1=None, y0=None, y1=None):
+def create_2D_input(cs_file, cosipy_file, static_file, start_date, end_date, static_file_full=None, x0=None, x1=None, y0=None, y1=None):
     """ This function creates an input dataset from an offered csv file with input point data
         Here you need to define how to interpolate the data.
 
@@ -341,7 +326,9 @@ def create_2D_input(cs_file, cosipy_file, static_file, start_date, end_date, x0=
     #-----------------------------------
     print('Read static file %s \n' % (static_file))
     ds = xr.open_dataset(static_file)
-
+    if (static_file_full is not None):
+        print("Read large-scale static file.")
+        ds_full = xr.open_dataset(static_file_full) #static file with surrounding terrain
     #-----------------------------------
     # Create subset
     #-----------------------------------
@@ -507,14 +494,8 @@ def create_2D_input(cs_file, cosipy_file, static_file, start_date, end_date, x0=
     add_variable_along_latlon(dso, ds.ASPECT.values, 'ASPECT', 'degrees', 'Aspect of slope')
     add_variable_along_latlon(dso, ds.SLOPE.values, 'SLOPE', 'degrees', 'Terrain slope')
     add_variable_along_latlon(dso, ds.MASK.values, 'MASK', 'boolean', 'Glacier mask')
-    add_variable_along_timelatlon(dso, T_interp, 'T2', 'K', 'Temperature at 2 m')
-    del T_interp
-    add_variable_along_timelatlon(dso, RH_interp, 'RH2', '%', 'Relative humidity at 2 m')
-    del RH_interp
     add_variable_along_timelatlon(dso, U_interp, 'U2', 'm s\u207b\xb9', 'Wind velocity at 2 m')
     del U_interp
-    add_variable_along_timelatlon(dso, P_interp, 'PRES', 'hPa', 'Atmospheric Pressure')
-    del P_interp
     
     if ELEV_model:
         add_variable_along_latlon(dso, ds.N_Points.values, 'N_Points', 'count','Number of Points in each bin')
@@ -530,9 +511,6 @@ def create_2D_input(cs_file, cosipy_file, static_file, start_date, end_date, x0=
     if(LWin_var in df):
         add_variable_along_timelatlon(dso, LW_interp, 'LWin', 'W m\u207b\xb2', 'Incoming longwave radiation')
         del LW_interp
-    if(N_var in df):
-        add_variable_along_timelatlon(dso, N_interp, 'N', '%', 'Cloud cover fraction')
-        del N_interp
 
     print(('Number of glacier cells: %i') % (np.count_nonzero(~np.isnan(ds['MASK'].values))))
     print(('Number of glacier cells: %i') % (np.nansum(ds['MASK'].values)))
@@ -616,8 +594,20 @@ def create_2D_input(cs_file, cosipy_file, static_file, start_date, end_date, x0=
             shad1yr = ds_LUT.SHADING.values
             svf = ds_LUT.SVF.values
 
+            mask = ds_LUT['MASK'].values
+            slope = ds_LUT['SLOPE'].values
+            aspect = ds_LUT['ASPECT'].values
+            hgt = ds_LUT['HGT'].values
         else:
             print('Build look-up-tables')
+
+            ## overwrite some of the auxiliary variables
+            mask = ds_full.MASK.values
+            hgt = ds_full.HGT.values
+            slope  = ds_full.SLOPE.values
+            aspect = ds_full.ASPECT.values
+            lats = ds_full.lat.values
+            lons = ds_full.lon.values
 
             # Sky view factor
             svf = LUTsvf(np.flipud(hgt), np.flipud(mask), np.flipud(slope), np.flipud(aspect), lats[::-1], lons)
@@ -632,34 +622,32 @@ def create_2D_input(cs_file, cosipy_file, static_file, start_date, end_date, x0=
             Ny = len(lats)  # number of latitudes
             Nx = len(lons)  # number of longitudes
 
-            f = nc.Dataset('../../data/static/LUT_Rad.nc', 'w')
-            f.createDimension('time', Nt)
-            f.createDimension('lat', Ny)
-            f.createDimension('lon', Nx)
-
-            LATS = f.createVariable('lat', 'f4', ('lat',))
-            LATS.units = 'degree'
-            LONS = f.createVariable('lon', 'f4', ('lon',))
-            LONS.units = 'degree'
-
-            LATS[:] = lats
-            LONS[:] = lons
-
-            shad = f.createVariable('SHADING', float, ('time', 'lat', 'lon'))
-            shad.long_name = 'Topographic shading'
-            shad[:] = shad1yr
-
-            SVF = f.createVariable('SVF', float, ('lat', 'lon'))
-            SVF.long_name = 'sky view factor'
-            SVF[:] = svf
-
-            f.close()
-
+            LUTout = xr.Dataset({'SVF':(['lat','lon'], svf), 'SHADING':(['time','lat','lon'], shad1yr)}, coords={'time':np.arange(0,Nt), 'lat':lats[::-1], 'lon':lons})
+            LUTout['lat'].attrs['units'] = 'degrees_north'
+            LUTout['lon'].attrs['units'] = 'degrees_east'
+            #crop file to glacier extent
+            LUTout['MASK'] = (('lat','lon'), np.flipud(mask))
+            LUTout['SLOPE'] = (('lat','lon'), np.flipud(slope))
+            LUTout['ASPECT'] = (('lat','lon'), np.flipud(aspect))
+            LUTout['HGT'] = (('lat','lon'), np.flipud(hgt))
+            LUTout = LUTout.where(LUTout.MASK ==1, drop=True)
+            print(LUTout)
+            del shad1yr #to close memmapped array
+            LUTout.to_netcdf('../../data/static/LUT_Rad.nc')
+            # restore auxilary fields but on cropped extent - should not be needed anymore at larger domain
+            hgt = LUTout['HGT'].values
+            mask = LUTout['MASK'].values
+            slope = LUTout['SLOPE'].values
+            aspect = LUTout['ASPECT'].values
+            shad1yr = LUTout['SHADING'].values
+            svf = LUTout['SVF'].values
+            #they should already be flipped
+  
         # In both cases, run the radiation model
         for t in range(len(dso.time)):
             doy = df.index[t].dayofyear
             hour = df.index[t].hour
-            G_interp[t, :, :] = calcRad(solPars, timeCorr, doy, hour, stationLat, T_interp[t, ::-1, :], P_interp[t, ::-1, :], RH_interp[t, ::-1, :], N_interp[t, ::-1, :], np.flipud(hgt), np.flipud(mask), np.flipud(slope), np.flipud(aspect), shad1yr, svf, dtstep, tcart)
+            G_interp[t, :, :] = calcRad(solPars, timeCorr, doy, hour, stationLat, T_interp[t, ::-1, :], P_interp[t, ::-1, :], RH_interp[t, ::-1, :], N_interp[t, ::-1, :], hgt, mask, slope, aspect, shad1yr, svf, dtstep, tcart)
 
         # Change aspect to south == 0, east == negative, west == positive
         aspect2 = ds['ASPECT'].values - 180.0
@@ -672,9 +660,19 @@ def create_2D_input(cs_file, cosipy_file, static_file, start_date, end_date, x0=
     #-----------------------------------
     # Add variables to file 
     #-----------------------------------
+    add_variable_along_timelatlon(dso, T_interp, 'T2', 'K', 'Temperature at 2 m')
+    del T_interp
+    add_variable_along_timelatlon(dso, RH_interp, 'RH2', '%', 'Relative humidity at 2 m')
+    del RH_interp
+    add_variable_along_timelatlon(dso, P_interp, 'PRES', 'hPa', 'Atmospheric Pressure')
+    del P_interp
     add_variable_along_timelatlon(dso, G_interp, 'G', 'W m\u207b\xb2', 'Incoming shortwave radiation')
     del G_interp
-    
+
+    if(N_var in df):
+        add_variable_along_timelatlon(dso, N_interp, 'N', '%', 'Cloud cover fraction')
+        del N_interp
+
     #Delete the created files from disk
     os.system("rm memmapped*.dat")
 
@@ -797,6 +795,7 @@ if __name__ == "__main__":
     parser.add_argument('-s', '-static_file', dest='static_file', help='Static file containing DEM, Slope etc.')
     parser.add_argument('-b', '-start_date', dest='start_date', help='Start date')
     parser.add_argument('-e', '-end_date', dest='end_date', help='End date')
+    parser.add_argument('-sx','-static_file_full', dest='static_file_full', const=None, help='Static file containing surrounding terrain etc.')
     parser.add_argument('-xl', '-xl', dest='xl', type=float, const=None, help='left longitude value of the subset')
     parser.add_argument('-xr', '-xr', dest='xr', type=float, const=None, help='right longitude value of the subset')
     parser.add_argument('-yl', '-yl', dest='yl', type=float, const=None, help='lower latitude value of the subset')
@@ -806,4 +805,4 @@ if __name__ == "__main__":
     if point_model:
         create_1D_input(args.csv_file, args.cosipy_file, args.static_file, args.start_date, args.end_date) 
     else:
-        create_2D_input(args.csv_file, args.cosipy_file, args.static_file, args.start_date, args.end_date, args.xl, args.xr, args.yl, args.yu) 
+        create_2D_input(args.csv_file, args.cosipy_file, args.static_file, args.start_date, args.end_date, args.static_file_full, args.xl, args.xr, args.yl, args.yu) 
