@@ -11,15 +11,13 @@ import richdem as rd
 import fiona
 from horayzon.domain import curved_grid
 
-static_folder = '/home/niki/Dokumente/cosipy_1d_testkit/data/static/HEF/'
+static_folder = '../../data/static/HEF/'
 
-
-os.chdir("/home/niki/Dokumente/cosipy_1d_testkit/utilities/createStatic/")
 sys.path.append("../..")
 from utilities.aws2cosipy.crop_file_to_glacier import crop_file_to_glacier
 
 ## Define settings ##
-distributed_radiation = True
+distributed_radiation = False
 tile = True
 
 ## If distributed radation is not desired, run default static file creation according to values below ##
@@ -199,5 +197,5 @@ if distributed_radiation:
 else:
     #Generally less grid cells the better, so crop to minimum extent possible
     create_static(dem_path_tif=dem_path_tif, shape_path=shape_path, output_path=output_path,
-                  tile=tile, aggregate=aggregate, aggregate_degree=aggregate_degree,
-                  automatic_domain=automatic_domain, crop_file=True, dist_search=20.0)
+                  tile=tile, aggregate=False, aggregate_degree=aggregate_degree,
+                  automatic_domain=True, crop_file=False, dist_search=20.0)
