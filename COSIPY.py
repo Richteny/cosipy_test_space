@@ -178,38 +178,41 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=mult_factor_RRR, alb_ice=al
     #Check if 1D or 2D
     times = datetime.now()
     #this takes 1min, make it faster!
-    if 'N_Points' in list(IO.get_result().keys()):
-        print("Compute area weighted MB for 1D case.")
-        dsmb = IO.get_result().sel(time=slice("2000-01-01", "2009-12-31"))
-        dsmb['weighted_mb'] = dsmb['MB'] * dsmb['N_Points'] / np.sum(dsmb['N_Points'])
-        print("time 1:", datetime.now()-times)
-        #time_vals = pd.to_datetime(dsmb.time.values)
-        #secs = np.array([time_vals.astype('int64')]).ravel()
-        #years = np.unique(time_vals.year)
-        #clean_year_vals = np.array([np.datetime64(pd.datetime(x,1,1,0,0,0)) for x in years])
-        #clean_year_vals = clean_year_vals.astype('int64')
-        #print(secs)
-        #print(clean_year_vals)
-        #sum over glacier - all grid cell, why sum not mean?
-        spatial_mean = dsmb[['weighted_mb']].sum(dim=['lat','lon'])
-        dfmb = spatial_mean['weighted_mb'].to_dataframe()
-        #dfmb.reset_index(inplace=True)
-        #dfmb['FY'] =  dfmb.apply(lambda x: pd.datetime(x.time.year,1,1).year, axis=1)
-        mean_annual_df =  dfmb.resample("1Y").sum()
-        geod_mb = np.nanmean(mean_annual_df['weighted_mb'].values)
+    if tsl_evaluation is True:
+        if 'N_Points' in list(IO.get_result().keys()):
+            print("Compute area weighted MB for 1D case.")
+            dsmb = IO.get_result().sel(time=slice("2000-01-01", "2009-12-31"))
+            dsmb['weighted_mb'] = dsmb['MB'] * dsmb['N_Points'] / np.sum(dsmb['N_Points'])
+            print("time 1:", datetime.now()-times)
+            #time_vals = pd.to_datetime(dsmb.time.values)
+            #secs = np.array([time_vals.astype('int64')]).ravel()
+            #years = np.unique(time_vals.year)
+            #clean_year_vals = np.array([np.datetime64(pd.datetime(x,1,1,0,0,0)) for x in years])
+            #clean_year_vals = clean_year_vals.astype('int64')
+            #print(secs)
+            #print(clean_year_vals)
+            #sum over glacier - all grid cell
+            spatial_mean = dsmb[['weighted_mb']].sum(dim=['lat','lon'])
+            dfmb = spatial_mean['weighted_mb'].to_dataframe()
+            #dfmb.reset_index(inplace=True)
+            #dfmb['FY'] =  dfmb.apply(lambda x: pd.datetime(x.time.year,1,1).year, axis=1)
+            mean_annual_df =  dfmb.resample("1Y").sum() #resample to fixed year to match geodetic
+            geod_mb = np.nanmean(mean_annual_df['weighted_mb'].values)
+        else:
+            print("2D case.")
+            spatial_mean = IO.get_result()['MB'].mean(dim=['lat','lon'], keep_attrs=True)
+            #mean glacier-wide MB
+            #select timeframe from 2010 to 2020 (do not include first day of 2020)
+            geod_df = spatial_mean.sel(time=slice("2000-01-01","2009-12-31")).to_dataframe()
+            #geod_df = spatial_mean.sel(time=slice("2010-01-01","2019-12-31")).to_dataframe()
+            #geod_df['FY'] = geod_df.apply(lambda x: str(pd.to_datetime(str(x.time.year)+'-01-01').year), axis=1)
+            mean_annual_df = geod_df.resample("1Y").sum()
+            geod_mb = np.nanmean(mean_annual_df.MB.values)
+        print("Geod. MB test.") 
+        print(geod_mb)
+        print("Time it took to calculate geod. MB ", datetime.now()-times)
     else:
-        print("2D case.")
-        spatial_mean = IO.get_result()['MB'].mean(dim=['lat','lon'], keep_attrs=True)
-        #mean glacier-wide MB
-        #select timeframe from 2010 to 2020 (do not include first day of 2020)
-        geod_df = spatial_mean.sel(time=slice("2000-01-01","2009-12-31")).to_dataframe()
-        #geod_df = spatial_mean.sel(time=slice("2010-01-01","2019-12-31")).to_dataframe()
-        #geod_df['FY'] = geod_df.apply(lambda x: str(pd.to_datetime(str(x.time.year)+'-01-01').year), axis=1)
-        mean_annual_df = geod_df.resample("1Y").sum()
-        geod_mb = np.nanmean(mean_annual_df.MB.values)
-    print("Geod. MB test.") 
-    print(geod_mb)
-    print("Time it took to calculate geod. MB ", datetime.now()-times)
+        geod_mb = np.array([np.nan])
     #cmb_spatial_mean_cum = np.cumsum(cmb_spatial_mean)    
 
     encoding = dict()

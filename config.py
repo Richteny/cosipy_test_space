@@ -24,9 +24,9 @@ time_end_str=(time_end[0:10]).replace('-','')
 
 data_path = './data/'
 
-input_netcdf= 'HEF/HEF_COSMO_1D_30m_1999_2010.nc' #Abramov_300m_ERA5mod_spinup_Wohlfahrt_2009-2020.nc' #"Abramov/Abramov_300m_ERA5mod_spinup_Wohlfahrt_2009-2020_crop.nc" #"Abramov/Abramov_300m_ERA5_OldRad_1999_2021.nc" 
+input_netcdf= 'HEF/HEF_COSMO_30m_1999_2010.nc' #Abramov_300m_ERA5mod_spinup_Wohlfahrt_2009-2020.nc' #"Abramov/Abramov_300m_ERA5mod_spinup_Wohlfahrt_2009-2020_crop.nc" #"Abramov/Abramov_300m_ERA5_OldRad_1999_2021.nc" 
 
-output_netcdf = 'HEF_COSMO_1D_30m_1999_2010_bestDREAM_'+time_start_str+'-'+time_end_str+'.nc'
+output_netcdf = 'HEF_COSMO_30m_1999_2010_HORAYZON_'+time_start_str+'-'+time_end_str+'.nc'
 
 
 
@@ -61,7 +61,7 @@ min_snowheight = 0.001                                         # Minimum snowhei
 tsl_method='conservative'                                      # Possible options are mantra, conservative, grid_search, bare in mind that conservative algorithm assumes there is a spatial consistency in snow-cover
 tsl_normalize=True
 #tsl_data_file = './data/input/Abramov/snowlines/TSLA_Abramov_filtered_jaso.csv' # path to transient snow line altitudes dataset
-tsl_data_file = './data/input/HEF/snowlines/HEF-snowlines-1999-2010.csv'
+tsl_data_file = './data/input/HEF/snowlines/HEF-snowlines-1999-2010_noWinter.csv'
 #-----------------------------------
 # Run mutliple Lapse Rates
 #-----------------------------------
