@@ -2,6 +2,7 @@ import math
 import numpy as np
 import metpy.calc
 from metpy.units import units
+from numba import njit
 
 # The following functions are needed for the radiation method Wohlfahrt 2016
 def solarFParallel(lat, lon, timezone_lon, day, hour):
@@ -189,7 +190,7 @@ def solpars(lat):
 
     return solpars, timecorr
 
-
+@njit
 def haversine(lat1, lon1, lat2, lon2):
     """ This function calculates the distance between two points given their longitudes and latitudes
      based on the haversine formula. """
@@ -204,7 +205,7 @@ def haversine(lat1, lon1, lat2, lon2):
     d = 2 * 6371000 * math.asin(a)
     return d
 
-
+@njit
 def relshad(dem, mask, lats, lons, solh, sdirfn):
     """ This function calculates the topographic shading based on Mölg et al. 2009
 
@@ -224,7 +225,7 @@ def relshad(dem, mask, lats, lons, solh, sdirfn):
     illu[:, :] = np.nan
 
     # Define maximum radius (of DEM area) in degreees lat/lon
-    rmax = ((np.linalg.norm(np.max(lats) - np.min(lats))) ** 2 + (np.linalg.norm(np.max(lons) - np.min(lons))) ** 2) ** 0.5
+    rmax = ((np.max(lats) - np.min(lats)) ** 2 + (np.max(lons) - np.min(lons)) ** 2) ** 0.5
     nums = int(rmax * len(lats) / (lats[0] - lats[-1]))
 
     # Calculate direction to sun
@@ -258,12 +259,17 @@ def relshad(dem, mask, lats, lons, solh, sdirfn):
                 idx = (ilon, (np.abs(lons - lon_list_short[-1])).argmin())
 
                 # Points along profile (indices)
-                y_list = np.round(np.linspace(idy[0], idy[1], len(lat_list_short)))
-                x_list = np.round(np.linspace(idx[0], idx[1], len(lon_list_short)))
+                y_list = np.zeros(len(lat_list_short), dtype=np.float64)
+                x_list = np.zeros(len(lon_list_short), dtype=np.float64)
+                np.round(np.linspace(idy[0], idy[1], len(lat_list_short)), 0, y_list)
+                np.round(np.linspace(idx[0], idx[1], len(lon_list_short)), 0, x_list)
 
                 # Calculate ALTITUDE along profile
-                zi = z[y_list.astype(np.int), x_list.astype(np.int)]
-
+                zi = np.zeros(len(y_list))
+                for ll in np.arange(0,len(y_list)):
+                    y_list_p = int(y_list[ll])
+                    x_list_p = int(x_list[ll])
+                    zi[ll] = z[y_list_p, x_list_p]
                 # Calclulate DISTANCE along profile
                 d_list = []
                 for j in range(len(lat_list_short)):
@@ -302,7 +308,9 @@ def LUTshad(solpars, timecorr, lat, elvgrid, maskgrid, lats, lons, STEP, TCART):
     """
 
     hour = np.arange(1, 25, 1)
-    shad1yr = np.zeros((int(366 * (3600 / STEP) * 24), len(lats), len(lons)))  # Array (time,lat,lon)
+    shad1yr = np.memmap('memmappedSHAD.dat', dtype=np.float64, mode='w+',
+                        shape=(int(366 * (3600 / STEP) * 24), len(lats), len(lons)))
+    #shad1yr = np.zeros((int(366 * (3600 / STEP) * 24), len(lats), len(lons)))  # Array (time,lat,lon)
     shad1yr[:, :, :] = np.nan
 
     # Go through days of year

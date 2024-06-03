@@ -21,9 +21,9 @@ echo $SLURM_CPUS_ON_NODE
 conda activate pymc_env
 #module load anaconda/2019.07
 
-#python -u /data/scratch/richteny/thesis/cosipy_test_space/COSIPY.py
+python -u /data/scratch/richteny/thesis/cosipy_test_space/COSIPY.py
 #python -u /data/scratch/richteny/thesis/cosipy_test_space/spotpy_multobj_full.py
-python -u /data/scratch/richteny/thesis/cosipy_test_space/spotpy_run_fromlist.py
+#python -u /data/scratch/richteny/thesis/cosipy_test_space/spotpy_run_fromlist.py
 #python -u /data/scratch/richteny/thesis/cosipy_test_space/FAST_spotpy.py 
 #python -u /data/scratch/richteny/thesis/cosipy_test_space/pymc3_calibration.py
 #python -u /data/scratch/richteny/thesis/cosipy_test_space/pymc_calibration.py
