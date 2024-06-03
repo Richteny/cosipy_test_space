@@ -38,7 +38,6 @@ import sys
 import xesmf as xe
 import pandas as pd
 
-os.chdir("/home/niki/Dokumente/cosipy_1d_testkit/utilities/aws2cosipy/")
 sys.path.append("../..")
 from utilities.aws2cosipy.crop_file_to_glacier import crop_file_to_glacier
 from utilities.aws2cosipy.aws2cosipyConfig import WRF
@@ -46,6 +45,26 @@ from utilities.aws2cosipy.aws2cosipyConfig import WRF
 # -----------------------------------------------------------------------------
 # Settings
 # -----------------------------------------------------------------------------
+
+# set paths
+regrid = False #regrid to coarser resolution
+elevation_profile = False ## 1D COSIPY
+elev_bandsize = 30 #in m 
+if elevation_profile == True:
+    print("Routine check. Regrid Option is set to: ", regrid)
+    print("Setting regrid to False.")
+    print("Elevation band size is set to: ", elev_bandsize, "m")
+    regrid = False
+ellps = "WGS84"  # Earth's surface approximation (sphere, GRS80 or WGS84)
+path_out = "../../data/static/HEF/"
+file_sw_dir_cor = "LUT_HORAYZON_sw_dir_cor_raw.nc"
+
+static_file = "../../data/static/HEF/HEF_static_raw.nc" #path to high resolution dataset
+coarse_static_file = "../../data/static/HEF/HEF_static_agg.nc" #Load coarse grid
+
+# ----------------------------
+# Some helper functions
+# ----------------------------
 
 def add_variable_along_timelatlon(ds, var, name, units, long_name):
     """ This function adds missing variables to the DATA class """
@@ -146,22 +165,6 @@ def construct_1d_dataset(df):
     assign_attrs(elev_ds, 'sw_dir_cor','-','Average shortwave radiation correction factor per elevation band')
     
     return elev_ds
-
-# set paths
-regrid = False #regrid to coarser resolution
-elevation_profile = False ## 1D COSIPY
-elev_bandsize = 30 #in m 
-if elevation_profile == True:
-    print("Routine check. Regrid Option is set to: ", regrid)
-    print("Setting regrid to False.")
-    print("Elevation band size is set to: ", elev_bandsize, "m")
-    regrid = False
-ellps = "WGS84"  # Earth's surface approximation (sphere, GRS80 or WGS84)
-path_out = "../../data/static/HEF/"
-file_sw_dir_cor = "LUT_HORAYZON_sw_dir_cor_raw.nc"
-
-static_file = "../../data/static/HEF/HEF_static_raw.nc" #path to high resolution dataset
-coarse_static_file = "../../data/static/HEF/HEF_static_agg.nc" #Load coarse grid
 
 # -----------------------------------------------------------------------------
 # Prepare data and initialise Terrain class
