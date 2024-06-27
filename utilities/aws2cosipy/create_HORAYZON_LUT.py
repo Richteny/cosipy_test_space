@@ -48,7 +48,7 @@ from utilities.aws2cosipy.aws2cosipyConfig import WRF
 
 # set paths
 regrid = False #regrid to coarser resolution
-elevation_profile = False ## 1D COSIPY
+elevation_profile = True ## 1D COSIPY
 elev_bandsize = 30 #in m 
 if elevation_profile == True:
     print("Routine check. Regrid Option is set to: ", regrid)
@@ -57,7 +57,7 @@ if elevation_profile == True:
     regrid = False
 ellps = "WGS84"  # Earth's surface approximation (sphere, GRS80 or WGS84)
 path_out = "../../data/static/HEF/"
-file_sw_dir_cor = "LUT_HORAYZON_sw_dir_cor_raw.nc"
+file_sw_dir_cor = "LUT_HORAYZON_sw_dir_cor_1D10m.nc"
 
 static_file = "../../data/static/HEF/HEF_static_raw.nc" #path to high resolution dataset
 coarse_static_file = "../../data/static/HEF/HEF_static_agg.nc" #Load coarse grid
@@ -443,7 +443,7 @@ for i in range(len(ta)): #loop over timesteps
         ##sort values by index vars, just in case
         df.sort_values(by=["time","lat","lon"], inplace=True)
         df.set_index(['time','lat','lon'], inplace=True)
-        
+        print(df)
         elev_ds = construct_1d_dataset(df)
     
     now = time.time()
@@ -505,7 +505,7 @@ else:
 #BBox script to crop to minimal extent!
 if elevation_profile == True:
     combined.to_netcdf(path_out+file_sw_dir_cor)
-    combined[['HGT','ASPECT','SLOPE','MASK','N_Points']].to_netcdf(path_out+"HEF_static_30m_elevbands.nc")
+    combined[['HGT','ASPECT','SLOPE','MASK','N_Points']].to_netcdf(path_out+"HEF_static_10m_elevbands.nc")
 else:
     #cropped_combined = crop_file_to_glacier(combined) #results in +2 gridsize somehow
     cropped_combined = combined.where(combined.MASK ==1, drop=True)
