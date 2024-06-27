@@ -550,7 +550,10 @@ def create_2D_input(cs_file, cosipy_file, static_file, start_date, end_date, sta
 
         # get correction factor which must be computed beforehand!
         try:
-            correction_factor = xr.open_dataset("../../data/static/HEF/LUT_HORAYZON_sw_dir_cor_raw.nc")
+            if ELEV_model:
+                correction_factor = xr.open_dataset("../../data/static/HEF/LUT_HORAYZON_sw_dir_cor_raw_1D.nc")
+            else:
+                correction_factor = xr.open_dataset("../../data/static/HEF/LUT_HORAYZON_sw_dir_cor_agg.nc")
         except:
             print("HORAYZON Lookup Table is not available.")
             sys.exit()
@@ -630,6 +633,7 @@ def create_2D_input(cs_file, cosipy_file, static_file, start_date, end_date, sta
             LUTout['SLOPE'] = (('lat','lon'), np.flipud(slope))
             LUTout['ASPECT'] = (('lat','lon'), np.flipud(aspect))
             LUTout['HGT'] = (('lat','lon'), np.flipud(hgt))
+            #since we are using the domain including surrounding terrain, need to crop back to smaller domain again
             LUTout = LUTout.where(LUTout.MASK ==1, drop=True)
             print(LUTout)
             del shad1yr #to close memmapped array
