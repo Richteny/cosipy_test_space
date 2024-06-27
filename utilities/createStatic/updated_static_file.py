@@ -17,15 +17,15 @@ sys.path.append("../..")
 from utilities.aws2cosipy.crop_file_to_glacier import crop_file_to_glacier
 
 ## Define settings ##
-distributed_radiation = False
+distributed_radiation = True
 tile = True
 
 ## If distributed radation is not desired, run default static file creation according to values below ##
 # to aggregate the DEM to a coarser spatial resolution
 aggregate = False
-aggregate_degree = '0.00277778'
+aggregate_degree = '0.00277778' #300m
 automatic_domain = True #Do km buffer around glacier or set lat lon box by hand in functions below
-crop_file = True #crop to minimum extent
+crop_file = False #crop to minimum extent
 # ref exist: If already have high res. static data set to True and skip calculation
 ref_exist = False
 
@@ -38,6 +38,7 @@ shape_path = static_folder + 'Shapefiles/HEF_RGI6.shp'
 
 ### path were the static.nc file is saved
 output_path = static_folder + 'HEF_static_raw.nc'
+output_path_crop = static_folder + 'HEF_static_raw_crop.nc'
 output_path_agg = static_folder + 'HEF_static_agg.nc'
 
 #domain creation assumes WGS84 is valid
@@ -59,7 +60,7 @@ def domain_creation(shp_path, dist_search, ellps="WGS84"):
 
     return (longitude_upper_left, latitude_upper_left, longitude_lower_right, latitude_lower_right)
 
-def create_static(dem_path_tif=dem_path_tif, shape_path=shape_path, output_path=output_path, tile=tile, aggregate=aggregate, aggregate_degree=aggregate_degree, automatic_domain=automatic_domain, crop_file=crop_file, dist_search=20.0):
+def create_static(dem_path_tif=dem_path_tif, shape_path=shape_path, output_path=output_path, output_path_crop=output_path_crop, tile=tile, aggregate=aggregate, aggregate_degree=aggregate_degree, automatic_domain=automatic_domain, crop_file=crop_file, dist_search=20.0):
     if automatic_domain:
         longitude_upper_left, latitude_upper_left, longitude_lower_right, latitude_lower_right = domain_creation(shape_path, dist_search=dist_search, ellps="WGS84")
 
@@ -114,7 +115,7 @@ def create_static(dem_path_tif=dem_path_tif, shape_path=shape_path, output_path=
 
     ### set NaNs in mask to -9999 and elevation within the shape to 1
     mask=mask.Band1.values
-    #some datasets have 0s instead of -9999
+    #some datasets have 0s instead of -9999 why do they occur when doing aggregate?
     mask[mask == 0] = -9999
     mask[np.isnan(mask)]=-9999
     mask[mask>0]=1
@@ -164,7 +165,11 @@ def create_static(dem_path_tif=dem_path_tif, shape_path=shape_path, output_path=
     print(output_path)
     if crop_file == True:
         ds_crop = crop_file_to_glacier(ds)
-        ds_crop.to_netcdf(output_path)
+        if aggregate == True: #saved cropped file only        
+            ds_crop.to_netcdf(output_path)
+        else: #save both files
+            ds.to_netcdf(output_path)
+            ds_crop.to_netcdf(output_path_crop)
         ds.close()
         ds_crop.close()
     else:
@@ -181,14 +186,14 @@ if distributed_radiation:
         print("Skipping calculation of high resolution static file.")
     else:
         #This needs to have a buffer
-        create_static(dem_path_tif=dem_path_tif, shape_path=shape_path, output_path=output_path,
+        create_static(dem_path_tif=dem_path_tif, shape_path=shape_path, output_path=output_path, output_path_crop=output_path_crop,
                       tile=tile, aggregate=False, aggregate_degree=aggregate_degree,
-                       automatic_domain=True, crop_file=False, dist_search=20.0)
-    print("\n----------------------------------------")
-    print("Created high resolution domain for LUTs.")
-    print("----------------------------------------\n")
+                       automatic_domain=True, crop_file=True, dist_search=20.0)
+        print("\n----------------------------------------")
+        print("Created high resolution domain for LUTs.")
+        print("----------------------------------------\n")
     #This doesn't really need a buffer so crop it to minimum extent possible next
-    create_static(dem_path_tif=dem_path_tif, shape_path=shape_path, output_path=output_path_agg,
+    create_static(dem_path_tif=dem_path_tif, shape_path=shape_path, output_path=output_path_agg, output_path_crop=output_path_crop,
                   tile=tile, aggregate=True, aggregate_degree=aggregate_degree,
                   automatic_domain=True, crop_file=True, dist_search=1.0)
     print("\n----------------------------------------")
@@ -196,6 +201,7 @@ if distributed_radiation:
     print("----------------------------------------\n")
 else:
     #Generally less grid cells the better, so crop to minimum extent possible
-    create_static(dem_path_tif=dem_path_tif, shape_path=shape_path, output_path=output_path,
+    create_static(dem_path_tif=dem_path_tif, shape_path=shape_path, output_path=output_path, output_path_crop=output_path_crop,
                   tile=tile, aggregate=False, aggregate_degree=aggregate_degree,
-                  automatic_domain=True, crop_file=False, dist_search=20.0)
+                  automatic_domain=True, crop_file=True, dist_search=20.0)
+#cropfile=False
