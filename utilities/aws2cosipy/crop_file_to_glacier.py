@@ -93,7 +93,7 @@ def crop_file_to_glacier(ds):
 
 ### Functions ###
 #Note this function has issues if the glacier extent is near a border already:
-#In that case the index-1 or +2 may result in index error or using the last value
+#In that case the index+1 may result in index error
 #This should however never be the case as this script is only applied if we take a larger extent around the glacier for e.g., 
 #Mölgs radiation scheme
 
@@ -105,13 +105,13 @@ def bbox_2d_array(mask, arr, varname):
         elif varname in ['lat','latitude']:
             ix = np.where(np.any(mask == 1, axis=1))[0]
             i_min, i_max = ix[[0, -1]]
-            i_min = i_min -1
-            i_max = i_max +2
+            i_min = i_min #lower bounds included
+            i_max = i_max +1
         elif varname in ['lon','longitude']:
             ix = np.where(np.any(mask == 1, axis=0))[0]
             i_min, i_max = ix[[0, -1]]
-            i_min = i_min -1
-            i_max = i_max +2
+            i_min = i_min #lower bounds included
+            i_max = i_max +1
         bbox = arr[i_min:i_max]
     elif arr.ndim == 2:
         ix_c = np.where(np.any(mask == 1, axis=0))[0]
@@ -120,14 +120,14 @@ def bbox_2d_array(mask, arr, varname):
         r_min, r_max = ix_r[[0, -1]]
     
         #Draw box with one non-value border
-        #Now we got bounding box -> just add +1 / +2 at every index and voila
-        bbox = arr[r_min-1:r_max+2,c_min-1:c_max+2]
+        #Now we got bounding box -> just add +1 at maxima and voila
+        bbox = arr[r_min:r_max+1,c_min:c_max+1]
     elif arr.ndim == 3:
         ix_c = np.where(np.any(mask == 1, axis=0))[0]
         ix_r = np.where(np.any(mask == 1, axis=1))[0]
         c_min, c_max = ix_c[[0, -1]]
         r_min, r_max = ix_r[[0, -1]]
-        bbox = arr[:, r_min-1:r_max+2,c_min-1:c_max+2]
+        bbox = arr[:, r_min:r_max+1,c_min:c_max+1]
     return bbox 
 
 
