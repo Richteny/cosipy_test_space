@@ -106,8 +106,8 @@ def main():
         #tsl_obs = pm.Normal("tsl_obs", mu=mu_tsl, sigma=tsla_obs['SC_stdev'], observed=tsl_data)
 
         ## Setup sampler
-        step = pm.Slice()
-        post = pm.sample(draws=10, step=step, return_inferencedata=True, chains=1, progressbar=True,)
+        #step = pm.Slice()
+        post = pm.sample(draws=10, return_inferencedata=True, chains=1, progressbar=True,)
 
         ## testing to save samples
         post.to_netcdf(main_path+"simulations/simulations_HEF_results_MCMC.nc")
