@@ -1,6 +1,6 @@
 """
  This file reads the DEM of the study site and the shapefile and creates the needed static.nc
-
+ TODO: Implement 1D elevation band dataset in here as well in case usage with Moelg/Wohlfahrt scheme is desired
 """
 import sys
 import os
