@@ -18,7 +18,7 @@ RH2_var = 'RH2'
 G_var = 'G'
 RRR_var = 'RRR'
 U2_var = 'U2'
-LWin_var = 'LWinCor_Avg'
+LWin_var = 'LWin'
 SNOWFALL_var = 'SNOWFALL'
 N_var = 'N'
 
@@ -33,9 +33,11 @@ radiationModule = 'Wohlfahrt2016' # 'Moelg2009', 'Wohlfahrt2016', 'none'
 LUT = false  # If there is already a Look-up-table for topographic shading and sky-view-factor built for this area, set to True
 LUT_path = "./data/static/LUT_Rad.nc"
 dtstep = 10800  # time step (s)
-tcart = 26  # Station time correction in hour angle units (1 is 4 min)
-timezone_lon = 90.0  # Longitude of station
-zeni_thld = 85.0  # If you do not know the exact value for your location, set value to 89.0
+tcart = 4.24  # Station time correction in hour angle units (1 is 4 min)
+timezone_lon = 15.0  # Longitude of station
+zeni_thld = 89.0  # If you do not know the exact value for your location, set value to 89.0
+ELEV_model = true
+delimiter = ','
 
 [aws2cosipy.points]
 point_model = false
@@ -44,12 +46,12 @@ plat = 30.47
 hgt = 5665.0
 
 [aws2cosipy.station]
-stationName = 'Zhadang'
-stationAlt = 5665.0
-stationLat = -54.4  # Latitude of station
+stationName = 'HEF'
+stationAlt = 3030.0283
+stationLat = 46.797478  # Latitude of station
 
 [aws2cosipy.lapse]
-lapse_T = -0.006  # Temp K per  m
+lapse_T = -0.0065  # Temp K per  m
 lapse_RH = 0.000  # RH % per m (0 to 1)
 lapse_RRR = 0.0000  # mm per m
 lapse_SNOWFALL = 0.0000  # Snowfall % per m (0 to 1)
@@ -74,3 +76,4 @@ latitude_lower_right = 30.46
 [wrf2cosipy.constants]
 hu = 10  # Height of WRF wind velocity
 lu_class = 24 # land use class for glaciers
+

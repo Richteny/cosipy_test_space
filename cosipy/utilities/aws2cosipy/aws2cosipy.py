@@ -1,18 +1,30 @@
 """
+<<<<<<< HEAD
 Reads the input data (model forcing) and writes the output to a netCDF
 file. It supports point models with ``create_1D_input`` and distributed
 simulations with ``create_2D_input``.
+=======
+This module can read the input data (model forcing) and write the output
+to a netCDF file. It supports point models with ``create_1D_input`` and
+distributed simulations with ``create_2D_input``.
+>>>>>>> 1ffd27e ((Feat): transitioning towards 2.0 release)
 
 The 1D input function works without a static file, in which the static
 variables are created.
 
+<<<<<<< HEAD
 Edit the configuration by supplying a valid .toml file - this includes
 lapse rates for both cases. See the sample ``utilities_config.toml`` for
 more information.
+=======
+For both cases, lapse rates can be determined in a .toml configuration
+file. See the sample `utilities_config.toml` for more information.
+>>>>>>> 1ffd27e ((Feat): transitioning towards 2.0 release)
 
 Usage:
 
 From source:
+<<<<<<< HEAD
 ``python -m cosipy.utilities.aws2cosipy.aws2cosipy -i <input> -o <output> -s <static> [-u <path>] [-b <date>] [-e <date>]``
 
 Entry point:
@@ -34,6 +46,15 @@ Optional arguments:
     --xr <float>            Right longitude value of the subset.
     --yl <float>            Lower latitude value of the subset.
     --yu <float>            Upper latitude value of the subset.
+=======
+``python -m cosipy.utilities.aws2cosipy.aws2cosipy -c [<input>] -o [<output>] -s [<static>]``
+
+Otherwise, use the entry point:
+``cosipy-aws2cosipy -c [<input>] -o [<output>] -s [<static>]``
+
+Options and arguments:
+
+>>>>>>> 1ffd27e ((Feat): transitioning towards 2.0 release)
 """
 
 import argparse
@@ -92,9 +113,12 @@ def set_order_and_type(
         dataframe: Contains input data.
         replace_pressure: Set pressure data to 660 hPa if no pressure
             data is available.
+<<<<<<< HEAD
 
     Returns:
         Ordered dataframe.
+=======
+>>>>>>> 1ffd27e ((Feat): transitioning towards 2.0 release)
     """
     for name in ["T2_var", "RH2_var", "U2_var", "G_var", "PRES_var"]:
         dataframe[_cfg.names[name]] = convert_to_numeric(
@@ -157,10 +181,14 @@ def get_time_slice(dataframe, start_date, end_date):
 
 
 def set_bias(
+<<<<<<< HEAD
     data: np.ndarray,
     lapse_type: str,
     altitude: float = 0.0,
     limit: bool = True,
+=======
+    data: np.ndarray, lapse_type: str, altitude: float = 0.0, limit: bool = True
+>>>>>>> 1ffd27e ((Feat): transitioning towards 2.0 release)
 ):
     """Apply lapse rate to data.
 
@@ -526,6 +554,10 @@ def create_2D_input(
     lat_index = len(ds.lat)
     lon_index = len(ds.lon)
     T_interp = set_zero_field(time_index, lat_index, lon_index)
+<<<<<<< HEAD
+=======
+    T_interp_rad = set_zero_field(time_index, lat_index, lon_index)
+>>>>>>> 1ffd27e ((Feat): transitioning towards 2.0 release)
     RH_interp = set_zero_field(time_index, lat_index, lon_index)
     U_interp = set_zero_field(time_index, lat_index, lon_index)
     G_interp = np.full([time_index, lat_index, lon_index], np.nan)
@@ -551,11 +583,21 @@ def create_2D_input(
     print("Interpolate CR file to grid")
 
     # Interpolate data (T, RH, RRR, U) to grid using lapse rates
+<<<<<<< HEAD
+=======
+    rad_tlapse = -0.0065 #new to have default lapse rate for rad. scheme K per m 
+>>>>>>> 1ffd27e ((Feat): transitioning towards 2.0 release)
     altitude = ds.HGT.values - _cfg.station["stationAlt"]
     for t in range(time_index):
         T_interp[t, :, :] = set_bias(
             data=(T2[t]), lapse_type="lapse_T", altitude=altitude, limit=False
         )
+<<<<<<< HEAD
+=======
+        T_interp_rad[t, :, :] = set_bias(
+            data=(T2[t]), lapse_type="rad_tlapse", altitude=altitude, limit=False
+        )
+>>>>>>> 1ffd27e ((Feat): transitioning towards 2.0 release)
         RH_interp[t, :, :] = set_bias(
             data=RH2[t], lapse_type="lapse_RH", altitude=altitude, limit=False
         )
@@ -724,7 +766,11 @@ def create_2D_input(
                 doy,
                 hour,
                 _cfg.station["stationLat"],
+<<<<<<< HEAD
                 T_interp[t, ::-1, :],
+=======
+                T_interp_rad[t, ::-1, :],
+>>>>>>> 1ffd27e ((Feat): transitioning towards 2.0 release)
                 P_interp[t, ::-1, :],
                 RH_interp[t, ::-1, :],
                 N_interp[t, ::-1, :],
@@ -819,7 +865,10 @@ def add_variable_along_timelatlon_point(ds, var, name, units, long_name):
     ds[name].attrs["long_name"] = long_name
     return ds
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 1ffd27e ((Feat): transitioning towards 2.0 release)
 def add_variable_along_point(ds, var, name, units, long_name):
     """Add point data to a dataset."""
     ds[name] = (("lat", "lon"), np.reshape(var, (1, 1)))
@@ -925,8 +974,13 @@ def get_user_arguments(parser: argparse.ArgumentParser) -> argparse.Namespace:
 
     # Required arguments
     parser.add_argument(
+<<<<<<< HEAD
         "-i",
         "--input",
+=======
+        "-c",
+        "--csv_file",
+>>>>>>> 1ffd27e ((Feat): transitioning towards 2.0 release)
         dest="csv_file",
         type=str,
         metavar="<path>",
@@ -935,7 +989,11 @@ def get_user_arguments(parser: argparse.ArgumentParser) -> argparse.Namespace:
     )
     parser.add_argument(
         "-o",
+<<<<<<< HEAD
         "--output",
+=======
+        "--cosipy_file",
+>>>>>>> 1ffd27e ((Feat): transitioning towards 2.0 release)
         dest="cosipy_file",
         type=str,
         metavar="<path>",
@@ -973,7 +1031,11 @@ def get_user_arguments(parser: argparse.ArgumentParser) -> argparse.Namespace:
         type=float,
         metavar="<float>",
         const=None,
+<<<<<<< HEAD
         help="Left longitude value of the subset",
+=======
+        help="left longitude value of the subset",
+>>>>>>> 1ffd27e ((Feat): transitioning towards 2.0 release)
     )
     parser.add_argument(
         "--xr",
@@ -981,7 +1043,11 @@ def get_user_arguments(parser: argparse.ArgumentParser) -> argparse.Namespace:
         type=float,
         metavar="<float>",
         const=None,
+<<<<<<< HEAD
         help="Right longitude value of the subset",
+=======
+        help="right longitude value of the subset",
+>>>>>>> 1ffd27e ((Feat): transitioning towards 2.0 release)
     )
     parser.add_argument(
         "--yl",
@@ -989,7 +1055,11 @@ def get_user_arguments(parser: argparse.ArgumentParser) -> argparse.Namespace:
         type=float,
         metavar="<float>",
         const=None,
+<<<<<<< HEAD
         help="Lower latitude value of the subset",
+=======
+        help="lower latitude value of the subset",
+>>>>>>> 1ffd27e ((Feat): transitioning towards 2.0 release)
     )
     parser.add_argument(
         "--yu",
@@ -997,7 +1067,11 @@ def get_user_arguments(parser: argparse.ArgumentParser) -> argparse.Namespace:
         type=float,
         metavar="<float>",
         const=None,
+<<<<<<< HEAD
         help="Upper latitude value of the subset",
+=======
+        help="upper latitude value of the subset",
+>>>>>>> 1ffd27e ((Feat): transitioning towards 2.0 release)
     )
     arguments = parser.parse_args()
 
