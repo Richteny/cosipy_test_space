@@ -13,7 +13,11 @@ def updateRoughness(GRID, opt_dict=None):
     if roughness_method == 'Moelg12':
         sigma = method_Moelg(GRID)
     else:
-        raise ValueError("Roghness method = \"{:s}\" is not allowed, must be one of {:s}".format(roughness_method,", ".join(roughness_allowed)))
+        error_message = (
+            f'Roughness method = "{roughness_method}" is not allowed,',
+            f'must be one of {", ".join(roughness_allowed)}'
+        )
+        raise ValueError(" ".join(error_message))
 
     return sigma
 
@@ -21,7 +25,6 @@ def updateRoughness(GRID, opt_dict=None):
 def method_Moelg(GRID):
 
     """ This method updates the roughness length (Moelg et al 2009, J.Clim.)"""
-
 
     # Get hours since the last snowfall
     # First get fresh snow properties (height and timestamp)
