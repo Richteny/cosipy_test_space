@@ -22,37 +22,32 @@
     Correspondence: tobias.sauter@fau.de
 
 """
+import cProfile
+import logging
 import os
+import sys
 from datetime import datetime
 from itertools import product
-import itertools
 
-import logging
+import numpy as np
+import pandas as pd
+import scipy
 import yaml
+# from dask import compute, delayed
+# import dask as da
+# from dask.diagnostics import ProgressBar
+from dask.distributed import as_completed, progress
+from dask_jobqueue import SLURMCluster
+from distributed import Client, LocalCluster
+# import dask
+from tornado import gen
 
 from config import *
+from cosipy.cpkernel.cosipy_core import cosipy_core
+from cosipy.cpkernel.io import IOClass
 from slurm_config import *
-from cosipy.cpkernel.cosipy_core import * 
-from cosipy.cpkernel.io import *
 
-from distributed import Client, LocalCluster
-from dask import compute, delayed
-import dask as da
-from dask.diagnostics import ProgressBar
-from dask.distributed import progress, wait, as_completed
-import dask
-from tornado import gen
-from dask_jobqueue import SLURMCluster
-
-import scipy
-
-import cProfile
-#Load constants for default function values
-from constants import *
 from numba import njit
-
-#from dask_mpi import initialize
-#initialize(nanny=False)
 
 def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=mult_factor_RRR, alb_ice=albedo_ice,
          alb_snow=albedo_fresh_snow,alb_firn=albedo_firn,albedo_aging=albedo_mod_snow_aging,
@@ -105,6 +100,12 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=mult_factor_RRR, alb_ice=al
     RESULT = IO.create_result_file() 
     RESTART = IO.create_restart_file()
     print("Time required to init IO, DATA, RESULT, RESTART: ", datetime.now()-times)
+
+    #----------------------------------------------
+    # Calculation - Multithreading using all cores  
+    #----------------------------------------------
+
+
     # Auxiliary variables for futures
     futures= []
     #adjust lapse rates
@@ -145,10 +146,9 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=mult_factor_RRR, alb_ice=al
             run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures, opt_dict=opt_dict)
 
     else:
-        #scheduler_port=local_port
-        with LocalCluster(n_workers=workers, local_directory='logs/dask-worker-space', threads_per_worker=1, silence_logs=True) as cluster:
+        with LocalCluster(scheduler_port=local_port, n_workers=workers, local_directory='logs/dask-worker-space', threads_per_worker=1, silence_logs=True) as cluster:
             print(cluster)
-            run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures,opt_dict=opt_dict)
+            run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures, opt_dict=opt_dict)
 
     print('\n')
     print('--------------------------------------------------------------')
@@ -334,7 +334,7 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=mult_factor_RRR, alb_ice=al
     #-----------------------------------------------
     # Print out some information
     #-----------------------------------------------
-    print("\t Time required to write restart and output files: %4g minutes %2g seconds \n" % (duration_run_writing.total_seconds()//60.0,duration_run_writing.total_seconds()%60.0))
+    print("\t Time required tor write restart and output files: %4g minutes %2g seconds \n" % (duration_run_writing.total_seconds()//60.0,duration_run_writing.total_seconds()%60.0))
     print("\t Total run duration: %4g minutes %2g seconds \n" % (duration_run.total_seconds()//60.0,duration_run.total_seconds()%60.0))
     print('--------------------------------------------------------------')
     print('\t SIMULATION WAS SUCCESSFUL')
@@ -418,16 +418,16 @@ def run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures, opt_dict=None):
                         stake_names.append(stake_name)
             else:
                 stake_names = None
-
+                
             if WRF is True:
                 mask = DATA.MASK.sel(south_north=y, west_east=x)
-	        # Provide restart grid if necessary
-                if ((mask==1) & (restart==False)):
+                # Provide restart grid if necessary
+                if ((mask==1) & (not restart)):
                     if np.isnan(DATA.sel(south_north=y, west_east=x).to_array()).any():
                         print('ERROR!!!!!!!!!!! There are NaNs in the dataset')
                         sys.exit()
-                    futures.append(client.submit(cosipy_core, DATA.sel(south_north=y, west_east=x), y, x, stake_names=stake_names, stake_data=df_stakes_data, opt_dict=opt_dict))
-                elif ((mask==1) & (restart==True)):
+                    futures.append(client.submit(cosipy_core, DATA.sel(south_north=y, west_east=x), y, x, stake_names=stake_names, stake_data=df_stakes_data))
+                elif ((mask==1) & (restart)):
                     if np.isnan(DATA.sel(south_north=y, west_east=x).to_array()).any():
                         print('ERROR!!!!!!!!!!! There are NaNs in the dataset')
                         sys.exit()
@@ -436,13 +436,13 @@ def run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures, opt_dict=None):
                                              stake_names=stake_names, stake_data=df_stakes_data, opt_dict=opt_dict))
             else:
                 mask = DATA.MASK.isel(lat=y, lon=x)
-	        # Provide restart grid if necessary
-                if ((mask==1) & (restart==False)):
+                # Provide restart grid if necessary
+                if ((mask==1) & (not restart)):
                     if np.isnan(DATA.isel(lat=y,lon=x).to_array()).any():
                         print('ERROR!!!!!!!!!!! There are NaNs in the dataset')
                         sys.exit()
                     futures.append(client.submit(cosipy_core, DATA.isel(lat=y, lon=x), y, x, stake_names=stake_names, stake_data=df_stakes_data, opt_dict=opt_dict))
-                elif ((mask==1) & (restart==True)):
+                elif ((mask==1) & (restart)):
                     if np.isnan(DATA.isel(lat=y,lon=x).to_array()).any():
                         print('ERROR!!!!!!!!!!! There are NaNs in the dataset')
                         sys.exit()
@@ -510,7 +510,7 @@ def run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures, opt_dict=None):
 
 
 def start_logging():
-    ''' Start the python logging'''
+    """Start the python logging"""
 
     if os.path.exists('./cosipy.yaml'):
         with open('./cosipy.yaml', 'rt') as f:
@@ -531,7 +531,7 @@ def transform_coordinates(coords):
     A = 6378.137 # major axis [km]   
     E2 = 6.69437999014e-3 # eccentricity squared    
     
-    coords = np.asarray(coords).astype(np.float)
+    coords = np.asarray(coords).astype(float)
                                                       
     # is coords a tuple? Convert it to an one-element array of tuples
     if coords.ndim == 1:
@@ -619,7 +619,7 @@ def close_everything(scheduler):
 
 
 
-''' MODEL EXECUTION '''
+""" MODEL EXECUTION """
 if __name__ == "__main__":
     #import pstats
     #profiler = cProfile.Profile()
