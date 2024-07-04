@@ -4,7 +4,7 @@ import pandas as pd
 from constants import mult_factor_RRR, densification_method, ice_density, water_density, \
                       minimum_snowfall, zero_temperature, lat_heat_sublimation, \
                       lat_heat_melting, lat_heat_vaporize, center_snow_transfer_function, \
-                      spread_snow_transfer_function, constant_density
+                      spread_snow_transfer_function, constant_density, albedo_fresh_snow
 from config import force_use_TP, force_use_N, stake_evaluation, full_field, WRF_X_CSPY 
 
 from cosipy.modules.albedo import updateAlbedo
@@ -31,7 +31,6 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
       xarray dataset which contain one grid point
     indY: 
     indX:
-
     GRID_RESTART : boolean, optional
       If restart is given, no inital profile is created
     stake_name : boolean, optional
@@ -44,9 +43,6 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
 
     """
     
-
-
-
     # Replace values from constants.py if coupled
     from constants import max_layers, dt, z	#WTF python!
     if WRF_X_CSPY:
@@ -169,6 +165,10 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
 
     # Initial cumulative mass balance variable
     MB_cum = 0
+    
+    # Initial snow albedo and surface temperature for Bougamont et al. 2005 albedo
+    surface_temperature = 270.0
+    albedo_snow = albedo_fresh_snow
 
     if stake_evaluation:
         # Create pandas dataframe for stake evaluation
@@ -214,9 +214,9 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
 
         if SNOWFALL > 0.0:
             # Add a new snow node on top
-           GRID.add_fresh_snow(SNOWFALL, density_fresh_snow, np.minimum(float(T2[t]),zero_temperature), 0.0)
+            GRID.add_fresh_snow(SNOWFALL, density_fresh_snow, np.minimum(float(T2[t]),zero_temperature), 0.0)
         else:
-           GRID.set_fresh_snow_props_update_time(dt)
+            GRID.set_fresh_snow_props_update_time(dt)
 
         # Guarantee that solar radiation is greater equal zero
         if (G[t]<0.0):
@@ -230,7 +230,7 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
         #--------------------------------------------
         # Calculate albedo and roughness length changes if first layer is snow
         #--------------------------------------------
-        alpha = updateAlbedo(GRID, opt_dict)
+        alpha, albedo_snow = updateAlbedo(GRID,surface_temperature,albedo_snow, opt_dic)
 
         #--------------------------------------------
         # Update roughness length

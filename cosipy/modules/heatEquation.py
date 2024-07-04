@@ -2,26 +2,14 @@ import numpy as np
 from numba import njit
 from cosipy.utils.options import read_opt
 
-def solveHeatEquation(GRID, dt, opt_dict=None):
-
-    # Read and set options
-    read_opt(opt_dict, globals())
-
-    heatEquation_method = 'default'
-    heatEquation_allowed = ['default']
-
-    if heatEquation_method == 'default':
-        heatEquation_default(GRID,dt)
-    else:
-        raise ValueError("Heat equation = \"{:s}\" is not allowed, must be one of {:s}".format(heatEquation_method, ", ".join(heatEquation_allowed)))
-
 @njit
-def heatEquation_default(GRID, dt):
+def solveHeatEquation(GRID, dt, opt_dict=None):
     """ Solves the heat equation on a non-uniform grid
 
     dt  ::  integration time
     
     """
+    read_opt(opt_dict, globals())
     # number of layers
     nl = GRID.get_number_layers()
 
