@@ -68,6 +68,19 @@ def get_config_params() -> dict:
             "eval_method",
             "obs_type",
         ),
+        "TRANSIENT SNOWLINE DATA": (
+            "tsl_evaluation", 
+            "time_col_obs",
+            "tsla_col_obs",
+            "min_snowheight",
+            "tsl_method",
+            "tsl_normalize",
+            "tsl_data_file",
+        ),
+        "RUN LAPSE RATES ONLINE": (
+            "station_altitude",
+        ),
+        
         "DIMENSIONS": ("WRF", "WRF_X_CSPY", "northing", "easting"),
         "COMPRESSION": ("compression_level",),
         "PARALLELIZATION": ("slurm_use", "workers", "local_port"),
@@ -208,7 +221,8 @@ def get_aws2cosipy_params() -> dict:
             "SNOWFALL_var",
             "N_var",
         ),
-        "coords": ("WRF", "aggregate", "aggregation_step", "delimiter"),
+
+        "coords": ("WRF", "aggregate", "aggregation_step", "ELEV_model", "delimiter"),
         "radiation": (
             "radiationModule",
             "LUT",

@@ -16,11 +16,7 @@ import pandas as pd
 import pytest
 import xarray as xr
 
-<<<<<<< HEAD
 import cosipy.postprocessing.field_plots.plot_cosipy_fields as pcf
-=======
-import postprocessing.field_plots.plot_cosipy_fields as pcf
->>>>>>> 7157fd0 ((Update): Update to all PRs from COSIPY release 2.0. Bulk-changes)
 
 # import constants
 # from COSIPY import start_logging
@@ -64,11 +60,7 @@ class TestPostprocessPlotFieldsHandling:
         dims = {}
         reference_time = pd.Timestamp("2009-01-01T12:00:00")
         dims["name"] = ["time", "lat", "lon"]
-<<<<<<< HEAD
         dims["time"] = pd.date_range(reference_time, periods=4, freq="6h")
-=======
-        dims["time"] = pd.date_range(reference_time, periods=4, freq="6H")
->>>>>>> 7157fd0 ((Update): Update to all PRs from COSIPY release 2.0. Bulk-changes)
         elevation = xr.Variable(
             data=1000 + 10 * np.random.rand(2, 1),
             dims=dims["name"][1:],
@@ -119,15 +111,11 @@ class TestPostprocessPlotFieldsPlotting:
 
         compare_ax = pcf.set_gridlines(ax=ax)
         assert isinstance(compare_ax, cartopy.mpl.geoaxes.GeoAxes)
-<<<<<<< HEAD
         gridliners = compare_ax.gridlines()
         print(gridliners)
         artists = gridliners.xline_artists + gridliners.yline_artists
         for gridlines in artists:
-=======
-        assert compare_ax._gridliners
-        for gridlines in compare_ax._gridliners:
->>>>>>> 7157fd0 ((Update): Update to all PRs from COSIPY release 2.0. Bulk-changes)
+
             kwargs = gridlines.collection_kwargs
             assert kwargs.get("linewidth", None) == 0.5
             assert kwargs.get("color", None) == "gray"
@@ -185,11 +173,7 @@ class TestPostprocessPlotFieldsPlotting:
         )
 
         assert isinstance(compare_ax, plt.Axes)
-<<<<<<< HEAD
         assert compare_ax.gridlines
-=======
-        assert compare_ax._gridliners
->>>>>>> 7157fd0 ((Update): Update to all PRs from COSIPY release 2.0. Bulk-changes)
         assert compare_ax.get_title() == dataset[arg_name].long_name.title()
 
         plt.close("all")
@@ -372,11 +356,7 @@ class TestPostprocessPlotFieldsPlotting:
     def test_parse_arguments(self):
         with patch(
             "sys.argv",
-<<<<<<< HEAD
             ["main", "--input", "./path/file", "--date", "'2009-01-01'"],
-=======
-            ["main", "--file", "./path/file", "--date", "'2009-01-01'"],
->>>>>>> 7157fd0 ((Update): Update to all PRs from COSIPY release 2.0. Bulk-changes)
         ):
             args = pcf.parse_arguments()
         assert isinstance(args, argparse.Namespace)
