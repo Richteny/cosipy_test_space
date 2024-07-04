@@ -91,21 +91,12 @@ def fixture_conftest_rng_seed():
 @pytest.fixture(
     name="conftest_mock_grid_values", scope="function", autouse=False
 )
-<<<<<<< HEAD
 def fixture_conftest_mock_grid_values():
     """Constructs the layer values used to generate Grid objects.
 
     Returns:
         Generator[dict] Numba arrays for layers' heights, snowpack
         densities, temperatures, and liquid water content.
-=======
-def fixture_conftest_mock_grid_values() -> dict:
-    """Constructs the layer values used to generate Grid objects.
-
-    Returns:
-        Numba arrays for layers' heights, snowpack densities,
-        temperatures, and liquid water content.
->>>>>>> 7157fd0 ((Update): Update to all PRs from COSIPY release 2.0. Bulk-changes)
     """
 
     layer_values = {}
@@ -127,24 +118,15 @@ def fixture_conftest_mock_grid_values() -> dict:
 
 
 @pytest.fixture(name="conftest_mock_grid", scope="function", autouse=False)
-<<<<<<< HEAD
 def fixture_conftest_mock_grid(conftest_mock_grid_values: dict):
-=======
-def fixture_conftest_mock_grid(conftest_mock_grid_values: dict) -> Grid:
->>>>>>> 7157fd0 ((Update): Update to all PRs from COSIPY release 2.0. Bulk-changes)
     """Constructs a Grid object.
 
     .. note:: Use with caution, as this fixture assumes Grid objects are
         correctly instantiated.
 
     Returns:
-<<<<<<< HEAD
         Generator[Grid]: Grid object with numba arrays for the layers'
         heights, densities, temperatures, and liquid water content.
-=======
-        Grid object with numba arrays for the layers' heights,
-        densities, temperatures, and liquid water content.
->>>>>>> 7157fd0 ((Update): Update to all PRs from COSIPY release 2.0. Bulk-changes)
     """
 
     data = conftest_mock_grid_values.copy()
@@ -161,26 +143,16 @@ def fixture_conftest_mock_grid(conftest_mock_grid_values: dict) -> Grid:
 
 
 @pytest.fixture(name="conftest_mock_grid_ice", scope="function", autouse=False)
-<<<<<<< HEAD
 def fixture_conftest_mock_grid_ice(conftest_mock_grid_values: dict):
-=======
-def fixture_conftest_mock_grid_ice(conftest_mock_grid_values: dict) -> Grid:
->>>>>>> 7157fd0 ((Update): Update to all PRs from COSIPY release 2.0. Bulk-changes)
     """Constructs a Grid object for ice layers.
 
     .. note:: Use with caution, as this fixture assumes Grid objects are
         correctly instantiated.
 
     Returns:
-<<<<<<< HEAD
         Generator[Grid]: Grid object for ice layers with numba arrays
         for layer heights, layer densities, layer temperatures, and
         layer liquid water content.
-=======
-        Grid object for ice layers with numba arrays for layer heights,
-        layer densities, layer temperatures, and layer liquid water
-        content.
->>>>>>> 7157fd0 ((Update): Update to all PRs from COSIPY release 2.0. Bulk-changes)
     """
 
     data = conftest_mock_grid_values.copy()
@@ -195,7 +167,6 @@ def fixture_conftest_mock_grid_ice(conftest_mock_grid_values: dict) -> Grid:
     yield grid_object
 
 
-<<<<<<< HEAD
 """Mock xarray Dataset"""
 @pytest.fixture(
     name="conftest_mock_xr_dataset_dims", scope="function", autouse=False
@@ -210,7 +181,6 @@ def fixture_conftest_mock_xr_dataset_dims():
     dimensions = {}
     reference_time = pd.Timestamp("2009-01-01T12:00:00")
     dimensions["time"] = pd.date_range(reference_time, periods=4, freq="6h")
-=======
 # Mock xarray Dataset
 @pytest.fixture(
     name="conftest_mock_xr_dataset_dims", scope="function", autouse=False
@@ -221,7 +191,6 @@ def fixture_conftest_mock_xr_dataset_dims() -> dict:
     dimensions = {}
     reference_time = pd.Timestamp("2009-01-01T12:00:00")
     dimensions["time"] = pd.date_range(reference_time, periods=4, freq="6H")
->>>>>>> 7157fd0 ((Update): Update to all PRs from COSIPY release 2.0. Bulk-changes)
     dimensions["latitude"] = [30.460, 30.463, 30.469, 30.472]
     dimensions["longitude"] = [90.621, 90.624, 90.627, 90.630, 90.633]
     dimensions["name"] = ["time", "lat", "lon"]
@@ -234,20 +203,12 @@ def fixture_conftest_mock_xr_dataset_dims() -> dict:
 )
 def fixture_conftest_mock_xr_dataset(
     conftest_mock_xr_dataset_dims: dict, conftest_rng_seed: np.random.Generator
-<<<<<<< HEAD
 ):
     """Constructs mock xarray Dataset of output .nc file.
 
     Returns:
         Generator[xr.Dataset]: Dataset with data for elevation and
         surface data.
-=======
-) -> xr.Dataset:
-    """Constructs mock xarray Dataset of output .nc file.
-
-    Returns:
-        Dataset with data for elevation and surface data.
->>>>>>> 7157fd0 ((Update): Update to all PRs from COSIPY release 2.0. Bulk-changes)
     """
 
     _ = conftest_rng_seed
@@ -612,7 +573,6 @@ class TestBoilerplate:
         for key in new_params:
             monkeypatch.setattr(module, key, new_params[key])
 
-<<<<<<< HEAD
     def calculate_irreducible_water_content(
         self, current_ice_fraction: float
     ) -> float:
@@ -634,8 +594,6 @@ class TestBoilerplate:
             theta_e = self.calculate_irreducible_water_content(i)
             assert isinstance(theta_e, float)
 
-=======
->>>>>>> 7157fd0 ((Update): Update to all PRs from COSIPY release 2.0. Bulk-changes)
     @pytest.fixture(scope="class", autouse=False)
     def test_boilerplate_integration(self):
         """Integration test for boilerplate methods."""
@@ -646,10 +604,7 @@ class TestBoilerplate:
         self.test_regenerate_grid_values()
         self.test_check_output()
         self.test_assert_grid_profiles_equal()
-<<<<<<< HEAD
         self.test_calculate_irreducible_water_content()
-=======
->>>>>>> 7157fd0 ((Update): Update to all PRs from COSIPY release 2.0. Bulk-changes)
 
 
 @pytest.fixture(name="conftest_boilerplate", scope="function", autouse=False)
