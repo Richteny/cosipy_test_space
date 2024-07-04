@@ -1,20 +1,33 @@
 import numpy as np
-from constants import densification_method, snow_ice_threshold, minimum_snow_layer_height, \
-                      zero_temperature, ice_density
 from numba import njit
 from cosipy.utils.options import read_opt
 
-def densification(GRID,SLOPE,dt,opt_dict=None):
-    """Densification of the snowpack.
+from cosipy.constants import Constants
+
+# only required for njitted functions
+snow_ice_threshold = Constants.snow_ice_threshold
+minimum_snow_layer_height = Constants.minimum_snow_layer_height
+zero_temperature = Constants.zero_temperature
+
+## Do we need to call this outside to update the fields
+# Read and set options
+#read_opt(opt_dict, globals())
+
+
+def densification(GRID,SLOPE,dt, opt_dict=None):
+    """Apply densification to the snowpack.
 
     Args:
-        GRID    ::  GRID-Structure.
-        SLOPE   ::  Slope of the surface [degrees].
-        dt      ::  integration time [s].
+        GRID (Grid): Glacier data structure.
+        SLOPE (np.ndarray): Slope of the surface [|degree|].
+        dt (int): Integration time [s].
+
+    Raises:
+        NotImplementedError: Densification method is not allowed.
     """
     # Read and set options
     read_opt(opt_dict, globals())
-
+    densification_method = Constants.densification_method
     densification_allowed = ['Boone', 'Vionnet', 'empirical', 'constant']
     if densification_method == 'Boone':
         method_Boone(GRID,SLOPE,dt)
@@ -36,15 +49,16 @@ def densification(GRID,SLOPE,dt,opt_dict=None):
 def copy_layer_profiles(GRID) -> tuple:
     """Get a copy of the layer profiles.
 
-    `np.array` returns a copy by default and is 2x faster than np.copy
-    (which is not supported by numba).
-
     Args:
-        GRID (Grid): Grid object.
+        GRID (Grid): Glacier data structure.
+
     Returns:
         Profiles for height, density, temperature, liquid water content,
         and ice fraction.
     """
+
+    # np.array returns a copy by default and is 2x faster than np.copy
+    # (which is not supported by numba).
     heights = np.array(GRID.get_height())
     densities = np.array(GRID.get_density())
     temperatures = np.array(GRID.get_temperature())
@@ -55,8 +69,9 @@ def copy_layer_profiles(GRID) -> tuple:
 
 @njit
 def method_Boone(GRID,SLOPE,dt):
-    """ Description: Densification through overburden pressure
-        after Essery et al. 2013
+    """Densification through overburden pressure.
+
+    After Essery et al., (2013).
     """
 
     # Constants
@@ -119,8 +134,9 @@ def method_Boone(GRID,SLOPE,dt):
 
 
 def method_Vionnet(GRID,SLOPE,dt):
-    """ Description: Densification through overburden stress
-        after Vionnet et al. 2011
+    """Densification through overburden stress.
+
+    After Vionnet et al., (2011).
     """
 
     # Constants
@@ -158,7 +174,7 @@ def method_Vionnet(GRID,SLOPE,dt):
             dD = (-sigma/eta)*dt 
 
             # Rate of change for the density
-            dRho = dD*rho[idxNode] 
+            # dRho = dD*rho[idxNode] 
             
             # Calc changes in volumetric fractions of ice and water
             # No water in layer
@@ -187,7 +203,7 @@ def method_Vionnet(GRID,SLOPE,dt):
 
 
 def method_empirical(GRID,SLOPE,dt):
-    """Simple empirical snow compaction parametrization using a constant time scale."""
+    """Empirical snow compaction parametrization using a constant time scale."""
 
     rho_max = 600.0     # maximum attainable density [kg m^-3]
     #tau = 3.6e5         # empirical compaction time scale [s]
@@ -204,7 +220,7 @@ def method_empirical(GRID,SLOPE,dt):
 
         if ((1-(dRho/GRID.get_node_density(idxNode)))<1):
             # Set the new ice fraction
-            GRID.set_node_ice_fraction(idxNode, (rho_max + (rho[idxNode]-rho_max) * np.exp(-dt/tau))/ice_density )
+            GRID.set_node_ice_fraction(idxNode, (rho_max + (rho[idxNode]-rho_max) * np.exp(-dt/tau))/Constants.ice_density )
 
             # Set height change
             GRID.set_node_height(idxNode, (1-(dRho/GRID.get_node_density(idxNode)))*GRID.get_node_height(idxNode))

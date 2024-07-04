@@ -1,0 +1,23 @@
+# This is the SLURM configuration (init) file.
+# Please make your changes here.
+
+[LABELS]
+account = "morsanat"  # Slurm account/group, equivalent to Slurm parameter `--account`.
+name = "WoHEF"  # Equivalent to Slurm parameter `--job-name`.
+queue = "work"  # Name of job queue.
+
+[PARAMETERS]
+# Additional Slurm parameters. These can overwrite other settings.
+slurm_parameters = ["--qos=short", "nodes=1", "--error=Error_nodes.err", "--output=Output_nodes.out", "--time=01:00:00", "--mem='3G'"]
+shebang = "#!/bin/bash -l"
+local_directory = "./logs/dask-worker-space"
+
+[MEMORY]
+port = 8786  # Network port number.
+cores = 20  # One grid point per core: do not change.
+nodes = 15  # Grid points submitted in one sbatch script.
+processes = 20  # Number of processes.
+memory = "3G"  # Total allocated memory per submitted Slurm job.
+
+[OVERRIDES]
+memory_per_process = 3  # Memory per process. This sets `memory` to (cores * memory_per_process.)

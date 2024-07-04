@@ -2,14 +2,26 @@ import sys
 
 import numpy as np
 
-from constants import *
+from cosipy.constants import Constants
 from cosipy.cpkernel.grid import Grid
 from cosipy.utils.options import read_opt
 
 
 def init_snowpack(DATA, opt_dict):
-    """INITIALIZATION"""
+    """Initialise the snowpack.
 
+    Returns:
+        Grid: Initialised glacier data structure with snowpack.
+    """
+
+    # Declare locally for faster lookup
+    initial_snowheight_constant = Constants.initial_snowheight_constant
+    initial_glacier_height = Constants.initial_glacier_height
+    initial_glacier_layer_heights = Constants.initial_glacier_layer_heights
+    temperature_bottom = Constants.temperature_bottom
+    initial_top_density_snowpack = Constants.initial_top_density_snowpack
+    initial_bottom_density_snowpack = Constants.initial_bottom_density_snowpack
+    ice_density = Constants.ice_density
     # Read and set options
     read_opt(opt_dict, globals())
 
@@ -75,7 +87,7 @@ def init_snowpack(DATA, opt_dict):
 
 
 def load_snowpack(GRID_RESTART):
-    """ Initialize grid from restart file """
+    """Initialize grid from restart file."""
 
     # Number of layers
     num_layers = int(GRID_RESTART.NLAYERS.values)
