@@ -1,4 +1,6 @@
 from numba import njit
+from numba.core import types
+from numba.typed import Dict
 from cosipy.utils.options import read_opt
 from cosipy.constants import Constants
 
@@ -22,7 +24,7 @@ def check_oob(ice_fraction, lwc):
 
 
 @njit
-def refreezing(GRID, opt_dict=None):
+def refreezing(GRID, opt_dict=Dict.empty(key_type=types.unicode_type,value_type=types.float64)):
     """Refreeze water in layers.
 
     This approach is adapted from Bartelt & Lehning (2002).

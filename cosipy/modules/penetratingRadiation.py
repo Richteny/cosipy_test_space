@@ -1,5 +1,7 @@
 import numpy as np
 from numba import njit
+from numba.core import types
+from numba.typed import Dict
 from cosipy.utils.options import read_opt
 
 from cosipy.constants import Constants
@@ -15,7 +17,7 @@ lat_heat_melting = Constants.lat_heat_melting
 # Read and set options - cant call this outside because it wasn't parsed so dictionary does not exist unless called in the functions
 #read_opt(opt_dict, globals())
 
-def penetrating_radiation(GRID, SWnet, dt, opt_dict=None):
+def penetrating_radiation(GRID, SWnet, dt, opt_dict=Dict.empty(key_type=types.unicode_type,value_type=types.float64)):
     # Read and set options
     read_opt(opt_dict, globals())
 
