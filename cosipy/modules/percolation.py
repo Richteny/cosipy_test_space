@@ -1,10 +1,12 @@
 import numpy as np
 from numba import njit
+from numba.core import types
+from numba.typed import Dict
 from cosipy.utils.options import read_opt
 
 
 @njit
-def percolation(GRID, water: float, dt: int, opt_dict=None) -> float:
+def percolation(GRID, water: float, dt: int, opt_dict=Dict.empty(key_type=types.unicode_type,value_type=types.float64)) -> float:
     """Percolate melt water through the snow- and firn pack.
 
     Bucket method (Bartelt & Lehning, 2002).

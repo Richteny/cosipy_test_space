@@ -1,6 +1,9 @@
 import numpy as np
 from cosipy.utils.options import read_opt
 
+from numba.core import types
+from numba.typed import Dict
+
 from cosipy.constants import Constants
 
 # only required for njitted functions
@@ -21,7 +24,7 @@ t_star_K = Constants.t_star_K
 # Need to load in dic values here already to be able to call the following functions?
 #opt_dict = read_opt(opt_dict, globals())
 
-def updateAlbedo(GRID, surface_temperature, albedo_snow, opt_dict):
+def updateAlbedo(GRID, surface_temperature, albedo_snow, opt_dict=Dict.empty(key_type=types.unicode_type,value_type=types.float64)):
     """Updates the albedo."""
     read_opt(opt_dict, globals())
     albedo_allowed = ["Oerlemans98", "Bougamont05"]

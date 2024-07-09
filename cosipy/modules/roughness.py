@@ -1,13 +1,17 @@
 from cosipy.constants import Constants
 from cosipy.utils.options import read_opt
 
+from numba.core import types
+from numba.typed import Dict
+
 # need to define variables locally to be able to change them with our dictionary
 roughness_fresh_snow = Constants.roughness_fresh_snow
 aging_factor_roughness = Constants.aging_factor_roughness
 roughness_firn = Constants.roughness_firn
+roughness_ice = Constants.roughness_ice
 
 
-def updateRoughness(GRID, opt_dict=None):
+def updateRoughness(GRID, opt_dict=Dict.empty(key_type=types.unicode_type,value_type=types.float64)):
 
     # Read and set options
     read_opt(opt_dict, globals())
