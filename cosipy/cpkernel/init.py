@@ -6,8 +6,11 @@ from cosipy.constants import Constants
 from cosipy.cpkernel.grid import Grid
 from cosipy.utils.options import read_opt
 
+from numba.core import types
+from numba.typed import Dict
 
-def init_snowpack(DATA, opt_dict):
+
+def init_snowpack(DATA, opt_dict=Dict.empty(key_type=types.unicode_type,value_type=types.float64)):
     """Initialise the snowpack.
 
     Returns:
