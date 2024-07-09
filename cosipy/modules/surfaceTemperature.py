@@ -2,6 +2,8 @@ from types import SimpleNamespace
 
 import numpy as np
 from numba import njit
+from numba.core import types
+from numba.typed import Dict
 from scipy.optimize import minimize, newton
 
 from cosipy.constants import Constants
@@ -22,7 +24,7 @@ water_density = Constants.water_density
 
 
 
-def update_surface_temperature(GRID, dt, z, z0, T2, rH2, p, SWnet, u2, RAIN, SLOPE, LWin=None, N=None, opt_dict=None):
+def update_surface_temperature(GRID, dt, z, z0, T2, rH2, p, SWnet, u2, RAIN, SLOPE, LWin=None, N=None, opt_dict=Dict.empty(key_type=types.unicode_type,value_type=types.float64)):
     """Solve the surface temperature and get the surface fluxes.
 
     Args:

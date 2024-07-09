@@ -7,6 +7,9 @@ import inspect
 import os
 import sys
 
+from numba.core import types
+from numba.typed import Dict
+
 import numpy as np
 import pandas as pd
 import xarray as xr
@@ -16,7 +19,7 @@ from cosipy.constants import Constants
 
 class IOClass:
 
-    def __init__(self, DATA=None, opt_dict=None):
+    def __init__(self, DATA=None, opt_dict=Dict.empty(key_type=types.unicode_type, value_type=types.float64)):
         """Initialise the IO Class"""
 
         """
