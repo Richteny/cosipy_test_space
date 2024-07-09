@@ -1,9 +1,11 @@
 import numpy as np
 from numba import njit
+from numba.core import types
+from numba.typed import Dict
 from cosipy.utils.options import read_opt
 
 @njit
-def solveHeatEquation(GRID, dt, opt_dict=None):
+def solveHeatEquation(GRID, dt, opt_dict=Dict.empty(key_type=types.unicode_type,value_type=types.float64)):
     """Solve the heat equation on a non-uniform grid.
 
     Args:
