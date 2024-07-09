@@ -46,7 +46,9 @@ from cosipy.constants import Constants
 from cosipy.cpkernel.cosipy_core import cosipy_core
 from cosipy.cpkernel.io import IOClass
 
-from numba import njit
+from numba import njit, typeof
+from numba.core import types
+from numba.typed import Dict
 
 def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, alb_ice=Constants.albedo_ice,
          alb_snow= Constants.albedo_fresh_snow, alb_firn=Constants.albedo_firn, albedo_aging= Constants.albedo_mod_snow_aging,
@@ -64,7 +66,7 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
         count = count + 1
 
     #Initialise dictionary and load Params#
-    opt_dict = dict()
+    opt_dict = Dict.empty(key_type=types.unicode_type, value_type=types.float64)
     opt_dict['mult_factor_RRR'] = RRR_factor
     opt_dict['albedo_ice'] = alb_ice
     opt_dict['albedo_fresh_snow'] = alb_snow
@@ -76,6 +78,8 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
     opt_dict['roughness_fresh_snow'] = roughness_fresh_snow
     opt_dict['roughness_ice'] = roughness_ice
     opt_dict['roughness_firn'] = roughness_firn
+    print(opt_dict)
+    print(typeof(opt_dict))
     lapse_T = float(lr_T)
     lapse_RRR = float(lr_RRR)
     lapse_RH = float(lr_RH)

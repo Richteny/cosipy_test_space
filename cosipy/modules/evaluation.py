@@ -11,8 +11,10 @@ from scipy import stats
 from datetime import datetime
 from cosipy.utils.options import read_opt
 from numba import njit
+from numba.core import types
+from numba.typed import Dict
 
-def evaluate(stake_names, stake_data, df_, opt_dict=None):
+def evaluate(stake_names, stake_data, df_, opt_dict=Dict.empty(key_type=types.unicode_type,value_type=types.float64)):
     """Evaluate the simulation using stake measurements.
 
     Args:

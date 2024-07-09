@@ -15,9 +15,11 @@ from cosipy.modules.refreezing import refreezing
 from cosipy.modules.roughness import updateRoughness
 from cosipy.modules.surfaceTemperature import update_surface_temperature
 
+from numba.core import types
+from numba.typed import Dict
 from cosipy.utils.options import read_opt
 
-def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_data=None, opt_dict=None):
+def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_data=None, opt_dict=Dict.empty(key_type=types.unicode_type,value_type=types.float64)):
     """Cosipy core function.
 
     The calculations are performed on a single core.

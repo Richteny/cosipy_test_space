@@ -1,5 +1,7 @@
 import numpy as np
 from numba import njit
+from numba.core import types
+from numba.typed import Dict
 from cosipy.utils.options import read_opt
 
 from cosipy.constants import Constants
@@ -14,7 +16,7 @@ zero_temperature = Constants.zero_temperature
 #read_opt(opt_dict, globals())
 
 
-def densification(GRID,SLOPE,dt, opt_dict=None):
+def densification(GRID,SLOPE,dt, opt_dict=Dict.empty(key_type=types.unicode_type,value_type=types.float64)):
     """Apply densification to the snowpack.
 
     Args:
