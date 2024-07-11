@@ -45,10 +45,13 @@ from cosipy.config import Config, SlurmConfig
 from cosipy.constants import Constants
 from cosipy.cpkernel.cosipy_core import cosipy_core
 from cosipy.cpkernel.io import IOClass
+from cosipy.modules.evaluation import evaluate, resample_output, create_tsl_df, eval_tsl, resample_by_hand
 
 from numba import njit, typeof
 from numba.core import types
 from numba.typed import Dict
+
+import xarray as xr
 
 def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, alb_ice=Constants.albedo_ice,
          alb_snow= Constants.albedo_fresh_snow, alb_firn=Constants.albedo_firn, albedo_aging= Constants.albedo_mod_snow_aging,
@@ -65,28 +68,35 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
     if isinstance(count, int):
         count = count + 1
 
+    '''
+    TEST TO PARSE A TUPLE OF PARAM VALUES AND NOT CALL IN DICTIONARY
+    '''
+    opt_dict = (RRR_factor+0.5, alb_ice, alb_snow, alb_firn, albedo_aging, albedo_depth, center_snow_transfer_function,
+                spread_snow_transfer_function, roughness_fresh_snow, roughness_ice, roughness_firn)
+    #0 to 5 - base, 6 center snow , 7 spreadsnow, 8 to 10 roughness length 
     #Initialise dictionary and load Params#
-    opt_dict = Dict.empty(key_type=types.unicode_type, value_type=types.float64)
-    opt_dict['mult_factor_RRR'] = RRR_factor
-    opt_dict['albedo_ice'] = alb_ice
-    opt_dict['albedo_fresh_snow'] = alb_snow
-    opt_dict['albedo_firn'] = alb_firn
-    opt_dict['albedo_mod_snow_aging'] = albedo_aging
-    opt_dict['albedo_mod_snow_depth'] = albedo_depth
-    opt_dict['center_snow_transfer_function'] = center_snow_transfer_function
-    opt_dict['spread_snow_transfer_function'] = spread_snow_transfer_function
-    opt_dict['roughness_fresh_snow'] = roughness_fresh_snow
-    opt_dict['roughness_ice'] = roughness_ice
-    opt_dict['roughness_firn'] = roughness_firn
+    #opt_dict = Dict.empty(key_type=types.unicode_type, value_type=types.float64)
+    #opt_dict['mult_factor_RRR'] = RRR_factor
+    #opt_dict['albedo_ice'] = alb_ice
+    #opt_dict['albedo_fresh_snow'] = alb_snow
+    #opt_dict['albedo_firn'] = alb_firn
+    #opt_dict['albedo_mod_snow_aging'] = albedo_aging
+    #opt_dict['albedo_mod_snow_depth'] = albedo_depth
+    #opt_dict['center_snow_transfer_function'] = center_snow_transfer_function
+    #opt_dict['spread_snow_transfer_function'] = spread_snow_transfer_function
+    #opt_dict['roughness_fresh_snow'] = roughness_fresh_snow
+    #opt_dict['roughness_ice'] = roughness_ice
+    #opt_dict['roughness_firn'] = roughness_firn
     print(opt_dict)
-    print(typeof(opt_dict))
+    #print(typeof(opt_dict))
     lapse_T = float(lr_T)
     lapse_RRR = float(lr_RRR)
     lapse_RH = float(lr_RH)
     print("Time required to load in opt_dic: ", datetime.now()-times)
     print("#--------------------------------------#")
     print("Starting simulations with the following parameters.")
-    [print("Parameter ", x,"=",opt_dict[x]) for x in opt_dict.keys()]
+    print(opt_dict)
+    #[print("Parameter ", x,"=",opt_dict[x]) for x in opt_dict.keys()]
     #for key in opt_dict.keys():
     #    print("Parameter ", key,"=",opt_dict[key])
     print("\n#--------------------------------------#")
@@ -99,7 +109,8 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
     IO = IOClass(opt_dict=opt_dict)
     start_time = datetime.now() 
     if Config.restart:
-        DATA = IO.create_data_file(suffix="_num{}_lrT_{}_lrRRR_{}_prcp_{}".format(count, round(abs(lapse_T),7),round(lapse_RRR,7),round(opt_dict['mult_factor_RRR'],5)))
+        #DATA = IO.create_data_file(suffix="_num{}_lrT_{}_lrRRR_{}_prcp_{}".format(count, round(abs(lapse_T),7),round(lapse_RRR,7),round(opt_dict['mult_factor_RRR'],5)))
+         DATA = IO.create_data_file(suffix="_num{}_lrT_{}_lrRRR_{}_prcp_{}".format(count, round(abs(lapse_T),6),round(lapse_RRR, 6),round(opt_dict[0],5)))
     else:
         DATA = IO.create_data_file()
     # Create global result and restart datasets
@@ -187,12 +198,13 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
     output_path = create_data_directory(path='output')                
     results_output_name = output_netcdf.split('.nc')[0]+'_num{}.nc'.format(count)  
     IO.get_result().to_netcdf(os.path.join(output_path,results_output_name), encoding=encoding, mode = 'w')
+    print(IO.get_result())
     #dataset = IO.get_result()
     #calculate MB for geod. reference
     #Check if 1D or 2D
     times = datetime.now()
     #this takes 1min, make it faster!
-    if tsl_evaluation is True:
+    if Config.tsl_evaluation is True:
         if 'N_Points' in list(IO.get_result().keys()):
             print("Compute area weighted MB for 1D case.")
             dsmb = IO.get_result().sel(time=slice("2000-01-01", "2009-12-31"))
@@ -245,7 +257,7 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
     #----------------------------------------------
     # Implement TSL Extraction
     #----------------------------------------------
-    #if (restart == True) and (merge == True):
+    #if (Config.restart == True) and (Config.merge == True):
     #    print("Trying to concatenate files. Requires some time.")
     #    #Get name of files 
     #    previous_output_name = results_output_name.replace(time_start_str, time_start_old_file).replace(time_end_str, time_start_str)
@@ -284,17 +296,17 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
         #times = datetime.now()
         tsla_observations = pd.read_csv(Config.tsl_data_file)
         
-        if (restart == True) and (merge == True):
+        if (Config.restart == True) and (Config.merge == True):
             tsl_csv_name = 'tsla_'+merged_output_name.split('.nc')[0].lower()+'.csv'
             resampled_out = resample_output(ds_merged)
-            tsl_out = calculate_tsl(resampled_out, min_snowheight)
-            tsla_stats = eval_tsl(tsla_observations, tsl_out, time_col_obs, tsla_col_obs)
+            tsl_out = calculate_tsl(resampled_out, Config.min_snowheight)
+            tsla_stats = eval_tsl(tsla_observations, tsl_out, Config.time_col_obs, Config.tsla_col_obs)
             print("TSLA Observed vs Modelled RMSE: " + str(tsla_stats[0]) + "; R-squared: " + str(tsla_stats[1]))
-            tsl_out.to_csv(os.path.join(data_path,'output',tsl_csv_name))
+            tsl_out.to_csv(os.path.join(output_path,tsl_csv_name))
             del ds_merged
         else:
             tsl_csv_name = 'tsla_'+results_output_name.split('.nc')[0].lower()+'.csv'    
-            tsla_observations = pd.read_csv(tsl_data_file)
+            tsla_observations = pd.read_csv(Config.tsl_data_file)
             #a_resampled_out = resample_output(IO.get_result())
             times = datetime.now()
             #dates,clean_day_vals,secs,holder = prereq_res(IO.get_result().sel(time=slice("2010-01-01","2019-12-31")))
@@ -308,14 +320,14 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
             resampled_out['MASK'] = (('lat','lon'), IO.get_result()['MASK'].data)
             #print("Time required for resampling: ", datetime.now()-times)
             #a_tsl_out = create_tsl_df(a_resampled_out, min_snowheight, tsl_method, tsl_normalize)
-            tsl_out = create_tsl_df(resampled_out, min_snowheight, tsl_method, tsl_normalize)
+            tsl_out = create_tsl_df(resampled_out, Config.min_snowheight, Config.tsl_method, Config.tsl_normalize)
             #tsl_out = calculate_tsl(resampled_out, min_snowheight)
             #print(tsla_observations)
             print(tsl_out)
             #print(np.nanmedian(tsl_out['Med_TSL']))
-            tsla_stats = eval_tsl(tsla_observations,tsl_out, time_col_obs, tsla_col_obs)
+            tsla_stats = eval_tsl(tsla_observations,tsl_out, Config.time_col_obs, Config.tsla_col_obs)
             print("TSLA Observed vs. Modelled RMSE: " + str(tsla_stats[0])+ "; R-squared: " + str(tsla_stats[1]))
-            tsl_out.to_csv(os.path.join(data_path,'output',tsl_csv_name))
+            tsl_out.to_csv(os.path.join(output_path,tsl_csv_name))
             ## Match to observation dates for pymc routine
             tsl_out_match = tsl_out.loc[tsl_out['time'].isin(tsla_observations['LS_DATE'])]
             #tsla_obs_v2 = tsla_observations.loc[tsla_observations['LS_DATE'].isin(tsl_out_match['time'])]
@@ -359,9 +371,10 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
     return (geod_mb,tsl_out_match)
 
 def run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures, opt_dict=None):
+    print("run cosipy",opt_dict)
     Config()
     Constants()
-
+    
     with Client(cluster) as client:
         print_notice(msg="\tStarting clients and submitting jobs ...")
         print(cluster)

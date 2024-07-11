@@ -14,7 +14,7 @@ from numba import njit
 from numba.core import types
 from numba.typed import Dict
 
-def evaluate(stake_names, stake_data, df_, opt_dict=Dict.empty(key_type=types.unicode_type,value_type=types.float64)):
+def evaluate(stake_names, stake_data, df_):
     """Evaluate the simulation using stake measurements.
 
     Args:

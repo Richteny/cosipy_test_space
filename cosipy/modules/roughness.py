@@ -11,10 +11,22 @@ roughness_firn = Constants.roughness_firn
 roughness_ice = Constants.roughness_ice
 
 
-def updateRoughness(GRID, opt_dict=Dict.empty(key_type=types.unicode_type,value_type=types.float64)):
+def updateRoughness(GRID, opt_dict=None):
 
     # Read and set options
-    read_opt(opt_dict, globals())
+    if opt_dict is not None:
+        mult_factor_RRR = opt_dict[0]
+        albedo_ice = opt_dict[1]
+        albedo_fresh_snow = opt_dict[2]
+        albedo_firn = opt_dict[3]
+        albedo_mod_snow_aging = opt_dict[4]
+        albedo_mod_snow_depth = opt_dict[5]
+        center_snow_transfer_function = opt_dict[6]
+        spread_snow_transfer_function = opt_dict[7]
+        roughness_fresh_snow = opt_dict[8]
+        roughness_ice = opt_dict[9]
+        roughness_firn = opt_dict[10]
+    #read_opt(opt_dict, globals())
     roughness_allowed = ['Moelg12']
     if Constants.roughness_method == 'Moelg12':
         sigma = method_Moelg(GRID)
