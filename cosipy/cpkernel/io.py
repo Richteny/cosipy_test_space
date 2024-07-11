@@ -21,11 +21,38 @@ from cosipy.utils.options import read_opt
 
 class IOClass:
 
-    def __init__(self, DATA=None, opt_dict=Dict.empty(key_type=types.unicode_type, value_type=types.float64)):
+    def __init__(self, DATA=None, opt_dict=None):
         """Initialise the IO Class"""
 
+        """
         # Read and set options
-        read_opt(opt_dict, globals())
+        if opt_dict is not None:
+            mult_factor_RRR = opt_dict[0]
+            albedo_ice = opt_dict[1]
+            albedo_fresh_snow = opt_dict[2]
+            albedo_firn = opt_dict[3]
+            albedo_mod_snow_aging = opt_dict[4]
+            albedo_mod_snow_depth = opt_dict[5]
+            center_snow_transfer_function = opt_dict[6]
+            spread_snow_transfer_function = opt_dict[7]
+            roughness_fresh_snow = opt_dict[8]
+            roughness_ice = opt_dict[9]
+            roughness_firn = opt_dict[10]
+        else:
+            mult_factor_RRR = Constants.mult_factor_RRR
+            albedo_ice = Constants.albedo_ice
+            albedo_fresh_snow = Constants.albedo_fresh_snow
+            albedo_firn = Constants.albedo_firn
+            albedo_mod_snow_aging = Constants.albedo_mod_snow_aging
+            albedo_mod_snow_depth = Constants.albedo_mod_snow_depth
+            center_snow_transfer_function = Constants.center_snow_transfer_function
+            spread_snow_transfer_function = Constants.spread_snow_transfer_function
+            roughness_fresh_snow = Constants.roughness_fresh_snow
+            roughness_ice = Constants.roughness_ice
+            roughness_firn = Constants.roughness_firn
+        #the above needs to be put into attrs
+        #read_opt(opt_dict, globals())
+        """
         output_vars = self.get_output_structure()
         self.atm = output_vars['vars']['atm']
         self.internal = output_vars['vars']['internal']
@@ -231,7 +258,7 @@ class IOClass:
 
         return metadata_spatial, metadata_spatiotemporal
 
-    def init_result_dataset(self) -> xr.Dataset:
+    def init_result_dataset(self, opt_dict=None) -> xr.Dataset:
         """Create the final dataset to aggregate and store the results.
 
         Aggregates results from individual COSIPY runs. After the
@@ -241,7 +268,35 @@ class IOClass:
         Returns:
             One-dimensional structure with the model output.
         """
-        
+        # Constants for metadata #
+        print(opt_dict) 
+        if opt_dict is not None:
+            mult_factor_RRR = opt_dict[0]
+            albedo_ice = opt_dict[1]
+            albedo_fresh_snow = opt_dict[2]
+            albedo_firn = opt_dict[3]
+            albedo_mod_snow_aging = opt_dict[4]
+            albedo_mod_snow_depth = opt_dict[5]
+            center_snow_transfer_function = opt_dict[6]
+            spread_snow_transfer_function = opt_dict[7]
+            roughness_fresh_snow = opt_dict[8]
+            roughness_ice = opt_dict[9]
+            roughness_firn = opt_dict[10]
+        else:
+            mult_factor_RRR = Constants.mult_factor_RRR
+            albedo_ice = Constants.albedo_ice
+            albedo_fresh_snow = Constants.albedo_fresh_snow
+            albedo_firn = Constants.albedo_firn
+            albedo_mod_snow_aging = Constants.albedo_mod_snow_aging
+            albedo_mod_snow_depth = Constants.albedo_mod_snow_depth
+            center_snow_transfer_function = Constants.center_snow_transfer_function
+            spread_snow_transfer_function = Constants.spread_snow_transfer_function
+            roughness_fresh_snow = Constants.roughness_fresh_snow
+            roughness_ice = Constants.roughness_ice
+            roughness_firn = Constants.roughness_firn
+       
+
+ 
         # Coordinates
         self.RESULT = xr.Dataset()
         self.RESULT.coords['time'] = self.DATA.coords['time']
@@ -279,9 +334,9 @@ class IOClass:
         self.RESULT.attrs['Temperature_bottom'] = Constants.temperature_bottom
         self.RESULT.attrs['Const_init_temp'] = Constants.const_init_temp
 
-        self.RESULT.attrs['Center_snow_transfer_function'] = Constants.center_snow_transfer_function
-        self.RESULT.attrs['Spread_snow_transfer_function'] = Constants.spread_snow_transfer_function
-        self.RESULT.attrs['Multiplication_factor_for_RRR_or_SNOWFALL'] = Constants.mult_factor_RRR
+        self.RESULT.attrs['Center_snow_transfer_function'] = center_snow_transfer_function
+        self.RESULT.attrs['Spread_snow_transfer_function'] = spread_snow_transfer_function
+        self.RESULT.attrs['Multiplication_factor_for_RRR_or_SNOWFALL'] = mult_factor_RRR
         self.RESULT.attrs['Minimum_snow_layer_height'] = Constants.minimum_snow_layer_height
         self.RESULT.attrs['Minimum_snowfall'] = Constants.minimum_snowfall
 
@@ -295,14 +350,14 @@ class IOClass:
         self.RESULT.attrs['Temperature_threshold_merging'] = Constants.temperature_threshold_merging
 
         self.RESULT.attrs['Density_fresh_snow'] = Constants.constant_density
-        self.RESULT.attrs['Albedo_fresh_snow'] = Constants.albedo_fresh_snow
-        self.RESULT.attrs['Albedo_firn'] = Constants.albedo_firn
-        self.RESULT.attrs['Albedo_ice'] = Constants.albedo_ice
-        self.RESULT.attrs['Albedo_mod_snow_aging'] = Constants.albedo_mod_snow_aging
-        self.RESULT.attrs['Albedo_mod_snow_depth'] = Constants.albedo_mod_snow_depth
-        self.RESULT.attrs['Roughness_fresh_snow'] = Constants.roughness_fresh_snow
-        self.RESULT.attrs['Roughness_ice'] = Constants.roughness_ice
-        self.RESULT.attrs['Roughness_firn'] = Constants.roughness_firn
+        self.RESULT.attrs['Albedo_fresh_snow'] = albedo_fresh_snow
+        self.RESULT.attrs['Albedo_firn'] = albedo_firn
+        self.RESULT.attrs['Albedo_ice'] = albedo_ice
+        self.RESULT.attrs['Albedo_mod_snow_aging'] = albedo_mod_snow_aging
+        self.RESULT.attrs['Albedo_mod_snow_depth'] = albedo_mod_snow_depth
+        self.RESULT.attrs['Roughness_fresh_snow'] = roughness_fresh_snow
+        self.RESULT.attrs['Roughness_ice'] = roughness_ice
+        self.RESULT.attrs['Roughness_firn'] = roughness_firn
         self.RESULT.attrs['Aging_factor_roughness'] = Constants.aging_factor_roughness
         self.RESULT.attrs['Snow_ice_threshold'] = Constants.snow_ice_threshold
 

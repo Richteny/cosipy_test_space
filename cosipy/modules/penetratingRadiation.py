@@ -17,9 +17,9 @@ lat_heat_melting = Constants.lat_heat_melting
 # Read and set options - cant call this outside because it wasn't parsed so dictionary does not exist unless called in the functions
 #read_opt(opt_dict, globals())
 
-def penetrating_radiation(GRID, SWnet, dt, opt_dict=Dict.empty(key_type=types.unicode_type,value_type=types.float64)):
+def penetrating_radiation(GRID, SWnet, dt):
     # Read and set options
-    read_opt(opt_dict, globals())
+    #read_opt(opt_dict, globals())
 
     penetrating_allowed = ["Bintanja95"]
     if Constants.penetrating_method == "Bintanja95":
