@@ -25,7 +25,7 @@ water_density = Constants.water_density
 
 
 
-def update_surface_temperature(GRID, dt, z, z0, T2, rH2, p, SWnet, u2, RAIN, SLOPE, LWin=None, N=None, opt_dict=Dict.empty(key_type=types.unicode_type,value_type=types.float64)):
+def update_surface_temperature(GRID, dt, z, z0, T2, rH2, p, SWnet, u2, RAIN, SLOPE, LWin=None, N=None, opt_dict=None):
     """Solve the surface temperature and get the surface fluxes.
 
     Args:
@@ -63,7 +63,19 @@ def update_surface_temperature(GRID, dt, z, z0, T2, rH2, p, SWnet, u2, RAIN, SLO
     """
     
     # Read and set options
-    read_opt(opt_dict, globals())
+    if opt_dict is not None:
+        mult_factor_RRR = opt_dict[0]
+        albedo_ice = opt_dict[1]
+        albedo_fresh_snow = opt_dict[2]
+        albedo_firn = opt_dict[3]
+        albedo_mod_snow_aging = opt_dict[4]
+        albedo_mod_snow_depth = opt_dict[5]
+        center_snow_transfer_function = opt_dict[6]
+        spread_snow_transfer_function = opt_dict[7]
+        roughness_fresh_snow = opt_dict[8]
+        roughness_ice = opt_dict[9]
+        roughness_firn = opt_dict[10]
+    #read_opt(opt_dict, globals())
 
     #Interpolate subsurface temperatures to selected subsurface depths for GHF computation
     B_Ts = interp_subT(GRID)

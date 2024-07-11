@@ -24,7 +24,7 @@ def check_oob(ice_fraction, lwc):
 
 
 @njit
-def refreezing(GRID, opt_dict=Dict.empty(key_type=types.unicode_type,value_type=types.float64)):
+def refreezing(GRID):
     """Refreeze water in layers.
 
     This approach is adapted from Bartelt & Lehning (2002).
@@ -104,7 +104,7 @@ def refreezing(GRID, opt_dict=Dict.empty(key_type=types.unicode_type,value_type=
     """
 
     #read dict
-    read_opt(opt_dict, globals())
+    #read_opt(opt_dict, globals())
 
     # Maximum snow fractional ice content:
     phi_ice_max = (snow_ice_threshold - air_density) / (

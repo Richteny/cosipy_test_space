@@ -24,9 +24,22 @@ t_star_K = Constants.t_star_K
 # Need to load in dic values here already to be able to call the following functions?
 #opt_dict = read_opt(opt_dict, globals())
 
-def updateAlbedo(GRID, surface_temperature, albedo_snow, opt_dict=Dict.empty(key_type=types.unicode_type,value_type=types.float64)):
+def updateAlbedo(GRID, surface_temperature, albedo_snow, opt_dict=None):
     """Updates the albedo."""
-    read_opt(opt_dict, globals())
+    #read_opt(opt_dict, globals())
+    if opt_dict is not None:
+        mult_factor_RRR = opt_dict[0]
+        albedo_ice = opt_dict[1]
+        albedo_fresh_snow = opt_dict[2]
+        albedo_firn = opt_dict[3]
+        albedo_mod_snow_aging = opt_dict[4]
+        albedo_mod_snow_depth = opt_dict[5]
+        center_snow_transfer_function = opt_dict[6]
+        spread_snow_transfer_function = opt_dict[7]
+        roughness_fresh_snow = opt_dict[8]
+        roughness_ice = opt_dict[9]
+        roughness_firn = opt_dict[10]
+    
     albedo_allowed = ["Oerlemans98", "Bougamont05"]
     if albedo_method == "Oerlemans98":
         alphaMod = method_Oerlemans(GRID)
@@ -82,10 +95,9 @@ def method_Oerlemans(GRID):
     return alphaMod
 
 
-def method_Bougamont(GRID, surface_temperature, albedo_snow, opt_dict):
+def method_Bougamont(GRID, surface_temperature, albedo_snow):
     # Get hours since the last snowfall
     # First get fresh snow properties (height and timestamp)
-    read_opt(opt_dict, globals())
     _, fresh_snow_timestamp, _ = GRID.get_fresh_snow_props()
 
     # Get time difference between last snowfall and now:
