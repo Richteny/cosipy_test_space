@@ -28,7 +28,7 @@ def densification(GRID,SLOPE,dt, opt_dict=None):
         NotImplementedError: Densification method is not allowed.
     """
     # Read and set options
-    read_opt(opt_dict, globals())
+    #read_opt(opt_dict, globals())
     densification_method = Constants.densification_method
     densification_allowed = ['Boone', 'Vionnet', 'empirical', 'constant']
     if densification_method == 'Boone':
