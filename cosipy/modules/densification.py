@@ -16,7 +16,7 @@ zero_temperature = Constants.zero_temperature
 #read_opt(opt_dict, globals())
 
 
-def densification(GRID,SLOPE,dt, opt_dict=Dict.empty(key_type=types.unicode_type,value_type=types.float64)):
+def densification(GRID,SLOPE,dt, opt_dict=None):
     """Apply densification to the snowpack.
 
     Args:

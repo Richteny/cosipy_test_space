@@ -1,6 +1,6 @@
 [SIMULATION_PERIOD]
-time_start = "1999-01-01T00:00"
-time_end = "1999-02-01T00:00"
+time_start = "2000-04-01T00:00"
+time_end = "2000-09-01T00:00"
 
 [FILENAMES]
 data_path = "./data/"

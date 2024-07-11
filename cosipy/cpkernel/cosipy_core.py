@@ -19,7 +19,7 @@ from numba.core import types
 from numba.typed import Dict
 from cosipy.utils.options import read_opt
 
-def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_data=None, opt_dict=Dict.empty(key_type=types.unicode_type,value_type=types.float64)):
+def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_data=None, opt_dict=None):
     """Cosipy core function.
 
     The calculations are performed on a single core.
@@ -63,7 +63,21 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
 
     # Replace imported variables with content of the opt_dict. If it's empty
     # nothing happens.
-    read_opt(opt_dict, globals())
+    print(opt_dict)
+    if opt_dict is not None:
+        mult_factor_RRR = opt_dict[0]
+        albedo_ice = opt_dict[1]
+        albedo_fresh_snow = opt_dict[2]
+        albedo_firn = opt_dict[3]
+        albedo_mod_snow_aging = opt_dict[4]
+        albedo_mod_snow_depth = opt_dict[5]
+        center_snow_transfer_function = opt_dict[6]
+        spread_snow_transfer_function = opt_dict[7]
+        roughness_fresh_snow = opt_dict[8]
+        roughness_ice = opt_dict[9]
+        roughness_firn = opt_dict[10]
+
+    #read_opt(opt_dict, globals())
     # Local variables
     nt = len(DATA.time.values)         #accessing DATA is expensive 		
     _RRR = np.full(nt, np.nan)
@@ -251,7 +265,7 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
 
         # Penetrating SW radiation and subsurface melt
         if SWnet > 0.0:
-            subsurface_melt, G_penetrating = penetrating_radiation(GRID, SWnet, dt, opt_dict)
+            subsurface_melt, G_penetrating = penetrating_radiation(GRID, SWnet, dt)
         else:
             subsurface_melt = 0.0
             G_penetrating = 0.0
@@ -310,17 +324,17 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
         #--------------------------------------------
         # Percolation
         #--------------------------------------------
-        Q  = percolation(GRID, melt + condensation + RAIN/1000.0 + lwc_from_melted_layers, dt, opt_dict)
+        Q  = percolation(GRID, melt + condensation + RAIN/1000.0 + lwc_from_melted_layers, dt)
 
         #--------------------------------------------
         # Refreezing
         #--------------------------------------------
-        water_refreezed = refreezing(GRID, opt_dict)
+        water_refreezed = refreezing(GRID)
 
         #--------------------------------------------
         # Solve the heat equation
         #--------------------------------------------
-        solveHeatEquation(GRID, dt, opt_dict)
+        solveHeatEquation(GRID, dt)
 
         #--------------------------------------------
         # Calculate new density to densification

@@ -6,7 +6,7 @@ from cosipy.utils.options import read_opt
 
 
 @njit
-def percolation(GRID, water: float, dt: int, opt_dict=Dict.empty(key_type=types.unicode_type,value_type=types.float64)) -> float:
+def percolation(GRID, water: float, dt: int) -> float:
     """Percolate melt water through the snow- and firn pack.
 
     Bucket method (Bartelt & Lehning, 2002).
@@ -19,7 +19,7 @@ def percolation(GRID, water: float, dt: int, opt_dict=Dict.empty(key_type=types.
     Returns:
         Percolated meltwater.
     """
-    read_opt(opt_dict, globals())
+    #read_opt(opt_dict, globals())
     # convert m to mm = kg/m2, not needed because of change to fraction
     # water = water * 1000
 

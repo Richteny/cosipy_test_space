@@ -14,7 +14,7 @@ thermal_conductivity_method = "bulk"
 sfc_temperature_method = "Newton"
 
 [INITIAL_CONDITIONS]
-initial_snowheight_constant = 0.2
+initial_snowheight_constant = 0.3
 initial_snow_layer_heights = 0.1
 initial_glacier_height = 191.366
 initial_glacier_layer_heights = 0.5
@@ -53,7 +53,7 @@ t_star_K = 14
 t_star_cutoff = 263.17
 roughness_fresh_snow = 0.24
 roughness_ice = 1.7
-roughness_firn = 4.0
+roughness_firn = 7.0
 aging_factor_roughness = 0.0026
 snow_ice_threshold = 900.0
 lat_heat_melting = 334000.0

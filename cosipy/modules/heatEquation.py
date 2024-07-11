@@ -5,14 +5,13 @@ from numba.typed import Dict
 from cosipy.utils.options import read_opt
 
 @njit
-def solveHeatEquation(GRID, dt, opt_dict=Dict.empty(key_type=types.unicode_type,value_type=types.float64)):
+def solveHeatEquation(GRID, dt):
     """Solve the heat equation on a non-uniform grid.
 
     Args:
         GRID (Grid): Glacier data structure.
         dt (int): Integration time [s].
     """
-    read_opt(opt_dict, globals())
 
     # Define index arrays
     nl = GRID.get_number_layers()  # number of layers
