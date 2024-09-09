@@ -1,2 +1,389 @@
 INFO:__main__:COSIPY simulation started
-/var/spool/slurmd/job1374621/slurm_script: line 24: 802805 Killed                  python -u /data/scratch/richteny/thesis/cosipy_test_space/COSIPY.py
+INFO:distributed.http.proxy:To route to workers diagnostics web server please install jupyter-server-proxy: python -m pip install jupyter-server-proxy
+INFO:distributed.scheduler:State start
+INFO:distributed.scheduler:  Scheduler at:   tcp://192.168.1.7:39285
+INFO:distributed.scheduler:  dashboard at:                     :8787
+INFO:distributed.scheduler:Receive client connection: Client-2138a820-6e8f-11ef-b93e-0cc47ab393e4
+INFO:distributed.core:Starting established connection to tcp://192.168.1.7:42518
+/data/scratch/richteny/miniconda3/envs/pymc_env/lib/python3.11/site-packages/distributed/worker.py:2991: UserWarning: Large object of size 6.62 MiB detected in task graph: 
+  [<xarray.Dataset>
+Dimensions:   (time: 96409)
+Coor ...  1.0 1.0, 0, 0]
+Consider scattering large objects ahead of time
+with client.scatter to reduce scheduler burden and 
+keep data on workers
+
+    future = client.submit(func, big_data)    # bad
+
+    big_future = client.scatter(big_data)     # good
+    future = client.submit(func, big_future)  # good
+  warnings.warn(
+INFO:distributed.scheduler:Register worker <WorkerState 'tcp://192.168.1.4:42247', name: SLURMCluster-3-0, status: init, memory: 0, processing: 0>
+INFO:distributed.scheduler:Starting worker compute stream, tcp://192.168.1.4:42247
+INFO:distributed.core:Starting established connection to tcp://192.168.1.4:35412
+INFO:distributed.scheduler:Register worker <WorkerState 'tcp://192.168.1.4:39681', name: SLURMCluster-3-10, status: init, memory: 0, processing: 0>
+INFO:distributed.scheduler:Starting worker compute stream, tcp://192.168.1.4:39681
+INFO:distributed.core:Starting established connection to tcp://192.168.1.4:35410
+INFO:distributed.scheduler:Register worker <WorkerState 'tcp://192.168.1.4:39101', name: SLURMCluster-3-8, status: init, memory: 0, processing: 0>
+INFO:distributed.scheduler:Starting worker compute stream, tcp://192.168.1.4:39101
+INFO:distributed.core:Starting established connection to tcp://192.168.1.4:35414
+INFO:distributed.scheduler:Register worker <WorkerState 'tcp://192.168.1.3:45913', name: SLURMCluster-1-14, status: init, memory: 0, processing: 0>
+INFO:distributed.scheduler:Starting worker compute stream, tcp://192.168.1.3:45913
+INFO:distributed.core:Starting established connection to tcp://192.168.1.3:56200
+INFO:distributed.scheduler:Register worker <WorkerState 'tcp://192.168.1.4:43759', name: SLURMCluster-3-12, status: init, memory: 0, processing: 0>
+INFO:distributed.scheduler:Starting worker compute stream, tcp://192.168.1.4:43759
+INFO:distributed.core:Starting established connection to tcp://192.168.1.4:35416
+INFO:distributed.scheduler:Register worker <WorkerState 'tcp://192.168.1.4:36551', name: SLURMCluster-3-6, status: init, memory: 0, processing: 0>
+INFO:distributed.scheduler:Starting worker compute stream, tcp://192.168.1.4:36551
+INFO:distributed.core:Starting established connection to tcp://192.168.1.4:35418
+INFO:distributed.scheduler:Register worker <WorkerState 'tcp://192.168.1.3:42967', name: SLURMCluster-1-19, status: init, memory: 0, processing: 0>
+INFO:distributed.scheduler:Starting worker compute stream, tcp://192.168.1.3:42967
+INFO:distributed.core:Starting established connection to tcp://192.168.1.3:56202
+INFO:distributed.scheduler:Register worker <WorkerState 'tcp://192.168.1.3:36329', name: SLURMCluster-1-15, status: init, memory: 0, processing: 0>
+INFO:distributed.scheduler:Starting worker compute stream, tcp://192.168.1.3:36329
+INFO:distributed.core:Starting established connection to tcp://192.168.1.3:56204
+INFO:distributed.scheduler:Register worker <WorkerState 'tcp://192.168.1.4:42947', name: SLURMCluster-3-9, status: init, memory: 0, processing: 0>
+INFO:distributed.scheduler:Starting worker compute stream, tcp://192.168.1.4:42947
+INFO:distributed.core:Starting established connection to tcp://192.168.1.4:35420
+INFO:distributed.scheduler:Register worker <WorkerState 'tcp://192.168.1.4:45169', name: SLURMCluster-3-15, status: init, memory: 0, processing: 0>
+INFO:distributed.scheduler:Starting worker compute stream, tcp://192.168.1.4:45169
+INFO:distributed.core:Starting established connection to tcp://192.168.1.4:35422
+INFO:distributed.scheduler:Register worker <WorkerState 'tcp://192.168.1.3:46595', name: SLURMCluster-1-11, status: init, memory: 0, processing: 0>
+INFO:distributed.scheduler:Starting worker compute stream, tcp://192.168.1.3:46595
+INFO:distributed.core:Starting established connection to tcp://192.168.1.3:56206
+INFO:distributed.scheduler:Register worker <WorkerState 'tcp://192.168.1.4:46817', name: SLURMCluster-3-19, status: init, memory: 0, processing: 0>
+INFO:distributed.scheduler:Starting worker compute stream, tcp://192.168.1.4:46817
+INFO:distributed.core:Starting established connection to tcp://192.168.1.4:35424
+INFO:distributed.scheduler:Register worker <WorkerState 'tcp://192.168.1.4:44247', name: SLURMCluster-3-4, status: init, memory: 0, processing: 0>
+INFO:distributed.scheduler:Starting worker compute stream, tcp://192.168.1.4:44247
+INFO:distributed.core:Starting established connection to tcp://192.168.1.4:35426
+INFO:distributed.scheduler:Register worker <WorkerState 'tcp://192.168.1.4:41421', name: SLURMCluster-3-2, status: init, memory: 0, processing: 0>
+INFO:distributed.scheduler:Starting worker compute stream, tcp://192.168.1.4:41421
+INFO:distributed.core:Starting established connection to tcp://192.168.1.4:35428
+INFO:distributed.scheduler:Register worker <WorkerState 'tcp://192.168.1.3:43051', name: SLURMCluster-1-16, status: init, memory: 0, processing: 0>
+INFO:distributed.scheduler:Starting worker compute stream, tcp://192.168.1.3:43051
+INFO:distributed.core:Starting established connection to tcp://192.168.1.3:56208
+INFO:distributed.scheduler:Register worker <WorkerState 'tcp://192.168.1.3:34151', name: SLURMCluster-1-18, status: init, memory: 0, processing: 0>
+INFO:distributed.scheduler:Starting worker compute stream, tcp://192.168.1.3:34151
+INFO:distributed.core:Starting established connection to tcp://192.168.1.3:56210
+INFO:distributed.scheduler:Register worker <WorkerState 'tcp://192.168.1.4:37485', name: SLURMCluster-3-14, status: init, memory: 0, processing: 0>
+INFO:distributed.scheduler:Starting worker compute stream, tcp://192.168.1.4:37485
+INFO:distributed.core:Starting established connection to tcp://192.168.1.4:35430
+INFO:distributed.scheduler:Register worker <WorkerState 'tcp://192.168.1.3:39547', name: SLURMCluster-1-3, status: init, memory: 0, processing: 0>
+INFO:distributed.scheduler:Starting worker compute stream, tcp://192.168.1.3:39547
+INFO:distributed.core:Starting established connection to tcp://192.168.1.3:56212
+INFO:distributed.scheduler:Register worker <WorkerState 'tcp://192.168.1.3:35599', name: SLURMCluster-1-9, status: init, memory: 0, processing: 0>
+INFO:distributed.scheduler:Starting worker compute stream, tcp://192.168.1.3:35599
+INFO:distributed.core:Starting established connection to tcp://192.168.1.3:56214
+INFO:distributed.scheduler:Register worker <WorkerState 'tcp://192.168.1.3:40173', name: SLURMCluster-1-7, status: init, memory: 0, processing: 0>
+INFO:distributed.scheduler:Starting worker compute stream, tcp://192.168.1.3:40173
+INFO:distributed.core:Starting established connection to tcp://192.168.1.3:56216
+INFO:distributed.scheduler:Register worker <WorkerState 'tcp://192.168.1.4:38733', name: SLURMCluster-3-13, status: init, memory: 0, processing: 0>
+INFO:distributed.scheduler:Starting worker compute stream, tcp://192.168.1.4:38733
+INFO:distributed.core:Starting established connection to tcp://192.168.1.4:35432
+INFO:distributed.scheduler:Register worker <WorkerState 'tcp://192.168.1.5:37483', name: SLURMCluster-2-14, status: init, memory: 0, processing: 0>
+INFO:distributed.scheduler:Starting worker compute stream, tcp://192.168.1.5:37483
+INFO:distributed.core:Starting established connection to tcp://192.168.1.5:56168
+INFO:distributed.scheduler:Register worker <WorkerState 'tcp://192.168.1.3:42791', name: SLURMCluster-1-4, status: init, memory: 0, processing: 0>
+INFO:distributed.scheduler:Starting worker compute stream, tcp://192.168.1.3:42791
+INFO:distributed.core:Starting established connection to tcp://192.168.1.3:56218
+INFO:distributed.scheduler:Register worker <WorkerState 'tcp://192.168.1.5:42277', name: SLURMCluster-2-4, status: init, memory: 0, processing: 0>
+INFO:distributed.scheduler:Starting worker compute stream, tcp://192.168.1.5:42277
+INFO:distributed.core:Starting established connection to tcp://192.168.1.5:56170
+INFO:distributed.scheduler:Register worker <WorkerState 'tcp://192.168.1.5:39823', name: SLURMCluster-2-0, status: init, memory: 0, processing: 0>
+INFO:distributed.scheduler:Starting worker compute stream, tcp://192.168.1.5:39823
+INFO:distributed.core:Starting established connection to tcp://192.168.1.5:56172
+INFO:distributed.scheduler:Register worker <WorkerState 'tcp://192.168.1.5:36707', name: SLURMCluster-2-12, status: init, memory: 0, processing: 0>
+INFO:distributed.scheduler:Starting worker compute stream, tcp://192.168.1.5:36707
+INFO:distributed.core:Starting established connection to tcp://192.168.1.5:56174
+INFO:distributed.scheduler:Register worker <WorkerState 'tcp://192.168.1.4:43161', name: SLURMCluster-3-16, status: init, memory: 0, processing: 0>
+INFO:distributed.scheduler:Starting worker compute stream, tcp://192.168.1.4:43161
+INFO:distributed.core:Starting established connection to tcp://192.168.1.4:35434
+INFO:distributed.scheduler:Register worker <WorkerState 'tcp://192.168.1.3:41707', name: SLURMCluster-1-13, status: init, memory: 0, processing: 0>
+INFO:distributed.scheduler:Starting worker compute stream, tcp://192.168.1.3:41707
+INFO:distributed.core:Starting established connection to tcp://192.168.1.3:56220
+INFO:distributed.scheduler:Register worker <WorkerState 'tcp://192.168.1.5:36287', name: SLURMCluster-2-15, status: init, memory: 0, processing: 0>
+INFO:distributed.scheduler:Starting worker compute stream, tcp://192.168.1.5:36287
+INFO:distributed.core:Starting established connection to tcp://192.168.1.5:56176
+INFO:distributed.scheduler:Register worker <WorkerState 'tcp://192.168.1.5:40649', name: SLURMCluster-2-2, status: init, memory: 0, processing: 0>
+INFO:distributed.scheduler:Starting worker compute stream, tcp://192.168.1.5:40649
+INFO:distributed.core:Starting established connection to tcp://192.168.1.5:56178
+INFO:distributed.scheduler:Register worker <WorkerState 'tcp://192.168.1.5:44505', name: SLURMCluster-2-9, status: init, memory: 0, processing: 0>
+INFO:distributed.scheduler:Starting worker compute stream, tcp://192.168.1.5:44505
+INFO:distributed.core:Starting established connection to tcp://192.168.1.5:56180
+INFO:distributed.scheduler:Register worker <WorkerState 'tcp://192.168.1.4:43983', name: SLURMCluster-3-11, status: init, memory: 0, processing: 0>
+INFO:distributed.scheduler:Starting worker compute stream, tcp://192.168.1.4:43983
+INFO:distributed.core:Starting established connection to tcp://192.168.1.4:35436
+INFO:distributed.scheduler:Register worker <WorkerState 'tcp://192.168.1.3:38887', name: SLURMCluster-1-2, status: init, memory: 0, processing: 0>
+INFO:distributed.scheduler:Starting worker compute stream, tcp://192.168.1.3:38887
+INFO:distributed.core:Starting established connection to tcp://192.168.1.3:56222
+INFO:distributed.scheduler:Register worker <WorkerState 'tcp://192.168.1.5:37249', name: SLURMCluster-2-8, status: init, memory: 0, processing: 0>
+INFO:distributed.scheduler:Starting worker compute stream, tcp://192.168.1.5:37249
+INFO:distributed.core:Starting established connection to tcp://192.168.1.5:56182
+INFO:distributed.scheduler:Register worker <WorkerState 'tcp://192.168.1.5:43047', name: SLURMCluster-2-5, status: init, memory: 0, processing: 0>
+INFO:distributed.scheduler:Starting worker compute stream, tcp://192.168.1.5:43047
+INFO:distributed.core:Starting established connection to tcp://192.168.1.5:56184
+INFO:distributed.scheduler:Register worker <WorkerState 'tcp://192.168.1.3:40741', name: SLURMCluster-1-10, status: init, memory: 0, processing: 0>
+INFO:distributed.scheduler:Starting worker compute stream, tcp://192.168.1.3:40741
+INFO:distributed.core:Starting established connection to tcp://192.168.1.3:56224
+INFO:distributed.scheduler:Register worker <WorkerState 'tcp://192.168.1.5:44915', name: SLURMCluster-2-16, status: init, memory: 0, processing: 0>
+INFO:distributed.scheduler:Starting worker compute stream, tcp://192.168.1.5:44915
+INFO:distributed.core:Starting established connection to tcp://192.168.1.5:56186
+INFO:distributed.scheduler:Register worker <WorkerState 'tcp://192.168.1.3:34881', name: SLURMCluster-1-5, status: init, memory: 0, processing: 0>
+INFO:distributed.scheduler:Starting worker compute stream, tcp://192.168.1.3:34881
+INFO:distributed.core:Starting established connection to tcp://192.168.1.3:56226
+INFO:distributed.scheduler:Register worker <WorkerState 'tcp://192.168.1.5:38805', name: SLURMCluster-2-1, status: init, memory: 0, processing: 0>
+INFO:distributed.scheduler:Starting worker compute stream, tcp://192.168.1.5:38805
+INFO:distributed.core:Starting established connection to tcp://192.168.1.5:56188
+INFO:distributed.scheduler:Register worker <WorkerState 'tcp://192.168.1.3:39577', name: SLURMCluster-1-6, status: init, memory: 0, processing: 0>
+INFO:distributed.scheduler:Starting worker compute stream, tcp://192.168.1.3:39577
+INFO:distributed.core:Starting established connection to tcp://192.168.1.3:56228
+INFO:distributed.scheduler:Register worker <WorkerState 'tcp://192.168.1.5:45319', name: SLURMCluster-2-7, status: init, memory: 0, processing: 0>
+INFO:distributed.scheduler:Starting worker compute stream, tcp://192.168.1.5:45319
+INFO:distributed.core:Starting established connection to tcp://192.168.1.5:56190
+INFO:distributed.scheduler:Register worker <WorkerState 'tcp://192.168.1.3:38601', name: SLURMCluster-1-0, status: init, memory: 0, processing: 0>
+INFO:distributed.scheduler:Starting worker compute stream, tcp://192.168.1.3:38601
+INFO:distributed.core:Starting established connection to tcp://192.168.1.3:56230
+INFO:distributed.scheduler:Register worker <WorkerState 'tcp://192.168.1.4:46847', name: SLURMCluster-3-5, status: init, memory: 0, processing: 0>
+INFO:distributed.scheduler:Starting worker compute stream, tcp://192.168.1.4:46847
+INFO:distributed.core:Starting established connection to tcp://192.168.1.4:35438
+INFO:distributed.scheduler:Register worker <WorkerState 'tcp://192.168.1.5:34781', name: SLURMCluster-2-10, status: init, memory: 0, processing: 0>
+INFO:distributed.scheduler:Starting worker compute stream, tcp://192.168.1.5:34781
+INFO:distributed.core:Starting established connection to tcp://192.168.1.5:56192
+INFO:distributed.scheduler:Register worker <WorkerState 'tcp://192.168.1.3:35551', name: SLURMCluster-1-1, status: init, memory: 0, processing: 0>
+INFO:distributed.scheduler:Starting worker compute stream, tcp://192.168.1.3:35551
+INFO:distributed.core:Starting established connection to tcp://192.168.1.3:56232
+INFO:distributed.scheduler:Register worker <WorkerState 'tcp://192.168.1.5:45413', name: SLURMCluster-2-17, status: init, memory: 0, processing: 0>
+INFO:distributed.scheduler:Starting worker compute stream, tcp://192.168.1.5:45413
+INFO:distributed.core:Starting established connection to tcp://192.168.1.5:56194
+INFO:distributed.scheduler:Register worker <WorkerState 'tcp://192.168.1.4:44005', name: SLURMCluster-3-17, status: init, memory: 0, processing: 0>
+INFO:distributed.scheduler:Starting worker compute stream, tcp://192.168.1.4:44005
+INFO:distributed.core:Starting established connection to tcp://192.168.1.4:35440
+INFO:distributed.scheduler:Register worker <WorkerState 'tcp://192.168.1.5:44757', name: SLURMCluster-2-6, status: init, memory: 0, processing: 0>
+INFO:distributed.scheduler:Starting worker compute stream, tcp://192.168.1.5:44757
+INFO:distributed.core:Starting established connection to tcp://192.168.1.5:56196
+INFO:distributed.scheduler:Register worker <WorkerState 'tcp://192.168.1.5:42843', name: SLURMCluster-2-19, status: init, memory: 0, processing: 0>
+INFO:distributed.scheduler:Starting worker compute stream, tcp://192.168.1.5:42843
+INFO:distributed.core:Starting established connection to tcp://192.168.1.5:56198
+INFO:distributed.scheduler:Register worker <WorkerState 'tcp://192.168.1.5:45191', name: SLURMCluster-2-11, status: init, memory: 0, processing: 0>
+INFO:distributed.scheduler:Starting worker compute stream, tcp://192.168.1.5:45191
+INFO:distributed.core:Starting established connection to tcp://192.168.1.5:56200
+INFO:distributed.scheduler:Register worker <WorkerState 'tcp://192.168.1.5:43251', name: SLURMCluster-2-18, status: init, memory: 0, processing: 0>
+INFO:distributed.scheduler:Starting worker compute stream, tcp://192.168.1.5:43251
+INFO:distributed.core:Starting established connection to tcp://192.168.1.5:56202
+INFO:distributed.scheduler:Register worker <WorkerState 'tcp://192.168.1.4:38385', name: SLURMCluster-3-1, status: init, memory: 0, processing: 0>
+INFO:distributed.scheduler:Starting worker compute stream, tcp://192.168.1.4:38385
+INFO:distributed.core:Starting established connection to tcp://192.168.1.4:35442
+INFO:distributed.scheduler:Register worker <WorkerState 'tcp://192.168.1.5:36257', name: SLURMCluster-2-13, status: init, memory: 0, processing: 0>
+INFO:distributed.scheduler:Starting worker compute stream, tcp://192.168.1.5:36257
+INFO:distributed.core:Starting established connection to tcp://192.168.1.5:56204
+INFO:distributed.scheduler:Register worker <WorkerState 'tcp://192.168.1.3:34723', name: SLURMCluster-1-12, status: init, memory: 0, processing: 0>
+INFO:distributed.scheduler:Starting worker compute stream, tcp://192.168.1.3:34723
+INFO:distributed.core:Starting established connection to tcp://192.168.1.3:56234
+INFO:distributed.scheduler:Register worker <WorkerState 'tcp://192.168.1.3:41287', name: SLURMCluster-1-17, status: init, memory: 0, processing: 0>
+INFO:distributed.scheduler:Starting worker compute stream, tcp://192.168.1.3:41287
+INFO:distributed.core:Starting established connection to tcp://192.168.1.3:56236
+INFO:distributed.scheduler:Register worker <WorkerState 'tcp://192.168.1.3:35299', name: SLURMCluster-1-8, status: init, memory: 0, processing: 0>
+INFO:distributed.scheduler:Starting worker compute stream, tcp://192.168.1.3:35299
+INFO:distributed.core:Starting established connection to tcp://192.168.1.3:56238
+INFO:distributed.scheduler:Register worker <WorkerState 'tcp://192.168.1.4:34249', name: SLURMCluster-3-7, status: init, memory: 0, processing: 0>
+INFO:distributed.scheduler:Starting worker compute stream, tcp://192.168.1.4:34249
+INFO:distributed.core:Starting established connection to tcp://192.168.1.4:35444
+INFO:distributed.scheduler:Register worker <WorkerState 'tcp://192.168.1.5:40039', name: SLURMCluster-2-3, status: init, memory: 0, processing: 0>
+INFO:distributed.scheduler:Starting worker compute stream, tcp://192.168.1.5:40039
+INFO:distributed.core:Starting established connection to tcp://192.168.1.5:56206
+INFO:distributed.scheduler:Register worker <WorkerState 'tcp://192.168.1.4:46257', name: SLURMCluster-3-18, status: init, memory: 0, processing: 0>
+INFO:distributed.scheduler:Starting worker compute stream, tcp://192.168.1.4:46257
+INFO:distributed.core:Starting established connection to tcp://192.168.1.4:35446
+INFO:distributed.scheduler:Register worker <WorkerState 'tcp://192.168.1.4:42779', name: SLURMCluster-3-3, status: init, memory: 0, processing: 0>
+INFO:distributed.scheduler:Starting worker compute stream, tcp://192.168.1.4:42779
+INFO:distributed.core:Starting established connection to tcp://192.168.1.4:35448
+INFO:distributed.scheduler:Remove client Client-2138a820-6e8f-11ef-b93e-0cc47ab393e4
+INFO:distributed.core:Received 'close-stream' from tcp://192.168.1.7:42518; closing.
+INFO:distributed.scheduler:Remove client Client-2138a820-6e8f-11ef-b93e-0cc47ab393e4
+INFO:distributed.scheduler:Close client connection: Client-2138a820-6e8f-11ef-b93e-0cc47ab393e4
+INFO:distributed.core:Connection to tcp://192.168.1.3:56230 has been closed.
+INFO:distributed.scheduler:Remove worker <WorkerState 'tcp://192.168.1.3:38601', name: SLURMCluster-1-0, status: running, memory: 0, processing: 0>
+INFO:distributed.core:Removing comms to tcp://192.168.1.3:38601
+INFO:distributed.core:Connection to tcp://192.168.1.3:56232 has been closed.
+INFO:distributed.scheduler:Remove worker <WorkerState 'tcp://192.168.1.3:35551', name: SLURMCluster-1-1, status: running, memory: 0, processing: 0>
+INFO:distributed.core:Removing comms to tcp://192.168.1.3:35551
+INFO:distributed.core:Connection to tcp://192.168.1.4:35412 has been closed.
+INFO:distributed.scheduler:Remove worker <WorkerState 'tcp://192.168.1.4:42247', name: SLURMCluster-3-0, status: running, memory: 0, processing: 0>
+INFO:distributed.core:Removing comms to tcp://192.168.1.4:42247
+INFO:distributed.core:Connection to tcp://192.168.1.4:35442 has been closed.
+INFO:distributed.scheduler:Remove worker <WorkerState 'tcp://192.168.1.4:38385', name: SLURMCluster-3-1, status: running, memory: 0, processing: 0>
+INFO:distributed.core:Removing comms to tcp://192.168.1.4:38385
+INFO:distributed.core:Connection to tcp://192.168.1.3:56228 has been closed.
+INFO:distributed.scheduler:Remove worker <WorkerState 'tcp://192.168.1.3:39577', name: SLURMCluster-1-6, status: running, memory: 0, processing: 0>
+INFO:distributed.core:Removing comms to tcp://192.168.1.3:39577
+INFO:distributed.core:Connection to tcp://192.168.1.5:56172 has been closed.
+INFO:distributed.scheduler:Remove worker <WorkerState 'tcp://192.168.1.5:39823', name: SLURMCluster-2-0, status: running, memory: 0, processing: 0>
+INFO:distributed.core:Removing comms to tcp://192.168.1.5:39823
+INFO:distributed.core:Connection to tcp://192.168.1.4:35422 has been closed.
+INFO:distributed.scheduler:Remove worker <WorkerState 'tcp://192.168.1.4:45169', name: SLURMCluster-3-15, status: running, memory: 0, processing: 0>
+INFO:distributed.core:Removing comms to tcp://192.168.1.4:45169
+INFO:distributed.core:Connection to tcp://192.168.1.3:56222 has been closed.
+INFO:distributed.scheduler:Remove worker <WorkerState 'tcp://192.168.1.3:38887', name: SLURMCluster-1-2, status: running, memory: 0, processing: 0>
+INFO:distributed.core:Removing comms to tcp://192.168.1.3:38887
+INFO:distributed.core:Connection to tcp://192.168.1.5:56174 has been closed.
+INFO:distributed.scheduler:Remove worker <WorkerState 'tcp://192.168.1.5:36707', name: SLURMCluster-2-12, status: running, memory: 0, processing: 0>
+INFO:distributed.core:Removing comms to tcp://192.168.1.5:36707
+INFO:distributed.core:Connection to tcp://192.168.1.4:35418 has been closed.
+INFO:distributed.scheduler:Remove worker <WorkerState 'tcp://192.168.1.4:36551', name: SLURMCluster-3-6, status: running, memory: 0, processing: 0>
+INFO:distributed.core:Removing comms to tcp://192.168.1.4:36551
+INFO:distributed.core:Connection to tcp://192.168.1.3:56238 has been closed.
+INFO:distributed.scheduler:Remove worker <WorkerState 'tcp://192.168.1.3:35299', name: SLURMCluster-1-8, status: running, memory: 0, processing: 0>
+INFO:distributed.core:Removing comms to tcp://192.168.1.3:35299
+INFO:distributed.core:Connection to tcp://192.168.1.5:56192 has been closed.
+INFO:distributed.scheduler:Remove worker <WorkerState 'tcp://192.168.1.5:34781', name: SLURMCluster-2-10, status: running, memory: 0, processing: 0>
+INFO:distributed.core:Removing comms to tcp://192.168.1.5:34781
+INFO:distributed.core:Connection to tcp://192.168.1.3:56206 has been closed.
+INFO:distributed.scheduler:Remove worker <WorkerState 'tcp://192.168.1.3:46595', name: SLURMCluster-1-11, status: running, memory: 0, processing: 0>
+INFO:distributed.core:Removing comms to tcp://192.168.1.3:46595
+INFO:distributed.core:Connection to tcp://192.168.1.3:56212 has been closed.
+INFO:distributed.scheduler:Remove worker <WorkerState 'tcp://192.168.1.3:39547', name: SLURMCluster-1-3, status: running, memory: 0, processing: 0>
+INFO:distributed.core:Removing comms to tcp://192.168.1.3:39547
+INFO:distributed.core:Connection to tcp://192.168.1.3:56204 has been closed.
+INFO:distributed.scheduler:Remove worker <WorkerState 'tcp://192.168.1.3:36329', name: SLURMCluster-1-15, status: running, memory: 0, processing: 0>
+INFO:distributed.core:Removing comms to tcp://192.168.1.3:36329
+INFO:distributed.core:Connection to tcp://192.168.1.3:56214 has been closed.
+INFO:distributed.scheduler:Remove worker <WorkerState 'tcp://192.168.1.3:35599', name: SLURMCluster-1-9, status: running, memory: 0, processing: 0>
+INFO:distributed.core:Removing comms to tcp://192.168.1.3:35599
+INFO:distributed.core:Connection to tcp://192.168.1.4:35424 has been closed.
+INFO:distributed.scheduler:Remove worker <WorkerState 'tcp://192.168.1.4:46817', name: SLURMCluster-3-19, status: running, memory: 0, processing: 0>
+INFO:distributed.core:Removing comms to tcp://192.168.1.4:46817
+INFO:distributed.core:Connection to tcp://192.168.1.3:56200 has been closed.
+INFO:distributed.scheduler:Remove worker <WorkerState 'tcp://192.168.1.3:45913', name: SLURMCluster-1-14, status: running, memory: 0, processing: 0>
+INFO:distributed.core:Removing comms to tcp://192.168.1.3:45913
+INFO:distributed.core:Connection to tcp://192.168.1.3:56236 has been closed.
+INFO:distributed.scheduler:Remove worker <WorkerState 'tcp://192.168.1.3:41287', name: SLURMCluster-1-17, status: running, memory: 0, processing: 0>
+INFO:distributed.core:Removing comms to tcp://192.168.1.3:41287
+INFO:distributed.core:Connection to tcp://192.168.1.4:35446 has been closed.
+INFO:distributed.scheduler:Remove worker <WorkerState 'tcp://192.168.1.4:46257', name: SLURMCluster-3-18, status: running, memory: 0, processing: 0>
+INFO:distributed.core:Removing comms to tcp://192.168.1.4:46257
+INFO:distributed.core:Connection to tcp://192.168.1.5:56184 has been closed.
+INFO:distributed.scheduler:Remove worker <WorkerState 'tcp://192.168.1.5:43047', name: SLURMCluster-2-5, status: running, memory: 0, processing: 0>
+INFO:distributed.core:Removing comms to tcp://192.168.1.5:43047
+INFO:distributed.core:Connection to tcp://192.168.1.4:35426 has been closed.
+INFO:distributed.scheduler:Remove worker <WorkerState 'tcp://192.168.1.4:44247', name: SLURMCluster-3-4, status: running, memory: 0, processing: 0>
+INFO:distributed.core:Removing comms to tcp://192.168.1.4:44247
+INFO:distributed.core:Connection to tcp://192.168.1.4:35420 has been closed.
+INFO:distributed.scheduler:Remove worker <WorkerState 'tcp://192.168.1.4:42947', name: SLURMCluster-3-9, status: running, memory: 0, processing: 0>
+INFO:distributed.core:Removing comms to tcp://192.168.1.4:42947
+INFO:distributed.core:Connection to tcp://192.168.1.4:35416 has been closed.
+INFO:distributed.scheduler:Remove worker <WorkerState 'tcp://192.168.1.4:43759', name: SLURMCluster-3-12, status: running, memory: 0, processing: 0>
+INFO:distributed.core:Removing comms to tcp://192.168.1.4:43759
+INFO:distributed.core:Connection to tcp://192.168.1.4:35430 has been closed.
+INFO:distributed.scheduler:Remove worker <WorkerState 'tcp://192.168.1.4:37485', name: SLURMCluster-3-14, status: running, memory: 0, processing: 0>
+INFO:distributed.core:Removing comms to tcp://192.168.1.4:37485
+INFO:distributed.core:Connection to tcp://192.168.1.5:56188 has been closed.
+INFO:distributed.scheduler:Remove worker <WorkerState 'tcp://192.168.1.5:38805', name: SLURMCluster-2-1, status: running, memory: 0, processing: 0>
+INFO:distributed.core:Removing comms to tcp://192.168.1.5:38805
+INFO:distributed.core:Connection to tcp://192.168.1.3:56202 has been closed.
+INFO:distributed.scheduler:Remove worker <WorkerState 'tcp://192.168.1.3:42967', name: SLURMCluster-1-19, status: running, memory: 0, processing: 0>
+INFO:distributed.core:Removing comms to tcp://192.168.1.3:42967
+INFO:distributed.core:Connection to tcp://192.168.1.3:56224 has been closed.
+INFO:distributed.scheduler:Remove worker <WorkerState 'tcp://192.168.1.3:40741', name: SLURMCluster-1-10, status: running, memory: 0, processing: 0>
+INFO:distributed.core:Removing comms to tcp://192.168.1.3:40741
+INFO:distributed.core:Connection to tcp://192.168.1.4:35436 has been closed.
+INFO:distributed.scheduler:Remove worker <WorkerState 'tcp://192.168.1.4:43983', name: SLURMCluster-3-11, status: running, memory: 0, processing: 0>
+INFO:distributed.core:Removing comms to tcp://192.168.1.4:43983
+INFO:distributed.core:Connection to tcp://192.168.1.3:56234 has been closed.
+INFO:distributed.scheduler:Remove worker <WorkerState 'tcp://192.168.1.3:34723', name: SLURMCluster-1-12, status: running, memory: 0, processing: 0>
+INFO:distributed.core:Removing comms to tcp://192.168.1.3:34723
+INFO:distributed.core:Connection to tcp://192.168.1.5:56182 has been closed.
+INFO:distributed.scheduler:Remove worker <WorkerState 'tcp://192.168.1.5:37249', name: SLURMCluster-2-8, status: running, memory: 0, processing: 0>
+INFO:distributed.core:Removing comms to tcp://192.168.1.5:37249
+INFO:distributed.core:Connection to tcp://192.168.1.5:56206 has been closed.
+INFO:distributed.scheduler:Remove worker <WorkerState 'tcp://192.168.1.5:40039', name: SLURMCluster-2-3, status: running, memory: 0, processing: 0>
+INFO:distributed.core:Removing comms to tcp://192.168.1.5:40039
+INFO:distributed.core:Connection to tcp://192.168.1.4:35428 has been closed.
+INFO:distributed.scheduler:Remove worker <WorkerState 'tcp://192.168.1.4:41421', name: SLURMCluster-3-2, status: running, memory: 0, processing: 0>
+INFO:distributed.core:Removing comms to tcp://192.168.1.4:41421
+INFO:distributed.core:Connection to tcp://192.168.1.4:35444 has been closed.
+INFO:distributed.scheduler:Remove worker <WorkerState 'tcp://192.168.1.4:34249', name: SLURMCluster-3-7, status: running, memory: 0, processing: 0>
+INFO:distributed.core:Removing comms to tcp://192.168.1.4:34249
+INFO:distributed.core:Connection to tcp://192.168.1.4:35438 has been closed.
+INFO:distributed.scheduler:Remove worker <WorkerState 'tcp://192.168.1.4:46847', name: SLURMCluster-3-5, status: running, memory: 0, processing: 0>
+INFO:distributed.core:Removing comms to tcp://192.168.1.4:46847
+INFO:distributed.core:Connection to tcp://192.168.1.4:35448 has been closed.
+INFO:distributed.scheduler:Remove worker <WorkerState 'tcp://192.168.1.4:42779', name: SLURMCluster-3-3, status: running, memory: 0, processing: 0>
+INFO:distributed.core:Removing comms to tcp://192.168.1.4:42779
+INFO:distributed.core:Connection to tcp://192.168.1.4:35414 has been closed.
+INFO:distributed.scheduler:Remove worker <WorkerState 'tcp://192.168.1.4:39101', name: SLURMCluster-3-8, status: running, memory: 0, processing: 0>
+INFO:distributed.core:Removing comms to tcp://192.168.1.4:39101
+INFO:distributed.core:Connection to tcp://192.168.1.4:35432 has been closed.
+INFO:distributed.scheduler:Remove worker <WorkerState 'tcp://192.168.1.4:38733', name: SLURMCluster-3-13, status: running, memory: 0, processing: 0>
+INFO:distributed.core:Removing comms to tcp://192.168.1.4:38733
+INFO:distributed.core:Connection to tcp://192.168.1.5:56200 has been closed.
+INFO:distributed.scheduler:Remove worker <WorkerState 'tcp://192.168.1.5:45191', name: SLURMCluster-2-11, status: running, memory: 0, processing: 0>
+INFO:distributed.core:Removing comms to tcp://192.168.1.5:45191
+INFO:distributed.core:Connection to tcp://192.168.1.3:56216 has been closed.
+INFO:distributed.scheduler:Remove worker <WorkerState 'tcp://192.168.1.3:40173', name: SLURMCluster-1-7, status: running, memory: 0, processing: 0>
+INFO:distributed.core:Removing comms to tcp://192.168.1.3:40173
+INFO:distributed.core:Connection to tcp://192.168.1.4:35440 has been closed.
+INFO:distributed.scheduler:Remove worker <WorkerState 'tcp://192.168.1.4:44005', name: SLURMCluster-3-17, status: running, memory: 0, processing: 0>
+INFO:distributed.core:Removing comms to tcp://192.168.1.4:44005
+INFO:distributed.core:Connection to tcp://192.168.1.3:56220 has been closed.
+INFO:distributed.scheduler:Remove worker <WorkerState 'tcp://192.168.1.3:41707', name: SLURMCluster-1-13, status: running, memory: 0, processing: 0>
+INFO:distributed.core:Removing comms to tcp://192.168.1.3:41707
+INFO:distributed.core:Connection to tcp://192.168.1.4:35434 has been closed.
+INFO:distributed.scheduler:Remove worker <WorkerState 'tcp://192.168.1.4:43161', name: SLURMCluster-3-16, status: running, memory: 0, processing: 0>
+INFO:distributed.core:Removing comms to tcp://192.168.1.4:43161
+INFO:distributed.core:Connection to tcp://192.168.1.3:56208 has been closed.
+INFO:distributed.scheduler:Remove worker <WorkerState 'tcp://192.168.1.3:43051', name: SLURMCluster-1-16, status: running, memory: 0, processing: 0>
+INFO:distributed.core:Removing comms to tcp://192.168.1.3:43051
+INFO:distributed.core:Connection to tcp://192.168.1.3:56226 has been closed.
+INFO:distributed.scheduler:Remove worker <WorkerState 'tcp://192.168.1.3:34881', name: SLURMCluster-1-5, status: running, memory: 0, processing: 0>
+INFO:distributed.core:Removing comms to tcp://192.168.1.3:34881
+INFO:distributed.core:Connection to tcp://192.168.1.3:56218 has been closed.
+INFO:distributed.scheduler:Remove worker <WorkerState 'tcp://192.168.1.3:42791', name: SLURMCluster-1-4, status: running, memory: 0, processing: 0>
+INFO:distributed.core:Removing comms to tcp://192.168.1.3:42791
+INFO:distributed.core:Connection to tcp://192.168.1.5:56190 has been closed.
+INFO:distributed.scheduler:Remove worker <WorkerState 'tcp://192.168.1.5:45319', name: SLURMCluster-2-7, status: running, memory: 0, processing: 0>
+INFO:distributed.core:Removing comms to tcp://192.168.1.5:45319
+INFO:distributed.core:Connection to tcp://192.168.1.5:56176 has been closed.
+INFO:distributed.scheduler:Remove worker <WorkerState 'tcp://192.168.1.5:36287', name: SLURMCluster-2-15, status: running, memory: 0, processing: 0>
+INFO:distributed.core:Removing comms to tcp://192.168.1.5:36287
+INFO:distributed.core:Connection to tcp://192.168.1.5:56198 has been closed.
+INFO:distributed.scheduler:Remove worker <WorkerState 'tcp://192.168.1.5:42843', name: SLURMCluster-2-19, status: running, memory: 0, processing: 0>
+INFO:distributed.core:Removing comms to tcp://192.168.1.5:42843
+INFO:distributed.core:Connection to tcp://192.168.1.5:56196 has been closed.
+INFO:distributed.scheduler:Remove worker <WorkerState 'tcp://192.168.1.5:44757', name: SLURMCluster-2-6, status: running, memory: 0, processing: 0>
+INFO:distributed.core:Removing comms to tcp://192.168.1.5:44757
+INFO:distributed.core:Connection to tcp://192.168.1.5:56180 has been closed.
+INFO:distributed.scheduler:Remove worker <WorkerState 'tcp://192.168.1.5:44505', name: SLURMCluster-2-9, status: running, memory: 0, processing: 0>
+INFO:distributed.core:Removing comms to tcp://192.168.1.5:44505
+INFO:distributed.core:Connection to tcp://192.168.1.3:56210 has been closed.
+INFO:distributed.scheduler:Remove worker <WorkerState 'tcp://192.168.1.3:34151', name: SLURMCluster-1-18, status: running, memory: 0, processing: 0>
+INFO:distributed.core:Removing comms to tcp://192.168.1.3:34151
+INFO:distributed.core:Connection to tcp://192.168.1.5:56202 has been closed.
+INFO:distributed.scheduler:Remove worker <WorkerState 'tcp://192.168.1.5:43251', name: SLURMCluster-2-18, status: running, memory: 0, processing: 0>
+INFO:distributed.core:Removing comms to tcp://192.168.1.5:43251
+INFO:distributed.core:Connection to tcp://192.168.1.5:56204 has been closed.
+INFO:distributed.scheduler:Remove worker <WorkerState 'tcp://192.168.1.5:36257', name: SLURMCluster-2-13, status: running, memory: 0, processing: 0>
+INFO:distributed.core:Removing comms to tcp://192.168.1.5:36257
+INFO:distributed.core:Connection to tcp://192.168.1.5:56168 has been closed.
+INFO:distributed.scheduler:Remove worker <WorkerState 'tcp://192.168.1.5:37483', name: SLURMCluster-2-14, status: running, memory: 0, processing: 0>
+INFO:distributed.core:Removing comms to tcp://192.168.1.5:37483
+INFO:distributed.core:Connection to tcp://192.168.1.4:35410 has been closed.
+INFO:distributed.scheduler:Remove worker <WorkerState 'tcp://192.168.1.4:39681', name: SLURMCluster-3-10, status: running, memory: 0, processing: 0>
+INFO:distributed.core:Removing comms to tcp://192.168.1.4:39681
+INFO:distributed.core:Connection to tcp://192.168.1.5:56178 has been closed.
+INFO:distributed.scheduler:Remove worker <WorkerState 'tcp://192.168.1.5:40649', name: SLURMCluster-2-2, status: running, memory: 0, processing: 0>
+INFO:distributed.core:Removing comms to tcp://192.168.1.5:40649
+INFO:distributed.core:Connection to tcp://192.168.1.5:56194 has been closed.
+INFO:distributed.scheduler:Remove worker <WorkerState 'tcp://192.168.1.5:45413', name: SLURMCluster-2-17, status: running, memory: 0, processing: 0>
+INFO:distributed.core:Removing comms to tcp://192.168.1.5:45413
+INFO:distributed.core:Connection to tcp://192.168.1.5:56170 has been closed.
+INFO:distributed.scheduler:Remove worker <WorkerState 'tcp://192.168.1.5:42277', name: SLURMCluster-2-4, status: running, memory: 0, processing: 0>
+INFO:distributed.core:Removing comms to tcp://192.168.1.5:42277
+INFO:distributed.core:Connection to tcp://192.168.1.5:56186 has been closed.
+INFO:distributed.scheduler:Remove worker <WorkerState 'tcp://192.168.1.5:44915', name: SLURMCluster-2-16, status: running, memory: 0, processing: 0>
+INFO:distributed.core:Removing comms to tcp://192.168.1.5:44915
+INFO:distributed.scheduler:Lost all workers
+INFO:distributed.scheduler:Scheduler closing...
+INFO:distributed.scheduler:Scheduler closing all comms
+/data/scratch/richteny/thesis/cosipy_test_space-v2/COSIPY.py:241: FutureWarning: 'Y' is deprecated and will be removed in a future version, please use 'YE' instead.
+  mean_annual_df = geod_df.resample("1Y").sum()

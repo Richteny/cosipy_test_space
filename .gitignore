@@ -15,3 +15,4 @@ error*
 slurm.err
 slurm.out
 .coverage
+.vscode/
