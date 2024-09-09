@@ -7,9 +7,6 @@ import inspect
 import os
 import sys
 
-from numba.core import types
-from numba.typed import Dict
-
 import numpy as np
 import pandas as pd
 import xarray as xr
