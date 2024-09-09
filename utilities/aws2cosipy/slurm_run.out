@@ -2,67 +2,69 @@
 Create input 
 
 Read input file ../../data/input/HEF/COSMO_forcing_1999-2010.csv
-Read static file ../../data/static/HEF/HEF_static_raw_crop.nc 
+Read static file ../../data/static/HEF/HEF_static_10m_elevbands.nc 
 
-Read large-scale static file.
 Managed to get to here.
-LWin in data
 Interpolate CR file to grid
 1.12e-07
 1.68e-07
 TIMESTAMP
-1999-01-01 00:00:00   -0.008860
-1999-01-01 00:00:00   -0.008860
-1999-01-01 01:00:00   -0.008802
-1999-01-01 02:00:00   -0.008578
-1999-01-01 03:00:00   -0.008881
+1999-01-02 00:00:00   -0.004102
+1999-01-02 01:00:00   -0.004519
+1999-01-02 02:00:00   -0.004865
+1999-01-02 03:00:00   -0.003910
+1999-01-02 04:00:00   -0.003311
                          ...   
-2009-12-31 20:00:00   -0.006143
-2009-12-31 21:00:00   -0.008051
-2009-12-31 22:00:00   -0.006376
-2009-12-31 23:00:00   -0.007944
-2010-01-01 00:00:00   -0.005885
-Name: lr_t2m, Length: 96444, dtype: float64
+2009-12-31 20:00:00   -0.005323
+2009-12-31 21:00:00   -0.006482
+2009-12-31 22:00:00   -0.005917
+2009-12-31 23:00:00   -0.007396
+2010-01-01 00:00:00   -0.007396
+Name: lr_t2m, Length: 96409, dtype: float64
 TIMESTAMP
-1999-01-01 00:00:00    0.001945
-1999-01-01 00:00:00    0.001945
-1999-01-01 01:00:00    0.001777
-1999-01-01 02:00:00    0.002019
-1999-01-01 03:00:00    0.001699
-                         ...   
-2009-12-31 20:00:00   -0.000593
-2009-12-31 21:00:00   -0.014180
-2009-12-31 22:00:00   -0.022562
-2009-12-31 23:00:00   -0.018518
-2010-01-01 00:00:00    0.035711
-Name: lr_lwin, Length: 96444, dtype: float64
-Number of glacier cells: 12265
-Number of glacier cells: 12265
-Run the Radiation Module Moelg2009
-Build look-up-tables
-Look-up-table sky view factor done
-Look-up-table topographic shading done
+1999-01-02 00:00:00   -2.426866e-07
+1999-01-02 01:00:00   -3.637573e-07
+1999-01-02 02:00:00   -1.328004e-07
+1999-01-02 03:00:00   -2.062007e-09
+1999-01-02 04:00:00    0.000000e+00
+                           ...     
+2009-12-31 20:00:00   -4.027549e-06
+2009-12-31 21:00:00    5.667219e-06
+2009-12-31 22:00:00    5.829690e-06
+2009-12-31 23:00:00    5.829690e-06
+2010-01-01 00:00:00    5.829690e-06
+Name: lr_sf, Length: 96409, dtype: float64
+Number of glacier cells: 129
+Number of glacier cells: 129
+Run the Radiation Module HORAYZON
 <xarray.Dataset>
-Dimensions:  (lat: 121, lon: 281, time: 2928)
+Dimensions:     (time: 8784, lat: 129, lon: 1)
 Coordinates:
-  * time     (time) int64 0 1 2 3 4 5 6 7 ... 2921 2922 2923 2924 2925 2926 2927
-  * lat      (lat) float64 46.82 46.82 46.82 46.82 ... 46.79 46.79 46.79 46.79
-  * lon      (lon) float64 10.73 10.73 10.73 10.73 10.73 ... 10.8 10.8 10.8 10.8
+  * time        (time) float64 1.0 1.01 1.02 1.03 ... 366.2 366.2 366.2 366.2
+  * lat         (lat) float64 46.8 46.8 46.8 46.8 ... 46.82 46.82 46.82 46.82
+  * lon         (lon) float64 10.76
 Data variables:
-    SVF      (lat, lon) float32 nan nan nan nan nan nan ... nan nan nan nan nan
-    SHADING  (time, lat, lon) float64 nan nan nan nan nan ... nan nan nan nan
-    MASK     (lat, lon) float32 nan nan nan nan nan nan ... nan nan nan nan nan
-    SLOPE    (lat, lon) float32 nan nan nan nan nan nan ... nan nan nan nan nan
-    ASPECT   (lat, lon) float32 nan nan nan nan nan nan ... nan nan nan nan nan
-    HGT      (lat, lon) float32 nan nan nan nan nan nan ... nan nan nan nan nan
+    HGT         (lat, lon) float64 ...
+    ASPECT      (lat, lon) float64 ...
+    SLOPE       (lat, lon) float32 ...
+    MASK        (lat, lon) float64 ...
+    N_Points    (lat, lon) float64 ...
+    sw_dir_cor  (time, lat, lon) float64 0.0 0.0 0.0 0.0 0.0 ... 0.0 0.0 0.0 0.0
+    countval    (time, lat, lon) int64 ...
+    doy         (time) int64 1 1 1 1 1 1 1 1 ... 366 366 366 366 366 366 366 366
+    hour        (time) int64 0 1 2 3 4 5 6 7 8 9 ... 15 16 17 18 19 20 21 22 23
 Input file created 
 
 -------------------------------------------
 
 
-WARNING! Please check the data, its seems they are out of a reasonable range Rrr MAX: 176.74 MIN: 0.00 
+WARNING! Please check the data, its seems they are out of a reasonable range G MAX: 1915.46 MIN: 0.00 
 
 
 
-WARNING! Please check the data, its seems they are out of a reasonable range Lwin MAX: 653.91 MIN: 0.00 
+WARNING! Please check the data, its seems they are out of a reasonable range Rrr MAX: 193.23 MIN: 0.00 
+
+
+
+WARNING! Please check the data, its seems they are out of a reasonable range Snowfall MAX: 2.72 MIN: 0.00 
 

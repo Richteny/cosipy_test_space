@@ -1,8 +1,4 @@
 import numpy as np
-from cosipy.utils.options import read_opt
-
-from numba.core import types
-from numba.typed import Dict
 
 from cosipy.constants import Constants
 

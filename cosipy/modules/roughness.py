@@ -1,8 +1,4 @@
 from cosipy.constants import Constants
-from cosipy.utils.options import read_opt
-
-from numba.core import types
-from numba.typed import Dict
 
 # need to define variables locally to be able to change them with our dictionary
 roughness_fresh_snow = Constants.roughness_fresh_snow
