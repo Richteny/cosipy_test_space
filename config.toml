@@ -1,11 +1,11 @@
 [SIMULATION_PERIOD]
-time_start = "2000-04-01T00:00"
-time_end = "2000-09-01T00:00"
+time_start = "1999-01-02T00:00"
+time_end = "2010-01-01T00:00"
 
 [FILENAMES]
 data_path = "./data/"
-input_netcdf = "HEF/HEF_COSMO_300m_1999_2010.nc"
-output_prefix = "HEF_COSMO_300m_1999_2010_HORAYZON"
+input_netcdf = "HEF/HEF_COSMO_1D10m_HORAYZON_1999_2010.nc"
+output_prefix = "HEF_COSMO_1D10m_1999_2010_HORAYZON"
 
 [RESTART]
 restart = false
@@ -18,13 +18,14 @@ eval_method = "rmse"
 obs_type = "snowheight"
 
 ["TRANSIENT SNOWLINE DATA"]
-tsl_evaluation = true
+tsl_evaluation = true #true
+write_csv_status = false #true
 time_col_obs = "LS_DATE"
 tsla_col_obs = "TSL_normalized"
-min_snowheight = 0.001
+min_snowheight = 0.001 #1mm
 tsl_method = "conservative"
 tsl_normalize = true
-tsl_data_file = "./data/input/HEF/snowlines/HEF-snowlines-1999-2010_noWinter.csv"
+tsl_data_file = "./data/input/HEF/snowlines/HEF-snowlines-1999-2010_manual.csv"
 
 ["RUN LAPSE RATES ONLINE"]
 station_altitude = 3030.0283
@@ -39,16 +40,16 @@ easting = "lon"
 compression_level = 2
 
 [PARALLELIZATION]
-slurm_use = false #true
-workers = 0
+slurm_use = true #false
+workers = 2
 local_port = 8786
 
 [FULL_FIELDS]
 full_field = false
 
 [FORCINGS]
-force_use_TP = true
-force_use_N = false
+force_use_TP = false
+force_use_N = true
 
 [SUBSET]
 tile = false
