@@ -48,8 +48,6 @@ from cosipy.cpkernel.io import IOClass
 from cosipy.modules.evaluation import evaluate, resample_output, create_tsl_df, eval_tsl, resample_by_hand
 
 from numba import njit, typeof
-from numba.core import types
-from numba.typed import Dict
 
 import xarray as xr
 
@@ -71,7 +69,14 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
     '''
     TEST TO PARSE A TUPLE OF PARAM VALUES AND NOT CALL IN DICTIONARY
     '''
-    opt_dict = (RRR_factor+0.5, alb_ice, alb_snow, alb_firn, albedo_aging, albedo_depth, center_snow_transfer_function,
+    # these values crashed previously [array(2.74724189), array(0.25), array(0.84), array(0.555), array(1.1), array(1.1)]
+    RRR_factor = np.array([0.74724189])
+    alb_ice = np.array([0.25])
+    alb_snow = np.array([0.84])
+    alb_firn = np.array([0.555])
+    albedo_aging = np.array([1.1])
+    albedo_depth = np.array([1.1])
+    opt_dict = (RRR_factor, alb_ice, alb_snow, alb_firn, albedo_aging, albedo_depth, center_snow_transfer_function,
                 spread_snow_transfer_function, roughness_fresh_snow, roughness_ice, roughness_firn)
     #0 to 5 - base, 6 center snow , 7 spreadsnow, 8 to 10 roughness length 
     #Initialise dictionary and load Params#
@@ -87,11 +92,12 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
     #opt_dict['roughness_fresh_snow'] = roughness_fresh_snow
     #opt_dict['roughness_ice'] = roughness_ice
     #opt_dict['roughness_firn'] = roughness_firn
-    print(opt_dict)
+    #print(opt_dict)
     #print(typeof(opt_dict))
     lapse_T = float(lr_T)
     lapse_RRR = float(lr_RRR)
     lapse_RH = float(lr_RH)
+    print("Lapse rates are:", lapse_T, lapse_RRR, lapse_RH)
     print("Time required to load in opt_dic: ", datetime.now()-times)
     print("#--------------------------------------#")
     print("Starting simulations with the following parameters.")
@@ -106,6 +112,7 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
     #------------------------------------------
     #setup IO with new values from dictionary 
     times = datetime.now()
+    #test_dict(opt_dict)
     IO = IOClass(opt_dict=opt_dict)
     start_time = datetime.now() 
     if Config.restart:
@@ -117,7 +124,6 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
     RESULT = IO.create_result_file() 
     RESTART = IO.create_restart_file()
     print("Time required to init IO, DATA, RESULT, RESTART: ", datetime.now()-times)
-
     #----------------------------------------------
     # Calculation - Multithreading using all cores  
     #----------------------------------------------
@@ -197,13 +203,13 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
     output_netcdf = set_output_netcdf_path()
     output_path = create_data_directory(path='output')                
     results_output_name = output_netcdf.split('.nc')[0]+'_num{}.nc'.format(count)  
-    IO.get_result().to_netcdf(os.path.join(output_path,results_output_name), encoding=encoding, mode = 'w')
-    print(IO.get_result())
+    #IO.get_result().to_netcdf(os.path.join(output_path,results_output_name), encoding=encoding, mode = 'w')
+    #print(IO.get_result())
     #dataset = IO.get_result()
     #calculate MB for geod. reference
     #Check if 1D or 2D
     times = datetime.now()
-    #this takes 1min, make it faster!
+    #this takes 1min, make it faster! CHANGE IT BACK ONCE DONE WITH TESTS!
     if Config.tsl_evaluation is True:
         if 'N_Points' in list(IO.get_result().keys()):
             print("Compute area weighted MB for 1D case.")
@@ -237,8 +243,8 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
         print("Geod. MB test.") 
         print(geod_mb)
         print("Time it took to calculate geod. MB ", datetime.now()-times)
-    else:
-        geod_mb = np.array([np.nan])
+    #else:
+    #    geod_mb = np.array([np.nan])
     #cmb_spatial_mean_cum = np.cumsum(cmb_spatial_mean)    
 
     encoding = dict()
@@ -302,7 +308,7 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
             tsl_out = calculate_tsl(resampled_out, Config.min_snowheight)
             tsla_stats = eval_tsl(tsla_observations, tsl_out, Config.time_col_obs, Config.tsla_col_obs)
             print("TSLA Observed vs Modelled RMSE: " + str(tsla_stats[0]) + "; R-squared: " + str(tsla_stats[1]))
-            tsl_out.to_csv(os.path.join(output_path,tsl_csv_name))
+            #tsl_out.to_csv(os.path.join(output_path,tsl_csv_name))
             del ds_merged
         else:
             tsl_csv_name = 'tsla_'+results_output_name.split('.nc')[0].lower()+'.csv'    
@@ -313,7 +319,7 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
             dates,clean_day_vals,secs,holder = prereq_res(IO.get_result().sel(time=slice("2000-01-01","2009-12-31")))
             resampled_array = resample_by_hand(holder, IO.get_result().sel(time=slice("2000-01-01","2009-12-31")).SNOWHEIGHT.values, secs, clean_day_vals)
             resampled_out = construct_resampled_ds(IO.get_result().sel(time=slice("2000-01-01","2009-12-31")),resampled_array,dates.values)
-            print(resampled_out)
+            #print(resampled_out)
             print("Time required for resampling of output: ", datetime.now()-times)
             #Need HGT values as 2D, ensured with following line of code.
             resampled_out['HGT'] = (('lat','lon'), IO.get_result()['HGT'].data)
@@ -323,14 +329,17 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
             tsl_out = create_tsl_df(resampled_out, Config.min_snowheight, Config.tsl_method, Config.tsl_normalize)
             #tsl_out = calculate_tsl(resampled_out, min_snowheight)
             #print(tsla_observations)
-            print(tsl_out)
+            #print(tsl_out)
             #print(np.nanmedian(tsl_out['Med_TSL']))
             tsla_stats = eval_tsl(tsla_observations,tsl_out, Config.time_col_obs, Config.tsla_col_obs)
             print("TSLA Observed vs. Modelled RMSE: " + str(tsla_stats[0])+ "; R-squared: " + str(tsla_stats[1]))
             tsl_out.to_csv(os.path.join(output_path,tsl_csv_name))
             ## Match to observation dates for pymc routine
             tsl_out_match = tsl_out.loc[tsl_out['time'].isin(tsla_observations['LS_DATE'])]
+            print(np.array(tsl_out_match['Med_TSL']))
+            print(tsl_out_match['Med_TSL'].values.shape)
             #tsla_obs_v2 = tsla_observations.loc[tsla_observations['LS_DATE'].isin(tsl_out_match['time'])]
+            
             #if tsl_normalize:
             #    tsla_obs_v2['SC_stdev'] = (tsla_obs_v2['SC_stdev']) / (tsla_obs_v2['glacier_DEM_max'] - tsla_obs_v2['glacier_DEM_min'])
             #a_tsl_out.to_csv(os.path.join(data_path,'output','test_for_resample.csv'))
@@ -352,6 +361,36 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
             #cost = -(1*mbe_tsla + 1*mbe)
             #print("Full cost function value is: ", cost)
         print("Time required for full TSL EVAL: ", datetime.now()-times)
+        
+        ## Create DF that holds params to save ##
+        if Config.write_csv_status:
+            try:
+                param_df = pd.read_csv("./simulations/cosipy_params.csv", index_col=0)
+                curr_df = pd.DataFrame( np.concatenate((np.array(opt_dict, dtype=float),np.array([geod_mb]),
+                                                        tsl_out_match.Med_TSL.values)) ).transpose()
+                curr_df.columns = ['rrr_factor', 'alb_ice', 'alb_snow', 'alb_firn', 'albedo_aging',
+                                   'albedo_depth', 'center_snow_transfer', 'spread_snow_transfer',
+                                   'roughness_fresh_snow', 'roughness_ice', 'roughness_firn', 'mb'] + [f'sim{i+1}' for i in range(tsl_out_match.shape[0])]
+                #print("\n--------------------------------")
+                #print(curr_df)
+                #curr_df.to_csv("./simulations/curr_df.csv")
+                param_df = pd.concat([param_df, curr_df], ignore_index=True)
+                #print(param_df)
+                #print("\n----------------------------------")
+            except:
+                #param_df does not exist yet, create
+                #print(tsl_out_match)
+                #print(tsl_out_match.shape[1])
+                test = np.concatenate((np.array(opt_dict, dtype=float), np.array([geod_mb]), tsl_out_match.Med_TSL.values))
+                #print(test)
+                param_df = pd.DataFrame( np.concatenate((np.array(opt_dict, dtype=float), np.array([geod_mb]),
+                                                         tsl_out_match.Med_TSL.values)) ).transpose()
+                #print(param_df)
+                param_df.columns =   ['rrr_factor', 'alb_ice', 'alb_snow', 'alb_firn', 'albedo_aging',
+                                      'albedo_depth', 'center_snow_transfer', 'spread_snow_transfer',
+                                      'roughness_fresh_snow', 'roughness_ice', 'roughness_firn','mb'] + [f'sim{i+1}' for i in range(tsl_out_match.shape[0])]
+            param_df.to_csv("./simulations/cosipy_params.csv")
+
     #-----------------------------------------------
     # Stop time measurement
     #-----------------------------------------------
@@ -371,7 +410,7 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
     return (geod_mb,tsl_out_match)
 
 def run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures, opt_dict=None):
-    print("run cosipy",opt_dict)
+    
     Config()
     Constants()
     
@@ -475,7 +514,7 @@ def run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures, opt_dict=None):
                 if mask == 1 & (not Config.restart):
                     if np.isnan(DATA.isel(lat=y,lon=x).to_array()).any():
                         print_nan_error()
-                    futures.append(client.submit(cosipy_core, DATA.isel(lat=y, lon=x), y, x, stake_names=stake_names, stake_data=df_stakes_data))
+                    futures.append(client.submit(cosipy_core, DATA.isel(lat=y, lon=x), y, x, stake_names=stake_names, stake_data=df_stakes_data, opt_dict=opt_dict))
                 elif mask == 1 & Config.restart:
                     if np.isnan(DATA.isel(lat=y,lon=x).to_array()).any():
                         print_nan_error()
