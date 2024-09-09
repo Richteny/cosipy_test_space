@@ -15,10 +15,6 @@ from cosipy.modules.refreezing import refreezing
 from cosipy.modules.roughness import updateRoughness
 from cosipy.modules.surfaceTemperature import update_surface_temperature
 
-from numba.core import types
-from numba.typed import Dict
-from cosipy.utils.options import read_opt
-
 def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_data=None, opt_dict=None):
     """Cosipy core function.
 
@@ -63,7 +59,6 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
 
     # Replace imported variables with content of the opt_dict. If it's empty
     # nothing happens.
-    print(opt_dict)
     if opt_dict is not None:
         mult_factor_RRR = opt_dict[0]
         albedo_ice = opt_dict[1]
