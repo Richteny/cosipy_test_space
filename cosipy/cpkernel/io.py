@@ -7,17 +7,12 @@ import inspect
 import os
 import sys
 
-from numba.core import types
-from numba.typed import Dict
-
 import numpy as np
 import pandas as pd
 import xarray as xr
 
 from cosipy.config import Config
 from cosipy.constants import Constants
-
-from cosipy.utils.options import read_opt
 
 class IOClass:
 
@@ -268,8 +263,7 @@ class IOClass:
         Returns:
             One-dimensional structure with the model output.
         """
-        # Constants for metadata #
-        print(opt_dict) 
+        # Constants for metadata # 
         if opt_dict is not None:
             mult_factor_RRR = opt_dict[0]
             albedo_ice = opt_dict[1]

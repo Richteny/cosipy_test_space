@@ -4,11 +4,7 @@ import numpy as np
 
 from cosipy.constants import Constants
 from cosipy.cpkernel.grid import Grid
-from cosipy.utils.options import read_opt
-
-from numba.core import types
-from numba.typed import Dict
-
+#from cosipy.utils.options import read_opt
 
 def init_snowpack(DATA, opt_dict=None):
     """Initialise the snowpack.
