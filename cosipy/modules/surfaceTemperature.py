@@ -2,12 +2,9 @@ from types import SimpleNamespace
 
 import numpy as np
 from numba import njit
-from numba.core import types
-from numba.typed import Dict
 from scipy.optimize import minimize, newton
 
 from cosipy.constants import Constants
-from cosipy.utils.options import read_opt
 
 zlt1 = Constants.zlt1
 zlt2 = Constants.zlt2

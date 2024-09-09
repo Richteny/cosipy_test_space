@@ -1,7 +1,4 @@
 from numba import njit
-from numba.core import types
-from numba.typed import Dict
-from cosipy.utils.options import read_opt
 from cosipy.constants import Constants
 
 zero_temperature = Constants.zero_temperature
