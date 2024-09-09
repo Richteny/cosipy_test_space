@@ -1,8 +1,5 @@
 import numpy as np
 from numba import njit
-from numba.core import types
-from numba.typed import Dict
-from cosipy.utils.options import read_opt
 
 @njit
 def solveHeatEquation(GRID, dt):
