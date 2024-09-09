@@ -6,7 +6,7 @@ import pandas as pd
 import sys
 import os
 from COSIPY import main as runcosipy
-from constants import *
+#from constants import *
 from config import *
 import pytensor
 import pytensor.tensor as pt
@@ -21,7 +21,7 @@ pytensor.config.optimizer="fast_compile"
 def main():
 
     ### set up paths and constants
-    main_path = "/data/scratch/richteny/thesis/cosipy_test_space/"
+    main_path = "/data/scratch/richteny/thesis/cosipy_test_space-v2/"
     os.makedirs(main_path+"simulations/", exist_ok=True)
     path_to_geod = "/data/scratch/richteny/Hugonnet_21_MB/"
     rgi_id = "RGI60-11.00897"
@@ -52,20 +52,20 @@ def main():
     #create count to store simulations 
     count = 0
 
-    ## Define cosipy function
-    @as_op(itypes=[pt.dscalar, pt.dscalar, pt.dscalar, pt.dscalar, pt.dscalar, pt.dscalar], otypes=[pt.dscalar, pt.dmatrix])
-    def run_cspy(alb_ice, alb_snow, alb_firn, albedo_aging, albedo_depth, center_snow_transfer_function):
+    ## Define cosipy function #dvector or matrix
+    @as_op(itypes=[pt.dscalar, pt.dscalar, pt.dscalar, pt.dscalar, pt.dscalar, pt.dscalar], otypes=[pt.dscalar, pt.dvector])
+    def run_cspy(rrr_factor, alb_ice, alb_snow, alb_firn, albedo_aging, albedo_depth):
         #params
+        rrrfactor = rrr_factor
         albice = alb_ice
         albsnow = alb_snow
         albfirn = alb_firn
         albaging = albedo_aging
         albdepth = albedo_depth
-        centersnow = center_snow_transfer_function
-
+        
         #start cosipy
-        modmb, modtsl = runcosipy(alb_ice=albice, alb_snow=albsnow, alb_firn=albfirn, albedo_aging=albaging, albedo_depth=albdepth,
-                                  center_snow_transfer_function=centersnow, count=count)
+        modmb, modtsl = runcosipy(RRR_factor=rrrfactor, alb_ice=albice, alb_snow=albsnow, alb_firn=albfirn, albedo_aging=albaging,
+                                  albedo_depth=albdepth, count=count)
         print("Calculated MB is: ", modmb)
         return np.array([modmb]), modtsl['Med_TSL'].values
 
@@ -74,40 +74,39 @@ def main():
     with pm.Model() as model:
 
         # Defining priors for the model parameters to calibrate
-        albsnow = pm.TruncatedNormal('albsnow', mu=0.89, sigma=0.1, lower=0.71, upper=0.97)
-        albice = pm.TruncatedNormal('albice', mu=0.25, sigma=0.1, lower=0.1, upper=0.4)
-        albfirn = pm.TruncatedNormal('albfirn', mu=0.55, sigma=0.1, lower=0.41, upper=0.7)
-        albaging = pm.TruncatedNormal('albaging', mu=6+3, sigma=10, lower=0.1) #bound to positive, mu at Moelg value
-        albdepth = pm.TruncatedNormal('albdepth', mu=3, sigma=8, lower=0.1) #see where this comes from
-        centersnow = pm.TruncatedNormal('centersnow', mu=0., sigma=0.2, lower=-3, upper=3) #reasons
-        #tau = pm.DiscreteUniform("tau", lower=0, upper=10)
+        rrr_factor = pm.TruncatedNormal('rrrfactor', mu=1, sigma=20, lower=0.33, upper=3)
+        alb_snow = pm.TruncatedNormal('albsnow', mu=0.89, sigma=0.1, lower=0.71, upper=0.97)
+        alb_ice = pm.TruncatedNormal('albice', mu=0.25, sigma=0.1, lower=0.1, upper=0.4)
+        alb_firn = pm.TruncatedNormal('albfirn', mu=0.55, sigma=0.1, lower=0.41, upper=0.7)
+        alb_aging = pm.TruncatedNormal('albaging', mu=6+3, sigma=10, lower=0.1) #bound to positive, mu at Moelg value
+        alb_depth = pm.TruncatedNormal('albdepth', mu=3, sigma=10, lower=0.1) #see where this comes from
         print("Set priors.")
 
         #Get output of COSIPY
-        modmb, modtsl = run_cspy(albice, albsnow, albfirn, albaging, 
-                                 albdepth, centersnow)
+        modmb, modtsl = run_cspy(rrr_factor, alb_ice, alb_snow, alb_firn, alb_aging, 
+                                 alb_depth)
 
 
-        #how is he trying to print this before it has actually ran?
-        print("Modelled MB is:", modmb)
-        #print("Ran model.")
         #Setup observations
         geod_data = pm.Data('geod_data', np.array([geod_ref['dmdtda']]))
         #print(geod_ref['dmdtda'])
-        #tsl_data = pm.Data('tsl_data', tsla_obs['SC_median'])
+        tsl_data = pm.Data('tsl_data', np.array(tsla_obs['TSL_normalized']))
 
+        print(np.array(tsla_obs['TSL_normalized']))
         #Expected values as deterministic RVs
         #for some reason this doesnt work !!!
         mu_mb = pm.Deterministic('mu_mb', modmb)
-        #mu_tsl = pm.Deterministic('mu_tsl', modtsl)
+        mu_tsl = pm.Deterministic('mu_tsl', modtsl)
 
         #Likelihood (sampling distribution) of observations
-        mb_obs = pm.Normal("mb_obs", mu=modmb, sigma=geod_ref['err_dmdtda'], observed=geod_data)
-        #tsl_obs = pm.Normal("tsl_obs", mu=mu_tsl, sigma=tsla_obs['SC_stdev'], observed=tsl_data)
+        mb_obs = pm.Normal("mb_obs", mu=mu_mb, sigma=geod_ref['err_dmdtda'], observed=geod_data)
+        tsl_obs = pm.Normal("tsl_obs", mu=mu_tsl, sigma=np.array(tsla_obs['SC_stdev']), observed=tsl_data, shape=mu_tsl.shape[0])
 
         ## Setup sampler
+        step = pm.Metropolis()
         #step = pm.Slice()
-        post = pm.sample(draws=10, return_inferencedata=True, chains=1, progressbar=True,)
+        #step = pm.DEMetropolisZ()
+        post = pm.sample(draws=10000, tune=2000, step=step, return_inferencedata=True, chains=1, progressbar=True, discard_tuned_samples=False)
 
         ## testing to save samples
         post.to_netcdf(main_path+"simulations/simulations_HEF_results_MCMC.nc")
