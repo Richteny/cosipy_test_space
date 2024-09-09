@@ -1,36 +1,113 @@
 20
-Time required to load in opt_dic:  0:00:00.000006
+Lapse rates are: 0.0 0.0 0.0
+Time required to load in opt_dic:  0:00:00.000030
 #--------------------------------------#
 Starting simulations with the following parameters.
-Parameter  mult_factor_RRR = 1.25
-Parameter  albedo_ice = 0.2
-Parameter  albedo_fresh_snow = 0.77
-Parameter  albedo_firn = 0.55
-Parameter  albedo_mod_snow_aging = 6
-Parameter  albedo_mod_snow_depth = 8
-Parameter  center_snow_transfer_function = 1.0
-Parameter  spread_snow_transfer_function = 1
-Parameter  roughness_fresh_snow = 0.24
-Parameter  roughness_ice = 1.7
-Parameter  roughness_firn = 7.0
+(array([0.74724189]), array([0.25]), array([0.84]), array([0.555]), array([1.1]), array([1.1]), 1.0, 1, 0.24, 1.7, 4.0)
 
 #--------------------------------------#
 
- Maximum available time interval from 1999-01-01T00:00 until 2010-01-01T00:00. Time steps: 96444 
+ Maximum available time interval from 1999-01-02T00:00 until 2010-01-01T00:00. Time steps: 96409 
 
 
 --------------------------------------------------------------
-	 Integration from 1999-01-01T00:00 to 2010-01-01T00:00
+	 Integration from 1999-01-02T00:00 to 2010-01-01T00:00
 --------------------------------------------------------------
 
 --------------------------------------------------------------
 Checking input data .... 
 
 Temperature data (T2) ... ok 
-Please check the input data, its seems they are out of range T2 MAX: 299.91 MIN: 235.38 
+Please check the input data, its seems they are out of range T2 MAX: 295.92 MIN: 235.57 
 
 Relative humidity data (RH2) ... ok 
 Shortwave data (G) ... ok 
-Please check the input data, its seems they are out of range G MAX: 2546.59 MIN: 0.00 
+Please check the input data, its seems they are out of range G MAX: 1915.46 MIN: 0.00 
 
 Wind velocity data (U2) ... ok 
+Precipitation data (RRR) ... ok 
+Please check the input data, its seems they are out of range Rrr MAX: 193.23 MIN: 0.00 
+
+Cloud cover data (N) ... ok 
+Pressure data (PRES) ... ok 
+Snowfall data (SNOWFALL) ... ok 
+Please check the input data, its seems they are out of range Snowfall MAX: 2.72 MIN: 0.00 
+
+
+ Glacier gridpoints: 129 
+
+
+
+
+Output dataset ... ok
+Restart dataset ... ok 
+
+--------------------------------------------------------------
+
+Time required to init IO, DATA, RESULT, RESTART:  0:00:03.035082
+(96409, 129, 1)
+Assigning values back to DATA
+100.0
+0.01591862687473622
+(96409, 129, 1)
+Seconds needed for lapse rate: 0:00:03.665819
+#!/usr/bin/env bash
+
+#SBATCH -J WoHEF
+#SBATCH -A morsanat
+#SBATCH -n 1
+#SBATCH --cpus-per-task=20
+#SBATCH --mem=56G
+#SBATCH -t 00:30:00
+#SBATCH --qos=short
+#SBATCH --error=Error_nodes.err
+#SBATCH --output=Output_nodes.out
+#SBATCH --time=01:00:00
+#SBATCH --mem='3G'
+
+/data/scratch/richteny/miniconda3/envs/pymc_env/bin/python -m distributed.cli.dask_worker tcp://192.168.1.7:39285 --nthreads 1 --nworkers 20 --memory-limit 2.79GiB --name dummy-name --nanny --death-timeout 60 --local-directory ./logs/dask-worker-space
+
+You are using SLURM!
+
+SLURMCluster(421e3b3d, 'tcp://192.168.1.7:39285', workers=0, threads=0, memory=0 B)
+------------------------------------------------------------------------
+	Starting clients and submitting jobs ...
+------------------------------------------------------------------------
+
+SLURMCluster(421e3b3d, 'tcp://192.168.1.7:39285', workers=0, threads=0, memory=0 B)
+<Client: 'tcp://192.168.1.7:39285' processes=0 threads=0, memory=0 B>
+129 140 0
+	Time required to do calculations:    6 minutes 18.4715 seconds
+
+
+
+------------------------------------------------------------------------
+Write results ...
+------------------------------------------------------------------------
+
+2D case.
+Geod. MB test.
+5.515877056804516
+Time it took to calculate geod. MB  0:00:00.081147
+Starting TSL eval.
+Time required for resampling of output:  0:00:01.612610
+Calculating TSLA using conservative. Normalization is set to True.
+Max elev. 3697.2958984375 .
+ Min elev. 2417.2958984375
+[0. 0. 0. ... 0. 0. 0.]
+Time required for calculating TSL only : 0:00:04.410328
+Time required for calculating TSL stats:  0:00:00.003861
+TSLA Observed vs. Modelled RMSE: 0.22789015394093046; R-squared: 0.0
+[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.
+ 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.
+ 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]
+(62,)
+Time required for full TSL EVAL:  0:00:06.045951
+	Time required to write restart and output files:    0 minutes 6.13526 seconds
+
+	Total run duration:    6 minutes 31.8506 seconds
+
+------------------------------------------------------------------------
+	SIMULATION WAS SUCCESSFUL
+------------------------------------------------------------------------
+

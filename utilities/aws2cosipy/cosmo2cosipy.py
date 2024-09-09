@@ -448,14 +448,15 @@ def create_2D_input(cs_file, cosipy_file, static_file, start_date, end_date, sta
     # Interpolate data (T, RH, RRR, U)  to grid using lapse rates from file
     lapse_T = df['lr_t2m']
     lapse_RH = df['lr_rh2']
-    lapse_LW = df['lr_lwin']
+    lapse_SF = df['lr_sf']
     lapse_RRR = df['lr_tp']
+    
     print(lapse_T)
-    print(lapse_LW)
+    print(lapse_SF)
     for t in range(len(dso.time)):
         T_interp[t,:,:] = (T2[t]) + (ds.HGT.values-stationAlt)*lapse_T[t]
         RH_interp[t,:,:] = RH2[t] + (ds.HGT.values-stationAlt)*lapse_RH[t]
-        LW_interp[t,:,:] = (LW[t]) + (ds.HGT.values-stationAlt)*lapse_LW[t]
+        #LW_interp[t,:,:] = (LW[t]) + (ds.HGT.values-stationAlt)*lapse_LW[t]
         #print(lapse_LW[t])
         #print(LW[t])
         #print(LW_interp[t,0:2,0:2])
@@ -469,7 +470,7 @@ def create_2D_input(cs_file, cosipy_file, static_file, start_date, end_date, sta
             RRR_interp[t,:,:] = np.maximum(RRR[t] + (ds.HGT.values-stationAlt)*lapse_RRR[t], 0.0)
         
         if (SNOWFALL_var in df):
-            SNOWFALL_interp[t, :, :] = SNOWFALL[t] + (ds.HGT.values-stationAlt)*lapse_SNOWFALL
+            SNOWFALL_interp[t, :, :] = np.maximum(SNOWFALL[t] + (ds.HGT.values-stationAlt)*lapse_SF[t], 0.0)
 
         #if(LWin_var in df):
         #    LW_interp[t,:,:] = LW[t]
@@ -484,7 +485,8 @@ def create_2D_input(cs_file, cosipy_file, static_file, start_date, end_date, sta
     #-----------------------------------
     RH_interp[RH_interp > 100.0] = 100.0
     RH_interp[RH_interp < 0.0] = 0.1
-    LW_interp[LW_interp < 0.0] = 0.0
+    if(LWin_var in df):
+        LW_interp[LW_interp < 0.0] = 0.0
     
     #-----------------------------------
     # Add variables to file to already
@@ -551,7 +553,7 @@ def create_2D_input(cs_file, cosipy_file, static_file, start_date, end_date, sta
         # get correction factor which must be computed beforehand!
         try:
             if ELEV_model:
-                correction_factor = xr.open_dataset("../../data/static/HEF/LUT_HORAYZON_sw_dir_cor_raw_1D.nc")
+                correction_factor = xr.open_dataset("../../data/static/HEF/LUT_HORAYZON_sw_dir_cor_1D10m.nc")
             else:
                 correction_factor = xr.open_dataset("../../data/static/HEF/LUT_HORAYZON_sw_dir_cor_agg.nc")
         except:

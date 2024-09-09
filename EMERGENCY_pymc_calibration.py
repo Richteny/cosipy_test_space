@@ -52,7 +52,17 @@ def main():
     #create count to store simulations 
     count = 0
 
-    ## Define cosipy function #dvector or matrix
+    # Read in previously saved parameter values
+    params = pd.read_csv("./simulations/cosipy_params.csv", index_col=0)
+    # Create copy .. 
+    params.to_csv("./simulations/cosipy_params_prev.csv")
+    # Read in param values as starting values for sampler
+    start = {'rrrfactor': params.iloc[-1]['rrr_factor'], 'albice': params.iloc[-1]['alb_ice'], 'albsnow': params.iloc[-1]['alb_snow'],
+             'albfirn': params.iloc[-1]['alb_firn'], 'albaging': params.iloc[-1]['albedo_aging'], 'albdepth': params.iloc[-1]['albedo_depth'],
+             } #'centersnow': params.iloc[-1]['center_snow_transfer']}
+    print("Loaded start values from previous results.", start)
+
+    ## Define cosipy function
     @as_op(itypes=[pt.dscalar, pt.dscalar, pt.dscalar, pt.dscalar, pt.dscalar, pt.dscalar], otypes=[pt.dscalar, pt.dvector])
     def run_cspy(rrr_factor, alb_ice, alb_snow, alb_firn, albedo_aging, albedo_depth):
         #params
@@ -62,10 +72,10 @@ def main():
         albfirn = alb_firn
         albaging = albedo_aging
         albdepth = albedo_depth
-        
+
         #start cosipy
-        modmb, modtsl = runcosipy(RRR_factor=rrrfactor, alb_ice=albice, alb_snow=albsnow, alb_firn=albfirn, albedo_aging=albaging,
-                                  albedo_depth=albdepth, count=count)
+        modmb, modtsl = runcosipy(RRR_factor=rrrfactor, alb_ice= albice, alb_snow=albsnow,  alb_firn=albfirn, albedo_aging=albaging, albedo_depth=albdepth,
+                                  count=count)
         print("Calculated MB is: ", modmb)
         return np.array([modmb]), modtsl['Med_TSL'].values
 
@@ -80,6 +90,7 @@ def main():
         alb_firn = pm.TruncatedNormal('albfirn', mu=0.55, sigma=0.1, lower=0.41, upper=0.7)
         alb_aging = pm.TruncatedNormal('albaging', mu=6+3, sigma=10, lower=0.1) #bound to positive, mu at Moelg value
         alb_depth = pm.TruncatedNormal('albdepth', mu=3, sigma=10, lower=0.1) #see where this comes from
+        #centersnow = pm.TruncatedNormal('centersnow', mu=0., sigma=0.2, lower=-3, upper=3) #reasons
         print("Set priors.")
 
         #Get output of COSIPY
@@ -87,6 +98,7 @@ def main():
                                  alb_depth)
 
 
+        #print("Ran model.")
         #Setup observations
         geod_data = pm.Data('geod_data', np.array([geod_ref['dmdtda']]))
         #print(geod_ref['dmdtda'])
@@ -100,16 +112,18 @@ def main():
 
         #Likelihood (sampling distribution) of observations
         mb_obs = pm.Normal("mb_obs", mu=mu_mb, sigma=geod_ref['err_dmdtda'], observed=geod_data)
+        #tsl_obs = pm.Normal("tsl_obs", mu=mu_tsl, sigma=tsla_obs['SC_stdev'], observed=tsl_data)
         tsl_obs = pm.Normal("tsl_obs", mu=mu_tsl, sigma=np.array(tsla_obs['SC_stdev']), observed=tsl_data, shape=mu_tsl.shape[0])
-
+        
+        print(mu_tsl.shape)
+        print(tsl_data.shape)
         ## Setup sampler
-        step = pm.Metropolis()
         #step = pm.Slice()
-        #step = pm.DEMetropolisZ()
-        post = pm.sample(draws=10000, tune=2000, step=step, return_inferencedata=True, chains=1, progressbar=True, discard_tuned_samples=False)
+        step = pm.Metropolis()
+        post = pm.sample(draws=10000, step=step, return_inferencedata=True, chains=1, start=start, discard_tuned_samples=False)
 
         ## testing to save samples
-        post.to_netcdf(main_path+"simulations/simulations_HEF_results_MCMC.nc")
+        post.to_netcdf(main_path+"simulations/simulations_HEF_results_MCMC_continued.nc")
 
 if __name__ == '__main__':
     main()
