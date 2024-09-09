@@ -1,18 +1,29 @@
 import numpy as np
-from config import eval_method, obs_type, tsl_method, tsl_normalize
-from cosipy.utils.options import read_opt
+from cosipy.config import Config
+
+eval_method = Config.eval_method
+obs_type = Config.obs_type
+tsl_method = Config.tsl_method
+tsl_normalize = Config.tsl_normalize
+
 import pandas as pd
 from scipy import stats
 from datetime import datetime
 from numba import njit
 
-def evaluate(stake_names, stake_data, df_, opt_dict=None):
-    """ This methods evaluates the simulation with the stake measurements
-        stake_name  ::  """
-            
-    # Read and set options
-    read_opt(opt_dict, globals())
-    if eval_method == 'rmse':
+def evaluate(stake_names, stake_data, df_):
+    """Evaluate the simulation using stake measurements.
+
+    Args:
+        stake_names (list): Stake IDs.
+        stake_data (pd.Dataframe): Stake measurements.
+        df (pd.Dataframe): Simulated mass balance and snow height.
+    
+    Returns:
+        Statistical evaluation.
+    """
+
+    if Config.eval_method == 'rmse':
         stat = rmse(stake_names, stake_data, df_)
     else:
         stat = None
@@ -21,10 +32,13 @@ def evaluate(stake_names, stake_data, df_, opt_dict=None):
 
 
 def rmse(stake_names, stake_data, df_):
-    if (obs_type=='mb'):
+    if (Config.obs_type=='mb'):
         rmse = ((stake_data[stake_names].subtract(df_['mb'],axis=0))**2).mean()**.5
-    if (obs_type=='snowheight'):
+    elif (Config.obs_type=='snowheight'):
         rmse = ((stake_data[stake_names].subtract(df_['snowheight'],axis=0))**2).mean()**.5
+    else:
+        msg = f'RMSE not implemented for obs_type="{Config.obs_type}" in config.py.'
+        raise NotImplementedError(msg)
     return rmse
 
 

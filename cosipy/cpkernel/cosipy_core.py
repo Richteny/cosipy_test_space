@@ -1,62 +1,78 @@
 import numpy as np
 import pandas as pd
 
-from constants import mult_factor_RRR, densification_method, ice_density, water_density, \
-                      minimum_snowfall, zero_temperature, lat_heat_sublimation, \
-                      lat_heat_melting, lat_heat_vaporize, center_snow_transfer_function, \
-                      spread_snow_transfer_function, constant_density
-from config import force_use_TP, force_use_N, stake_evaluation, full_field, WRF_X_CSPY 
-
+from cosipy.config import Config
+from cosipy.constants import Constants
+from cosipy.cpkernel.init import init_snowpack, load_snowpack
+from cosipy.cpkernel.io import IOClass
 from cosipy.modules.albedo import updateAlbedo
+from cosipy.modules.densification import densification
+from cosipy.modules.evaluation import evaluate, resample_output, create_tsl_df, eval_tsl, resample_by_hand
 from cosipy.modules.heatEquation import solveHeatEquation
 from cosipy.modules.penetratingRadiation import penetrating_radiation
 from cosipy.modules.percolation import percolation
 from cosipy.modules.refreezing import refreezing
 from cosipy.modules.roughness import updateRoughness
-from cosipy.modules.densification import densification
-from cosipy.modules.evaluation import evaluate, resample_output, create_tsl_df, eval_tsl, resample_by_hand
 from cosipy.modules.surfaceTemperature import update_surface_temperature
 
-from cosipy.cpkernel.init import init_snowpack, load_snowpack
-from cosipy.cpkernel.io import IOClass
-from cosipy.utils.options import read_opt
-
-
 def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_data=None, opt_dict=None):
-    """ Cosipy core function, which perform the calculations on one core.
+    """Cosipy core function.
 
-    Params
-    ======
-    DATA: xarray.Dataset
-      xarray dataset which contain one grid point
-    indY: 
-    indX:
+    The calculations are performed on a single core.
 
-    GRID_RESTART : boolean, optional
-      If restart is given, no inital profile is created
-    stake_name : boolean, optional
-      stake names      
-    stake_data : boolean, optional
-      stake data
-    Returns
-    ======
-    Returns all calculated variables of one grid point
+    Args:
+        DATA (xarray.Dataset): Dataset with single grid point.
+        indY (int): The grid cell's Y index.
+        indX (int): The grid cell's X index.
+        GRID_RESTART (xarray.Dataset): Use a restart dataset instead of
+            creating an initial profile. Default ``None``.
+        stake_name (list): Stake names. Default ``None``.
+        stake_data (pd.Dataframe): Stake measurements. Default ``None``.
 
+    Returns:
+        All calculated variables for one grid point.
     """
-    
 
-
+    # Declare locally for faster lookup
+    dt = Constants.dt
+    max_layers = Constants.max_layers
+    z = Constants.z
+    mult_factor_RRR = Constants.mult_factor_RRR
+    densification_method = Constants.densification_method
+    ice_density = Constants.ice_density
+    water_density = Constants.water_density
+    minimum_snowfall = Constants.minimum_snowfall
+    zero_temperature = Constants.zero_temperature
+    lat_heat_sublimation = Constants.lat_heat_sublimation
+    lat_heat_melting = Constants.lat_heat_melting
+    lat_heat_vaporize = Constants.lat_heat_vaporize
+    center_snow_transfer_function = Constants.center_snow_transfer_function
+    spread_snow_transfer_function = Constants.spread_snow_transfer_function
+    constant_density = Constants.constant_density
+    albedo_fresh_snow = Constants.albedo_fresh_snow
 
     # Replace values from constants.py if coupled
-    from constants import max_layers, dt, z	#WTF python!
-    if WRF_X_CSPY:
+    if Config.WRF_X_CSPY:
         dt = int(DATA.DT.values)
         max_layers = int(DATA.max_layers.values)
         z = float(DATA.ZLVL.values)
 
     # Replace imported variables with content of the opt_dict. If it's empty
     # nothing happens.
-    read_opt(opt_dict, globals())
+    if opt_dict is not None:
+        mult_factor_RRR = opt_dict[0]
+        albedo_ice = opt_dict[1]
+        albedo_fresh_snow = opt_dict[2]
+        albedo_firn = opt_dict[3]
+        albedo_mod_snow_aging = opt_dict[4]
+        albedo_mod_snow_depth = opt_dict[5]
+        center_snow_transfer_function = opt_dict[6]
+        spread_snow_transfer_function = opt_dict[7]
+        roughness_fresh_snow = opt_dict[8]
+        roughness_ice = opt_dict[9]
+        roughness_firn = opt_dict[10]
+
+    #read_opt(opt_dict, globals())
     # Local variables
     nt = len(DATA.time.values)         #accessing DATA is expensive 		
     _RRR = np.full(nt, np.nan)
@@ -110,12 +126,12 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
 
     # Create the local output datasets if not coupled
     RESTART = None
-    if not WRF_X_CSPY:
+    if not Config.WRF_X_CSPY:
         IO = IOClass(DATA, opt_dict)
         RESTART = IO.create_local_restart_dataset()
 
     # hours since the last snowfall (albedo module)
-    hours_since_snowfall = 0
+    # hours_since_snowfall = 0
 
     #--------------------------------------------
     # Get data from file
@@ -132,45 +148,44 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
     if ('SNOWFALL' in DATA) and ('RRR' in DATA):
         SNOWF = DATA.SNOWFALL.values * mult_factor_RRR
         RRR = DATA.RRR.values * mult_factor_RRR
-
-    elif ('SNOWFALL' in DATA):
+    elif 'SNOWFALL' in DATA:
         SNOWF = DATA.SNOWFALL.values * mult_factor_RRR
         RRR = None
         RAIN = None
-
     else:
         SNOWF = None
         RRR = DATA.RRR.values * mult_factor_RRR
 
     # Use RRR rather than snowfall?
-    if force_use_TP:
+    if Config.force_use_TP:
         SNOWF = None
 
     if ('LWin' in DATA) and ('N' in DATA):
         LWin = DATA.LWin.values
         N = DATA.N.values
-
-    elif ('LWin' in DATA):
+    elif 'LWin' in DATA:
         LWin = DATA.LWin.values
-
     else:
         LWin = None
         N = DATA.N.values
 
     # Use N rather than LWin
-    if force_use_N:
+    if Config.force_use_N:
         LWin = None
 
-    if ('SLOPE' in DATA):
+    if 'SLOPE' in DATA:
         SLOPE = DATA.SLOPE.values
-
     else:
         SLOPE = 0.0
 
     # Initial cumulative mass balance variable
     MB_cum = 0
+    
+    # Initial snow albedo and surface temperature for Bougamont et al. 2005 albedo
+    surface_temperature = 270.0
+    albedo_snow = albedo_fresh_snow
 
-    if stake_evaluation:
+    if Config.stake_evaluation:
         # Create pandas dataframe for stake evaluation
         _df = pd.DataFrame(index=stake_data.index, columns=['mb','snowheight'], dtype='float')
 
@@ -183,12 +198,12 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
         GRID.grid_check()
 
         # get seconds since start
-        timestamp = dt*t
-        if WRF_X_CSPY:
-            timestamp = np.float64(DATA.CURR_SECS.values)
+        # timestamp = dt*t
+        # if Config.WRF_X_CSPY:
+            # timestamp = np.float64(DATA.CURR_SECS.values)
 
         # Calc fresh snow density
-        if (densification_method!='constant'):
+        if densification_method != 'constant':
             density_fresh_snow = np.maximum(109.0+6.0*(T2[t]-273.16)+26.0*np.sqrt(U2[t]), 50.0)
         else:
             density_fresh_snow = constant_density 
@@ -196,27 +211,27 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
         # Derive snowfall [m] and rain rates [m w.e.]
         if (SNOWF is not None) and (RRR is not None):
             SNOWFALL = SNOWF[t]
-            RAIN = RRR[t]-SNOWFALL*(density_fresh_snow/ice_density) * 1000.0
-        elif (SNOWF is not None):
+            RAIN = RRR[t]-SNOWFALL*(density_fresh_snow/water_density) * 1000.0
+        elif SNOWF is not None:
             SNOWFALL = SNOWF[t]
         else:
             # Else convert total precipitation [mm] to snowheight [m]; liquid/solid fraction
-            SNOWFALL = (RRR[t]/1000.0)*(ice_density/density_fresh_snow)*(0.5*(-np.tanh(((T2[t]-zero_temperature) - center_snow_transfer_function) * spread_snow_transfer_function) + 1.0))
-            RAIN = RRR[t]-SNOWFALL*(density_fresh_snow/ice_density) * 1000.0
+            SNOWFALL = (RRR[t]/1000.0)*(water_density/density_fresh_snow)*(0.5*(-np.tanh(((T2[t]-zero_temperature) - center_snow_transfer_function) * spread_snow_transfer_function) + 1.0))
+            RAIN = RRR[t]-SNOWFALL*(density_fresh_snow/water_density) * 1000.0
 
         # if snowfall is smaller than the threshold
         if SNOWFALL<minimum_snowfall:
             SNOWFALL = 0.0
 
         # if rainfall is smaller than the threshold
-        if RAIN<(minimum_snowfall*(density_fresh_snow/ice_density)*1000.0):
+        if RAIN<(minimum_snowfall*(density_fresh_snow/water_density)*1000.0):
             RAIN = 0.0
 
         if SNOWFALL > 0.0:
             # Add a new snow node on top
-           GRID.add_fresh_snow(SNOWFALL, density_fresh_snow, np.minimum(float(T2[t]),zero_temperature), 0.0)
+            GRID.add_fresh_snow(SNOWFALL, density_fresh_snow, np.minimum(float(T2[t]),zero_temperature), 0.0)
         else:
-           GRID.set_fresh_snow_props_update_time(dt)
+            GRID.set_fresh_snow_props_update_time(dt)
 
         # Guarantee that solar radiation is greater equal zero
         if (G[t]<0.0):
@@ -230,7 +245,7 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
         #--------------------------------------------
         # Calculate albedo and roughness length changes if first layer is snow
         #--------------------------------------------
-        alpha = updateAlbedo(GRID, opt_dict)
+        alpha, albedo_snow = updateAlbedo(GRID,surface_temperature,albedo_snow, opt_dict)
 
         #--------------------------------------------
         # Update roughness length
@@ -245,7 +260,7 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
 
         # Penetrating SW radiation and subsurface melt
         if SWnet > 0.0:
-            subsurface_melt, G_penetrating = penetrating_radiation(GRID, SWnet, dt, opt_dict)
+            subsurface_melt, G_penetrating = penetrating_radiation(GRID, SWnet, dt)
         else:
             subsurface_melt = 0.0
             G_penetrating = 0.0
@@ -284,8 +299,16 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
         # Melt process - mass changes of snowpack (melting, sublimation, deposition, evaporation, condensation)
         #--------------------------------------------
         # Melt energy in [W m^-2 or J s^-1 m^-2]
-        melt_energy = max(0, sw_radiation_net + lw_radiation_in + lw_radiation_out + ground_heat_flux + rain_heat_flux +
-                          sensible_heat_flux + latent_heat_flux)
+        melt_energy = max(
+            0,
+            sw_radiation_net
+            + lw_radiation_in
+            + lw_radiation_out
+            + ground_heat_flux
+            + rain_heat_flux
+            + sensible_heat_flux
+            + latent_heat_flux
+        )
 
         # Convert melt energy to m w.e.q.
         melt = melt_energy * dt / (1000 * lat_heat_melting)
@@ -296,17 +319,17 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
         #--------------------------------------------
         # Percolation
         #--------------------------------------------
-        Q  = percolation(GRID, melt + condensation + RAIN/1000.0 + lwc_from_melted_layers, dt, opt_dict)
+        Q  = percolation(GRID, melt + condensation + RAIN/1000.0 + lwc_from_melted_layers, dt)
 
         #--------------------------------------------
         # Refreezing
         #--------------------------------------------
-        water_refreezed = refreezing(GRID, opt_dict)
+        water_refreezed = refreezing(GRID)
 
         #--------------------------------------------
         # Solve the heat equation
         #--------------------------------------------
-        solveHeatEquation(GRID, dt, opt_dict)
+        solveHeatEquation(GRID, dt)
 
         #--------------------------------------------
         # Calculate new density to densification
@@ -316,12 +339,18 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
         #--------------------------------------------
         # Calculate mass balance
         #--------------------------------------------
-        surface_mass_balance = SNOWFALL * (density_fresh_snow / ice_density) - melt + sublimation + deposition + evaporation
+        surface_mass_balance = (
+            SNOWFALL * (density_fresh_snow / water_density)
+            - melt
+            + sublimation
+            + deposition
+            + evaporation
+        )
         internal_mass_balance = water_refreezed - subsurface_melt
         mass_balance = surface_mass_balance + internal_mass_balance
 
-        internal_mass_balance2 = melt-Q  + subsurface_melt
-        mass_balance_check = surface_mass_balance + internal_mass_balance2
+        # internal_mass_balance2 = melt-Q  + subsurface_melt
+        # mass_balance_check = surface_mass_balance + internal_mass_balance2
 
         # Cumulative mass balance for stake evaluation 
         MB_cum = MB_cum + mass_balance
@@ -334,7 +363,7 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
         
         # Save results
         _RAIN[t] = RAIN
-        _SNOWFALL[t] = SNOWFALL * (density_fresh_snow/ice_density)
+        _SNOWFALL[t] = SNOWFALL * (density_fresh_snow/water_density)
         _LWin[t] = lw_radiation_in
         _LWout[t] = lw_radiation_out
         _H[t] = sensible_heat_flux
@@ -361,7 +390,7 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
         _surfM[t] = melt
         _MOL[t] = MOL
 
-        if full_field:
+        if Config.full_field:
             if GRID.get_number_layers()>max_layers:
                 print('Maximum number of layers reached')
             else:
@@ -385,7 +414,7 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
             _LAYER_IRREDUCIBLE_WATER = None
             _LAYER_REFREEZE = None
 
-    if stake_evaluation:
+    if Config.stake_evaluation:
         # Evaluate stakes
         _stat = evaluate(stake_names, stake_data, _df)
     else:
@@ -393,7 +422,7 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
         _df = None
 
     # Restart
-    if not WRF_X_CSPY:
+    if not Config.WRF_X_CSPY:
         new_snow_height, new_snow_timestamp, old_snow_timestamp = GRID.get_fresh_snow_props()
         RESTART.NLAYERS.values[:] = GRID.get_number_layers()
         RESTART.NEWSNOWHEIGHT.values[:] = new_snow_height
