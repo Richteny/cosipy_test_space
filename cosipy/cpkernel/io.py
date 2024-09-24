@@ -238,6 +238,7 @@ class IOClass:
             "MASK": ("boolean", "Glacier mask"),
             "SLOPE": ("degrees", "Terrain slope"),
             "ASPECT": ("degrees", "Aspect of slope"),
+            "N_Points": ("count", "Number of points in each bin"),
         }
         metadata_spatiotemporal = {
             "T2": ("K", "Air temperature at 2 m"),
