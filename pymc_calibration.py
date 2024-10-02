@@ -78,8 +78,8 @@ def main():
         alb_snow = pm.TruncatedNormal('albsnow', mu=0.89, sigma=0.1, lower=0.71, upper=0.97)
         alb_ice = pm.TruncatedNormal('albice', mu=0.25, sigma=0.1, lower=0.1, upper=0.4)
         alb_firn = pm.TruncatedNormal('albfirn', mu=0.55, sigma=0.1, lower=0.41, upper=0.7)
-        alb_aging = pm.TruncatedNormal('albaging', mu=6+3, sigma=10, lower=0.1, upper=30) #bound to positive, mu at Moelg value
-        alb_depth = pm.TruncatedNormal('albdepth', mu=3, sigma=10, lower=0.1, upper=30) #see where this comes from
+        alb_aging = pm.TruncatedNormal('albaging', mu=6+3, sigma=10, lower=0.1, upper=31) #bound to positive, mu at Moelg value
+        alb_depth = pm.TruncatedNormal('albdepth', mu=3, sigma=10, lower=0.1, upper=31) #see where this comes from
         print("Set priors.")
 
         #Get output of COSIPY
@@ -103,10 +103,10 @@ def main():
         tsl_obs = pm.Normal("tsl_obs", mu=mu_tsl, sigma=np.array(tsla_obs['SC_stdev']), observed=tsl_data, shape=mu_tsl.shape[0])
 
         ## Setup sampler
-        step = pm.Metropolis()
+        #step = pm.Metropolis()
         #step = pm.Slice()
-        #step = pm.DEMetropolisZ()
-        post = pm.sample(draws=1000, tune=200, step=step, return_inferencedata=True, chains=1, progressbar=True, discard_tuned_samples=False)
+        step = pm.DEMetropolisZ()
+        post = pm.sample(draws=1000, tune=200, step=step, return_inferencedata=True, chains=4, cores=1, progressbar=True, discard_tuned_samples=False)
 
         ## testing to save samples
         post.to_netcdf(main_path+"simulations/simulations_HEF_results_MCMC.nc")
