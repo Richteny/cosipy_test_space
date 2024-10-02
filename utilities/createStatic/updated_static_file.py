@@ -22,10 +22,10 @@ tile = True
 
 ## If distributed radation is not desired, run default static file creation according to values below ##
 # to aggregate the DEM to a coarser spatial resolution
-aggregate = False
+aggregate = True
 aggregate_degree = '0.00277778' #300m
 automatic_domain = True #Do km buffer around glacier or set lat lon box by hand in functions below
-crop_file = False #crop to minimum extent
+crop_file = True #crop to minimum extent
 # ref exist: If already have high res. static data set to True and skip calculation
 ref_exist = False
 
@@ -37,9 +37,9 @@ dem_path_tif = static_folder + 'DEM/COPDEM30_HEF_Box.tif'  #n30
 shape_path = static_folder + 'Shapefiles/HEF_RGI6.shp'
 
 ### path were the static.nc file is saved
-output_path = static_folder + 'HEF_static_raw.nc'
-output_path_crop = static_folder + 'HEF_static_raw_crop.nc'
-output_path_agg = static_folder + 'HEF_static_agg.nc'
+output_path = static_folder + 'HEF_static_30m_raw.nc'
+output_path_crop = static_folder + 'HEF_static_30m_raw_crop.nc'
+output_path_agg = static_folder + 'HEF_static_300m_agg.nc'
 
 #domain creation assumes WGS84 is valid
 def domain_creation(shp_path, dist_search, ellps="WGS84"):
@@ -204,4 +204,3 @@ else:
     create_static(dem_path_tif=dem_path_tif, shape_path=shape_path, output_path=output_path, output_path_crop=output_path_crop,
                   tile=tile, aggregate=False, aggregate_degree=aggregate_degree,
                   automatic_domain=True, crop_file=True, dist_search=20.0)
-#cropfile=False
