@@ -70,12 +70,12 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
     TEST TO PARSE A TUPLE OF PARAM VALUES AND NOT CALL IN DICTIONARY
     '''
     # these values crashed previously [array(2.74724189), array(0.25), array(0.84), array(0.555), array(1.1), array(1.1)]
-    RRR_factor = np.array([0.74724189])
-    alb_ice = np.array([0.25])
-    alb_snow = np.array([0.84])
-    alb_firn = np.array([0.555])
-    albedo_aging = np.array([1.1])
-    albedo_depth = np.array([1.1])
+    #RRR_factor = np.array([2.74724189])
+    #alb_ice = np.array([0.25])
+    #alb_snow = np.array([0.84])
+    #alb_firn = np.array([0.555])
+    #albedo_aging = np.array([1.1])
+    #albedo_depth = np.array([1.1])
     opt_dict = (RRR_factor, alb_ice, alb_snow, alb_firn, albedo_aging, albedo_depth, center_snow_transfer_function,
                 spread_snow_transfer_function, roughness_fresh_snow, roughness_ice, roughness_firn)
     #0 to 5 - base, 6 center snow , 7 spreadsnow, 8 to 10 roughness length 
