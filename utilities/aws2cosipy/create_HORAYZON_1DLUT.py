@@ -20,6 +20,7 @@
 
 # Load modules
 import os
+#os.chdir("/data/scratch/richteny/thesis/cosipy_test_space/utilities/aws2cosipy/")
 import numpy as np
 import subprocess
 from netCDF4 import Dataset, date2num
@@ -47,9 +48,9 @@ from utilities.aws2cosipy.aws2cosipyConfig import WRF
 # -----------------------------------------------------------------------------
 
 # set paths
-regrid = True #regrid to coarser resolution
-elevation_profile = False ## 1D COSIPY
-elev_bandsize = 30 #in m 
+regrid = False #regrid to coarser resolution
+elevation_profile = True ## 1D COSIPY
+elev_bandsize = 10 #in m 
 if elevation_profile == True:
     print("Routine check. Regrid Option is set to: ", regrid)
     print("Setting regrid to False.")
@@ -57,7 +58,7 @@ if elevation_profile == True:
     regrid = False
 ellps = "WGS84"  # Earth's surface approximation (sphere, GRS80 or WGS84)
 path_out = "../../data/static/HEF/"
-file_sw_dir_cor = "LUT_HORAYZON_sw_dir_cor_300m.nc"
+file_sw_dir_cor = "LUT_HORAYZON_sw_dir_cor_1D10m.nc"
 
 static_file = "../../data/static/HEF/HEF_static_30m_raw.nc" #path to high resolution dataset
 coarse_static_file = "../../data/static/HEF/HEF_static_300m_agg.nc" #Load coarse grid
@@ -442,6 +443,8 @@ for i in range(len(ta)): #loop over timesteps
         df['time'] = df['time'].dt.tz_localize(None)        
         ##sort values by index vars, just in case
         df.sort_values(by=["time","lat","lon"], inplace=True)
+        ## if elevation bins are too small, we will not have a unique index .. manual adjust that
+        # the latitude information is not really useful anymore if we use HORAYZON, so adjust it
         try:
             df['lat'] = df['lat'] + df['HGT']*1e-9
             df.set_index(['time','lat','lon'], inplace=True)

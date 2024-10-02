@@ -450,6 +450,7 @@ def create_2D_input(cs_file, cosipy_file, static_file, start_date, end_date, sta
     lapse_RH = df['lr_rh2']
     lapse_SF = df['lr_sf']
     lapse_RRR = df['lr_tp']
+    #apply separate lapse rates for total prec and snowfall? for now, yeah.. 
     
     print(lapse_T)
     print(lapse_SF)
@@ -555,7 +556,7 @@ def create_2D_input(cs_file, cosipy_file, static_file, start_date, end_date, sta
             if ELEV_model:
                 correction_factor = xr.open_dataset("../../data/static/HEF/LUT_HORAYZON_sw_dir_cor_1D10m.nc")
             else:
-                correction_factor = xr.open_dataset("../../data/static/HEF/LUT_HORAYZON_sw_dir_cor_agg.nc")
+                correction_factor = xr.open_dataset("../../data/static/HEF/LUT_HORAYZON_sw_dir_cor_300m.nc")
         except:
             print("HORAYZON Lookup Table is not available.")
             sys.exit()
