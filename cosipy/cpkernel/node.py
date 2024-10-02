@@ -186,6 +186,12 @@ class Node:
             kappa = self.get_layer_ice_fraction()*k_i + self.get_layer_air_porosity()*k_a + self.get_layer_liquid_water_content()*k_w
         elif thermal_conductivity_method == 'empirical':
             kappa = 0.021 + 2.5 * np.power((self.get_layer_density()/1000),2)
+        elif thermal_conductivity_method == 'Sturm97':
+            kappa = 0.138 - 1.01e-3 * self.get_layer_density() + 3.23e-6 * np.power((self.get_layer_density()),2)
+        elif thermal_conductivity_method == 'Calonne19':
+            theta = 1 / (1 + np.exp(-2 * 0.02 * (self.get_layer_density() - 450)))
+            kappa = ((k_i * k_a / 2.107 *0.024) * ((1 - theta) * ((0.024 - (1.23e-4 * self.get_layer_density()) + (2.5e-6 * np.power(self.get_layer_density(),2)))))) + \
+                  ((k_i / 2.107) * (theta * (2.107 + 0.003618 * (self.get_layer_density() - ice_density))))
         else:
             message = ("Thermal conductivity method =",
                        f"{thermal_conductivity_method}",

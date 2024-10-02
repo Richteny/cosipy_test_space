@@ -10,7 +10,7 @@ densification_method = "Boone"
 penetrating_method = "Bintanja95"
 roughness_method = "Moelg12"
 saturation_water_vapour_method = "Sonntag90"
-thermal_conductivity_method = "bulk"
+thermal_conductivity_method = "bulk" #Sturm97, Calonne19
 sfc_temperature_method = "Newton"
 
 [INITIAL_CONDITIONS]
