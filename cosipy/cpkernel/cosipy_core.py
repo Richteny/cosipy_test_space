@@ -71,6 +71,7 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
         roughness_fresh_snow = opt_dict[8]
         roughness_ice = opt_dict[9]
         roughness_firn = opt_dict[10]
+        aging_factor_roughness = opt_dict[11]
 
     #read_opt(opt_dict, globals())
     # Local variables

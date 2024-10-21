@@ -35,6 +35,7 @@ def updateAlbedo(GRID, surface_temperature, albedo_snow, opt_dict=None):
         roughness_fresh_snow = opt_dict[8]
         roughness_ice = opt_dict[9]
         roughness_firn = opt_dict[10]
+        aging_factor_roughness = opt_dict[11]
     
     albedo_allowed = ["Oerlemans98", "Bougamont05"]
     if albedo_method == "Oerlemans98":
