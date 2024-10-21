@@ -371,7 +371,8 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
                                                         tsl_out_match.Med_TSL.values)) ).transpose()
                 curr_df.columns = ['rrr_factor', 'alb_ice', 'alb_snow', 'alb_firn', 'albedo_aging',
                                    'albedo_depth', 'center_snow_transfer', 'spread_snow_transfer',
-                                   'roughness_fresh_snow', 'roughness_ice', 'roughness_firn', 'mb'] + [f'sim{i+1}' for i in range(tsl_out_match.shape[0])]
+                                   'roughness_fresh_snow', 'roughness_ice', 'roughness_firn', 'aging_factor_roughness', 'mb'] +\
+                                  [f'sim{i+1}' for i in range(tsl_out_match.shape[0])]
                 #print("\n--------------------------------")
                 #print(curr_df)
                 #curr_df.to_csv("./simulations/curr_df.csv")
@@ -389,7 +390,8 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
                 #print(param_df)
                 param_df.columns =   ['rrr_factor', 'alb_ice', 'alb_snow', 'alb_firn', 'albedo_aging',
                                       'albedo_depth', 'center_snow_transfer', 'spread_snow_transfer',
-                                      'roughness_fresh_snow', 'roughness_ice', 'roughness_firn','mb'] + [f'sim{i+1}' for i in range(tsl_out_match.shape[0])]
+                                      'roughness_fresh_snow', 'roughness_ice', 'roughness_firn', 'aging_factor_roughness', 'mb'] +\
+                                     [f'sim{i+1}' for i in range(tsl_out_match.shape[0])]
             param_df.to_csv("./simulations/cosipy_params.csv")
 
     #-----------------------------------------------
