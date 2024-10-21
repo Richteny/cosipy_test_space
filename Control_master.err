@@ -261,3 +261,297 @@ INFO: scheduler.remove_client(): Remove client Client-f5ad2fc2-8f95-11ef-9dbc-0c
 INFO: core.handle_stream(): Received 'close-stream' from tcp://192.168.1.2:37122; closing.
 INFO: scheduler.remove_client(): Remove client Client-f5ad2fc2-8f95-11ef-9dbc-0cc47ab289d6
 INFO: scheduler.add_client(): Close client connection: Client-f5ad2fc2-8f95-11ef-9dbc-0cc47ab289d6
+INFO: core.handle_stream(): Connection to tcp://192.168.1.4:55848 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.4:34043', name: SLURMCluster-4-12, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.4:34043
+INFO: core.handle_stream(): Connection to tcp://192.168.1.7:53414 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.7:41261', name: SLURMCluster-2-0, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.7:41261
+INFO: core.handle_stream(): Connection to tcp://192.168.1.5:59712 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.5:34925', name: SLURMCluster-3-6, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.5:34925
+INFO: core.handle_stream(): Connection to tcp://192.168.1.7:53384 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.7:34969', name: SLURMCluster-2-10, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.7:34969
+INFO: core.handle_stream(): Connection to tcp://192.168.1.5:59740 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.5:36055', name: SLURMCluster-3-10, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.5:36055
+INFO: core.handle_stream(): Connection to tcp://192.168.1.4:55868 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.4:32983', name: SLURMCluster-4-19, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.4:32983
+INFO: core.handle_stream(): Connection to tcp://192.168.1.4:55862 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.4:34047', name: SLURMCluster-4-0, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.4:34047
+INFO: core.handle_stream(): Connection to tcp://192.168.1.4:55852 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.4:42009', name: SLURMCluster-4-4, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.4:42009
+INFO: core.handle_stream(): Connection to tcp://192.168.1.5:59708 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.5:34521', name: SLURMCluster-3-3, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.5:34521
+INFO: core.handle_stream(): Connection to tcp://192.168.1.4:55856 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.4:33829', name: SLURMCluster-4-15, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.4:33829
+INFO: core.handle_stream(): Connection to tcp://192.168.1.4:55842 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.4:38311', name: SLURMCluster-4-2, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.4:38311
+INFO: core.handle_stream(): Connection to tcp://192.168.1.5:59726 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.5:33425', name: SLURMCluster-3-18, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.5:33425
+INFO: core.handle_stream(): Connection to tcp://192.168.1.4:55870 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.4:38497', name: SLURMCluster-4-13, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.4:38497
+INFO: core.handle_stream(): Connection to tcp://192.168.1.5:59742 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.5:35059', name: SLURMCluster-3-11, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.5:35059
+INFO: core.handle_stream(): Connection to tcp://192.168.1.7:53412 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.7:38051', name: SLURMCluster-2-3, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.7:38051
+INFO: core.handle_stream(): Connection to tcp://192.168.1.5:59720 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.5:37231', name: SLURMCluster-3-9, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.5:37231
+INFO: core.handle_stream(): Connection to tcp://192.168.1.5:59744 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.5:34083', name: SLURMCluster-3-16, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.5:34083
+INFO: core.handle_stream(): Connection to tcp://192.168.1.7:53386 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.7:35155', name: SLURMCluster-2-6, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.7:35155
+INFO: core.handle_stream(): Connection to tcp://192.168.1.7:53382 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.7:34583', name: SLURMCluster-2-16, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.7:34583
+INFO: core.handle_stream(): Connection to tcp://192.168.1.7:53400 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.7:36873', name: SLURMCluster-2-9, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.7:36873
+INFO: core.handle_stream(): Connection to tcp://192.168.1.7:53408 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.7:43381', name: SLURMCluster-2-18, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.7:43381
+INFO: core.handle_stream(): Connection to tcp://192.168.1.7:53394 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.7:37749', name: SLURMCluster-2-7, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.7:37749
+INFO: core.handle_stream(): Connection to tcp://192.168.1.5:59722 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.5:38997', name: SLURMCluster-3-5, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.5:38997
+INFO: core.handle_stream(): Connection to tcp://192.168.1.7:53402 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.7:41939', name: SLURMCluster-2-17, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.7:41939
+INFO: core.handle_stream(): Connection to tcp://192.168.1.7:53406 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.7:34765', name: SLURMCluster-2-5, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.7:34765
+INFO: core.handle_stream(): Connection to tcp://192.168.1.7:53422 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.7:46421', name: SLURMCluster-2-15, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.7:46421
+INFO: core.handle_stream(): Connection to tcp://192.168.1.5:59730 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.5:35105', name: SLURMCluster-3-1, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.5:35105
+INFO: core.handle_stream(): Connection to tcp://192.168.1.4:55834 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.4:35797', name: SLURMCluster-4-14, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.4:35797
+INFO: core.handle_stream(): Connection to tcp://192.168.1.5:59710 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.5:38311', name: SLURMCluster-3-15, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.5:38311
+INFO: core.handle_stream(): Connection to tcp://192.168.1.7:53420 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.7:35723', name: SLURMCluster-2-13, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.7:35723
+INFO: core.handle_stream(): Connection to tcp://192.168.1.7:53388 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.7:34877', name: SLURMCluster-2-12, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.7:34877
+INFO: core.handle_stream(): Connection to tcp://192.168.1.5:59718 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.5:38333', name: SLURMCluster-3-14, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.5:38333
+INFO: core.handle_stream(): Connection to tcp://192.168.1.5:59714 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.5:38279', name: SLURMCluster-3-7, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.5:38279
+INFO: core.handle_stream(): Connection to tcp://192.168.1.5:59724 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.5:36923', name: SLURMCluster-3-13, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.5:36923
+INFO: core.handle_stream(): Connection to tcp://192.168.1.4:55858 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.4:41687', name: SLURMCluster-4-8, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.4:41687
+INFO: core.handle_stream(): Connection to tcp://192.168.1.4:55838 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.4:44121', name: SLURMCluster-4-18, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.4:44121
+INFO: core.handle_stream(): Connection to tcp://192.168.1.7:53416 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.7:35763', name: SLURMCluster-2-11, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.7:35763
+INFO: core.handle_stream(): Connection to tcp://192.168.1.5:59732 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.5:39465', name: SLURMCluster-3-8, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.5:39465
+INFO: core.handle_stream(): Connection to tcp://192.168.1.7:53404 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.7:33945', name: SLURMCluster-2-8, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.7:33945
+INFO: core.handle_stream(): Connection to tcp://192.168.1.7:53398 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.7:42199', name: SLURMCluster-2-2, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.7:42199
+INFO: core.handle_stream(): Connection to tcp://192.168.1.5:59716 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.5:44715', name: SLURMCluster-3-2, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.5:44715
+INFO: core.handle_stream(): Connection to tcp://192.168.1.7:53390 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.7:43605', name: SLURMCluster-2-19, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.7:43605
+INFO: core.handle_stream(): Connection to tcp://192.168.1.5:59728 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.5:45827', name: SLURMCluster-3-4, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.5:45827
+INFO: core.handle_stream(): Connection to tcp://192.168.1.7:53418 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.7:37407', name: SLURMCluster-2-4, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.7:37407
+INFO: core.handle_stream(): Connection to tcp://192.168.1.7:53396 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.7:36935', name: SLURMCluster-2-14, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.7:36935
+INFO: core.handle_stream(): Connection to tcp://192.168.1.5:59746 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.5:39615', name: SLURMCluster-3-12, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.5:39615
+INFO: core.handle_stream(): Connection to tcp://192.168.1.4:55836 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.4:44145', name: SLURMCluster-4-1, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.4:44145
+INFO: core.handle_stream(): Connection to tcp://192.168.1.5:59736 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.5:38413', name: SLURMCluster-3-0, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.5:38413
+INFO: core.handle_stream(): Connection to tcp://192.168.1.1:36106 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.1:34139', name: SLURMCluster-6-16, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.1:34139
+INFO: core.handle_stream(): Connection to tcp://192.168.1.1:36124 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.1:44359', name: SLURMCluster-6-7, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.1:44359
+INFO: core.handle_stream(): Connection to tcp://192.168.1.7:53410 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.7:44891', name: SLURMCluster-2-1, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.7:44891
+INFO: core.handle_stream(): Connection to tcp://192.168.1.1:36142 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.1:33387', name: SLURMCluster-6-4, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.1:33387
+INFO: core.handle_stream(): Connection to tcp://192.168.1.1:36108 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.1:41151', name: SLURMCluster-6-19, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.1:41151
+INFO: core.handle_stream(): Connection to tcp://192.168.1.1:36130 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.1:35865', name: SLURMCluster-6-5, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.1:35865
+INFO: core.handle_stream(): Connection to tcp://192.168.1.1:36126 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.1:46443', name: SLURMCluster-6-6, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.1:46443
+INFO: core.handle_stream(): Connection to tcp://192.168.1.1:36110 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.1:38157', name: SLURMCluster-6-2, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.1:38157
+INFO: core.handle_stream(): Connection to tcp://192.168.1.1:36120 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.1:34575', name: SLURMCluster-6-15, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.1:34575
+INFO: core.handle_stream(): Connection to tcp://192.168.1.1:36140 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.1:36849', name: SLURMCluster-6-3, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.1:36849
+INFO: core.handle_stream(): Connection to tcp://192.168.1.1:36134 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.1:36767', name: SLURMCluster-6-8, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.1:36767
+INFO: core.handle_stream(): Connection to tcp://192.168.1.1:36128 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.1:37509', name: SLURMCluster-6-10, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.1:37509
+INFO: core.handle_stream(): Connection to tcp://192.168.1.1:36132 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.1:36405', name: SLURMCluster-6-13, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.1:36405
+INFO: core.handle_stream(): Connection to tcp://192.168.1.1:36136 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.1:42837', name: SLURMCluster-6-14, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.1:42837
+INFO: core.handle_stream(): Connection to tcp://192.168.1.1:36122 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.1:35365', name: SLURMCluster-6-1, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.1:35365
+INFO: core.handle_stream(): Connection to tcp://192.168.1.1:36116 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.1:38191', name: SLURMCluster-6-12, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.1:38191
+INFO: core.handle_stream(): Connection to tcp://192.168.1.1:36138 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.1:37967', name: SLURMCluster-6-11, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.1:37967
+INFO: core.handle_stream(): Connection to tcp://192.168.1.1:36144 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.1:33991', name: SLURMCluster-6-0, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.1:33991
+INFO: core.handle_stream(): Connection to tcp://192.168.1.1:36104 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.1:38743', name: SLURMCluster-6-18, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.1:38743
+INFO: core.handle_stream(): Connection to tcp://192.168.1.1:36118 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.1:46881', name: SLURMCluster-6-17, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.1:46881
+INFO: core.handle_stream(): Connection to tcp://192.168.1.1:36112 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.1:44611', name: SLURMCluster-6-9, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.1:44611
+INFO: core.handle_stream(): Connection to tcp://192.168.1.4:55832 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.4:37709', name: SLURMCluster-4-11, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.4:37709
+INFO: core.handle_stream(): Connection to tcp://192.168.1.4:55854 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.4:41905', name: SLURMCluster-4-10, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.4:41905
+INFO: core.handle_stream(): Connection to tcp://192.168.1.4:55850 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.4:37979', name: SLURMCluster-4-7, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.4:37979
+INFO: core.handle_stream(): Connection to tcp://192.168.1.4:55844 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.4:35703', name: SLURMCluster-4-3, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.4:35703
+INFO: core.handle_stream(): Connection to tcp://192.168.1.4:55846 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.4:33875', name: SLURMCluster-4-16, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.4:33875
+INFO: core.handle_stream(): Connection to tcp://192.168.1.4:55860 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.4:37447', name: SLURMCluster-4-6, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.4:37447
+INFO: core.handle_stream(): Connection to tcp://192.168.1.4:55866 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.4:37639', name: SLURMCluster-4-17, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.4:37639
+INFO: core.handle_stream(): Connection to tcp://192.168.1.4:55840 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.4:38601', name: SLURMCluster-4-5, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.4:38601
+INFO: core.handle_stream(): Connection to tcp://192.168.1.4:55864 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.4:33363', name: SLURMCluster-4-9, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.4:33363
+INFO: core.handle_stream(): Connection to tcp://192.168.1.5:59734 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.5:32859', name: SLURMCluster-3-19, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.5:32859
+INFO: core.handle_stream(): Connection to tcp://192.168.1.5:59738 has been closed.
+INFO: scheduler.remove_worker(): Remove worker <WorkerState 'tcp://192.168.1.5:45381', name: SLURMCluster-3-17, status: running, memory: 0, processing: 0>
+INFO: core.remove(): Removing comms to tcp://192.168.1.5:45381
+INFO: scheduler.remove_worker(): Lost all workers
+INFO: scheduler.close(): Scheduler closing...
+INFO: scheduler.close(): Scheduler closing all comms
+/data/scratch/richteny/thesis/cosipy_test_space/COSIPY.py:232: FutureWarning: 'Y' is deprecated and will be removed in a future version, please use 'YE' instead.
+  mean_annual_df =  dfmb.resample("1Y").sum() #resample to fixed year to match geodetic
+Traceback (most recent call last):
+  File "/data/scratch/richteny/thesis/cosipy_test_space/COSIPY.py", line 372, in main
+    curr_df.columns = ['rrr_factor', 'alb_ice', 'alb_snow', 'alb_firn', 'albedo_aging',
+    ^^^^^^^^^^^^^^^
+  File "/data/scratch/richteny/miniconda3/envs/pymc_env/lib/python3.11/site-packages/pandas/core/generic.py", line 6307, in __setattr__
+    return object.__setattr__(self, name, value)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "properties.pyx", line 69, in pandas._libs.properties.AxisProperty.__set__
+  File "/data/scratch/richteny/miniconda3/envs/pymc_env/lib/python3.11/site-packages/pandas/core/generic.py", line 813, in _set_axis
+    self._mgr.set_axis(axis, labels)
+  File "/data/scratch/richteny/miniconda3/envs/pymc_env/lib/python3.11/site-packages/pandas/core/internals/managers.py", line 239, in set_axis
+    self._validate_set_axis(axis, new_labels)
+  File "/data/scratch/richteny/miniconda3/envs/pymc_env/lib/python3.11/site-packages/pandas/core/internals/base.py", line 98, in _validate_set_axis
+    raise ValueError(
+ValueError: Length mismatch: Expected axis has 75 elements, new values have 74 elements
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/data/scratch/richteny/thesis/cosipy_test_space/FAST_spotpy.py", line 125, in <module>
+    fast = psample(obs=(tsla_obs, geod_ref), count=1)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/scratch/richteny/thesis/cosipy_test_space/FAST_spotpy.py", line 123, in psample
+    sampler.sample(rep)
+  File "/data/scratch/richteny/miniconda3/envs/pymc_env/lib/python3.11/site-packages/spotpy/algorithms/fast.py", line 229, in sample
+    for rep, randompar, simulations in self.repeat(param_generator):
+  File "/data/scratch/richteny/miniconda3/envs/pymc_env/lib/python3.11/site-packages/spotpy/parallel/sequential.py", line 29, in __call__
+    data = self.process(job)
+           ^^^^^^^^^^^^^^^^^
+  File "/data/scratch/richteny/miniconda3/envs/pymc_env/lib/python3.11/site-packages/spotpy/algorithms/_algorithm.py", line 549, in simulate
+    model_result = self.setup.simulation(self.partype(*all_params))
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/scratch/richteny/thesis/cosipy_test_space/FAST_spotpy.py", line 78, in simulation
+    sim_mb, sim_tsla = runcosipy(RRR_factor=x.RRR_factor, alb_ice = x.alb_ice, alb_snow = x.alb_snow, alb_firn = x.alb_firn,
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/scratch/richteny/thesis/cosipy_test_space/COSIPY.py", line 390, in main
+    param_df.columns =   ['rrr_factor', 'alb_ice', 'alb_snow', 'alb_firn', 'albedo_aging',
+    ^^^^^^^^^^^^^^^^
+  File "/data/scratch/richteny/miniconda3/envs/pymc_env/lib/python3.11/site-packages/pandas/core/generic.py", line 6307, in __setattr__
+    return object.__setattr__(self, name, value)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "properties.pyx", line 69, in pandas._libs.properties.AxisProperty.__set__
+  File "/data/scratch/richteny/miniconda3/envs/pymc_env/lib/python3.11/site-packages/pandas/core/generic.py", line 813, in _set_axis
+    self._mgr.set_axis(axis, labels)
+  File "/data/scratch/richteny/miniconda3/envs/pymc_env/lib/python3.11/site-packages/pandas/core/internals/managers.py", line 239, in set_axis
+    self._validate_set_axis(axis, new_labels)
+  File "/data/scratch/richteny/miniconda3/envs/pymc_env/lib/python3.11/site-packages/pandas/core/internals/base.py", line 98, in _validate_set_axis
+    raise ValueError(
+ValueError: Length mismatch: Expected axis has 75 elements, new values have 74 elements
