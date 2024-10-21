@@ -55,7 +55,8 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
          alb_snow= Constants.albedo_fresh_snow, alb_firn=Constants.albedo_firn, albedo_aging= Constants.albedo_mod_snow_aging,
          albedo_depth= Constants.albedo_mod_snow_depth, center_snow_transfer_function= Constants.center_snow_transfer_function,
          spread_snow_transfer_function= Constants.spread_snow_transfer_function, roughness_fresh_snow= Constants.roughness_fresh_snow,
-         roughness_ice= Constants.roughness_ice,roughness_firn= Constants.roughness_firn,count=""):
+         roughness_ice= Constants.roughness_ice,roughness_firn= Constants.roughness_firn, aging_factor_roughness= Constants.aging_factor_roughness,
+         count=""):
 
     Config()
     Constants()
@@ -77,7 +78,7 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
     #albedo_aging = np.array([1.1])
     #albedo_depth = np.array([1.1])
     opt_dict = (RRR_factor, alb_ice, alb_snow, alb_firn, albedo_aging, albedo_depth, center_snow_transfer_function,
-                spread_snow_transfer_function, roughness_fresh_snow, roughness_ice, roughness_firn)
+                spread_snow_transfer_function, roughness_fresh_snow, roughness_ice, roughness_firn, aging_factor_roughness)
     #0 to 5 - base, 6 center snow , 7 spreadsnow, 8 to 10 roughness length 
     #Initialise dictionary and load Params#
     #opt_dict = Dict.empty(key_type=types.unicode_type, value_type=types.float64)
