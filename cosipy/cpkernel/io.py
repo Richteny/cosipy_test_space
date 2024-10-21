@@ -277,6 +277,7 @@ class IOClass:
             roughness_fresh_snow = opt_dict[8]
             roughness_ice = opt_dict[9]
             roughness_firn = opt_dict[10]
+            aging_factor_roughness = opt_dict[11]
         else:
             mult_factor_RRR = Constants.mult_factor_RRR
             albedo_ice = Constants.albedo_ice
@@ -289,7 +290,7 @@ class IOClass:
             roughness_fresh_snow = Constants.roughness_fresh_snow
             roughness_ice = Constants.roughness_ice
             roughness_firn = Constants.roughness_firn
-       
+            aging_factor_roughness = Constants.aging_factor_roughness
 
  
         # Coordinates
@@ -353,7 +354,7 @@ class IOClass:
         self.RESULT.attrs['Roughness_fresh_snow'] = roughness_fresh_snow
         self.RESULT.attrs['Roughness_ice'] = roughness_ice
         self.RESULT.attrs['Roughness_firn'] = roughness_firn
-        self.RESULT.attrs['Aging_factor_roughness'] = Constants.aging_factor_roughness
+        self.RESULT.attrs['Aging_factor_roughness'] = aging_factor_roughness
         self.RESULT.attrs['Snow_ice_threshold'] = Constants.snow_ice_threshold
 
         self.RESULT.attrs['lat_heat_melting'] = Constants.lat_heat_melting
