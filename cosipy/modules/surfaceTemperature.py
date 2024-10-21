@@ -72,6 +72,7 @@ def update_surface_temperature(GRID, dt, z, z0, T2, rH2, p, SWnet, u2, RAIN, SLO
         roughness_fresh_snow = opt_dict[8]
         roughness_ice = opt_dict[9]
         roughness_firn = opt_dict[10]
+        aging_factor_roughness = opt_dict[11]
     #read_opt(opt_dict, globals())
 
     #Interpolate subsurface temperatures to selected subsurface depths for GHF computation
