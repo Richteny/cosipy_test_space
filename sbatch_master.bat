@@ -2,13 +2,13 @@
 
 #SBATCH --job-name="HEF-Test"
 #SBATCH --qos=medium
-#SBATCH --nodes=1
-#SBATCH --ntasks-per-node=20
-##SBATCH --ntasks=40
+##SBATCH --nodes=1
+##SBATCH --ntasks-per-node=20
+#SBATCH --ntasks=40
 #SBATCH --chdir=/data/scratch/richteny/thesis/cosipy_test_space/
 #SBATCH --account=morsanat
 #SBATCH --error=Control_master.err
-#SBATCH --partition=computehm
+##SBATCH --partition=computehm
 #SBATCH --output=Control_master.out
 ##SBATCH --mail-type=ALL
 
@@ -23,6 +23,7 @@ conda activate pymc_env
 #module load anaconda/2019.07
 
 #python -u /data/scratch/richteny/thesis/cosipy_test_space/COSIPY.py
-python -u /data/scratch/richteny/thesis/cosipy_test_space/pymc_calibration.py
+python -u /data/scratch/richteny/thesis/cosipy_test_space/FAST_spotpy.py
+#python -u /data/scratch/richteny/thesis/cosipy_test_space/pymc_calibration.py
 #python -u /data/scratch/richteny/thesis/cosipy_test_space/EMERGENCY_pymc_calibration.py
 

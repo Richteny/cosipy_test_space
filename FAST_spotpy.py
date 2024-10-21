@@ -87,7 +87,7 @@ class spot_setup:
 
     def objectivefunction(self, simulation, evaluation, params=None):
         if not self.obj_func:
-            if tsl_normalize:
+            if Config.tsl_normalize:
                 eval_tsla = np.delete(evaluation[1].TSL_normalized.values, np.argwhere(np.isnan(simulation[1])))
             else:
                 eval_tsla = np.delete(evaluation[1].SC_median.values, np.argwhere(np.isnan(simulation[1])))
