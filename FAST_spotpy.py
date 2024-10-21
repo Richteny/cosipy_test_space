@@ -87,13 +87,14 @@ class spot_setup:
 
     def objectivefunction(self, simulation, evaluation, params=None):
         if not self.obj_func:
+            print(evaluation[1])
             if Config.tsl_normalize:
-                eval_tsla = np.delete(evaluation[1].TSL_normalized.values, np.argwhere(np.isnan(simulation[1])))
+                eval_tsla = np.delete(evaluation[1]['TSL_normalized'].values, np.argwhere(np.isnan(simulation[1])))
             else:
-                eval_tsla = np.delete(evaluation[1].SC_median.values, np.argwhere(np.isnan(simulation[1])))
+                eval_tsla = np.delete(evaluation[1]['SC_median'].values, np.argwhere(np.isnan(simulation[1])))
             eval_mb = evaluation[0]['dmdtda'].values
             sigma_mb = evaluation[0]['err_dmdtda'].values
-            sigma_tsla = np.delete(evaluation[1].SC_stdev.values, np.argwhere(np.isnan(simulation[1])))
+            sigma_tsla = np.delete(evaluation[1]['SC_stdev'].values, np.argwhere(np.isnan(simulation[1])))
             sim_tsla = simulation[1][~np.isnan(simulation[1])]
             sim_mb = simulation[0][~np.isnan(simulation[0])]
            
@@ -122,4 +123,4 @@ def psample(obs, count=None):
     sampler = spotpy.algorithms.fast(setup, dbname=name, dbformat='csv', db_precision=np.float32, random_state=42, save_sim=True)
     sampler.sample(rep)
         
-fast = psample(obs=(tsla_obs, geod_ref), count=1)
+fast = psample(obs=(geod_ref, tsla_obs), count=1)
