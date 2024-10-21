@@ -7,7 +7,9 @@ import sys
 import os
 from COSIPY import main as runcosipy
 #from constants import *
-from config import *
+#from config import *
+from cosipy.config import Config
+from cosipy.constants import Constants
 import pytensor
 import pytensor.tensor as pt
 from pytensor.compile.ops import as_op
@@ -20,8 +22,12 @@ pytensor.config.optimizer="fast_compile"
 
 def main():
 
+    # Initiate Constants and Config
+    Config()
+    Constants()
+
     ### set up paths and constants
-    main_path = "/data/scratch/richteny/thesis/cosipy_test_space-v2/"
+    main_path = "/data/scratch/richteny/thesis/cosipy_test_space/"
     os.makedirs(main_path+"simulations/", exist_ok=True)
     path_to_geod = "/data/scratch/richteny/Hugonnet_21_MB/"
     rgi_id = "RGI60-11.00897"
@@ -29,18 +35,18 @@ def main():
 
     ### Load observations
     # Load TSL data
-    print("Loading TSL file from:", tsl_data_file)
-    tsla_obs = pd.read_csv(tsl_data_file)
+    print("Loading TSL file from:", Config.tsl_data_file)
+    tsla_obs = pd.read_csv(Config.tsl_data_file)
     tsla_obs['LS_DATE'] = pd.to_datetime(tsla_obs['LS_DATE'])
     time_start = "2000-01-01" #config starts with spinup - need to add 1year
     time_start_dt = pd.to_datetime(time_start)
-    time_end_dt = pd.to_datetime(time_end)
+    time_end_dt = pd.to_datetime(Config.time_end)
     print("Start date:", time_start)
-    print("End date:", time_end)
+    print("End date:", Config.time_end)
     tsla_obs = tsla_obs.loc[(tsla_obs['LS_DATE'] > time_start_dt) & (tsla_obs['LS_DATE'] <= time_end_dt)]
     tsla_obs.set_index('LS_DATE', inplace=True)
     #Normalize standard deviation if necessary
-    if tsl_normalize:
+    if Config.tsl_normalize:
         tsla_obs['SC_stdev'] = (tsla_obs['SC_stdev']) / (tsla_obs['glacier_DEM_max'] - tsla_obs['glacier_DEM_min'])
 
     # Load MB data
@@ -106,7 +112,7 @@ def main():
         #step = pm.Metropolis()
         #step = pm.Slice()
         step = pm.DEMetropolisZ()
-        post = pm.sample(draws=1000, tune=200, step=step, return_inferencedata=True, chains=4, cores=1, progressbar=True, discard_tuned_samples=False)
+        post = pm.sample(draws=10000, tune=1000, step=step, return_inferencedata=True, chains=6, cores=1, progressbar=True, discard_tuned_samples=False)
 
         ## testing to save samples
         post.to_netcdf(main_path+"simulations/simulations_HEF_results_MCMC.nc")
