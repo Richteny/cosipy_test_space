@@ -54,17 +54,17 @@ obs = None
 class spot_setup:
     # defining all parameters and the distribution
     print("Setting parameters.")
-    param = RRR_factor, alb_ice, alb_snow, alb_firn, albedo_aging, albedo_depth,\
-            aging_factor_roughness, roughness_fresh_snow, roughness_ice = [
+    param = RRR_factor, alb_ice, alb_snow, alb_firn, albedo_aging, albedo_depth = [
+            #aging_factor_roughness, roughness_fresh_snow, roughness_ice = [
         Uniform(low=0.33, high=3), #1.235, high=1.265
         Uniform(low= 0.1, high=0.4),
         Uniform(low=0.71, high=0.98),
         Uniform(low=0.41, high=0.7),
         Uniform(low=0.1, high=31),
         Uniform(low=0.1, high=31),
-        Uniform(low=0.005, high=0.0026+0.0026),
-        Uniform(low=0.2, high=3.56),
-        Uniform(low=0.1, high=7.0)]
+        #Uniform(low=0.005, high=0.0026+0.0026),
+        #Uniform(low=0.2, high=3.56),
+        #Uniform(low=0.1, high=7.0)]
         #roughness_firn = Uniform(low=2, high=6) not used here but set to max. ice value because of equation
     def __init__(self, obs, count="", obj_func=None):
         self.obj_func = obj_func
@@ -76,8 +76,8 @@ class spot_setup:
     def simulation(self, x):
         print("Count", self.count)
         sim_mb, sim_tsla = runcosipy(RRR_factor=x.RRR_factor, alb_ice = x.alb_ice, alb_snow = x.alb_snow, alb_firn = x.alb_firn,
-                   albedo_aging = x.albedo_aging, albedo_depth = x.albedo_depth, aging_factor_roughness = x.aging_factor_roughness,
-                   roughness_fresh_snow = x.roughness_fresh_snow, roughness_ice = x.roughness_ice, count=self.count)
+                   albedo_aging = x.albedo_aging, albedo_depth = x.albedo_depth, #aging_factor_roughness = x.aging_factor_roughness,
+                   count=self.count) #roughness_fresh_snow = x.roughness_fresh_snow, roughness_ice = x.roughness_ice, count=self.count)
         sim_tsla = sim_tsla[sim_tsla['time'].isin(tsla_obs.index)]
         return (np.array([sim_mb]), sim_tsla['Med_TSL'].values)
 
@@ -115,16 +115,16 @@ def psample(obs, count=None):
     np.random.seed(42)
     random.seed(42)
     
-    M = 4
-    d = 2
-    k = 9
-    par_iter = (1 + 4 * M ** 2 * (1 + (k -2) * d)) * k
+    #M = 4
+    #d = 2
+    #k = 9
+    #par_iter = (1 + 4 * M ** 2 * (1 + (k -2) * d)) * k
     
-    rep= 5000
+    rep= 2000
     count=count
-    name = "FAST_sensitivity_parameters"
+    name = "LHS_surrogate_parameters"
     setup = spot_setup(obs, count=count)
-    sampler = spotpy.algorithms.fast(setup, dbname=name, dbformat='csv', db_precision=np.float32, random_state=42, save_sim=True)
+    sampler = spotpy.algorithms.lhs(setup, dbname=name, dbformat='csv', db_precision=np.float32, random_state=42, save_sim=True)
     sampler.sample(rep)
         
 fast = psample(obs=(geod_ref, tsla_obs), count=1)
