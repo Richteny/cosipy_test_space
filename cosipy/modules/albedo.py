@@ -17,29 +17,33 @@ t_star_dry = Constants.t_star_dry
 t_star_wet = Constants.t_star_wet
 t_star_K = Constants.t_star_K
 
+#print("You are in the albedo scheme.")
 # Need to load in dic values here already to be able to call the following functions?
 #opt_dict = read_opt(opt_dict, globals())
 
 def updateAlbedo(GRID, surface_temperature, albedo_snow, opt_dict=None):
     """Updates the albedo."""
     #read_opt(opt_dict, globals())
+    print("Read opt dict.")
+    print(opt_dict)
     if opt_dict is not None:
-        mult_factor_RRR = opt_dict[0]
+        #mult_factor_RRR = opt_dict[0]
         albedo_ice = opt_dict[1]
         albedo_fresh_snow = opt_dict[2]
         albedo_firn = opt_dict[3]
         albedo_mod_snow_aging = opt_dict[4]
         albedo_mod_snow_depth = opt_dict[5]
-        center_snow_transfer_function = opt_dict[6]
-        spread_snow_transfer_function = opt_dict[7]
-        roughness_fresh_snow = opt_dict[8]
-        roughness_ice = opt_dict[9]
-        roughness_firn = opt_dict[10]
-        aging_factor_roughness = opt_dict[11]
+        #center_snow_transfer_function = opt_dict[6]
+        #spread_snow_transfer_function = opt_dict[7]
+        #roughness_fresh_snow = opt_dict[8]
+        #roughness_ice = opt_dict[9]
+        #roughness_firn = opt_dict[10]
+        #aging_factor_roughness = opt_dict[11]
     
     albedo_allowed = ["Oerlemans98", "Bougamont05"]
     if albedo_method == "Oerlemans98":
-        alphaMod = method_Oerlemans(GRID)
+        alphaMod = method_Oerlemans(GRID, albedo_ice, albedo_fresh_snow, albedo_firn,
+                                    albedo_mod_snow_aging, albedo_mod_snow_depth)
     elif albedo_method == "Bougamont05":
         alphaMod, albedo_snow = method_Bougamont(GRID, surface_temperature, albedo_snow)
     else:
@@ -53,7 +57,24 @@ def updateAlbedo(GRID, surface_temperature, albedo_snow, opt_dict=None):
     return alphaMod, albedo_snow
 
 
-def method_Oerlemans(GRID):
+def method_Oerlemans(GRID, albedo_ice: float, albedo_fresh_snow: float, albedo_firn: float, 
+                     albedo_mod_snow_aging: float, albedo_mod_snow_depth: float):
+
+    #if opt_dict is not None:
+    #    mult_factor_RRR = opt_dict[0]
+    #    albedo_ice = opt_dict[1]
+    #    albedo_fresh_snow = opt_dict[2]
+    #    albedo_firn = opt_dict[3]
+    #    albedo_mod_snow_aging = opt_dict[4]
+    #    albedo_mod_snow_depth = opt_dict[5]
+    #    center_snow_transfer_function = opt_dict[6]
+    #    spread_snow_transfer_function = opt_dict[7]
+    #    roughness_fresh_snow = opt_dict[8]
+    #    roughness_ice = opt_dict[9]
+    #    roughness_firn = opt_dict[10]
+    #    aging_factor_roughness = opt_dict[11]
+
+    print("We have come to this point")
     # Get hours since the last snowfall
     # First get fresh snow properties (height and timestamp)
     fresh_snow_height, fresh_snow_timestamp, _ = GRID.get_fresh_snow_props()
@@ -93,6 +114,20 @@ def method_Oerlemans(GRID):
 
 
 def method_Bougamont(GRID, surface_temperature, albedo_snow):
+    #if opt_dict is not None:
+    #    mult_factor_RRR = opt_dict[0]
+    #    albedo_ice = opt_dict[1]
+    #    albedo_fresh_snow = opt_dict[2]
+    #    albedo_firn = opt_dict[3]
+    #    albedo_mod_snow_aging = opt_dict[4]
+    #    albedo_mod_snow_depth = opt_dict[5]
+    #    center_snow_transfer_function = opt_dict[6]
+    #    spread_snow_transfer_function = opt_dict[7]
+    #    roughness_fresh_snow = opt_dict[8]
+    #    roughness_ice = opt_dict[9]
+    #    roughness_firn = opt_dict[10]
+    #    aging_factor_roughness = opt_dict[11]
+
     # Get hours since the last snowfall
     # First get fresh snow properties (height and timestamp)
     _, fresh_snow_timestamp, _ = GRID.get_fresh_snow_props()
