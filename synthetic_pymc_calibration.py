@@ -57,7 +57,7 @@ def main():
 
 
     # Load TSL data
-    tsl_data_file_synth = "tsla_hef_cosmo_1d10m_1999_2010_horayzon_20000101-20001231_num.csv"
+    tsl_data_file_synth = "tsla_hef_cosmo_1d10m_1999_2010_horayzon_20000101-20001231_rrr-2.2_0.94_0.2_0.555_num.csv"
     print("Loading TSL file from:", tsl_data_file_synth)
     tsla_synth = pd.read_csv(path_to_synth+tsl_data_file_synth)
     tsla_synth['time'] = pd.to_datetime(tsla_synth['time'])
@@ -76,7 +76,7 @@ def main():
     print(tsla_synth)
 
     # Load MB data
-    geod_synth = xr.open_dataset(path_to_synth+"HEF_COSMO_1D10m_1999_2010_HORAYZON_20000101-20001231_num.nc")
+    geod_synth = xr.open_dataset(path_to_synth+"HEF_COSMO_1D10m_1999_2010_HORAYZON_20000101-20001231_RRR-2.2_0.94_0.2_0.555_num.nc")
     geod_synth = geod_synth.sel(time=slice(time_start,Config.time_end))
     geod_synth['weighted_mb'] = geod_synth['MB'] * geod_synth['N_Points'] / np.sum(geod_synth['N_Points'])
     spat_mean = geod_synth[['weighted_mb']].sum(dim=['lat','lon'])
