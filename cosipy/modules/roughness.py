@@ -11,14 +11,14 @@ def updateRoughness(GRID, opt_dict=None):
 
     # Read and set options
     if opt_dict is not None:
-        mult_factor_RRR = opt_dict[0]
-        albedo_ice = opt_dict[1]
-        albedo_fresh_snow = opt_dict[2]
-        albedo_firn = opt_dict[3]
-        albedo_mod_snow_aging = opt_dict[4]
-        albedo_mod_snow_depth = opt_dict[5]
-        center_snow_transfer_function = opt_dict[6]
-        spread_snow_transfer_function = opt_dict[7]
+        #mult_factor_RRR = opt_dict[0]
+        #albedo_ice = opt_dict[1]
+        #albedo_fresh_snow = opt_dict[2]
+        #albedo_firn = opt_dict[3]
+        #albedo_mod_snow_aging = opt_dict[4]
+        #albedo_mod_snow_depth = opt_dict[5]
+        #center_snow_transfer_function = opt_dict[6]
+        #spread_snow_transfer_function = opt_dict[7]
         roughness_fresh_snow = opt_dict[8]
         roughness_ice = opt_dict[9]
         roughness_firn = opt_dict[10]
@@ -26,7 +26,7 @@ def updateRoughness(GRID, opt_dict=None):
     #read_opt(opt_dict, globals())
     roughness_allowed = ['Moelg12']
     if Constants.roughness_method == 'Moelg12':
-        sigma = method_Moelg(GRID)
+        sigma = method_Moelg(GRID, roughness_fresh_snow, aging_factor_roughness, roughness_firn, roughness_ice)
     else:
         error_message = (
             f'Roughness method = "{Constants.roughness_method}" is not allowed,',
@@ -37,7 +37,7 @@ def updateRoughness(GRID, opt_dict=None):
     return sigma
 
 
-def method_Moelg(GRID):
+def method_Moelg(GRID, roughness_fresh_snow: float, aging_factor_roughness: float, roughness_firn: float, roughness_ice: float):
     """Update the roughness length (Moelg et al 2009, J.Clim.)."""
 
     # Get hours since the last snowfall
