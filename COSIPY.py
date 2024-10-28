@@ -71,12 +71,12 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
     TEST TO PARSE A TUPLE OF PARAM VALUES AND NOT CALL IN DICTIONARY
     '''
     # these values crashed previously [array(2.74724189), array(0.25), array(0.84), array(0.555), array(1.1), array(1.1)]
-    #RRR_factor = np.array([2.74724189])
-    #alb_ice = np.array([0.25])
-    #alb_snow = np.array([0.84])
-    #alb_firn = np.array([0.555])
-    #albedo_aging = np.array([1.1])
-    #albedo_depth = np.array([1.1])
+    #RRR_factor = np.array([2.2], dtype=float)
+    #alb_ice = np.array([0.2], dtype=float)
+    #alb_snow = np.array([0.94], dtype=float)
+    #alb_firn = np.array([0.555], dtype=float)
+    #albedo_aging = np.array([23], dtype=float)
+    #albedo_depth = np.array([3], dtype=float)
     opt_dict = (RRR_factor, alb_ice, alb_snow, alb_firn, albedo_aging, albedo_depth, center_snow_transfer_function,
                 spread_snow_transfer_function, roughness_fresh_snow, roughness_ice, roughness_firn, aging_factor_roughness)
     #0 to 5 - base, 6 center snow , 7 spreadsnow, 8 to 10 roughness length 
@@ -98,8 +98,8 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
     lapse_T = float(lr_T)
     lapse_RRR = float(lr_RRR)
     lapse_RH = float(lr_RH)
-    print("Lapse rates are:", lapse_T, lapse_RRR, lapse_RH)
-    print("Time required to load in opt_dic: ", datetime.now()-times)
+    #print("Lapse rates are:", lapse_T, lapse_RRR, lapse_RH)
+    #print("Time required to load in opt_dic: ", datetime.now()-times)
     print("#--------------------------------------#")
     print("Starting simulations with the following parameters.")
     print(opt_dict)
@@ -122,7 +122,7 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
     else:
         DATA = IO.create_data_file()
     # Create global result and restart datasets
-    RESULT = IO.create_result_file() 
+    RESULT = IO.create_result_file(opt_dict=opt_dict) 
     RESTART = IO.create_restart_file()
     print("Time required to init IO, DATA, RESULT, RESTART: ", datetime.now()-times)
     #----------------------------------------------
@@ -203,9 +203,11 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
     
     output_netcdf = set_output_netcdf_path()
     output_path = create_data_directory(path='output')                
-    results_output_name = output_netcdf.split('.nc')[0]+'_num{}.nc'.format(count)  
+    results_output_name = output_netcdf.split('.nc')[0]+'_RRR-{}_{}_num{}.nc'.format(RRR_factor, alb_snow, count)  
     #IO.get_result().to_netcdf(os.path.join(output_path,results_output_name), encoding=encoding, mode = 'w')
-    #print(IO.get_result())
+    
+    print(np.nanmax(IO.get_result().ALBEDO))
+    print(np.nanmin(IO.get_result().ALBEDO))
     #dataset = IO.get_result()
     #calculate MB for geod. reference
     #Check if 1D or 2D
@@ -216,7 +218,7 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
             print("Compute area weighted MB for 1D case.")
             dsmb = IO.get_result().sel(time=slice("2000-01-01", "2009-12-31"))
             dsmb['weighted_mb'] = dsmb['MB'] * dsmb['N_Points'] / np.sum(dsmb['N_Points'])
-            print("time 1:", datetime.now()-times)
+            #print("time 1:", datetime.now()-times)
             #time_vals = pd.to_datetime(dsmb.time.values)
             #secs = np.array([time_vals.astype('int64')]).ravel()
             #years = np.unique(time_vals.year)
@@ -334,11 +336,11 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
             #print(np.nanmedian(tsl_out['Med_TSL']))
             tsla_stats = eval_tsl(tsla_observations,tsl_out, Config.time_col_obs, Config.tsla_col_obs)
             print("TSLA Observed vs. Modelled RMSE: " + str(tsla_stats[0])+ "; R-squared: " + str(tsla_stats[1]))
-            tsl_out.to_csv(os.path.join(output_path,tsl_csv_name))
+            #tsl_out.to_csv(os.path.join(output_path,tsl_csv_name))
             ## Match to observation dates for pymc routine
             tsl_out_match = tsl_out.loc[tsl_out['time'].isin(tsla_observations['LS_DATE'])]
-            print(np.array(tsl_out_match['Med_TSL']))
-            print(tsl_out_match['Med_TSL'].values.shape)
+            #print(np.array(tsl_out_match['Med_TSL']))
+            #print(tsl_out_match['Med_TSL'].values.shape)
             #tsla_obs_v2 = tsla_observations.loc[tsla_observations['LS_DATE'].isin(tsl_out_match['time'])]
             
             #if tsl_normalize:
@@ -366,7 +368,7 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
         ## Create DF that holds params to save ##
         if Config.write_csv_status:
             try:
-                param_df = pd.read_csv("./simulations/cosipy_params.csv", index_col=0)
+                param_df = pd.read_csv("./simulations/cosipy_synthetic_params.csv", index_col=0)
                 curr_df = pd.DataFrame( np.concatenate((np.array(opt_dict, dtype=float),np.array([geod_mb]),
                                                         tsl_out_match.Med_TSL.values)) ).transpose()
                 curr_df.columns = ['rrr_factor', 'alb_ice', 'alb_snow', 'alb_firn', 'albedo_aging',
@@ -383,7 +385,9 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
                 #param_df does not exist yet, create
                 #print(tsl_out_match)
                 #print(tsl_out_match.shape[1])
-                test = np.concatenate((np.array(opt_dict, dtype=float), np.array([geod_mb]), tsl_out_match.Med_TSL.values))
+                print(opt_dict)
+                #dtype float in np.array(opt_dict, dtype=float) not working when using prescribed parameters in earlier instance
+                #test = np.concatenate((np.array(opt_dict, dtype=object), np.array([geod_mb]), tsl_out_match.Med_TSL.values))
                 #print(test)
                 param_df = pd.DataFrame( np.concatenate((np.array(opt_dict, dtype=float), np.array([geod_mb]),
                                                          tsl_out_match.Med_TSL.values)) ).transpose()
@@ -392,7 +396,7 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
                                       'albedo_depth', 'center_snow_transfer', 'spread_snow_transfer',
                                       'roughness_fresh_snow', 'roughness_ice', 'roughness_firn', 'aging_factor_roughness', 'mb'] +\
                                      [f'sim{i+1}' for i in range(tsl_out_match.shape[0])]
-            param_df.to_csv("./simulations/cosipy_params.csv")
+            param_df.to_csv("./simulations/cosipy_synthetic_params.csv")
 
     #-----------------------------------------------
     # Stop time measurement

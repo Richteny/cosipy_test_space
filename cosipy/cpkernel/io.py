@@ -125,9 +125,9 @@ class IOClass:
         return self.DATA
 
 
-    def create_result_file(self) -> xr.Dataset:
+    def create_result_file(self, opt_dict=None) -> xr.Dataset:
         """Create and initialise the RESULT dataset."""
-        self.init_result_dataset()
+        self.init_result_dataset(opt_dict=opt_dict)
         return self.RESULT
          
     def create_restart_file(self) -> xr.Dataset:
@@ -278,6 +278,7 @@ class IOClass:
             roughness_ice = opt_dict[9]
             roughness_firn = opt_dict[10]
             aging_factor_roughness = opt_dict[11]
+            #print(aging_factor_roughness)
         else:
             mult_factor_RRR = Constants.mult_factor_RRR
             albedo_ice = Constants.albedo_ice
