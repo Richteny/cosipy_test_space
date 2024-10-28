@@ -262,7 +262,7 @@ def calculate_tsl_byhand(snowheights,hgts,mask, min_snowheight,tsl_method, tsl_n
 def create_tsl_df(cos_output,min_snowheight, tsl_method, tsl_normalize):
     times = datetime.now()
     amed,amean,astd,amax,amin,flag = calculate_tsl_byhand(cos_output.SNOWHEIGHT.values, cos_output.HGT.values, cos_output.MASK.values, min_snowheight, tsl_method, tsl_normalize)
-    print(amed)
+    #print(amed)
     tsl_df = pd.DataFrame({'time':pd.to_datetime(cos_output.time.values),
                             'Med_TSL':amed,
                             'Mean_TSL':amean,
