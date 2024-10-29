@@ -71,12 +71,12 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
     TEST TO PARSE A TUPLE OF PARAM VALUES AND NOT CALL IN DICTIONARY
     '''
     # these values crashed previously [array(2.74724189), array(0.25), array(0.84), array(0.555), array(1.1), array(1.1)]
-    RRR_factor = float(2.2)
-    alb_ice = float(0.2)
-    alb_snow = float(0.94)
-    alb_firn = float(0.555)
-    albedo_aging = float(23)
-    albedo_depth = float(3)
+    #RRR_factor = float(2.2)
+    #alb_ice = float(0.2)
+    #alb_snow = float(0.94)
+    #alb_firn = float(0.555)
+    #albedo_aging = float(23)
+    #albedo_depth = float(3)
     #roughness_fresh_snow = np.array([1.0], dtype=float)
     opt_dict = (RRR_factor, alb_ice, alb_snow, alb_firn, albedo_aging, albedo_depth, center_snow_transfer_function,
                 spread_snow_transfer_function, roughness_fresh_snow, roughness_ice, roughness_firn, aging_factor_roughness)
@@ -203,9 +203,10 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
         encoding[var] = dict(zlib=True, complevel=Config.compression_level)
     
     output_netcdf = set_output_netcdf_path()
-    output_path = create_data_directory(path='output')                
-    results_output_name = output_netcdf.split('.nc')[0] + f"_RRR-{round(RRR_factor,4)}_{round(alb_snow,4)}_{round(alb_ice,4)}_{round(alb_firn,4)}_num{count}.nc"
-    IO.get_result().to_netcdf(os.path.join(output_path,results_output_name), encoding=encoding, mode = 'w')
+    output_path = create_data_directory(path='output')
+    #item below only works when objects are arrays and not given by hand
+    results_output_name = output_netcdf.split('.nc')[0] + f"_RRR-{round(RRR_factor.item(),4)}_{round(alb_snow.item(),4)}_{round(alb_ice.item(),4)}_{round(alb_firn.item(),4)}_num{count}.nc"
+    #IO.get_result().to_netcdf(os.path.join(output_path,results_output_name), encoding=encoding, mode = 'w')
     
     print(np.nanmax(IO.get_result().ALBEDO))
     print(np.nanmin(IO.get_result().ALBEDO))
@@ -338,7 +339,7 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
             #print(np.nanmedian(tsl_out['Med_TSL']))
             tsla_stats = eval_tsl(tsla_observations,tsl_out, Config.time_col_obs, Config.tsla_col_obs)
             print("TSLA Observed vs. Modelled RMSE: " + str(tsla_stats[0])+ "; R-squared: " + str(tsla_stats[1]))
-            tsl_out.to_csv(os.path.join(output_path,tsl_csv_name))
+            #tsl_out.to_csv(os.path.join(output_path,tsl_csv_name))
             ## Match to observation dates for pymc routine
             tsl_out_match = tsl_out.loc[tsl_out['time'].isin(tsla_observations['LS_DATE'])]
             #print(np.array(tsl_out_match['Med_TSL']))
