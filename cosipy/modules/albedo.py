@@ -24,8 +24,8 @@ t_star_K = Constants.t_star_K
 def updateAlbedo(GRID, surface_temperature, albedo_snow, opt_dict=None):
     """Updates the albedo."""
     #read_opt(opt_dict, globals())
-    print("Read opt dict.")
-    print(opt_dict)
+    #print("Read opt dict.")
+    #print(opt_dict)
     if opt_dict is not None:
         #mult_factor_RRR = opt_dict[0]
         albedo_ice = opt_dict[1]
@@ -45,7 +45,8 @@ def updateAlbedo(GRID, surface_temperature, albedo_snow, opt_dict=None):
         alphaMod = method_Oerlemans(GRID, albedo_ice, albedo_fresh_snow, albedo_firn,
                                     albedo_mod_snow_aging, albedo_mod_snow_depth)
     elif albedo_method == "Bougamont05":
-        alphaMod, albedo_snow = method_Bougamont(GRID, surface_temperature, albedo_snow)
+        alphaMod, albedo_snow = method_Bougamont(GRID, surface_temperature, albedo_snow, albedo_ice, albedo_fresh_snow,
+                                                 albedo_firn, albedo_mod_snow_aging, albedo_mod_snow_depth)
     else:
         error_message = (
             f'Albedo method = "{albedo_method}"',
@@ -74,7 +75,7 @@ def method_Oerlemans(GRID, albedo_ice: float, albedo_fresh_snow: float, albedo_f
     #    roughness_firn = opt_dict[10]
     #    aging_factor_roughness = opt_dict[11]
 
-    print("We have come to this point")
+    #print("We have come to this point")
     # Get hours since the last snowfall
     # First get fresh snow properties (height and timestamp)
     fresh_snow_height, fresh_snow_timestamp, _ = GRID.get_fresh_snow_props()
@@ -113,7 +114,9 @@ def method_Oerlemans(GRID, albedo_ice: float, albedo_fresh_snow: float, albedo_f
     return alphaMod
 
 
-def method_Bougamont(GRID, surface_temperature, albedo_snow):
+
+def method_Bougamont(GRID, surface_temperature, albedo_snow, albedo_ice: float, albedo_fresh_snow: float, 
+                     albedo_firn: float, albedo_mod_snow_depth: float):
     #if opt_dict is not None:
     #    mult_factor_RRR = opt_dict[0]
     #    albedo_ice = opt_dict[1]

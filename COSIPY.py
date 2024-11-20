@@ -71,13 +71,16 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
     TEST TO PARSE A TUPLE OF PARAM VALUES AND NOT CALL IN DICTIONARY
     '''
     # these values crashed previously [array(2.74724189), array(0.25), array(0.84), array(0.555), array(1.1), array(1.1)]
-    #RRR_factor = float(2.2)
-    #alb_ice = float(0.2)
-    #alb_snow = float(0.94)
-    #alb_firn = float(0.555)
-    #albedo_aging = float(23)
-    #albedo_depth = float(3)
-    #roughness_fresh_snow = np.array([1.0], dtype=float)
+    #RRR_factor = float(1.665) #mean of prior
+    alb_ice = float(0.2)
+    alb_snow = float(0.94)
+    alb_firn = float(0.555)
+    albedo_aging = float(23.0)
+    albedo_depth = float(3.0)
+    #roughness_fresh_snow = float(0.24) #0.03 (https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2022JD037032) to max 1.6 from Brock et al. 2006
+    #roughness_ice = float(7)
+    #roughness_firn = float()
+    #aging_factor_roughness = float()
     opt_dict = (RRR_factor, alb_ice, alb_snow, alb_firn, albedo_aging, albedo_depth, center_snow_transfer_function,
                 spread_snow_transfer_function, roughness_fresh_snow, roughness_ice, roughness_firn, aging_factor_roughness)
     #0 to 5 - base, 6 center snow , 7 spreadsnow, 8 to 10 roughness length 
@@ -204,8 +207,13 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
     
     output_netcdf = set_output_netcdf_path()
     output_path = create_data_directory(path='output')
+    #version for parsed floats by hand here
+    #results_output_name = output_netcdf.split('.nc')[0] + f"_RRR-{round(RRR_factor,4)}_{round(alb_snow,4)}_{round(alb_ice,4)}_{round(alb_firn,4)}"\
+    #                                                       "_{round(albedo_aging,4)}_{round(albedo_depth,4)}_{round(roughness_fresh_snow,4)}"\
+    #                                                       "{round(roughness_ice,4)}_{round(roughness_firn,4)}_{round(aging_factor_roughness,4)}_num{count}.nc"
     #item below only works when objects are arrays and not given by hand
-    results_output_name = output_netcdf.split('.nc')[0] + f"_RRR-{round(RRR_factor.item(),4)}_{round(alb_snow.item(),4)}_{round(alb_ice.item(),4)}_{round(alb_firn.item(),4)}_num{count}.nc"
+    #results_output_name = output_netcdf.split('.nc')[0] + f"_RRR-{round(RRR_factor.item(),4)}_{round(alb_snow.item(),4)}_{round(alb_ice.item(),4)}_{round(alb_firn.item(),4)}_num{count}.nc"
+    results_output_name = output_netcdf
     #IO.get_result().to_netcdf(os.path.join(output_path,results_output_name), encoding=encoding, mode = 'w')
     
     print(np.nanmax(IO.get_result().ALBEDO))
