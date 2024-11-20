@@ -40,7 +40,7 @@ N_var = 'N'
 #------------------------
 aggregate = False
 aggregation_step = 'H'
-ELEV_model = True
+ELEV_model = False
 
 # Delimiter in csv file
 delimiter = ','
@@ -66,10 +66,10 @@ zeni_thld = 89.0              # If you do not know the exact value for your loca
 #------------------------
 # Point model 
 #------------------------
-point_model = False
-plon = 90.64
-plat = 30.47
-hgt = 5665.0
+point_model = True
+plon = 10.7596
+plat = 46.7975
+hgt = 3030.0283
 
 #------------------------
 # Interpolation arguments 

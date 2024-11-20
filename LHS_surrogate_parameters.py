@@ -3,9 +3,9 @@ from pathlib import Path
 import sys
 import os
 import numpy as np
-import matplotlib
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
+#import matplotlib
+#matplotlib.use('Agg')
+#import matplotlib.pyplot as plt
 import spotpy  # Load the SPOT package into your working storage
 from spotpy.parameter import Uniform
 from spotpy import analyser  # Load the Plotting extension
@@ -120,7 +120,7 @@ def psample(obs, count=None):
     #k = 9
     #par_iter = (1 + 4 * M ** 2 * (1 + (k -2) * d)) * k
     
-    rep= 2000
+    rep= 3000
     count=count
     name = "LHS_surrogate_parameters"
     setup = spot_setup(obs, count=count)

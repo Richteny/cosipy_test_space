@@ -41,6 +41,7 @@ def main():
     geod_ref = geod_ref.loc[geod_ref['period'] == "2000-01-01_2010-01-01"]
     geod_ref = geod_ref[['dmdtda','err_dmdtda']]
 
+    #Uncomment if 2D runs
     ### Load observations
     tsla_true_obs = pd.read_csv(Config.tsl_data_file)
     tsla_true_obs['LS_DATE'] = pd.to_datetime(tsla_true_obs['LS_DATE'])
@@ -74,7 +75,7 @@ def main():
     tsla_synth = tsla_synth.loc[tsla_synth.index.isin(tsla_true_obs.index)]
     tsla_synth['Std_TSL'] = tsla_true_obs['SC_stdev']
     print(tsla_synth)
-
+    
     # Load MB data
     geod_synth = xr.open_dataset(path_to_synth+"HEF_COSMO_1D10m_1999_2010_HORAYZON_20000101-20001231_RRR-2.2_0.94_0.2_0.555_num.nc")
     geod_synth = geod_synth.sel(time=slice(time_start,Config.time_end))
@@ -91,19 +92,20 @@ def main():
     count = 0
 
     ## Define cosipy function #dvector or matrix
-    @as_op(itypes=[pt.dscalar, pt.dscalar, pt.dscalar, pt.dscalar, pt.dscalar, pt.dscalar], otypes=[pt.dscalar, pt.dvector])
-    def run_cspy(rrr_factor, alb_ice, alb_snow, alb_firn, albedo_aging, albedo_depth):
+    #@as_op(itypes=[pt.dscalar, pt.dscalar, pt.dscalar, pt.dscalar, pt.dscalar, pt.dscalar], otypes=[pt.dscalar, pt.dvector])
+    @as_op(itypes=[pt.dscalar], otypes=[pt.dscalar, pt.dvector])
+    def run_cspy(rrr_factor): #, alb_ice, alb_snow, alb_firn, albedo_aging, albedo_depth):
         #params
         rrrfactor = rrr_factor
-        albice = alb_ice
-        albsnow = alb_snow
-        albfirn = alb_firn
-        albaging = albedo_aging
-        albdepth = albedo_depth
+        #albice = alb_ice
+        #albsnow = alb_snow
+        #albfirn = alb_firn
+        #albaging = albedo_aging
+        #albdepth = albedo_depth
         
         #start cosipy
-        modmb, modtsl = runcosipy(RRR_factor=rrrfactor, alb_ice=albice, alb_snow=albsnow, alb_firn=albfirn, albedo_aging=albaging,
-                                  albedo_depth=albdepth, count=count)
+        modmb, modtsl = runcosipy(RRR_factor=rrrfactor, #, alb_ice=albice, alb_snow=albsnow, alb_firn=albfirn, albedo_aging=albaging,
+                                  count=count)  #albedo_depth=albdepth, count=count)
         print("Calculated MB is: ", modmb)
         return np.array([modmb]), modtsl['Med_TSL'].values
 
@@ -113,27 +115,29 @@ def main():
 
         # Defining priors for the model parameters to calibrate
         rrr_factor = pm.TruncatedNormal('rrrfactor', mu=1, sigma=20, lower=0.33, upper=3)
-        alb_snow = pm.TruncatedNormal('albsnow', mu=0.89, sigma=0.5, lower=0.71, upper=0.98)
-        alb_ice = pm.TruncatedNormal('albice', mu=0.25, sigma=0.5, lower=0.1, upper=0.4)
-        alb_firn = pm.TruncatedNormal('albfirn', mu=0.55, sigma=0.5, lower=0.41, upper=0.7)
-        alb_aging = pm.TruncatedNormal('albaging', mu=14, sigma=50, lower=0.1, upper=31) #bound to positive, mu at Moelg value
-        alb_depth = pm.TruncatedNormal('albdepth', mu=6, sigma=50, lower=0.1, upper=31) #see where this comes from
+        #alb_snow = pm.TruncatedNormal('albsnow', mu=0.89, sigma=0.5, lower=0.71, upper=0.97)
+        #alb_ice = pm.TruncatedNormal('albice', mu=0.25, sigma=0.5, lower=0.1, upper=0.4)
+        #alb_firn = pm.TruncatedNormal('albfirn', mu=0.55, sigma=0.5, lower=0.41, upper=0.7)
+        #alb_aging = pm.TruncatedNormal('albaging', mu=14, sigma=50, lower=0.1, upper=31) #bound to positive, mu at Moelg value
+        #alb_depth = pm.TruncatedNormal('albdepth', mu=6, sigma=50, lower=0.1, upper=31) #see where this comes from
         print("Set priors.")
 
         #Get output of COSIPY
-        modmb, modtsl = run_cspy(rrr_factor, alb_ice, alb_snow, alb_firn, alb_aging, 
-                                 alb_depth)
+        modmb, modtsl = run_cspy(rrr_factor) #, alb_ice, alb_snow, alb_firn, alb_aging, 
+                                 #alb_depth)
 
 
         #Setup observations
         geod_data = pm.Data('geod_data', np.array([geod_mb]))
         #print(geod_ref['dmdtda'])
+        #Uncomment if 2D
         tsl_data = pm.Data('tsl_data', np.array(tsla_synth['Med_TSL']))
 
         #print(np.array(tsla_true_obs['TSL_normalized']))
         #Expected values as deterministic RVs
         #for some reason this doesnt work !!!
         mu_mb = pm.Deterministic('mu_mb', modmb)
+        #Uncomment if 2D
         mu_tsl = pm.Deterministic('mu_tsl', modtsl)
 
         #Likelihood (sampling distribution) of observations
@@ -155,7 +159,7 @@ def main():
             ]
         #initvals = {'rrrfactor': 0.6, 'albsnow': 0.75, 'albice': 0.2, 'albfirn': 0.5, 'albaging': 20, 'albdepth': 10}
         step = pm.DEMetropolisZ()
-        post = pm.sample(draws=10000, tune=500, step=step, return_inferencedata=True, chains=1, cores=1,
+        post = pm.sample(draws=2000, tune=200, step=step, return_inferencedata=True, chains=1, cores=1,
                          progressbar=True, discard_tuned_samples=False) #initvals=initvals
 
         ## testing to save samples
