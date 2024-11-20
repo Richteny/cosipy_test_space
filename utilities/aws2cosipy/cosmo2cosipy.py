@@ -181,7 +181,8 @@ def create_1D_input(cs_file, cosipy_file, static_file, start_date, end_date):
         ds['ASPECT'] = aspect
         
         # Auxiliary variables
-        mask = ds.MASK.values
+        #mask = ds.MASK.values #should simply be 1
+        mask = 1
         slope = ds.SLOPE.values
         aspect = ds.ASPECT.values
     else:
@@ -224,6 +225,8 @@ def create_1D_input(cs_file, cosipy_file, static_file, start_date, end_date):
     #-----------------------------------
     # Write file to disc 
     #-----------------------------------
+    print(ds)
+    print(ds.isnull())
     check_for_nan_point(ds)
     ds.to_netcdf(cosipy_file)
 

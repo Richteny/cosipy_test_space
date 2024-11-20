@@ -1,69 +1,70 @@
 -------------------------------------------
 Create input 
 
-Read input file ../../data/input/HEF/COSMO_forcing_1999-2010.csv
-Read static file ../../data/static/HEF/HEF_static_10m_elevbands.nc 
+Read input file ../../data/input/HEF/COSMO_forcing_1999-2010_PRESintp.csv
+Empty DataFrame
+Columns: [Unnamed: 0, T2, RH2, G, RRR, U2, N, RAIN, SNOWFALL, PRES, lr_t2m, lr_rh2, lr_tp, lr_sf]
+Index: []
+Empty DataFrame
+Columns: [Unnamed: 0, T2, RH2, G, RRR, U2, N, RAIN, SNOWFALL, PRES, lr_t2m, lr_rh2, lr_tp, lr_sf]
+Index: []
+                            T2        RH2        U2  ...       RRR    N  SNOWFALL
+TIMESTAMP                                            ...                         
+1999-01-01 00:00:00  261.35452  98.009700  8.555125  ...  0.135531  1.0  0.001119
+1999-01-01 01:00:00  261.46844  98.027650  8.533531  ...  0.147983  1.0  0.001215
+1999-01-01 02:00:00  261.44547  98.026054  8.273806  ...  0.162952  1.0  0.001353
+1999-01-01 03:00:00  261.47467  98.032570  7.963589  ...  0.217184  1.0  0.001824
+1999-01-01 04:00:00  261.51294  98.037270  7.679445  ...  0.289205  1.0  0.002452
 
-Managed to get to here.
-Interpolate CR file to grid
-1.12e-07
-1.68e-07
-TIMESTAMP
-1999-01-01 00:00:00   -0.007453
-1999-01-01 01:00:00   -0.007365
-1999-01-01 02:00:00   -0.007265
-1999-01-01 03:00:00   -0.007372
-1999-01-01 04:00:00   -0.007404
-                         ...   
-2009-12-31 20:00:00   -0.005323
-2009-12-31 21:00:00   -0.006482
-2009-12-31 22:00:00   -0.005917
-2009-12-31 23:00:00   -0.007396
-2010-01-01 00:00:00   -0.007396
-Name: lr_t2m, Length: 96433, dtype: float64
-TIMESTAMP
-1999-01-01 00:00:00   -2.928156e-06
-1999-01-01 01:00:00   -3.094256e-06
-1999-01-01 02:00:00   -3.488548e-06
-1999-01-01 03:00:00   -4.555830e-06
-1999-01-01 04:00:00   -5.629962e-06
-                           ...     
-2009-12-31 20:00:00   -9.460934e-07
-2009-12-31 21:00:00    9.530005e-07
-2009-12-31 22:00:00    9.722108e-07
-2009-12-31 23:00:00    1.000355e-06
-2010-01-01 00:00:00    5.126555e-05
-Name: lr_sf, Length: 96433, dtype: float64
-Number of glacier cells: 129
-Number of glacier cells: 129
-Run the Radiation Module HORAYZON
+[5 rows x 8 columns]
+Read static file ../../data/static/HEF/HEF_static_30m_raw_crop.nc 
+
 <xarray.Dataset>
-Dimensions:     (time: 8784, lat: 129, lon: 1)
+Dimensions:   (lon: 1, lat: 1, time: 96433)
 Coordinates:
-  * time        (time) float64 1.0 1.01 1.02 1.03 ... 366.2 366.2 366.2 366.2
-  * lat         (lat) float64 46.8 46.8 46.8 46.8 ... 46.82 46.82 46.82 46.82
-  * lon         (lon) float64 10.76
+  * lon       (lon) float64 10.76
+  * lat       (lat) float64 46.8
+  * time      (time) datetime64[ns] 1999-01-01 ... 2010-01-01
 Data variables:
-    HGT         (lat, lon) float64 ...
-    ASPECT      (lat, lon) float64 ...
-    SLOPE       (lat, lon) float32 ...
-    MASK        (lat, lon) float64 ...
-    N_Points    (lat, lon) float64 ...
-    sw_dir_cor  (time, lat, lon) float64 0.0 0.0 0.0 0.0 0.0 ... 0.0 0.0 0.0 0.0
-    doy         (time) int64 1 1 1 1 1 1 1 1 ... 366 366 366 366 366 366 366 366
-    hour        (time) int64 0 1 2 3 4 5 6 7 8 9 ... 15 16 17 18 19 20 21 22 23
+    HGT       (lat, lon) float64 3.03e+03
+    ASPECT    (lat, lon) float64 -25.92
+    SLOPE     (lat, lon) float64 21.99
+    MASK      (lat, lon) int64 1
+    T2        (time, lat, lon) float64 261.4 261.5 261.4 ... 264.9 265.1 265.1
+    RH2       (time, lat, lon) float64 98.01 98.03 98.03 ... 92.08 87.82 87.82
+    U2        (time, lat, lon) float64 8.555 8.534 8.274 ... 1.299 1.76 1.76
+    G         (time, lat, lon) float64 0.0 0.0 0.0 0.0 0.0 ... 0.0 0.0 0.0 0.0
+    PRES      (time, lat, lon) float64 701.3 701.3 701.3 ... 682.1 682.1 682.1
+    RRR       (time, lat, lon) float64 0.1355 0.148 0.163 ... 0.02634 0.02634
+    SNOWFALL  (time, lat, lon) float64 0.001119 0.001215 ... 0.000278 0.1518
+    N         (time, lat, lon) float64 1.0 1.0 1.0 1.0 1.0 ... 1.0 1.0 1.0 1.0
+<xarray.Dataset>
+Dimensions:   (lat: 1, lon: 1, time: 96433)
+Coordinates:
+  * lon       (lon) float64 10.76
+  * lat       (lat) float64 46.8
+  * time      (time) datetime64[ns] 1999-01-01 ... 2010-01-01
+Data variables:
+    HGT       (lat, lon) bool False
+    ASPECT    (lat, lon) bool False
+    SLOPE     (lat, lon) bool False
+    MASK      (lat, lon) bool False
+    T2        (time, lat, lon) bool False False False ... False False False
+    RH2       (time, lat, lon) bool False False False ... False False False
+    U2        (time, lat, lon) bool False False False ... False False False
+    G         (time, lat, lon) bool False False False ... False False False
+    PRES      (time, lat, lon) bool False False False ... False False False
+    RRR       (time, lat, lon) bool False False False ... False False False
+    SNOWFALL  (time, lat, lon) bool False False False ... False False False
+    N         (time, lat, lon) bool False False False ... False False False
 Input file created 
 
 -------------------------------------------
 
 
-WARNING! Please check the data, its seems they are out of a reasonable range G MAX: 1915.46 MIN: 0.00 
+WARNING! Please check the data, its seems they are out of a reasonable range Rrr MAX: 41.90 MIN: 0.00 
 
 
 
-WARNING! Please check the data, its seems they are out of a reasonable range Rrr MAX: 193.23 MIN: 0.00 
-
-
-
-WARNING! Please check the data, its seems they are out of a reasonable range Snowfall MAX: 2.23 MIN: 0.00 
+WARNING! Please check the data, its seems they are out of a reasonable range Snowfall MAX: 0.15 MIN: 0.00 
 

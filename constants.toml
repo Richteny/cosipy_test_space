@@ -5,7 +5,7 @@ z = 2.0
 
 [PARAMETERIZATIONS]
 stability_correction = "MO"
-albedo_method = "Oerlemans98"
+albedo_method = "Oerlemans98" #"Bougamont05"
 densification_method = "Boone"
 penetrating_method = "Bintanja95"
 roughness_method = "Moelg12"
@@ -53,7 +53,7 @@ t_star_K = 14
 t_star_cutoff = 263.17
 roughness_fresh_snow = 0.24
 roughness_ice = 1.7
-roughness_firn = 7.0 #4.0 #max 7
+roughness_firn = 4.0 #4.0 #max 7
 aging_factor_roughness = 0.0026
 snow_ice_threshold = 900.0
 lat_heat_melting = 334000.0

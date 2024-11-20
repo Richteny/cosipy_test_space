@@ -247,7 +247,6 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
         #--------------------------------------------
         # Calculate albedo and roughness length changes if first layer is snow
         #--------------------------------------------
-        print("Running albedo scheme next.")
         alpha, albedo_snow = updateAlbedo(GRID,surface_temperature,albedo_snow, opt_dict)
 
         #--------------------------------------------
