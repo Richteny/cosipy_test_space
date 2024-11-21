@@ -18,6 +18,8 @@ eval_method = "rmse"
 obs_type = "snowheight"
 
 ["TRANSIENT SNOWLINE DATA"]
+time_start_cali = "2000-01-01T00:00"
+time_end_cali = "2009-12-31T23:00"
 tsl_evaluation = true #true
 write_csv_status = true #true
 time_col_obs = "LS_DATE"
