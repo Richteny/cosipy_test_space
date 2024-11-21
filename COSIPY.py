@@ -209,8 +209,8 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
     output_path = create_data_directory(path='output')
     #version for parsed floats by hand here
     #results_output_name = output_netcdf.split('.nc')[0] + f"_RRR-{round(RRR_factor,4)}_{round(alb_snow,4)}_{round(alb_ice,4)}_{round(alb_firn,4)}"\
-    #                                                       "_{round(albedo_aging,4)}_{round(albedo_depth,4)}_{round(roughness_fresh_snow,4)}"\
-    #                                                       "{round(roughness_ice,4)}_{round(roughness_firn,4)}_{round(aging_factor_roughness,4)}_num{count}.nc"
+    #                                                      f"_{round(albedo_aging,4)}_{round(albedo_depth,4)}_{round(roughness_fresh_snow,4)}"\
+    #                                                      f"{round(roughness_ice,4)}_{round(roughness_firn,4)}_{round(aging_factor_roughness,4)}_num{count}.nc"
     #item below only works when objects are arrays and not given by hand
     #results_output_name = output_netcdf.split('.nc')[0] + f"_RRR-{round(RRR_factor.item(),4)}_{round(alb_snow.item(),4)}_{round(alb_ice.item(),4)}_{round(alb_firn.item(),4)}_num{count}.nc"
     results_output_name = output_netcdf
@@ -227,7 +227,7 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
     if Config.tsl_evaluation is True:
         if 'N_Points' in list(IO.get_result().keys()):
             print("Compute area weighted MB for 1D case.")
-            dsmb = IO.get_result().sel(time=slice("2000-01-01", "2009-12-31"))
+            dsmb = IO.get_result().sel(time=slice(Config.time_start_cali, Config.time_end_cali))
             dsmb['weighted_mb'] = dsmb['MB'] * dsmb['N_Points'] / np.sum(dsmb['N_Points'])
             #print("time 1:", datetime.now()-times)
             #time_vals = pd.to_datetime(dsmb.time.values)
@@ -249,7 +249,7 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
             spatial_mean = IO.get_result()['MB'].mean(dim=['lat','lon'], keep_attrs=True)
             #mean glacier-wide MB
             #select timeframe from 2010 to 2020 (do not include first day of 2020)
-            geod_df = spatial_mean.sel(time=slice("2000-01-01","2009-12-31")).to_dataframe()
+            geod_df = spatial_mean.sel(time=slice(Config.time_start_cali,Config.time_end_cali)).to_dataframe()
             #geod_df = spatial_mean.sel(time=slice("2010-01-01","2019-12-31")).to_dataframe()
             #geod_df['FY'] = geod_df.apply(lambda x: str(pd.to_datetime(str(x.time.year)+'-01-01').year), axis=1)
             mean_annual_df = geod_df.resample("1Y").sum()
@@ -329,10 +329,9 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
             tsla_observations = pd.read_csv(Config.tsl_data_file)
             #a_resampled_out = resample_output(IO.get_result())
             times = datetime.now()
-            #dates,clean_day_vals,secs,holder = prereq_res(IO.get_result().sel(time=slice("2010-01-01","2019-12-31")))
-            dates,clean_day_vals,secs,holder = prereq_res(IO.get_result().sel(time=slice("2000-01-01","2009-12-31")))
-            resampled_array = resample_by_hand(holder, IO.get_result().sel(time=slice("2000-01-01","2009-12-31")).SNOWHEIGHT.values, secs, clean_day_vals)
-            resampled_out = construct_resampled_ds(IO.get_result().sel(time=slice("2000-01-01","2009-12-31")),resampled_array,dates.values)
+            dates,clean_day_vals,secs,holder = prereq_res(IO.get_result().sel(time=slice(Config.time_start_cali,Config.time_end_cali)))
+            resampled_array = resample_by_hand(holder, IO.get_result().sel(time=slice(Config.time_start_cali,Config.time_end_cali)).SNOWHEIGHT.values, secs, clean_day_vals)
+            resampled_out = construct_resampled_ds(IO.get_result().sel(time=slice(Config.time_start_cali,Config.time_end_cali)),resampled_array,dates.values)
             #print(resampled_out)
             print("Time required for resampling of output: ", datetime.now()-times)
             #Need HGT values as 2D, ensured with following line of code.
