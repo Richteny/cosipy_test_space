@@ -1,300 +1,306 @@
-2024-11-20 12:35:17,081 - distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.8:40291'
-2024-11-20 12:35:17,084 - distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.8:44987'
-2024-11-20 12:35:17,086 - distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.8:36197'
-2024-11-20 12:35:17,087 - distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.8:41179'
-2024-11-20 12:35:17,090 - distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.8:36137'
-2024-11-20 12:35:17,091 - distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.8:40189'
-2024-11-20 12:35:17,091 - distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.8:44349'
-2024-11-20 12:35:17,092 - distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.8:40905'
-2024-11-20 12:35:17,093 - distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.8:35865'
-2024-11-20 12:35:17,093 - distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.8:35503'
-2024-11-20 12:35:17,093 - distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.8:40165'
-2024-11-20 12:35:17,102 - distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.8:44663'
-2024-11-20 12:35:17,107 - distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.8:39011'
-2024-11-20 12:35:17,108 - distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.8:45271'
-2024-11-20 12:35:17,113 - distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.8:33555'
-2024-11-20 12:35:17,114 - distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.8:36975'
-2024-11-20 12:35:17,114 - distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.8:36193'
-2024-11-20 12:35:17,115 - distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.8:46811'
-2024-11-20 12:35:17,115 - distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.8:34597'
-2024-11-20 12:35:17,115 - distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.8:38941'
-2024-11-20 12:35:17,613 - distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-fe6k3fyq', purging
-2024-11-20 12:35:17,614 - distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-ymhnsvom', purging
-2024-11-20 12:35:17,615 - distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-0y0p7_ft', purging
-2024-11-20 12:35:17,616 - distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-qmm7z23f', purging
-2024-11-20 12:35:17,617 - distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-j8z15npv', purging
-2024-11-20 12:35:17,618 - distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-k23ouiwd', purging
-2024-11-20 12:35:17,618 - distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-zjahy_2q', purging
-2024-11-20 12:35:17,619 - distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-0bkod8x4', purging
-2024-11-20 12:35:17,620 - distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-c5y7hpw1', purging
-2024-11-20 12:35:17,621 - distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-1tnc6jcg', purging
-2024-11-20 12:35:17,622 - distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-f3gud69a', purging
-2024-11-20 12:35:17,625 - distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-67qd2295', purging
-2024-11-20 12:35:17,626 - distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-bd5hwia9', purging
-2024-11-20 12:35:17,628 - distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-_ztxa2q6', purging
-2024-11-20 12:35:17,633 - distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-sq1gcc8u', purging
-2024-11-20 12:35:17,638 - distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-jto4ipld', purging
-2024-11-20 12:35:17,639 - distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-yhmscezx', purging
-2024-11-20 12:35:17,641 - distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-ysp1dmz5', purging
-2024-11-20 12:35:17,642 - distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-cpmt3v61', purging
-2024-11-20 12:35:17,643 - distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-0hpxdesr', purging
-2024-11-20 12:35:18,406 - distributed.worker - INFO -       Start worker at:    tcp://192.168.1.8:33305
-2024-11-20 12:35:18,406 - distributed.worker - INFO -          Listening to:    tcp://192.168.1.8:33305
-2024-11-20 12:35:18,406 - distributed.worker - INFO -           Worker name:           SLURMCluster-0-4
-2024-11-20 12:35:18,406 - distributed.worker - INFO -          dashboard at:          192.168.1.8:42271
-2024-11-20 12:35:18,406 - distributed.worker - INFO - Waiting to connect to:    tcp://192.168.1.7:34991
-2024-11-20 12:35:18,406 - distributed.worker - INFO - -------------------------------------------------
-2024-11-20 12:35:18,406 - distributed.worker - INFO -               Threads:                          1
-2024-11-20 12:35:18,406 - distributed.worker - INFO -                Memory:                   2.79 GiB
-2024-11-20 12:35:18,406 - distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-ddvgk2k3
-2024-11-20 12:35:18,406 - distributed.worker - INFO - -------------------------------------------------
-2024-11-20 12:35:18,409 - distributed.worker - INFO -       Start worker at:    tcp://192.168.1.8:38207
-2024-11-20 12:35:18,410 - distributed.worker - INFO -          Listening to:    tcp://192.168.1.8:38207
-2024-11-20 12:35:18,410 - distributed.worker - INFO -           Worker name:           SLURMCluster-0-8
-2024-11-20 12:35:18,410 - distributed.worker - INFO -          dashboard at:          192.168.1.8:40539
-2024-11-20 12:35:18,410 - distributed.worker - INFO - Waiting to connect to:    tcp://192.168.1.7:34991
-2024-11-20 12:35:18,410 - distributed.worker - INFO - -------------------------------------------------
-2024-11-20 12:35:18,410 - distributed.worker - INFO -               Threads:                          1
-2024-11-20 12:35:18,410 - distributed.worker - INFO -                Memory:                   2.79 GiB
-2024-11-20 12:35:18,410 - distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-ri0u6lr_
-2024-11-20 12:35:18,410 - distributed.worker - INFO - -------------------------------------------------
-2024-11-20 12:35:18,412 - distributed.worker - INFO -       Start worker at:    tcp://192.168.1.8:45005
-2024-11-20 12:35:18,412 - distributed.worker - INFO -          Listening to:    tcp://192.168.1.8:45005
-2024-11-20 12:35:18,412 - distributed.worker - INFO -           Worker name:           SLURMCluster-0-0
-2024-11-20 12:35:18,412 - distributed.worker - INFO -          dashboard at:          192.168.1.8:43473
-2024-11-20 12:35:18,412 - distributed.worker - INFO - Waiting to connect to:    tcp://192.168.1.7:34991
-2024-11-20 12:35:18,412 - distributed.worker - INFO - -------------------------------------------------
-2024-11-20 12:35:18,412 - distributed.worker - INFO -               Threads:                          1
-2024-11-20 12:35:18,413 - distributed.worker - INFO -                Memory:                   2.79 GiB
-2024-11-20 12:35:18,413 - distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-v954tuv2
-2024-11-20 12:35:18,413 - distributed.worker - INFO - -------------------------------------------------
-2024-11-20 12:35:18,415 - distributed.worker - INFO -         Registered to:    tcp://192.168.1.7:34991
-2024-11-20 12:35:18,415 - distributed.worker - INFO - -------------------------------------------------
-2024-11-20 12:35:18,415 - distributed.core - INFO - Starting established connection to tcp://192.168.1.7:34991
-2024-11-20 12:35:18,417 - distributed.worker - INFO -         Registered to:    tcp://192.168.1.7:34991
-2024-11-20 12:35:18,417 - distributed.worker - INFO - -------------------------------------------------
-2024-11-20 12:35:18,417 - distributed.core - INFO - Starting established connection to tcp://192.168.1.7:34991
-2024-11-20 12:35:18,417 - distributed.worker - INFO -       Start worker at:    tcp://192.168.1.8:35189
-2024-11-20 12:35:18,417 - distributed.worker - INFO -          Listening to:    tcp://192.168.1.8:35189
-2024-11-20 12:35:18,417 - distributed.worker - INFO -       Start worker at:    tcp://192.168.1.8:41427
-2024-11-20 12:35:18,417 - distributed.worker - INFO -           Worker name:           SLURMCluster-0-6
-2024-11-20 12:35:18,417 - distributed.worker - INFO -          Listening to:    tcp://192.168.1.8:41427
-2024-11-20 12:35:18,417 - distributed.worker - INFO -          dashboard at:          192.168.1.8:39813
-2024-11-20 12:35:18,417 - distributed.worker - INFO - Waiting to connect to:    tcp://192.168.1.7:34991
-2024-11-20 12:35:18,417 - distributed.worker - INFO -           Worker name:           SLURMCluster-0-5
-2024-11-20 12:35:18,417 - distributed.worker - INFO - -------------------------------------------------
-2024-11-20 12:35:18,418 - distributed.worker - INFO -          dashboard at:          192.168.1.8:45029
-2024-11-20 12:35:18,418 - distributed.worker - INFO -               Threads:                          1
-2024-11-20 12:35:18,418 - distributed.worker - INFO - Waiting to connect to:    tcp://192.168.1.7:34991
-2024-11-20 12:35:18,418 - distributed.worker - INFO - -------------------------------------------------
-2024-11-20 12:35:18,418 - distributed.worker - INFO -                Memory:                   2.79 GiB
-2024-11-20 12:35:18,418 - distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-wocce8dq
-2024-11-20 12:35:18,418 - distributed.worker - INFO - -------------------------------------------------
-2024-11-20 12:35:18,418 - distributed.worker - INFO -               Threads:                          1
-2024-11-20 12:35:18,418 - distributed.worker - INFO -                Memory:                   2.79 GiB
-2024-11-20 12:35:18,418 - distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-n4ug867m
-2024-11-20 12:35:18,418 - distributed.worker - INFO - -------------------------------------------------
-2024-11-20 12:35:18,419 - distributed.worker - INFO -       Start worker at:    tcp://192.168.1.8:42151
-2024-11-20 12:35:18,419 - distributed.worker - INFO -          Listening to:    tcp://192.168.1.8:42151
-2024-11-20 12:35:18,420 - distributed.worker - INFO -           Worker name:           SLURMCluster-0-7
-2024-11-20 12:35:18,420 - distributed.worker - INFO -          dashboard at:          192.168.1.8:40667
-2024-11-20 12:35:18,420 - distributed.worker - INFO - Waiting to connect to:    tcp://192.168.1.7:34991
-2024-11-20 12:35:18,420 - distributed.worker - INFO - -------------------------------------------------
-2024-11-20 12:35:18,420 - distributed.worker - INFO -               Threads:                          1
-2024-11-20 12:35:18,420 - distributed.worker - INFO -                Memory:                   2.79 GiB
-2024-11-20 12:35:18,420 - distributed.worker - INFO -         Registered to:    tcp://192.168.1.7:34991
-2024-11-20 12:35:18,420 - distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-j4t8diwc
-2024-11-20 12:35:18,420 - distributed.worker - INFO - -------------------------------------------------
-2024-11-20 12:35:18,420 - distributed.worker - INFO - -------------------------------------------------
-2024-11-20 12:35:18,420 - distributed.core - INFO - Starting established connection to tcp://192.168.1.7:34991
-2024-11-20 12:35:18,421 - distributed.worker - INFO -       Start worker at:    tcp://192.168.1.8:39753
-2024-11-20 12:35:18,421 - distributed.worker - INFO -          Listening to:    tcp://192.168.1.8:39753
-2024-11-20 12:35:18,422 - distributed.worker - INFO -           Worker name:           SLURMCluster-0-2
-2024-11-20 12:35:18,422 - distributed.worker - INFO -          dashboard at:          192.168.1.8:46333
-2024-11-20 12:35:18,422 - distributed.worker - INFO - Waiting to connect to:    tcp://192.168.1.7:34991
-2024-11-20 12:35:18,422 - distributed.worker - INFO - -------------------------------------------------
-2024-11-20 12:35:18,422 - distributed.worker - INFO -               Threads:                          1
-2024-11-20 12:35:18,422 - distributed.worker - INFO -                Memory:                   2.79 GiB
-2024-11-20 12:35:18,422 - distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-27cc1zjs
-2024-11-20 12:35:18,422 - distributed.worker - INFO - -------------------------------------------------
-2024-11-20 12:35:18,424 - distributed.worker - INFO -       Start worker at:    tcp://192.168.1.8:38419
-2024-11-20 12:35:18,424 - distributed.worker - INFO -          Listening to:    tcp://192.168.1.8:38419
-2024-11-20 12:35:18,424 - distributed.worker - INFO -           Worker name:           SLURMCluster-0-1
-2024-11-20 12:35:18,425 - distributed.worker - INFO -          dashboard at:          192.168.1.8:36481
-2024-11-20 12:35:18,425 - distributed.worker - INFO - Waiting to connect to:    tcp://192.168.1.7:34991
-2024-11-20 12:35:18,425 - distributed.worker - INFO - -------------------------------------------------
-2024-11-20 12:35:18,425 - distributed.worker - INFO -               Threads:                          1
-2024-11-20 12:35:18,424 - distributed.worker - INFO -       Start worker at:    tcp://192.168.1.8:37453
-2024-11-20 12:35:18,425 - distributed.worker - INFO -                Memory:                   2.79 GiB
-2024-11-20 12:35:18,425 - distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-t6wtcq_6
-2024-11-20 12:35:18,425 - distributed.worker - INFO -          Listening to:    tcp://192.168.1.8:37453
-2024-11-20 12:35:18,425 - distributed.worker - INFO - -------------------------------------------------
-2024-11-20 12:35:18,425 - distributed.worker - INFO -           Worker name:          SLURMCluster-0-18
-2024-11-20 12:35:18,425 - distributed.worker - INFO -          dashboard at:          192.168.1.8:38627
-2024-11-20 12:35:18,425 - distributed.worker - INFO - Waiting to connect to:    tcp://192.168.1.7:34991
-2024-11-20 12:35:18,425 - distributed.worker - INFO - -------------------------------------------------
-2024-11-20 12:35:18,425 - distributed.worker - INFO -               Threads:                          1
-2024-11-20 12:35:18,425 - distributed.worker - INFO -                Memory:                   2.79 GiB
-2024-11-20 12:35:18,425 - distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-yeew8b36
-2024-11-20 12:35:18,425 - distributed.worker - INFO - -------------------------------------------------
-2024-11-20 12:35:18,426 - distributed.worker - INFO -       Start worker at:    tcp://192.168.1.8:45319
-2024-11-20 12:35:18,426 - distributed.worker - INFO -          Listening to:    tcp://192.168.1.8:45319
-2024-11-20 12:35:18,426 - distributed.worker - INFO -           Worker name:          SLURMCluster-0-11
-2024-11-20 12:35:18,426 - distributed.worker - INFO -          dashboard at:          192.168.1.8:41971
-2024-11-20 12:35:18,426 - distributed.worker - INFO - Waiting to connect to:    tcp://192.168.1.7:34991
-2024-11-20 12:35:18,426 - distributed.worker - INFO - -------------------------------------------------
-2024-11-20 12:35:18,426 - distributed.worker - INFO -               Threads:                          1
-2024-11-20 12:35:18,427 - distributed.worker - INFO -                Memory:                   2.79 GiB
-2024-11-20 12:35:18,427 - distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-jr0pqw9u
-2024-11-20 12:35:18,427 - distributed.worker - INFO - -------------------------------------------------
-2024-11-20 12:35:18,427 - distributed.worker - INFO -         Registered to:    tcp://192.168.1.7:34991
-2024-11-20 12:35:18,427 - distributed.worker - INFO - -------------------------------------------------
-2024-11-20 12:35:18,427 - distributed.core - INFO - Starting established connection to tcp://192.168.1.7:34991
-2024-11-20 12:35:18,428 - distributed.worker - INFO -       Start worker at:    tcp://192.168.1.8:36291
-2024-11-20 12:35:18,428 - distributed.worker - INFO -          Listening to:    tcp://192.168.1.8:36291
-2024-11-20 12:35:18,428 - distributed.worker - INFO -           Worker name:          SLURMCluster-0-16
-2024-11-20 12:35:18,428 - distributed.worker - INFO -          dashboard at:          192.168.1.8:46313
-2024-11-20 12:35:18,428 - distributed.worker - INFO - Waiting to connect to:    tcp://192.168.1.7:34991
-2024-11-20 12:35:18,428 - distributed.worker - INFO - -------------------------------------------------
-2024-11-20 12:35:18,429 - distributed.worker - INFO -               Threads:                          1
-2024-11-20 12:35:18,429 - distributed.worker - INFO -                Memory:                   2.79 GiB
-2024-11-20 12:35:18,429 - distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-ivxdi6uy
-2024-11-20 12:35:18,429 - distributed.worker - INFO - -------------------------------------------------
-2024-11-20 12:35:18,430 - distributed.worker - INFO -         Registered to:    tcp://192.168.1.7:34991
-2024-11-20 12:35:18,430 - distributed.worker - INFO - -------------------------------------------------
-2024-11-20 12:35:18,430 - distributed.core - INFO - Starting established connection to tcp://192.168.1.7:34991
-2024-11-20 12:35:18,431 - distributed.worker - INFO -         Registered to:    tcp://192.168.1.7:34991
-2024-11-20 12:35:18,431 - distributed.worker - INFO - -------------------------------------------------
-2024-11-20 12:35:18,431 - distributed.core - INFO - Starting established connection to tcp://192.168.1.7:34991
-2024-11-20 12:35:18,433 - distributed.worker - INFO -         Registered to:    tcp://192.168.1.7:34991
-2024-11-20 12:35:18,433 - distributed.worker - INFO - -------------------------------------------------
-2024-11-20 12:35:18,433 - distributed.core - INFO - Starting established connection to tcp://192.168.1.7:34991
-2024-11-20 12:35:18,437 - distributed.worker - INFO -         Registered to:    tcp://192.168.1.7:34991
-2024-11-20 12:35:18,437 - distributed.worker - INFO - -------------------------------------------------
-2024-11-20 12:35:18,437 - distributed.worker - INFO -       Start worker at:    tcp://192.168.1.8:38691
-2024-11-20 12:35:18,438 - distributed.core - INFO - Starting established connection to tcp://192.168.1.7:34991
-2024-11-20 12:35:18,438 - distributed.worker - INFO -          Listening to:    tcp://192.168.1.8:38691
-2024-11-20 12:35:18,438 - distributed.worker - INFO -           Worker name:          SLURMCluster-0-15
-2024-11-20 12:35:18,438 - distributed.worker - INFO -          dashboard at:          192.168.1.8:41633
-2024-11-20 12:35:18,438 - distributed.worker - INFO - Waiting to connect to:    tcp://192.168.1.7:34991
-2024-11-20 12:35:18,438 - distributed.worker - INFO - -------------------------------------------------
-2024-11-20 12:35:18,438 - distributed.worker - INFO -               Threads:                          1
-2024-11-20 12:35:18,438 - distributed.worker - INFO -                Memory:                   2.79 GiB
-2024-11-20 12:35:18,438 - distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-idoqxjnx
-2024-11-20 12:35:18,438 - distributed.worker - INFO - -------------------------------------------------
-2024-11-20 12:35:18,438 - distributed.worker - INFO -         Registered to:    tcp://192.168.1.7:34991
-2024-11-20 12:35:18,438 - distributed.worker - INFO - -------------------------------------------------
-2024-11-20 12:35:18,439 - distributed.core - INFO - Starting established connection to tcp://192.168.1.7:34991
-2024-11-20 12:35:18,446 - distributed.worker - INFO -         Registered to:    tcp://192.168.1.7:34991
-2024-11-20 12:35:18,446 - distributed.worker - INFO - -------------------------------------------------
-2024-11-20 12:35:18,446 - distributed.core - INFO - Starting established connection to tcp://192.168.1.7:34991
-2024-11-20 12:35:18,447 - distributed.worker - INFO -         Registered to:    tcp://192.168.1.7:34991
-2024-11-20 12:35:18,447 - distributed.worker - INFO - -------------------------------------------------
-2024-11-20 12:35:18,447 - distributed.core - INFO - Starting established connection to tcp://192.168.1.7:34991
-2024-11-20 12:35:18,449 - distributed.worker - INFO -       Start worker at:    tcp://192.168.1.8:38679
-2024-11-20 12:35:18,449 - distributed.worker - INFO -          Listening to:    tcp://192.168.1.8:38679
-2024-11-20 12:35:18,449 - distributed.worker - INFO -           Worker name:          SLURMCluster-0-14
-2024-11-20 12:35:18,449 - distributed.worker - INFO -          dashboard at:          192.168.1.8:38437
-2024-11-20 12:35:18,449 - distributed.worker - INFO - Waiting to connect to:    tcp://192.168.1.7:34991
-2024-11-20 12:35:18,449 - distributed.worker - INFO - -------------------------------------------------
-2024-11-20 12:35:18,449 - distributed.worker - INFO -               Threads:                          1
-2024-11-20 12:35:18,449 - distributed.worker - INFO -                Memory:                   2.79 GiB
-2024-11-20 12:35:18,449 - distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-phc1wgwv
-2024-11-20 12:35:18,449 - distributed.worker - INFO - -------------------------------------------------
-2024-11-20 12:35:18,450 - distributed.worker - INFO -       Start worker at:    tcp://192.168.1.8:43827
-2024-11-20 12:35:18,450 - distributed.worker - INFO -          Listening to:    tcp://192.168.1.8:43827
-2024-11-20 12:35:18,450 - distributed.worker - INFO -           Worker name:          SLURMCluster-0-19
-2024-11-20 12:35:18,450 - distributed.worker - INFO -       Start worker at:    tcp://192.168.1.8:35509
-2024-11-20 12:35:18,450 - distributed.worker - INFO -          Listening to:    tcp://192.168.1.8:35509
-2024-11-20 12:35:18,450 - distributed.worker - INFO -          dashboard at:          192.168.1.8:42629
-2024-11-20 12:35:18,450 - distributed.worker - INFO - Waiting to connect to:    tcp://192.168.1.7:34991
-2024-11-20 12:35:18,450 - distributed.worker - INFO -           Worker name:          SLURMCluster-0-13
-2024-11-20 12:35:18,450 - distributed.worker - INFO - -------------------------------------------------
-2024-11-20 12:35:18,450 - distributed.worker - INFO -          dashboard at:          192.168.1.8:38751
-2024-11-20 12:35:18,450 - distributed.worker - INFO - Waiting to connect to:    tcp://192.168.1.7:34991
-2024-11-20 12:35:18,450 - distributed.worker - INFO - -------------------------------------------------
-2024-11-20 12:35:18,450 - distributed.worker - INFO -               Threads:                          1
-2024-11-20 12:35:18,450 - distributed.worker - INFO -                Memory:                   2.79 GiB
-2024-11-20 12:35:18,450 - distributed.worker - INFO -               Threads:                          1
-2024-11-20 12:35:18,450 - distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-hnx2h52i
-2024-11-20 12:35:18,450 - distributed.worker - INFO - -------------------------------------------------
-2024-11-20 12:35:18,450 - distributed.worker - INFO -                Memory:                   2.79 GiB
-2024-11-20 12:35:18,450 - distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-9lqpzsnl
-2024-11-20 12:35:18,451 - distributed.worker - INFO - -------------------------------------------------
-2024-11-20 12:35:18,451 - distributed.worker - INFO -         Registered to:    tcp://192.168.1.7:34991
-2024-11-20 12:35:18,451 - distributed.worker - INFO - -------------------------------------------------
-2024-11-20 12:35:18,452 - distributed.core - INFO - Starting established connection to tcp://192.168.1.7:34991
-2024-11-20 12:35:18,458 - distributed.worker - INFO -       Start worker at:    tcp://192.168.1.8:44565
-2024-11-20 12:35:18,459 - distributed.worker - INFO -          Listening to:    tcp://192.168.1.8:44565
-2024-11-20 12:35:18,459 - distributed.worker - INFO -           Worker name:           SLURMCluster-0-3
-2024-11-20 12:35:18,459 - distributed.worker - INFO -          dashboard at:          192.168.1.8:41221
-2024-11-20 12:35:18,459 - distributed.worker - INFO - Waiting to connect to:    tcp://192.168.1.7:34991
-2024-11-20 12:35:18,459 - distributed.worker - INFO - -------------------------------------------------
-2024-11-20 12:35:18,459 - distributed.worker - INFO -               Threads:                          1
-2024-11-20 12:35:18,459 - distributed.worker - INFO -                Memory:                   2.79 GiB
-2024-11-20 12:35:18,459 - distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-rsbghewa
-2024-11-20 12:35:18,459 - distributed.worker - INFO - -------------------------------------------------
-2024-11-20 12:35:18,461 - distributed.worker - INFO -         Registered to:    tcp://192.168.1.7:34991
-2024-11-20 12:35:18,461 - distributed.worker - INFO - -------------------------------------------------
-2024-11-20 12:35:18,461 - distributed.core - INFO - Starting established connection to tcp://192.168.1.7:34991
-2024-11-20 12:35:18,464 - distributed.worker - INFO -         Registered to:    tcp://192.168.1.7:34991
-2024-11-20 12:35:18,464 - distributed.worker - INFO -         Registered to:    tcp://192.168.1.7:34991
-2024-11-20 12:35:18,464 - distributed.worker - INFO - -------------------------------------------------
-2024-11-20 12:35:18,464 - distributed.worker - INFO - -------------------------------------------------
-2024-11-20 12:35:18,464 - distributed.core - INFO - Starting established connection to tcp://192.168.1.7:34991
-2024-11-20 12:35:18,464 - distributed.core - INFO - Starting established connection to tcp://192.168.1.7:34991
-2024-11-20 12:35:18,466 - distributed.worker - INFO -         Registered to:    tcp://192.168.1.7:34991
-2024-11-20 12:35:18,466 - distributed.worker - INFO - -------------------------------------------------
-2024-11-20 12:35:18,466 - distributed.core - INFO - Starting established connection to tcp://192.168.1.7:34991
-2024-11-20 12:35:18,469 - distributed.worker - INFO -       Start worker at:    tcp://192.168.1.8:40939
-2024-11-20 12:35:18,470 - distributed.worker - INFO -          Listening to:    tcp://192.168.1.8:40939
-2024-11-20 12:35:18,470 - distributed.worker - INFO -           Worker name:          SLURMCluster-0-12
-2024-11-20 12:35:18,470 - distributed.worker - INFO -          dashboard at:          192.168.1.8:39555
-2024-11-20 12:35:18,470 - distributed.worker - INFO - Waiting to connect to:    tcp://192.168.1.7:34991
-2024-11-20 12:35:18,470 - distributed.worker - INFO - -------------------------------------------------
-2024-11-20 12:35:18,470 - distributed.worker - INFO -               Threads:                          1
-2024-11-20 12:35:18,470 - distributed.worker - INFO -                Memory:                   2.79 GiB
-2024-11-20 12:35:18,470 - distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-kp6vgdzs
-2024-11-20 12:35:18,470 - distributed.worker - INFO - -------------------------------------------------
-2024-11-20 12:35:18,474 - distributed.worker - INFO -       Start worker at:    tcp://192.168.1.8:44081
-2024-11-20 12:35:18,474 - distributed.worker - INFO -          Listening to:    tcp://192.168.1.8:44081
-2024-11-20 12:35:18,474 - distributed.worker - INFO -           Worker name:           SLURMCluster-0-9
-2024-11-20 12:35:18,474 - distributed.worker - INFO -          dashboard at:          192.168.1.8:45273
-2024-11-20 12:35:18,474 - distributed.worker - INFO - Waiting to connect to:    tcp://192.168.1.7:34991
-2024-11-20 12:35:18,475 - distributed.worker - INFO - -------------------------------------------------
-2024-11-20 12:35:18,475 - distributed.worker - INFO -               Threads:                          1
-2024-11-20 12:35:18,475 - distributed.worker - INFO -                Memory:                   2.79 GiB
-2024-11-20 12:35:18,475 - distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-krzv5joq
-2024-11-20 12:35:18,475 - distributed.worker - INFO - -------------------------------------------------
-2024-11-20 12:35:18,490 - distributed.worker - INFO -         Registered to:    tcp://192.168.1.7:34991
-2024-11-20 12:35:18,490 - distributed.worker - INFO - -------------------------------------------------
-2024-11-20 12:35:18,490 - distributed.core - INFO - Starting established connection to tcp://192.168.1.7:34991
-2024-11-20 12:35:18,493 - distributed.worker - INFO -         Registered to:    tcp://192.168.1.7:34991
-2024-11-20 12:35:18,493 - distributed.worker - INFO - -------------------------------------------------
-2024-11-20 12:35:18,493 - distributed.core - INFO - Starting established connection to tcp://192.168.1.7:34991
-2024-11-20 12:35:18,510 - distributed.worker - INFO -       Start worker at:    tcp://192.168.1.8:46783
-2024-11-20 12:35:18,510 - distributed.worker - INFO -          Listening to:    tcp://192.168.1.8:46783
-2024-11-20 12:35:18,510 - distributed.worker - INFO -           Worker name:          SLURMCluster-0-10
-2024-11-20 12:35:18,510 - distributed.worker - INFO -          dashboard at:          192.168.1.8:44005
-2024-11-20 12:35:18,510 - distributed.worker - INFO - Waiting to connect to:    tcp://192.168.1.7:34991
-2024-11-20 12:35:18,510 - distributed.worker - INFO - -------------------------------------------------
-2024-11-20 12:35:18,510 - distributed.worker - INFO -               Threads:                          1
-2024-11-20 12:35:18,510 - distributed.worker - INFO -                Memory:                   2.79 GiB
-2024-11-20 12:35:18,510 - distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-u2m5zn_z
-2024-11-20 12:35:18,511 - distributed.worker - INFO - -------------------------------------------------
-2024-11-20 12:35:18,512 - distributed.worker - INFO -       Start worker at:    tcp://192.168.1.8:36993
-2024-11-20 12:35:18,513 - distributed.worker - INFO -          Listening to:    tcp://192.168.1.8:36993
-2024-11-20 12:35:18,513 - distributed.worker - INFO -           Worker name:          SLURMCluster-0-17
-2024-11-20 12:35:18,513 - distributed.worker - INFO -          dashboard at:          192.168.1.8:40697
-2024-11-20 12:35:18,513 - distributed.worker - INFO - Waiting to connect to:    tcp://192.168.1.7:34991
-2024-11-20 12:35:18,513 - distributed.worker - INFO - -------------------------------------------------
-2024-11-20 12:35:18,513 - distributed.worker - INFO -               Threads:                          1
-2024-11-20 12:35:18,513 - distributed.worker - INFO -                Memory:                   2.79 GiB
-2024-11-20 12:35:18,513 - distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-1u1w8hrb
-2024-11-20 12:35:18,513 - distributed.worker - INFO - -------------------------------------------------
-2024-11-20 12:35:18,521 - distributed.worker - INFO -         Registered to:    tcp://192.168.1.7:34991
-2024-11-20 12:35:18,521 - distributed.worker - INFO - -------------------------------------------------
-2024-11-20 12:35:18,521 - distributed.core - INFO - Starting established connection to tcp://192.168.1.7:34991
-2024-11-20 12:35:18,524 - distributed.worker - INFO -         Registered to:    tcp://192.168.1.7:34991
-2024-11-20 12:35:18,524 - distributed.worker - INFO - -------------------------------------------------
-2024-11-20 12:35:18,524 - distributed.core - INFO - Starting established connection to tcp://192.168.1.7:34991
+2024-11-26 10:58:37,961 - distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.8:40907'
+2024-11-26 10:58:37,964 - distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.8:40139'
+2024-11-26 10:58:37,966 - distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.8:34147'
+2024-11-26 10:58:37,966 - distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.8:37709'
+2024-11-26 10:58:37,969 - distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.8:44391'
+2024-11-26 10:58:37,970 - distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.8:43343'
+2024-11-26 10:58:37,970 - distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.8:36537'
+2024-11-26 10:58:37,971 - distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.8:37399'
+2024-11-26 10:58:37,971 - distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.8:46781'
+2024-11-26 10:58:37,971 - distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.8:33051'
+2024-11-26 10:58:37,972 - distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.8:35221'
+2024-11-26 10:58:37,972 - distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.8:34559'
+2024-11-26 10:58:37,972 - distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.8:39263'
+2024-11-26 10:58:37,973 - distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.8:34097'
+2024-11-26 10:58:37,973 - distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.8:40747'
+2024-11-26 10:58:37,989 - distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.8:33033'
+2024-11-26 10:58:38,073 - distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.8:41279'
+2024-11-26 10:58:38,074 - distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.8:40665'
+2024-11-26 10:58:38,074 - distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.8:41757'
+2024-11-26 10:58:38,081 - distributed.nanny - INFO -         Start Nanny at: 'tcp://192.168.1.8:36265'
+2024-11-26 10:58:41,609 - distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-hlgpya2k', purging
+2024-11-26 10:58:41,611 - distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-ogzomcz6', purging
+2024-11-26 10:58:41,612 - distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-vmpgl0ph', purging
+2024-11-26 10:58:41,613 - distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-mpy8fr99', purging
+2024-11-26 10:58:41,614 - distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-rlne0o_u', purging
+2024-11-26 10:58:41,616 - distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-s9wjty6b', purging
+2024-11-26 10:58:41,618 - distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-ty_3jnne', purging
+2024-11-26 10:58:41,619 - distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-qvmtke6u', purging
+2024-11-26 10:58:41,622 - distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-xqxblu6w', purging
+2024-11-26 10:58:41,624 - distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-sc3seffy', purging
+2024-11-26 10:58:41,626 - distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-6lql7duk', purging
+2024-11-26 10:58:41,630 - distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-i809wgip', purging
+2024-11-26 10:58:41,631 - distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-nbt4qngu', purging
+2024-11-26 10:58:41,633 - distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-munj9mcb', purging
+2024-11-26 10:58:41,635 - distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-b139x9em', purging
+2024-11-26 10:58:41,636 - distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-xwpt2p_h', purging
+2024-11-26 10:58:41,637 - distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-tn85bh5y', purging
+2024-11-26 10:58:41,638 - distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-6wxp7udj', purging
+2024-11-26 10:58:41,639 - distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-4twpyri4', purging
+2024-11-26 10:58:41,642 - distributed.diskutils - INFO - Found stale lock file and directory '/data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-8491kqw9', purging
+2024-11-26 10:58:42,591 - distributed.worker - INFO -       Start worker at:    tcp://192.168.1.8:33297
+2024-11-26 10:58:42,591 - distributed.worker - INFO -          Listening to:    tcp://192.168.1.8:33297
+2024-11-26 10:58:42,591 - distributed.worker - INFO -       Start worker at:    tcp://192.168.1.8:40475
+2024-11-26 10:58:42,591 - distributed.worker - INFO -           Worker name:           SLURMCluster-0-5
+2024-11-26 10:58:42,591 - distributed.worker - INFO -          Listening to:    tcp://192.168.1.8:40475
+2024-11-26 10:58:42,591 - distributed.worker - INFO -          dashboard at:          192.168.1.8:41113
+2024-11-26 10:58:42,591 - distributed.worker - INFO - Waiting to connect to:    tcp://192.168.1.7:33195
+2024-11-26 10:58:42,591 - distributed.worker - INFO -           Worker name:           SLURMCluster-0-4
+2024-11-26 10:58:42,591 - distributed.worker - INFO - -------------------------------------------------
+2024-11-26 10:58:42,591 - distributed.worker - INFO -          dashboard at:          192.168.1.8:39085
+2024-11-26 10:58:42,592 - distributed.worker - INFO - Waiting to connect to:    tcp://192.168.1.7:33195
+2024-11-26 10:58:42,591 - distributed.worker - INFO -               Threads:                          1
+2024-11-26 10:58:42,592 - distributed.worker - INFO - -------------------------------------------------
+2024-11-26 10:58:42,592 - distributed.worker - INFO -                Memory:                   2.79 GiB
+2024-11-26 10:58:42,592 - distributed.worker - INFO -               Threads:                          1
+2024-11-26 10:58:42,592 - distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-xe8irztf
+2024-11-26 10:58:42,592 - distributed.worker - INFO - -------------------------------------------------
+2024-11-26 10:58:42,592 - distributed.worker - INFO -                Memory:                   2.79 GiB
+2024-11-26 10:58:42,592 - distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-6qh2q8j4
+2024-11-26 10:58:42,592 - distributed.worker - INFO - -------------------------------------------------
+2024-11-26 10:58:42,592 - distributed.worker - INFO -       Start worker at:    tcp://192.168.1.8:45191
+2024-11-26 10:58:42,592 - distributed.worker - INFO -          Listening to:    tcp://192.168.1.8:45191
+2024-11-26 10:58:42,592 - distributed.worker - INFO -           Worker name:           SLURMCluster-0-7
+2024-11-26 10:58:42,593 - distributed.worker - INFO -          dashboard at:          192.168.1.8:46163
+2024-11-26 10:58:42,593 - distributed.worker - INFO - Waiting to connect to:    tcp://192.168.1.7:33195
+2024-11-26 10:58:42,593 - distributed.worker - INFO - -------------------------------------------------
+2024-11-26 10:58:42,593 - distributed.worker - INFO -               Threads:                          1
+2024-11-26 10:58:42,593 - distributed.worker - INFO -                Memory:                   2.79 GiB
+2024-11-26 10:58:42,593 - distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-q3azt2j8
+2024-11-26 10:58:42,593 - distributed.worker - INFO - -------------------------------------------------
+2024-11-26 10:58:42,593 - distributed.worker - INFO -       Start worker at:    tcp://192.168.1.8:42087
+2024-11-26 10:58:42,593 - distributed.worker - INFO -          Listening to:    tcp://192.168.1.8:42087
+2024-11-26 10:58:42,593 - distributed.worker - INFO -           Worker name:           SLURMCluster-0-0
+2024-11-26 10:58:42,593 - distributed.worker - INFO -          dashboard at:          192.168.1.8:33901
+2024-11-26 10:58:42,593 - distributed.worker - INFO - Waiting to connect to:    tcp://192.168.1.7:33195
+2024-11-26 10:58:42,593 - distributed.worker - INFO - -------------------------------------------------
+2024-11-26 10:58:42,593 - distributed.worker - INFO -               Threads:                          1
+2024-11-26 10:58:42,593 - distributed.worker - INFO -                Memory:                   2.79 GiB
+2024-11-26 10:58:42,593 - distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-2uu3wbl3
+2024-11-26 10:58:42,594 - distributed.worker - INFO - -------------------------------------------------
+2024-11-26 10:58:42,593 - distributed.worker - INFO -       Start worker at:    tcp://192.168.1.8:35935
+2024-11-26 10:58:42,594 - distributed.worker - INFO -          Listening to:    tcp://192.168.1.8:35935
+2024-11-26 10:58:42,594 - distributed.worker - INFO -           Worker name:           SLURMCluster-0-3
+2024-11-26 10:58:42,594 - distributed.worker - INFO -          dashboard at:          192.168.1.8:35981
+2024-11-26 10:58:42,594 - distributed.worker - INFO - Waiting to connect to:    tcp://192.168.1.7:33195
+2024-11-26 10:58:42,594 - distributed.worker - INFO -       Start worker at:    tcp://192.168.1.8:43507
+2024-11-26 10:58:42,594 - distributed.worker - INFO - -------------------------------------------------
+2024-11-26 10:58:42,594 - distributed.worker - INFO -          Listening to:    tcp://192.168.1.8:43507
+2024-11-26 10:58:42,594 - distributed.worker - INFO -           Worker name:           SLURMCluster-0-8
+2024-11-26 10:58:42,594 - distributed.worker - INFO -          dashboard at:          192.168.1.8:35897
+2024-11-26 10:58:42,594 - distributed.worker - INFO -               Threads:                          1
+2024-11-26 10:58:42,594 - distributed.worker - INFO - Waiting to connect to:    tcp://192.168.1.7:33195
+2024-11-26 10:58:42,594 - distributed.worker - INFO - -------------------------------------------------
+2024-11-26 10:58:42,594 - distributed.worker - INFO -                Memory:                   2.79 GiB
+2024-11-26 10:58:42,594 - distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-j4a8h77j
+2024-11-26 10:58:42,594 - distributed.worker - INFO -               Threads:                          1
+2024-11-26 10:58:42,594 - distributed.worker - INFO -                Memory:                   2.79 GiB
+2024-11-26 10:58:42,595 - distributed.worker - INFO - -------------------------------------------------
+2024-11-26 10:58:42,595 - distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-6cgdo599
+2024-11-26 10:58:42,595 - distributed.worker - INFO - -------------------------------------------------
+2024-11-26 10:58:42,595 - distributed.worker - INFO -       Start worker at:    tcp://192.168.1.8:34009
+2024-11-26 10:58:42,595 - distributed.worker - INFO -          Listening to:    tcp://192.168.1.8:34009
+2024-11-26 10:58:42,595 - distributed.worker - INFO -           Worker name:           SLURMCluster-0-9
+2024-11-26 10:58:42,595 - distributed.worker - INFO -          dashboard at:          192.168.1.8:36281
+2024-11-26 10:58:42,595 - distributed.worker - INFO - Waiting to connect to:    tcp://192.168.1.7:33195
+2024-11-26 10:58:42,595 - distributed.worker - INFO - -------------------------------------------------
+2024-11-26 10:58:42,595 - distributed.worker - INFO -               Threads:                          1
+2024-11-26 10:58:42,596 - distributed.worker - INFO -                Memory:                   2.79 GiB
+2024-11-26 10:58:42,596 - distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-eylht00f
+2024-11-26 10:58:42,597 - distributed.worker - INFO - -------------------------------------------------
+2024-11-26 10:58:42,598 - distributed.worker - INFO -       Start worker at:    tcp://192.168.1.8:36629
+2024-11-26 10:58:42,598 - distributed.worker - INFO -          Listening to:    tcp://192.168.1.8:36629
+2024-11-26 10:58:42,598 - distributed.worker - INFO -           Worker name:          SLURMCluster-0-16
+2024-11-26 10:58:42,598 - distributed.worker - INFO -          dashboard at:          192.168.1.8:34071
+2024-11-26 10:58:42,598 - distributed.worker - INFO - Waiting to connect to:    tcp://192.168.1.7:33195
+2024-11-26 10:58:42,598 - distributed.worker - INFO - -------------------------------------------------
+2024-11-26 10:58:42,598 - distributed.worker - INFO -         Registered to:    tcp://192.168.1.7:33195
+2024-11-26 10:58:42,598 - distributed.worker - INFO -               Threads:                          1
+2024-11-26 10:58:42,598 - distributed.worker - INFO - -------------------------------------------------
+2024-11-26 10:58:42,598 - distributed.worker - INFO -                Memory:                   2.79 GiB
+2024-11-26 10:58:42,598 - distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-csifxdj3
+2024-11-26 10:58:42,598 - distributed.worker - INFO - -------------------------------------------------
+2024-11-26 10:58:42,599 - distributed.core - INFO - Starting established connection to tcp://192.168.1.7:33195
+2024-11-26 10:58:42,599 - distributed.worker - INFO -         Registered to:    tcp://192.168.1.7:33195
+2024-11-26 10:58:42,599 - distributed.worker - INFO - -------------------------------------------------
+2024-11-26 10:58:42,600 - distributed.core - INFO - Starting established connection to tcp://192.168.1.7:33195
+2024-11-26 10:58:42,601 - distributed.worker - INFO -       Start worker at:    tcp://192.168.1.8:38813
+2024-11-26 10:58:42,601 - distributed.worker - INFO -          Listening to:    tcp://192.168.1.8:38813
+2024-11-26 10:58:42,601 - distributed.worker - INFO -           Worker name:          SLURMCluster-0-10
+2024-11-26 10:58:42,601 - distributed.worker - INFO -          dashboard at:          192.168.1.8:34521
+2024-11-26 10:58:42,602 - distributed.worker - INFO -         Registered to:    tcp://192.168.1.7:33195
+2024-11-26 10:58:42,602 - distributed.worker - INFO - Waiting to connect to:    tcp://192.168.1.7:33195
+2024-11-26 10:58:42,602 - distributed.worker - INFO - -------------------------------------------------
+2024-11-26 10:58:42,602 - distributed.worker - INFO - -------------------------------------------------
+2024-11-26 10:58:42,602 - distributed.worker - INFO -               Threads:                          1
+2024-11-26 10:58:42,602 - distributed.worker - INFO -                Memory:                   2.79 GiB
+2024-11-26 10:58:42,602 - distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-n23wpmgk
+2024-11-26 10:58:42,602 - distributed.worker - INFO - -------------------------------------------------
+2024-11-26 10:58:42,602 - distributed.core - INFO - Starting established connection to tcp://192.168.1.7:33195
+2024-11-26 10:58:42,602 - distributed.worker - INFO -         Registered to:    tcp://192.168.1.7:33195
+2024-11-26 10:58:42,602 - distributed.worker - INFO - -------------------------------------------------
+2024-11-26 10:58:42,603 - distributed.core - INFO - Starting established connection to tcp://192.168.1.7:33195
+2024-11-26 10:58:42,603 - distributed.worker - INFO -       Start worker at:    tcp://192.168.1.8:44267
+2024-11-26 10:58:42,603 - distributed.worker - INFO -          Listening to:    tcp://192.168.1.8:44267
+2024-11-26 10:58:42,603 - distributed.worker - INFO -           Worker name:           SLURMCluster-0-1
+2024-11-26 10:58:42,603 - distributed.worker - INFO -          dashboard at:          192.168.1.8:40007
+2024-11-26 10:58:42,603 - distributed.worker - INFO - Waiting to connect to:    tcp://192.168.1.7:33195
+2024-11-26 10:58:42,603 - distributed.worker - INFO - -------------------------------------------------
+2024-11-26 10:58:42,603 - distributed.worker - INFO -               Threads:                          1
+2024-11-26 10:58:42,604 - distributed.worker - INFO -                Memory:                   2.79 GiB
+2024-11-26 10:58:42,604 - distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-1ufkr557
+2024-11-26 10:58:42,604 - distributed.worker - INFO - -------------------------------------------------
+2024-11-26 10:58:42,605 - distributed.worker - INFO -         Registered to:    tcp://192.168.1.7:33195
+2024-11-26 10:58:42,605 - distributed.worker - INFO - -------------------------------------------------
+2024-11-26 10:58:42,606 - distributed.core - INFO - Starting established connection to tcp://192.168.1.7:33195
+2024-11-26 10:58:42,606 - distributed.worker - INFO -         Registered to:    tcp://192.168.1.7:33195
+2024-11-26 10:58:42,607 - distributed.worker - INFO - -------------------------------------------------
+2024-11-26 10:58:42,607 - distributed.core - INFO - Starting established connection to tcp://192.168.1.7:33195
+2024-11-26 10:58:42,611 - distributed.worker - INFO -         Registered to:    tcp://192.168.1.7:33195
+2024-11-26 10:58:42,611 - distributed.worker - INFO - -------------------------------------------------
+2024-11-26 10:58:42,611 - distributed.core - INFO - Starting established connection to tcp://192.168.1.7:33195
+2024-11-26 10:58:42,612 - distributed.worker - INFO -         Registered to:    tcp://192.168.1.7:33195
+2024-11-26 10:58:42,612 - distributed.worker - INFO - -------------------------------------------------
+2024-11-26 10:58:42,612 - distributed.core - INFO - Starting established connection to tcp://192.168.1.7:33195
+2024-11-26 10:58:42,620 - distributed.worker - INFO -         Registered to:    tcp://192.168.1.7:33195
+2024-11-26 10:58:42,620 - distributed.worker - INFO - -------------------------------------------------
+2024-11-26 10:58:42,621 - distributed.core - INFO - Starting established connection to tcp://192.168.1.7:33195
+2024-11-26 10:58:42,624 - distributed.worker - INFO -         Registered to:    tcp://192.168.1.7:33195
+2024-11-26 10:58:42,624 - distributed.worker - INFO - -------------------------------------------------
+2024-11-26 10:58:42,624 - distributed.core - INFO - Starting established connection to tcp://192.168.1.7:33195
+2024-11-26 10:58:42,638 - distributed.worker - INFO -       Start worker at:    tcp://192.168.1.8:38605
+2024-11-26 10:58:42,639 - distributed.worker - INFO -          Listening to:    tcp://192.168.1.8:38605
+2024-11-26 10:58:42,639 - distributed.worker - INFO -           Worker name:           SLURMCluster-0-2
+2024-11-26 10:58:42,639 - distributed.worker - INFO -          dashboard at:          192.168.1.8:35605
+2024-11-26 10:58:42,639 - distributed.worker - INFO - Waiting to connect to:    tcp://192.168.1.7:33195
+2024-11-26 10:58:42,639 - distributed.worker - INFO - -------------------------------------------------
+2024-11-26 10:58:42,639 - distributed.worker - INFO -               Threads:                          1
+2024-11-26 10:58:42,639 - distributed.worker - INFO -                Memory:                   2.79 GiB
+2024-11-26 10:58:42,639 - distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-z_gb2iq_
+2024-11-26 10:58:42,639 - distributed.worker - INFO - -------------------------------------------------
+2024-11-26 10:58:42,649 - distributed.worker - INFO -       Start worker at:    tcp://192.168.1.8:35511
+2024-11-26 10:58:42,649 - distributed.worker - INFO -          Listening to:    tcp://192.168.1.8:35511
+2024-11-26 10:58:42,650 - distributed.worker - INFO -           Worker name:          SLURMCluster-0-13
+2024-11-26 10:58:42,650 - distributed.worker - INFO -          dashboard at:          192.168.1.8:40181
+2024-11-26 10:58:42,650 - distributed.worker - INFO - Waiting to connect to:    tcp://192.168.1.7:33195
+2024-11-26 10:58:42,650 - distributed.worker - INFO - -------------------------------------------------
+2024-11-26 10:58:42,650 - distributed.worker - INFO -               Threads:                          1
+2024-11-26 10:58:42,650 - distributed.worker - INFO -                Memory:                   2.79 GiB
+2024-11-26 10:58:42,650 - distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-gwknwriz
+2024-11-26 10:58:42,650 - distributed.worker - INFO - -------------------------------------------------
+2024-11-26 10:58:42,653 - distributed.worker - INFO -         Registered to:    tcp://192.168.1.7:33195
+2024-11-26 10:58:42,653 - distributed.worker - INFO - -------------------------------------------------
+2024-11-26 10:58:42,653 - distributed.core - INFO - Starting established connection to tcp://192.168.1.7:33195
+2024-11-26 10:58:42,656 - distributed.worker - INFO -       Start worker at:    tcp://192.168.1.8:38951
+2024-11-26 10:58:42,656 - distributed.worker - INFO -       Start worker at:    tcp://192.168.1.8:37455
+2024-11-26 10:58:42,657 - distributed.worker - INFO -         Registered to:    tcp://192.168.1.7:33195
+2024-11-26 10:58:42,657 - distributed.worker - INFO -          Listening to:    tcp://192.168.1.8:38951
+2024-11-26 10:58:42,657 - distributed.worker - INFO -          Listening to:    tcp://192.168.1.8:37455
+2024-11-26 10:58:42,657 - distributed.worker - INFO - -------------------------------------------------
+2024-11-26 10:58:42,657 - distributed.worker - INFO -           Worker name:           SLURMCluster-0-6
+2024-11-26 10:58:42,657 - distributed.worker - INFO -           Worker name:          SLURMCluster-0-11
+2024-11-26 10:58:42,657 - distributed.worker - INFO -          dashboard at:          192.168.1.8:42721
+2024-11-26 10:58:42,657 - distributed.worker - INFO -          dashboard at:          192.168.1.8:41001
+2024-11-26 10:58:42,657 - distributed.worker - INFO - Waiting to connect to:    tcp://192.168.1.7:33195
+2024-11-26 10:58:42,657 - distributed.worker - INFO - Waiting to connect to:    tcp://192.168.1.7:33195
+2024-11-26 10:58:42,657 - distributed.worker - INFO - -------------------------------------------------
+2024-11-26 10:58:42,657 - distributed.worker - INFO - -------------------------------------------------
+2024-11-26 10:58:42,657 - distributed.worker - INFO -               Threads:                          1
+2024-11-26 10:58:42,657 - distributed.worker - INFO -               Threads:                          1
+2024-11-26 10:58:42,657 - distributed.worker - INFO -                Memory:                   2.79 GiB
+2024-11-26 10:58:42,657 - distributed.core - INFO - Starting established connection to tcp://192.168.1.7:33195
+2024-11-26 10:58:42,657 - distributed.worker - INFO -                Memory:                   2.79 GiB
+2024-11-26 10:58:42,657 - distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-xr7yg2yk
+2024-11-26 10:58:42,657 - distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-92wdmslw
+2024-11-26 10:58:42,657 - distributed.worker - INFO - -------------------------------------------------
+2024-11-26 10:58:42,657 - distributed.worker - INFO - -------------------------------------------------
+2024-11-26 10:58:42,661 - distributed.worker - INFO -       Start worker at:    tcp://192.168.1.8:36633
+2024-11-26 10:58:42,661 - distributed.worker - INFO -          Listening to:    tcp://192.168.1.8:36633
+2024-11-26 10:58:42,661 - distributed.worker - INFO -           Worker name:          SLURMCluster-0-17
+2024-11-26 10:58:42,661 - distributed.worker - INFO -          dashboard at:          192.168.1.8:39679
+2024-11-26 10:58:42,661 - distributed.worker - INFO - Waiting to connect to:    tcp://192.168.1.7:33195
+2024-11-26 10:58:42,661 - distributed.worker - INFO - -------------------------------------------------
+2024-11-26 10:58:42,661 - distributed.worker - INFO -               Threads:                          1
+2024-11-26 10:58:42,662 - distributed.worker - INFO -                Memory:                   2.79 GiB
+2024-11-26 10:58:42,662 - distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-9xmz1y3r
+2024-11-26 10:58:42,662 - distributed.worker - INFO - -------------------------------------------------
+2024-11-26 10:58:42,664 - distributed.worker - INFO -       Start worker at:    tcp://192.168.1.8:40783
+2024-11-26 10:58:42,665 - distributed.worker - INFO -          Listening to:    tcp://192.168.1.8:40783
+2024-11-26 10:58:42,665 - distributed.worker - INFO -           Worker name:          SLURMCluster-0-19
+2024-11-26 10:58:42,665 - distributed.worker - INFO -          dashboard at:          192.168.1.8:45453
+2024-11-26 10:58:42,665 - distributed.worker - INFO - Waiting to connect to:    tcp://192.168.1.7:33195
+2024-11-26 10:58:42,665 - distributed.worker - INFO -         Registered to:    tcp://192.168.1.7:33195
+2024-11-26 10:58:42,665 - distributed.worker - INFO - -------------------------------------------------
+2024-11-26 10:58:42,665 - distributed.worker - INFO - -------------------------------------------------
+2024-11-26 10:58:42,665 - distributed.worker - INFO -               Threads:                          1
+2024-11-26 10:58:42,665 - distributed.worker - INFO -                Memory:                   2.79 GiB
+2024-11-26 10:58:42,665 - distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-ftnl31_m
+2024-11-26 10:58:42,665 - distributed.worker - INFO - -------------------------------------------------
+2024-11-26 10:58:42,665 - distributed.core - INFO - Starting established connection to tcp://192.168.1.7:33195
+2024-11-26 10:58:42,673 - distributed.worker - INFO -       Start worker at:    tcp://192.168.1.8:37889
+2024-11-26 10:58:42,673 - distributed.worker - INFO -          Listening to:    tcp://192.168.1.8:37889
+2024-11-26 10:58:42,674 - distributed.worker - INFO -           Worker name:          SLURMCluster-0-18
+2024-11-26 10:58:42,674 - distributed.worker - INFO -          dashboard at:          192.168.1.8:37651
+2024-11-26 10:58:42,674 - distributed.worker - INFO - Waiting to connect to:    tcp://192.168.1.7:33195
+2024-11-26 10:58:42,674 - distributed.worker - INFO - -------------------------------------------------
+2024-11-26 10:58:42,674 - distributed.worker - INFO -               Threads:                          1
+2024-11-26 10:58:42,674 - distributed.worker - INFO -                Memory:                   2.79 GiB
+2024-11-26 10:58:42,674 - distributed.worker - INFO -         Registered to:    tcp://192.168.1.7:33195
+2024-11-26 10:58:42,674 - distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-cnh1z6rs
+2024-11-26 10:58:42,674 - distributed.worker - INFO - -------------------------------------------------
+2024-11-26 10:58:42,674 - distributed.worker - INFO - -------------------------------------------------
+2024-11-26 10:58:42,674 - distributed.core - INFO - Starting established connection to tcp://192.168.1.7:33195
+2024-11-26 10:58:42,676 - distributed.worker - INFO -       Start worker at:    tcp://192.168.1.8:40327
+2024-11-26 10:58:42,676 - distributed.worker - INFO -          Listening to:    tcp://192.168.1.8:40327
+2024-11-26 10:58:42,676 - distributed.worker - INFO -           Worker name:          SLURMCluster-0-14
+2024-11-26 10:58:42,676 - distributed.worker - INFO -          dashboard at:          192.168.1.8:43901
+2024-11-26 10:58:42,676 - distributed.worker - INFO - Waiting to connect to:    tcp://192.168.1.7:33195
+2024-11-26 10:58:42,676 - distributed.worker - INFO - -------------------------------------------------
+2024-11-26 10:58:42,676 - distributed.worker - INFO -               Threads:                          1
+2024-11-26 10:58:42,676 - distributed.worker - INFO -                Memory:                   2.79 GiB
+2024-11-26 10:58:42,676 - distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-wd0p151g
+2024-11-26 10:58:42,676 - distributed.worker - INFO - -------------------------------------------------
+2024-11-26 10:58:42,677 - distributed.worker - INFO -         Registered to:    tcp://192.168.1.7:33195
+2024-11-26 10:58:42,677 - distributed.worker - INFO - -------------------------------------------------
+2024-11-26 10:58:42,678 - distributed.core - INFO - Starting established connection to tcp://192.168.1.7:33195
+2024-11-26 10:58:42,678 - distributed.worker - INFO -         Registered to:    tcp://192.168.1.7:33195
+2024-11-26 10:58:42,678 - distributed.worker - INFO - -------------------------------------------------
+2024-11-26 10:58:42,678 - distributed.core - INFO - Starting established connection to tcp://192.168.1.7:33195
+2024-11-26 10:58:42,685 - distributed.worker - INFO -       Start worker at:    tcp://192.168.1.8:44483
+2024-11-26 10:58:42,685 - distributed.worker - INFO -          Listening to:    tcp://192.168.1.8:44483
+2024-11-26 10:58:42,685 - distributed.worker - INFO -           Worker name:          SLURMCluster-0-12
+2024-11-26 10:58:42,685 - distributed.worker - INFO -          dashboard at:          192.168.1.8:40631
+2024-11-26 10:58:42,685 - distributed.worker - INFO - Waiting to connect to:    tcp://192.168.1.7:33195
+2024-11-26 10:58:42,685 - distributed.worker - INFO - -------------------------------------------------
+2024-11-26 10:58:42,685 - distributed.worker - INFO -               Threads:                          1
+2024-11-26 10:58:42,685 - distributed.worker - INFO -                Memory:                   2.79 GiB
+2024-11-26 10:58:42,685 - distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-rwh8u1go
+2024-11-26 10:58:42,685 - distributed.worker - INFO - -------------------------------------------------
+2024-11-26 10:58:42,693 - distributed.worker - INFO -         Registered to:    tcp://192.168.1.7:33195
+2024-11-26 10:58:42,693 - distributed.worker - INFO - -------------------------------------------------
+2024-11-26 10:58:42,694 - distributed.core - INFO - Starting established connection to tcp://192.168.1.7:33195
+2024-11-26 10:58:42,694 - distributed.worker - INFO -       Start worker at:    tcp://192.168.1.8:38573
+2024-11-26 10:58:42,694 - distributed.worker - INFO -          Listening to:    tcp://192.168.1.8:38573
+2024-11-26 10:58:42,694 - distributed.worker - INFO -           Worker name:          SLURMCluster-0-15
+2024-11-26 10:58:42,694 - distributed.worker - INFO -          dashboard at:          192.168.1.8:46189
+2024-11-26 10:58:42,694 - distributed.worker - INFO - Waiting to connect to:    tcp://192.168.1.7:33195
+2024-11-26 10:58:42,694 - distributed.worker - INFO - -------------------------------------------------
+2024-11-26 10:58:42,694 - distributed.worker - INFO -               Threads:                          1
+2024-11-26 10:58:42,695 - distributed.worker - INFO -                Memory:                   2.79 GiB
+2024-11-26 10:58:42,695 - distributed.worker - INFO -       Local Directory: /data/scratch/richteny/thesis/cosipy_test_space/logs/dask-worker-space/dask-worker-space/worker-3o7aq1kc
+2024-11-26 10:58:42,695 - distributed.worker - INFO - -------------------------------------------------
+2024-11-26 10:58:42,697 - distributed.worker - INFO -         Registered to:    tcp://192.168.1.7:33195
+2024-11-26 10:58:42,697 - distributed.worker - INFO - -------------------------------------------------
+2024-11-26 10:58:42,697 - distributed.core - INFO - Starting established connection to tcp://192.168.1.7:33195
+2024-11-26 10:58:42,703 - distributed.worker - INFO -         Registered to:    tcp://192.168.1.7:33195
+2024-11-26 10:58:42,703 - distributed.worker - INFO - -------------------------------------------------
+2024-11-26 10:58:42,704 - distributed.worker - INFO -         Registered to:    tcp://192.168.1.7:33195
+2024-11-26 10:58:42,704 - distributed.worker - INFO - -------------------------------------------------
+2024-11-26 10:58:42,704 - distributed.core - INFO - Starting established connection to tcp://192.168.1.7:33195
+2024-11-26 10:58:42,704 - distributed.core - INFO - Starting established connection to tcp://192.168.1.7:33195
+2024-11-26 11:00:12,087 - distributed.core - INFO - Event loop was unresponsive in Worker for 3.38s.  This is often caused by long-running GIL-holding functions or moving large chunks of data. This can cause timeouts and instability.
+2024-11-26 11:00:12,509 - distributed.core - INFO - Event loop was unresponsive in Worker for 4.40s.  This is often caused by long-running GIL-holding functions or moving large chunks of data. This can cause timeouts and instability.
+2024-11-26 11:00:12,763 - distributed.core - INFO - Event loop was unresponsive in Worker for 3.66s.  This is often caused by long-running GIL-holding functions or moving large chunks of data. This can cause timeouts and instability.
+2024-11-26 11:00:12,949 - distributed.core - INFO - Event loop was unresponsive in Worker for 4.08s.  This is often caused by long-running GIL-holding functions or moving large chunks of data. This can cause timeouts and instability.
+2024-11-26 11:00:13,376 - distributed.core - INFO - Event loop was unresponsive in Worker for 3.93s.  This is often caused by long-running GIL-holding functions or moving large chunks of data. This can cause timeouts and instability.
+slurmstepd: error: *** JOB 1707339 ON node08 CANCELLED AT 2024-11-26T11:00:15 ***
