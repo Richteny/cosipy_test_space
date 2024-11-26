@@ -224,8 +224,6 @@ def get_aws2cosipy_params() -> dict:
             "SNOWFALL_var",
             "N_var",
         ),
-
-
         "coords": ("WRF", "aggregate", "aggregation_step", "ELEV_model", "delimiter"),
         "radiation": (
             "radiationModule",
