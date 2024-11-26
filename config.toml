@@ -5,7 +5,7 @@ time_end = "2000-12-31T23:00"
 [FILENAMES]
 data_path = "./data/"
 input_netcdf = "HEF/HEF_COSMO_1D10m_HORAYZON_IntpolPRES_1999_2010.nc"
-output_prefix = "HEF_COSMO_1D10m_1999_2010_HORAYZON_Bougamont05_"
+output_prefix = "HEF_COSMO_1D10m_1999_2010_HORAYZON_"
 
 [RESTART]
 restart = false

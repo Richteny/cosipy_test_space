@@ -26,6 +26,7 @@ conda activate pymc_env
 #python -u /data/scratch/richteny/thesis/cosipy_test_space/COSIPY.py
 #python -u /data/scratch/richteny/thesis/cosipy_test_space/FAST_spotpy.py
 #python -u /data/scratch/richteny/thesis/cosipy_test_space/pymc_calibration.py
-python -u /data/scratch/richteny/thesis/cosipy_test_space/synthetic_pymc_calibration.py
+#python -u /data/scratch/richteny/thesis/cosipy_test_space/synthetic_pymc_calibration.py
+python -u /data/scratch/richteny/thesis/cosipy_test_space/LHS_synth_surrogate_params.py
 #python -u /data/scratch/richteny/thesis/cosipy_test_space/EMERGENCY_pymc_calibration.py
 
