@@ -14,6 +14,7 @@ else:
 
 def set_parser() -> argparse.ArgumentParser:
     """Set argument parser for COSIPY."""
+
     tagline = (
         "Coupled snowpack and ice surface energy and mass balance model in Python."
     )
@@ -111,6 +112,7 @@ def get_entry_points(package_name: str = "cosipy"):
         if ep.name.startswith(package_name.upper())
         or ep.name.startswith(package_name.lower())
         or package_name.lower() in ep.name
+
     )
 
     return entrypoints
