@@ -16,6 +16,7 @@ You MUST manually add the values for `create_static` in the generated
 `utilities_config.toml`, as that utility script cannot be converted.
 """
 
+import configparser
 import inspect
 import sys
 
@@ -68,7 +69,10 @@ def get_config_params() -> dict:
             "obs_type",
         ),
         "TRANSIENT SNOWLINE DATA": (
-            "tsl_evaluation", 
+            "time_start_cali",
+            "time_end_cali",
+            "tsl_evaluation",
+            "write_csv_status",
             "time_col_obs",
             "tsla_col_obs",
             "min_snowheight",
@@ -99,6 +103,23 @@ def get_config_params() -> dict:
         output_split = config.output_netcdf.split(".")  # remove nc
     output_prefix = "_".join(output_split[:-1])
     params["FILENAMES"]["output_prefix"] = output_prefix
+
+    params["OUTPUT_VARIABLES"] = get_output_params()
+
+    return params
+    
+
+def get_output_params() -> dict:
+    """Get output variable selection from cosipy/output."""
+
+    output_config = configparser.ConfigParser()
+    output_config.read("./cosipy/output")
+    variables = output_config["vars"]
+
+    params = {}
+    params["output_atm"] = variables["atm"]
+    params["output_internal"] = variables["internal"]
+    params["output_full"] = variables["full"]
 
     return params
 
@@ -203,6 +224,8 @@ def get_aws2cosipy_params() -> dict:
             "SNOWFALL_var",
             "N_var",
         ),
+
+
         "coords": ("WRF", "aggregate", "aggregation_step", "ELEV_model", "delimiter"),
         "radiation": (
             "radiationModule",
@@ -281,8 +304,11 @@ def get_utilities_params() -> dict:
 
 def write_toml(parameters: dict, filename: str):
     """Write parameters to .toml file."""
+    
     with open(f"{filename}.toml", "w") as f:
         toml.dump(parameters, f)
+    
+
     print(f"Generated {filename}.toml")
 
 

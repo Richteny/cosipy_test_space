@@ -6,10 +6,11 @@
 #SBATCH --ntasks-per-node=20
 #SBATCH --time=03:00:00
 
+module load anaconda/2019.07
 module load intel64 netcdf 
 
 export KMP_STACKSIZE=64000000
 export OMP_NUM_THREADS=1
 ulimit -s unlimited
 
-python3 aws2cosipy.py -c ../../data/input/Abramov/Abramov_ERA5L_1981_2019.csv -o ../../data/input/Abramov/Abramov_ERA5L_1981_2016.nc -s ../../data/static/Abramov_static.nc -b 19810101 -e 20191231 
+python3 aws2cosipy.py -i ../../data/input/Zhadang/Zhadang_ERA5_200901_short.csv -o ../../data/input/Zhadang/Zhadang_ERA5_2009.nc -s ../../data/static/Zhadang_static.nc -b 20090101 -e 20091231
