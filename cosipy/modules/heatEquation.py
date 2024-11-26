@@ -1,6 +1,7 @@
 import numpy as np
 from numba import njit
 
+
 @njit
 def solveHeatEquation(GRID, dt):
     """Solve the heat equation on a non-uniform grid.
@@ -41,8 +42,8 @@ def solveHeatEquation(GRID, dt):
 
         # Update the temperatures
         T[k] = T[k] + (
-            (Kl * dt_use * (T[kl] - T[k]) / (hk1))
-            - (Ku * dt_use * (T[k] - T[ku]) / (hk))
+            (Kl * dt_use * (T[kl] - T[k]) / hk1)
+            - (Ku * dt_use * (T[k] - T[ku]) / hk)
         ) / (0.5 * (hk + hk1))
 
     GRID.set_temperature(T)  # Write results to GRID
