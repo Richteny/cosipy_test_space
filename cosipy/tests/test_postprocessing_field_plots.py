@@ -115,7 +115,6 @@ class TestPostprocessPlotFieldsPlotting:
         print(gridliners)
         artists = gridliners.xline_artists + gridliners.yline_artists
         for gridlines in artists:
-
             kwargs = gridlines.collection_kwargs
             assert kwargs.get("linewidth", None) == 0.5
             assert kwargs.get("color", None) == "gray"

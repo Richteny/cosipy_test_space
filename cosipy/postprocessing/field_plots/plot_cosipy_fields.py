@@ -398,7 +398,6 @@ def parse_arguments() -> argparse.Namespace:
                                      stamp plot.
         -t, --type <int>         Set plot type. 1: contour, 2: mesh.
                                      Default 1.
-
     """
 
     tagline = "Plot results for single or all variables."
