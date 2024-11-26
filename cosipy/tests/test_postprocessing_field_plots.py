@@ -115,6 +115,7 @@ class TestPostprocessPlotFieldsPlotting:
         print(gridliners)
         artists = gridliners.xline_artists + gridliners.yline_artists
         for gridlines in artists:
+
             kwargs = gridlines.collection_kwargs
             assert kwargs.get("linewidth", None) == 0.5
             assert kwargs.get("color", None) == "gray"
@@ -355,7 +356,7 @@ class TestPostprocessPlotFieldsPlotting:
     def test_parse_arguments(self):
         with patch(
             "sys.argv",
-            ["main", "--file", "./path/file", "--date", "'2009-01-01'"],
+            ["main", "--input", "./path/file", "--date", "'2009-01-01'"],
         ):
             args = pcf.parse_arguments()
         assert isinstance(args, argparse.Namespace)

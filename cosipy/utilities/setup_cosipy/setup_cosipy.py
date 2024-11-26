@@ -1,7 +1,27 @@
-"""Generate sample configuration files for COSIPY."""
+"""
+Generate sample configuration files for COSIPY.
+
+Usage:
+
+Entry point:
+``cosipy-setup [-y] [-o <path>]``
+
+From source:
+``python -m cosipy.utilities.setup_cosipy.setup_cosipy -i <input> -o <output> -s <static> [-u <path>] [-b <date>] [-e <date>]``
+
+Options and arguments:
+
+Optional switches:
+    -h, --help              Show this help message and exit.
+    -y, --yes               Silently overwrite existing configuration
+                                files.
+
+Optional arguments:
+    -o, --output <path>     Relative path to target configuration
+                                directory.
+"""
 
 import argparse
-import distutils.util
 import inspect
 import os
 import shutil
@@ -13,11 +33,11 @@ def get_user_arguments() -> argparse.Namespace:
     Optional switches:
         -h, --help              Show this help message and exit.
         -y, --yes               Silently overwrite existing
-                                configuration files.
+                                    configuration files.
 
     Optional arguments:
-        -o, --output <str>      Relative path to target configuration
-                                directory.
+        -o, --output <path>     Relative path to target configuration
+                                    directory.
 
     Returns:
         Namespace of user arguments.
@@ -33,7 +53,7 @@ def get_user_arguments() -> argparse.Namespace:
         "-y",
         "--yes",
         action="store_true",
-        default=None,
+        default=False,
         dest="overwrite",
         help="silently overwrite existing configuration files",
     )
@@ -97,11 +117,20 @@ def copy_file_to_target(
         decision = input(
             f"{basename} already exists in {target_dir}/\nOverwrite?\n"
         )
-        decision = distutils.util.strtobool(decision)
+        decision = strtobool(decision)
     if decision:
         shutil.copyfile(
             f"{source_dir}/{basename}", target_path, follow_symlinks=True
         )
+
+
+def strtobool(val: str) -> bool:
+    """Convert user input to bool."""
+    val = val.lower()
+    if val in ("y", "yes"):
+        return True
+    elif val in ("n", "no"):
+        return False
 
 
 def main():

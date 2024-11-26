@@ -1,3 +1,6 @@
+# This is the COSIPY configuration (init) file.
+# Please make your changes here.
+
 [SIMULATION_PERIOD]
 time_start = "2000-01-01T00:00"
 time_end = "2000-12-31T23:00"
@@ -8,14 +11,14 @@ input_netcdf = "HEF/HEF_COSMO_1D10m_HORAYZON_IntpolPRES_1999_2010.nc"
 output_prefix = "HEF_COSMO_1D10m_1999_2010_HORAYZON_"
 
 [RESTART]
-restart = false
+restart = false # set to true if you want to start from restart file
 
 [STAKE_DATA]
 stake_evaluation = false
-stakes_loc_file = "./data/input/HEF/loc_stakes.csv"
-stakes_data_file = "./data/input/HEF/data_stakes_hef.csv"
-eval_method = "rmse"
-obs_type = "snowheight"
+stakes_loc_file = "./data/input/HEF/loc_stakes.csv" # path to stake location file
+stakes_data_file = "./data/input/HEF/data_stakes_hef.csv" # path to stake data file
+eval_method = "rmse" # how to evaluate the simulations ("rmse")
+obs_type = "snowheight" # What kind of stake data is used "mb" or "snowheight"
 
 ["TRANSIENT SNOWLINE DATA"]
 time_start_cali = "2000-01-01T00:00"
@@ -33,13 +36,16 @@ tsl_data_file = "./data/input/HEF/snowlines/HEF-snowlines-1999-2010_manual.csv"
 station_altitude = 3030.0283
 
 [DIMENSIONS]
-WRF = false
-WRF_X_CSPY = false
-northing = "lat"
-easting = "lon"
+# STANDARD LAT/LON or WRF INPUT
+WRF = false # Set to True if you use WRF as input
+WRF_X_CSPY = false # Interactive simulation with WRF
+northing = "lat" # name of dimension in input and output
+easting = "lon" # name of dimension in input and output
 
 [COMPRESSION]
-compression_level = 2
+# Compression of output netCDF
+# Recommendation: choose 1, 2 or 3 (higher not worthwhile, because of needed time for writing output)
+compression_level = 2 # Choose value between 1 and 9 (highest compression)
 
 [PARALLELIZATION]
 slurm_use = true #false
@@ -47,15 +53,26 @@ workers = 2
 local_port = 8786
 
 [FULL_FIELDS]
-full_field = false
+# WRITE FULL FIELDS
+full_field = false # write full fields (2D data) to file
 
 [FORCINGS]
-force_use_TP = false
+# TOTAL PRECIPITATION
+force_use_TP = false # If total precipitation and snowfall in input data, use total precipitation
+# CLOUD COVER FRACTION
+# If cloud cover fraction and incoming longwave radiation in input data, use cloud cover fraction
 force_use_N = true
 
 [SUBSET]
+# provide pixel values
 tile = false
 xstart = 20
 xend = 40
 ystart = 20
 yend = 40
+
+[OUTPUT_VARIABLES]
+# Select which output variables are written to disk. Comma-separated. Edit with caution.
+output_atm = "T2,RH2,U2,RAIN,SNOWFALL,RRR,PRES,N,G,LWin,LWout,H,LE,B,QRR,Z0,ALBEDO,TS"
+output_internal = "ME,MB,surfMB,intMB,EVAPORATION,SUBLIMATION,CONDENSATION,DEPOSITION,surfM,subM,Q,REFREEZE,SNOWHEIGHT,TOTALHEIGHT,LAYERS"
+output_full = "HEIGHT,RHO,T,LWC,CC,POROSITY,LW,ICE_FRACTION,IRREDUCIBLE_WATER,REFREEZE"
