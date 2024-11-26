@@ -69,7 +69,10 @@ def get_config_params() -> dict:
             "obs_type",
         ),
         "TRANSIENT SNOWLINE DATA": (
-            "tsl_evaluation", 
+            "time_start_cali",
+            "time_end_cali",
+            "tsl_evaluation",
+            "write_csv_status",
             "time_col_obs",
             "tsla_col_obs",
             "min_snowheight",
@@ -221,6 +224,7 @@ def get_aws2cosipy_params() -> dict:
             "SNOWFALL_var",
             "N_var",
         ),
+
 
         "coords": ("WRF", "aggregate", "aggregation_step", "ELEV_model", "delimiter"),
         "radiation": (

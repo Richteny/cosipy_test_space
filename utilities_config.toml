@@ -29,7 +29,7 @@ aggregation_step = 'H'
 delimiter = ','
 
 [aws2cosipy.radiation]
-radiationModule = 'Wohlfahrt2016' # 'Moelg2009', 'Wohlfahrt2016', 'none'
+radiationModule = 'Wohlfahrt2016' # 'Moelg2009', 'Wohlfahrt2016', 'HORAYZON2022', 'none'
 LUT = false  # If there is already a Look-up-table for topographic shading and sky-view-factor built for this area, set to True
 LUT_path = "./data/static/LUT_Rad.nc"
 dtstep = 10800  # time step (s)
@@ -76,4 +76,3 @@ latitude_lower_right = 30.46
 [wrf2cosipy.constants]
 hu = 10  # Height of WRF wind velocity
 lu_class = 24 # land use class for glaciers
-

@@ -6,7 +6,7 @@
 #SBATCH --ntasks-per-node=20
 #SBATCH --time=03:00:00
 
-moduel load anaconda/2019.07
+module load anaconda/2019.07
 module load intel64 netcdf 
 
 export KMP_STACKSIZE=64000000

@@ -21,4 +21,3 @@ memory = "3G"  # Total allocated memory per submitted Slurm job.
 
 [OVERRIDES]
 memory_per_process = 3  # Memory per process. This sets `memory` to (cores * memory_per_process.)
-

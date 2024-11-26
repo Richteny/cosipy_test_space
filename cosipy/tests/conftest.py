@@ -109,6 +109,7 @@ def fixture_conftest_mock_grid_values():
 
 
 @pytest.fixture(name="conftest_mock_grid", scope="function", autouse=False)
+
 def fixture_conftest_mock_grid(conftest_mock_grid_values: dict):
     """Constructs a Grid object.
 
@@ -118,6 +119,7 @@ def fixture_conftest_mock_grid(conftest_mock_grid_values: dict):
     Returns:
         Generator[Grid]: Grid object with numba arrays for the layers'
         heights, densities, temperatures, and liquid water content.
+
     """
 
     data = conftest_mock_grid_values.copy()
@@ -158,6 +160,7 @@ def fixture_conftest_mock_grid_ice(conftest_mock_grid_values: dict):
     yield grid_object
 
 
+
 """Mock xarray Dataset"""
 @pytest.fixture(
     name="conftest_mock_xr_dataset_dims", scope="function", autouse=False
@@ -172,6 +175,7 @@ def fixture_conftest_mock_xr_dataset_dims():
     dimensions = {}
     reference_time = pd.Timestamp("2009-01-01T12:00:00")
     dimensions["time"] = pd.date_range(reference_time, periods=4, freq="6h")
+
 # Mock xarray Dataset
 @pytest.fixture(
     name="conftest_mock_xr_dataset_dims", scope="function", autouse=False
@@ -596,6 +600,7 @@ class TestBoilerplate:
         self.test_check_output()
         self.test_assert_grid_profiles_equal()
         self.test_calculate_irreducible_water_content()
+
 
 
 @pytest.fixture(name="conftest_boilerplate", scope="function", autouse=False)

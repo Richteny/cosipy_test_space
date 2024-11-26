@@ -136,12 +136,12 @@ def create_input(wrf_file, cosipy_file, start_date, end_date):
 
 def add_variable_along_latlon(ds, var, name, units, long_name):
     """Add spatial data to a dataset."""
+
     ds[name] = (('south_north','west_east'), var)
     ds[name].attrs['units'] = units
     ds[name].attrs['long_name'] = long_name
     ds[name].encoding['_FillValue'] = -9999
     return ds
-
 
 def add_variable_along_timelatlon(ds, var, name, units, long_name):
     """Add spatiotemporal data to a dataset."""
@@ -149,7 +149,6 @@ def add_variable_along_timelatlon(ds, var, name, units, long_name):
     ds[name].attrs['units'] = units
     ds[name].attrs['long_name'] = long_name
     return ds
-
 
 def check(field, max_bound, min_bound):
     """Check the validity of the input data."""
@@ -171,7 +170,6 @@ def wrf_rh(T2, Q2, PSFC):
     rh[rh>100.0] = 100.0
     rh[rh<0.0] = 0.0
     return rh
-
 
 def get_user_arguments(parser: argparse.ArgumentParser) -> argparse.Namespace:
     """Get user arguments for converting AWS data.
