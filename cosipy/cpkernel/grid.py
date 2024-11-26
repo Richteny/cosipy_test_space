@@ -29,6 +29,7 @@ layer_stretching = Constants.layer_stretching
 temperature_threshold_merging = Constants.temperature_threshold_merging
 density_threshold_merging = Constants.density_threshold_merging
 merge_max = Constants.merge_max
+minimum_snowfall = Constants.minimum_snowfall
 minimum_snow_layer_height = Constants.minimum_snow_layer_height
 remesh_method = Constants.remesh_method
 ice_density = Constants.ice_density
@@ -128,7 +129,7 @@ class Grid:
             )
 
     def add_fresh_snow(
-        self, height, density, temperature, liquid_water_content
+        self, height, density, temperature, liquid_water_content, dt
     ):
         """Add a fresh snow layer (node).
 
@@ -141,6 +142,7 @@ class Grid:
             temperature (float): Layer temperature [K].
             liquid_water_content (float): Liquid water content of the
                 layer [|m w.e.|].
+            dt (int): Integration time [s].
         """
 
         # Add new node
@@ -151,9 +153,12 @@ class Grid:
         # Increase node counter
         self.number_nodes += 1
 
-        # Set fresh snow properties for albedo calculation (height and
-        # timestamp)
-        self.set_fresh_snow_props(height)
+        if height < minimum_snowfall:
+            # Ignore impact of small snowfall on fresh snow layer properties
+            self.set_fresh_snow_props_update_time(dt)
+        else:
+            # Set the fresh snow properties for albedo calculation (height and timestamp)
+            self.set_fresh_snow_props(height)
 
     def remove_node(self, idx: list = None):
         """Remove a layer (node) from the grid (node list).
@@ -427,11 +432,11 @@ class Grid:
         merged if:
 
         (1) the density difference between one layer and the next is
-        smaller than the user defined threshold.
+            smaller than the user defined threshold.
         (2) the temperature difference is smaller than the user defined
-        threshold.
+            threshold.
         (3) the number of merges per time step does not exceed the user
-        defined threshold.
+            defined threshold.
 
         The thresholds are defined by ``temperature_threshold_merging``,
         ``density_threshold_merging``, and ``merge_max`` in
@@ -463,7 +468,21 @@ class Grid:
             else:
                 idx += 1
 
-        # Correct first layer
+        # Remesh ice
+        # remeshing layer 0 done by correct_layer above
+        min_ice_idx = max(1, self.get_number_snow_layers())
+        # Ensure top ice layer has first_layer_height when thin snow layers will be removed in update_grid
+        if (min_ice_idx == 1) & (self.get_node_height(0) < first_layer_height):
+            self.correct_layer(min_ice_idx, first_layer_height)
+            min_ice_idx += 1
+
+        idx = min_ice_idx
+        while idx < self.get_number_layers() - 1:
+            # Correct first layer
+            if self.get_node_height(idx) < minimum_snow_layer_height:
+                self.merge_nodes(idx)
+            else:
+                idx += 1
         self.correct_layer(0, first_layer_height)
 
     def split_node(self, pos: int):
@@ -584,12 +603,12 @@ class Grid:
             self.get_node_density(idx + 1) >= snow_ice_threshold
         ):
             # Update node properties
-            first_layer_height = self.get_node_height(idx) * (
+            surface_layer_height = self.get_node_height(idx) * (
                 self.get_node_density(idx) / ice_density
             )
             self.update_node(
                 idx + 1,
-                self.get_node_height(idx + 1) + first_layer_height,
+                self.get_node_height(idx + 1) + surface_layer_height,
                 self.get_node_temperature(idx + 1),
                 self.get_node_ice_fraction(idx + 1),
                 0.0,
@@ -599,7 +618,7 @@ class Grid:
 
             # self.check('Merge snow with glacier function')
 
-    def remove_melt_weq(self, melt: float, idx: int=0):
+    def remove_melt_weq(self, melt: float, idx: int = 0) -> float:
         """Remove mass from a layer.
 
         Reduces the mass/height of layer ``idx`` by the available melt
@@ -609,13 +628,13 @@ class Grid:
             melt: Snow water equivalent of melt [|m w.e.|].
             idx: Index of the layer. If no value is given, the function
                 acts on the first layer.
-        
-        Returns:
-            float: Liquid water content from removed layers.
-        """
-        lwc_from_layers = 0
 
-        while melt > 0:
+        Returns:
+            Liquid water content from removed layers.
+        """
+        lwc_from_layers = 0.0
+
+        while melt > 0.0 and idx < self.number_nodes:
             # Get SWE of layer
             SWE = self.get_node_height(idx) * (
                 self.get_node_density(idx) / water_density
@@ -673,7 +692,7 @@ class Grid:
         """Update the timestamp of the snow properties.
 
         Args:
-            seconds : seconds without snowfall [s].
+            seconds: seconds without snowfall [s].
         """
         self.old_snow_timestamp = self.old_snow_timestamp + seconds
         # Set the timestamp to zero
@@ -687,11 +706,16 @@ class Grid:
         """
         self.new_snow_height = height
 
-    def get_fresh_snow_props(self):
+    def get_fresh_snow_props(self) -> tuple:
         """Get the first snow layer's properties.
 
         This is used internally to track the albedo properties of the
         first snow layer.
+
+        Returns:
+            First snow layer's updated height, time elapsed since the
+            last snowfall, and the time elapsed between the last and
+            penultimate snowfall.
         """
         return (
             self.new_snow_height,
@@ -757,7 +781,7 @@ class Grid:
         for idx in range(self.number_nodes):
             self.grid[idx].set_layer_refreeze(refreeze[idx])
 
-    def get_temperature(self):
+    def get_temperature(self) -> list:
         """Get the temperature profile."""
         return [
             self.grid[idx].get_layer_temperature()
@@ -768,7 +792,7 @@ class Grid:
         """Get a node's temperature."""
         return self.grid[idx].get_layer_temperature()
 
-    def get_specific_heat(self):
+    def get_specific_heat(self) -> list:
         """Get the specific heat capacity profile (air+water+ice)."""
         return [
             self.grid[idx].get_layer_specific_heat()
@@ -779,21 +803,21 @@ class Grid:
         """Get a node's specific heat capacity (air+water+ice)."""
         return self.grid[idx].get_layer_specific_heat()
 
-    def get_height(self):
+    def get_height(self) -> list:
         """Get the heights of all the layers."""
         return [
             self.grid[idx].get_layer_height()
             for idx in range(self.number_nodes)
         ]
 
-    def get_snow_heights(self):
+    def get_snow_heights(self) -> list:
         """Get the heights of the snow layers."""
         return [
             self.grid[idx].get_layer_height()
             for idx in range(self.get_number_snow_layers())
         ]
 
-    def get_ice_heights(self):
+    def get_ice_heights(self) -> list:
         """Get the heights of the ice layers."""
         return [
             self.grid[idx].get_layer_height()
@@ -809,7 +833,7 @@ class Grid:
         """Get a node's density."""
         return self.grid[idx].get_layer_density()
 
-    def get_density(self):
+    def get_density(self) -> list:
         """Get the density profile."""
         return [
             self.grid[idx].get_layer_density()
@@ -820,7 +844,7 @@ class Grid:
         """Get a node's liquid water content."""
         return self.grid[idx].get_layer_liquid_water_content()
 
-    def get_liquid_water_content(self):
+    def get_liquid_water_content(self) -> list:
         """Get a profile of the liquid water content."""
         return [
             self.grid[idx].get_layer_liquid_water_content()
@@ -831,7 +855,7 @@ class Grid:
         """Get a node's ice fraction."""
         return self.grid[idx].get_layer_ice_fraction()
 
-    def get_ice_fraction(self):
+    def get_ice_fraction(self) -> list:
         """Get a profile of the ice fraction."""
         return [
             self.grid[idx].get_layer_ice_fraction()
@@ -842,7 +866,7 @@ class Grid:
         """Get a node's irreducible water content."""
         return self.grid[idx].get_layer_irreducible_water_content()
 
-    def get_irreducible_water_content(self):
+    def get_irreducible_water_content(self) -> list:
         """Get a profile of the irreducible water content."""
         return [
             self.grid[idx].get_layer_irreducible_water_content()
@@ -853,7 +877,7 @@ class Grid:
         """Get a node's cold content."""
         return self.grid[idx].get_layer_cold_content()
 
-    def get_cold_content(self):
+    def get_cold_content(self) -> list:
         """Get the cold content profile."""
         return [
             self.grid[idx].get_layer_cold_content()
@@ -864,7 +888,7 @@ class Grid:
         """Get a node's porosity."""
         return self.grid[idx].get_layer_porosity()
 
-    def get_porosity(self):
+    def get_porosity(self) -> list:
         """Get the porosity profile."""
         return [
             self.grid[idx].get_layer_porosity()
@@ -875,7 +899,7 @@ class Grid:
         """Get a node's thermal conductivity."""
         return self.grid[idx].get_layer_thermal_conductivity()
 
-    def get_thermal_conductivity(self):
+    def get_thermal_conductivity(self) -> list:
         """Get the thermal conductivity profile."""
         return [
             self.grid[idx].get_layer_thermal_conductivity()
@@ -886,7 +910,7 @@ class Grid:
         """Get a node's thermal diffusivity."""
         return self.grid[idx].get_layer_thermal_diffusivity()
 
-    def get_thermal_diffusivity(self):
+    def get_thermal_diffusivity(self) -> list:
         """Get the thermal diffusivity profile."""
         return [
             self.grid[idx].get_layer_thermal_diffusivity()
@@ -897,7 +921,7 @@ class Grid:
         """Get the amount of refrozen water in a node."""
         return self.grid[idx].get_layer_refreeze()
 
-    def get_refreeze(self):
+    def get_refreeze(self) -> list:
         """Get the profile of refrozen water."""
         return [
             self.grid[idx].get_layer_refreeze()
@@ -906,21 +930,20 @@ class Grid:
 
     def get_node_depth(self, idx: int):
         """Get a node's depth relative to the surface."""
-        d = 0
-        for i in range(idx + 1):
-            if i == 0:
-                d = d + self.get_node_height(i) / 2.0
-            else:
-                d = (
-                    d
-                    + self.get_node_height(i - 1) / 2.0
-                    + self.get_node_height(i) / 2.0
-                )
+        d = self.get_node_height(idx) / 2.0
+        if idx != 0:
+            for i in range(idx):
+                d = d + self.get_node_height(i)
         return d
 
-    def get_depth(self):
+    def get_depth(self) -> list:
         """Get a depth profile."""
-        return [self.get_node_depth(idx) for idx in range(self.number_nodes)]
+        h = np.array(self.get_height())
+        z = np.empty_like(h)  # faster than copy
+        z[0] = 0.5 * h[0]
+        z[1:] = np.cumsum(h[:-1]) + (0.5 * h[1:])
+
+        return [z[idx] for idx in range(self.number_nodes)]
 
     def get_total_snowheight(self, verbose=False):
         """Get the total snowheight (density<snow_ice_threshold)."""
@@ -987,7 +1010,7 @@ class Grid:
 
     def grid_info_screen(self, n: int = -999):
         """Print the state of the snowpack.
-        
+
         Args:
             n: Number of nodes to plot from the top. Default -999.
         """
@@ -1029,14 +1052,17 @@ class Grid:
         pass
 
     def check_layer_property(
-        self, property, name, maximum, minimum, n=-999, level=1
+        self, layer_property, name, maximum, minimum, n=-999, level=1
     ):
-        if np.nanmax(property) > maximum or np.nanmin(property) < minimum:
+        if (
+            np.nanmax(layer_property) > maximum
+            or np.nanmin(layer_property) < minimum
+        ):
             print(
                 str.capitalize(name),
                 "max",
-                np.nanmax(property),
+                np.nanmax(layer_property),
                 "min",
-                np.nanmin(property),
+                np.nanmin(layer_property),
             )
             os._exit()
