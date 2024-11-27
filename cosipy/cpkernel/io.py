@@ -436,7 +436,7 @@ class IOClass:
 
         return metadata
 
-    def init_result_dataset(self, opt_dict=opt_dict) -> xr.Dataset:
+    def init_result_dataset(self, opt_dict=None) -> xr.Dataset:
         """Create the final dataset to aggregate and store the results.
 
         Aggregates results from individual COSIPY runs. After the

@@ -28,7 +28,7 @@ def updateRoughness(GRID, opt_dict=None) -> float:
 
     roughness_allowed = ["Moelg12"]
     if Constants.roughness_method == "Moelg12":
-        sigma = method_Moelg(GRID)
+        sigma = method_Moelg(GRID, roughness_fresh_snow, aging_factor_roughness, roughness_firn, roughness_ice)
     else:
         error_message = (
             f'Roughness method = "{Constants.roughness_method}" is not allowed,',
@@ -40,7 +40,7 @@ def updateRoughness(GRID, opt_dict=None) -> float:
 
 
 def method_Moelg(GRID, roughness_fresh_snow: float, aging_factor_roughness: float,
-    roughness_firn: float, roughness_ice: float):) -> float:
+    roughness_firn: float, roughness_ice: float) -> float:
     """Update the roughness length.
 
     Adapted from Moelg et al. (2009), J.Clim. The roughness length of
@@ -53,7 +53,8 @@ def method_Moelg(GRID, roughness_fresh_snow: float, aging_factor_roughness: floa
     Returns:
         Surface roughness length, [mm]
     """
-
+    print("roughness params in method moelg")
+    print(roughness_fresh_snow, aging_factor_roughness, roughness_firn, roughness_ice)
     # Get hours since the last snowfall
     # First get fresh snow properties (height and timestamp)
     _, fresh_snow_timestamp, _ = GRID.get_fresh_snow_props()

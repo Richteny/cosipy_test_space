@@ -20,7 +20,7 @@ t_star_K = Constants.t_star_K
 
 def updateAlbedo(
     GRID, surface_temperature: float, albedo_snow: float, opt_dict=None
-) -> tuple:
+    ) -> tuple:
     """Update the surface albedo.
 
     Implemented albedo methods:
@@ -46,6 +46,12 @@ def updateAlbedo(
         albedo_firn = opt_dict[3]
         albedo_mod_snow_aging = opt_dict[4]
         albedo_mod_snow_depth = opt_dict[5]
+    else:
+        albedo_ice = Constants.albedo_ice
+        albedo_fresh_snow = Constants.albedo_fresh_snow
+        albedo_firn = Constants.albedo_firn
+        albedo_mod_snow_aging = Constants.albedo_mod_snow_aging
+        albedo_mod_snow_depth = Constants.albedo_mod_snow_depth
 
     albedo_allowed = ["Oerlemans98", "Bougamont05"]
     if albedo_method == "Oerlemans98":
@@ -139,7 +145,8 @@ def get_surface_properties(GRID) -> tuple:
     return fresh_snow_height, fresh_snow_timestamp, hours_since_snowfall
 
 
-def get_simple_albedo(elapsed_time: float) -> float:
+def get_simple_albedo(elapsed_time: float, albedo_firn: float, albedo_fresh_snow: float,
+    albedo_mod_snow_aging: float) -> float:
     """Get surface albedo neglecting snowpack depth.
 
     From Oerlemans & Knap (1998).
@@ -150,7 +157,6 @@ def get_simple_albedo(elapsed_time: float) -> float:
     Returns:
         Surface albedo without accounting for snowpack depth.
     """
-
     albedo = albedo_firn + (albedo_fresh_snow - albedo_firn) * np.exp(
         (-elapsed_time) / (albedo_mod_snow_aging * 24.0)
     )
@@ -158,18 +164,20 @@ def get_simple_albedo(elapsed_time: float) -> float:
     return albedo
 
 
-def get_albedo_with_decay(snow_albedo: float, snow_height: float) -> float:
+def get_albedo_with_decay(snow_albedo: float, snow_height: float, albedo_mod_snow_depth: float) -> float:
     """Apply surface albedo decay due to the snow depth.
 
     Taken from Oerlemans & Knap (1998).
 
     Args:
-        snow_albedo: Initial snow albedo.
+        snow_alb: Initial snow albedo.
         snow_height: Height of snowpack.
 
     Returns:
         Surface albedo with snow depth decay.
     """
+    print("Printing albedo mod snow depth in get labedo with decay")
+    print(albedo_mod_snow_depth)
     albedo = snow_albedo + (albedo_ice - snow_albedo) * np.exp(
         (-1.0 * snow_height) / (albedo_mod_snow_depth / 100.0)
     )
@@ -194,14 +202,22 @@ def method_Oerlemans(GRID, albedo_ice: float, albedo_fresh_snow: float, albedo_f
     """
     _, _, hours_since_snowfall = get_surface_properties(GRID)
 
+    
+    #Parse params locally
+    #albedo_ice = albedo_ice
+    #albedo_fresh_snow = albedo_fresh_snow
+    #albedo_firn = albedo_firn
+    #albedo_mod_snow_aging = albedo_mod_snow_aging
+    #albedo_mod_snow_depth = albedo_mod_snow_depth
     # Check if snow or ice
     if GRID.get_node_density(0) <= snow_ice_threshold:
         # Get current snowheight from layer height
         h = GRID.get_total_snowheight()  # np.sum(GRID.get_height()[0:idx])
-
+        
         # Surface albedo according to Oerlemans & Knap 1998, JGR)
-        alphaSnow = get_simple_albedo(elapsed_time=hours_since_snowfall)
-        alphaMod = get_albedo_with_decay(snow_albedo=alphaSnow, snow_height=h)
+        alphaSnow = get_simple_albedo(elapsed_time=hours_since_snowfall, albedo_firn=albedo_firn,
+                                      albedo_fresh_snow=albedo_fresh_snow, albedo_mod_snow_aging=albedo_mod_snow_aging)
+        alphaMod = get_albedo_with_decay(snow_albedo=alphaSnow, snow_height=h, albedo_mod_snow_depth=albedo_mod_snow_depth)
 
     else:
         # If no snow cover than set albedo to ice albedo

@@ -45,8 +45,7 @@ from cosipy.constants import Constants
 from cosipy.cpkernel.cosipy_core import cosipy_core
 from cosipy.cpkernel.io import IOClass
 from cosipy.modules.evaluation import evaluate, resample_output, create_tsl_df, eval_tsl, resample_by_hand
-
-
+from numba import njit
 import xarray as xr
 
 def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, alb_ice=Constants.albedo_ice,
@@ -64,23 +63,21 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
     if isinstance(count, int):
         count = count + 1
 
-    '''
-    TEST TO PARSE A TUPLE OF PARAM VALUES AND NOT CALL IN DICTIONARY
-    '''
     # these values crashed previously [array(2.74724189), array(0.25), array(0.84), array(0.555), array(1.1), array(1.1)]
-    RRR_factor = float(0.97) #mean of prior
-    #alb_ice = float(0.234798)
-    #alb_snow = float(0.901503)
-    #alb_firn = float(0.525673)
-    #albedo_aging = float(0.348963)
-    #albedo_depth = float(21.457584)
+    RRR_factor = float(2.2) #0.97 
+    alb_ice = float(0.2)
+    alb_snow = float(0.94)
+    alb_firn = float(0.555)
+    albedo_aging = float(23.0)
+    albedo_depth = float(3.0)
     #roughness_fresh_snow = float(0.24) #0.03 (https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2022JD037032) to max 1.6 from Brock et al. 2006
-    #roughness_ice = float(7)
-    #roughness_firn = float()
-    #aging_factor_roughness = float()
+    #roughness_ice = float(1.7)
+    #roughness_firn = float(4.0)
+    #aging_factor_roughness = float(0.0026)
     opt_dict = (RRR_factor, alb_ice, alb_snow, alb_firn, albedo_aging, albedo_depth, center_snow_transfer_function,
                 spread_snow_transfer_function, roughness_fresh_snow, roughness_ice, roughness_firn, aging_factor_roughness)
     #0 to 5 - base, 6 center snow , 7 spreadsnow, 8 to 10 roughness length 
+    #opt_dict=None
     lapse_T = float(lr_T)
     lapse_RRR = float(lr_RRR)
     lapse_RH = float(lr_RH)
@@ -171,11 +168,11 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
     #version for parsed floats by hand here
     results_output_name = output_netcdf.split('.nc')[0] + f"_RRR-{round(RRR_factor,4)}_{round(alb_snow,4)}_{round(alb_ice,4)}_{round(alb_firn,4)}"\
                                                           f"_{round(albedo_aging,4)}_{round(albedo_depth,4)}_{round(roughness_fresh_snow,4)}"\
-                                                          f"{round(roughness_ice,4)}_{round(roughness_firn,4)}_{round(aging_factor_roughness,4)}_num{count}.nc"
+                                                          f"_{round(roughness_ice,4)}_{round(roughness_firn,4)}_{round(aging_factor_roughness,4)}_num{count}.nc"
     #item below only works when objects are arrays and not given by hand
     #results_output_name = output_netcdf.split('.nc')[0] + f"_RRR-{round(RRR_factor.item(),4)}_{round(alb_snow.item(),4)}_{round(alb_ice.item(),4)}_{round(alb_firn.item(),4)}_num{count}.nc"
 
-    #IO.get_result().to_netcdf(os.path.join(output_path,results_output_name), encoding=encoding, mode='w')
+    IO.get_result().to_netcdf(os.path.join(output_path,results_output_name), encoding=encoding, mode='w')
     
     print(np.nanmax(IO.get_result().ALBEDO))
     print(np.nanmin(IO.get_result().ALBEDO))
@@ -219,52 +216,49 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
     times = datetime.now()
     if Config.tsl_evaluation is True:
         print("Starting TSL eval.")
+        tsla_observations = pd.read_csv(Config.tsl_data_file) 
+
+        tsl_csv_name = 'tsla_'+results_output_name.split('.nc')[0].lower()+'.csv'    
         tsla_observations = pd.read_csv(Config.tsl_data_file)
-        
+        dates,clean_day_vals,secs,holder = prereq_res(IO.get_result().sel(time=slice(Config.time_start_cali,Config.time_end_cali)))
+        resampled_array = resample_by_hand(holder, IO.get_result().sel(time=slice(Config.time_start_cali,Config.time_end_cali)).SNOWHEIGHT.values, secs, clean_day_vals)
+        resampled_out = construct_resampled_ds(IO.get_result().sel(time=slice(Config.time_start_cali,Config.time_end_cali)),resampled_array,dates.values)
 
-    tsl_csv_name = 'tsla_'+results_output_name.split('.nc')[0].lower()+'.csv'    
-    tsla_observations = pd.read_csv(Config.tsl_data_file)
-    dates,clean_day_vals,secs,holder = prereq_res(IO.get_result().sel(time=slice(Config.time_start_cali,Config.time_end_cali)))
-    resampled_array = resample_by_hand(holder, IO.get_result().sel(time=slice(Config.time_start_cali,Config.time_end_cali)).SNOWHEIGHT.values, secs, clean_day_vals)
-    resampled_out = construct_resampled_ds(IO.get_result().sel(time=slice(Config.time_start_cali,Config.time_end_cali)),resampled_array,dates.values)
+        print("Time required for resampling of output: ", datetime.now()-times)
+        #Need HGT values as 2D, ensured with following line of code.
+        resampled_out['HGT'] = (('lat','lon'), IO.get_result()['HGT'].data)
+        resampled_out['MASK'] = (('lat','lon'), IO.get_result()['MASK'].data)
 
-    print("Time required for resampling of output: ", datetime.now()-times)
-    #Need HGT values as 2D, ensured with following line of code.
-    resampled_out['HGT'] = (('lat','lon'), IO.get_result()['HGT'].data)
-    resampled_out['MASK'] = (('lat','lon'), IO.get_result()['MASK'].data)
-
-    tsl_out = create_tsl_df(resampled_out, Config.min_snowheight, Config.tsl_method, Config.tsl_normalize)
-
-    tsla_stats = eval_tsl(tsla_observations,tsl_out, Config.time_col_obs, Config.tsla_col_obs)
-    print("TSLA Observed vs. Modelled RMSE: " + str(tsla_stats[0])+ "; R-squared: " + str(tsla_stats[1]))
-    ## Match to observation dates for pymc routine
-    tsl_out_match = tsl_out.loc[tsl_out['time'].isin(tsla_observations['LS_DATE'])]
+        tsl_out = create_tsl_df(resampled_out, Config.min_snowheight, Config.tsl_method, Config.tsl_normalize)
+        #tsl_out.to_csv(os.path.join(output_path, tsl_csv_name))
+        tsla_stats = eval_tsl(tsla_observations,tsl_out, Config.time_col_obs, Config.tsla_col_obs)
+        print("TSLA Observed vs. Modelled RMSE: " + str(tsla_stats[0])+ "; R-squared: " + str(tsla_stats[1]))
+        ## Match to observation dates for pymc routine
+        tsl_out_match = tsl_out.loc[tsl_out['time'].isin(tsla_observations['LS_DATE'])]
     
-    print("Time required for full TSL EVAL: ", datetime.now()-times)
+        print("Time required for full TSL EVAL: ", datetime.now()-times)
 
-    ## Create DF that holds params to save ##
-    if Config.write_csv_status:
-        try:
-	    param_df = pd.read_csv("./simulations/cosipy_synthetic_params_lhs-fixedrrr.csv", index_col=0)
-	    curr_df = pd.DataFrame( np.concatenate((np.array(opt_dict, dtype=float),np.array([geod_mb]),
-	                                            tsl_out_match.Med_TSL.values)) ).transpose()
-	    curr_df.columns = ['rrr_factor', 'alb_ice', 'alb_snow', 'alb_firn', 'albedo_aging',
-	                       'albedo_depth', 'center_snow_transfer', 'spread_snow_transfer',
-	                       'roughness_fresh_snow', 'roughness_ice', 'roughness_firn', 'aging_factor_roughness', 'mb'] +\
-	                      [f'sim{i+1}' for i in range(tsl_out_match.shape[0])]
+        ## Create DF that holds params to save ##
+        if Config.write_csv_status:
+            try:
+                param_df = pd.read_csv("./simulations/cosipy_synthetic_params_lhs-fixedrrr.csv", index_col=0)
+                curr_df = pd.DataFrame( np.concatenate((np.array(opt_dict, dtype=float),np.array([geod_mb]),
+                                        tsl_out_match.Med_TSL.values)) ).transpose()
+                curr_df.columns = ['rrr_factor', 'alb_ice', 'alb_snow', 'alb_firn', 'albedo_aging',
+                                   'albedo_depth', 'center_snow_transfer', 'spread_snow_transfer',
+                                   'roughness_fresh_snow', 'roughness_ice', 'roughness_firn', 'aging_factor_roughness', 'mb'] +\
+                                  [f'sim{i+1}' for i in range(tsl_out_match.shape[0])]
 
-	param_df = pd.concat([param_df, curr_df], ignore_index=True)
-
-        except:
-	    print(opt_dict)
-	    param_df = pd.DataFrame( np.concatenate((np.array(opt_dict, dtype=float), np.array([geod_mb]),
-	                                             tsl_out_match.Med_TSL.values)) ).transpose()
-	    #print(param_df)
-	    param_df.columns =   ['rrr_factor', 'alb_ice', 'alb_snow', 'alb_firn', 'albedo_aging',
-	                          'albedo_depth', 'center_snow_transfer', 'spread_snow_transfer',
-	                          'roughness_fresh_snow', 'roughness_ice', 'roughness_firn', 'aging_factor_roughness', 'mb'] +\
-	                         [f'sim{i+1}' for i in range(tsl_out_match.shape[0])]
-        param_df.to_csv("./simulations/cosipy_synthetic_params_lhs-fixedrrr.csv")
+                param_df = pd.concat([param_df, curr_df], ignore_index=True)
+            except:
+                #print(opt_dict)
+                param_df = pd.DataFrame( np.concatenate((np.array(opt_dict, dtype=float), np.array([geod_mb]),
+                                         tsl_out_match.Med_TSL.values)) ).transpose()
+                param_df.columns =   ['rrr_factor', 'alb_ice', 'alb_snow', 'alb_firn', 'albedo_aging',
+                                      'albedo_depth', 'center_snow_transfer', 'spread_snow_transfer',
+                                      'roughness_fresh_snow', 'roughness_ice', 'roughness_firn', 'aging_factor_roughness', 'mb'] +\
+                                     [f'sim{i+1}' for i in range(tsl_out_match.shape[0])]
+            param_df.to_csv("./simulations/cosipy_synthetic_params_lhs-fixedrrr.csv")
 
     #-----------------------------------------------
     # Stop time measurement
@@ -362,7 +356,7 @@ def run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures, opt_dict=None):
                 # Provide restart grid if necessary
                 if (mask == 1) and (not Config.restart):
                     check_for_nan(data=DATA.sel(south_north=y, west_east=x))
-                    futures.append(client.submit(cosipy_core, DATA.sel(south_north=y, west_east=x), y, x, stake_names=stake_names, stake_data=df_stakes_data))
+                    futures.append(client.submit(cosipy_core, DATA.sel(south_north=y, west_east=x), y, x, stake_names=stake_names, stake_data=df_stakes_data, opt_dict=opt_dict))
                 elif (mask == 1) and (Config.restart):
                     check_for_nan(data=DATA.sel(south_north=y, west_east=x))
                     futures.append(
@@ -385,7 +379,7 @@ def run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures, opt_dict=None):
                 # Provide restart grid if necessary
                 if (mask == 1) and (not Config.restart):
                     check_for_nan(data=DATA.isel(lat=y,lon=x))
-                    futures.append(client.submit(cosipy_core, DATA.isel(lat=y, lon=x), y, x, stake_names=stake_names, stake_data=df_stakes_data))
+                    futures.append(client.submit(cosipy_core, DATA.isel(lat=y, lon=x), y, x, stake_names=stake_names, stake_data=df_stakes_data, opt_dict=opt_dict))
                 elif (mask == 1) and (Config.restart):
                     check_for_nan(data=DATA.isel(lat=y,lon=x))
                     futures.append(
