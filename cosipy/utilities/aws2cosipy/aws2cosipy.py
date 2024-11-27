@@ -528,7 +528,6 @@ def create_2D_input(
     lat_index = len(ds.lat)
     lon_index = len(ds.lon)
     T_interp = set_zero_field(time_index, lat_index, lon_index)
-    T_interp_rad = set_zero_field(time_index, lat_index, lon_index)
     RH_interp = set_zero_field(time_index, lat_index, lon_index)
     U_interp = set_zero_field(time_index, lat_index, lon_index)
     G_interp = np.full([time_index, lat_index, lon_index], np.nan)
@@ -559,9 +558,6 @@ def create_2D_input(
     for t in range(time_index):
         T_interp[t, :, :] = set_bias(
             data=(T2[t]), lapse_type="lapse_T", altitude=altitude, limit=False
-        )
-        T_interp_rad[t, :, :] = set_bias(
-            data=(T2[t]), lapse_type="rad_tlapse", altitude=altitude, limit=False
         )
         RH_interp[t, :, :] = set_bias(
             data=RH2[t], lapse_type="lapse_RH", altitude=altitude, limit=False
@@ -732,7 +728,6 @@ def create_2D_input(
                 hour,
                 _cfg.station["stationLat"],
                 T_interp[t, ::-1, :],
-                T_interp_rad[t, ::-1, :],
                 P_interp[t, ::-1, :],
                 RH_interp[t, ::-1, :],
                 N_interp[t, ::-1, :],
