@@ -176,8 +176,6 @@ def get_albedo_with_decay(snow_albedo: float, snow_height: float, albedo_mod_sno
     Returns:
         Surface albedo with snow depth decay.
     """
-    print("Printing albedo mod snow depth in get labedo with decay")
-    print(albedo_mod_snow_depth)
     albedo = snow_albedo + (albedo_ice - snow_albedo) * np.exp(
         (-1.0 * snow_height) / (albedo_mod_snow_depth / 100.0)
     )

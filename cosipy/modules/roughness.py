@@ -53,8 +53,6 @@ def method_Moelg(GRID, roughness_fresh_snow: float, aging_factor_roughness: floa
     Returns:
         Surface roughness length, [mm]
     """
-    print("roughness params in method moelg")
-    print(roughness_fresh_snow, aging_factor_roughness, roughness_firn, roughness_ice)
     # Get hours since the last snowfall
     # First get fresh snow properties (height and timestamp)
     _, fresh_snow_timestamp, _ = GRID.get_fresh_snow_props()
