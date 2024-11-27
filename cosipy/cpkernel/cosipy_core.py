@@ -51,7 +51,7 @@ def init_nan_array_2d(nt: int, max_layers: int) -> np.ndarray:
     return x
 
 
-def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_data=None):
+def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_data=None, opt_dict=None):
     """Cosipy core function.
 
     The calculations are performed on a single core.
@@ -173,7 +173,7 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
     # Create the local output datasets if not coupled
     RESTART = None
     if not WRF_X_CSPY:
-        IOClass(DATA, opt_dict)
+        IO = IOClass(DATA, opt_dict)
         RESTART = IO.create_local_restart_dataset()
 
     # hours since the last snowfall (albedo module)
@@ -328,13 +328,13 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
             fun, surface_temperature, lw_radiation_in, lw_radiation_out, sensible_heat_flux, latent_heat_flux, \
                 ground_heat_flux, rain_heat_flux, rho, Lv, MOL, Cs_t, Cs_q, q0, q2 \
                 = update_surface_temperature(GRID, dt, z, z0, T2[t], RH2[t], PRES[t], sw_radiation_net, \
-                                             U2[t], RAIN, SLOPE, LWin=LWin[t], opt_dict=opt_dict)
+                                             U2[t], RAIN, SLOPE, LWin=LWin[t])
         else:
             # Find new surface temperature (LW is parametrized using cloud fraction)
             fun, surface_temperature, lw_radiation_in, lw_radiation_out, sensible_heat_flux, latent_heat_flux, \
                 ground_heat_flux, rain_heat_flux, rho, Lv, MOL, Cs_t, Cs_q, q0, q2 \
                 = update_surface_temperature(GRID, dt, z, z0, T2[t], RH2[t], PRES[t], sw_radiation_net, \
-                                             U2[t], RAIN, SLOPE, N=N[t], opt_dict=opt_dict)
+                                             U2[t], RAIN, SLOPE, N=N[t])
 
         #--------------------------------------------
         # Surface mass fluxes [m w.e.q.]
