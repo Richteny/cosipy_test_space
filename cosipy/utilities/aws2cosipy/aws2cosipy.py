@@ -35,6 +35,7 @@ Optional arguments:
     --xr <float>            Right longitude value of the subset.
     --yl <float>            Lower latitude value of the subset.
     --yu <float>            Upper latitude value of the subset.
+    --sw <path>             Path to the HORAYZON LUT.
 
 """
 
@@ -451,6 +452,7 @@ def create_2D_input(
     x1=None,
     y0=None,
     y1=None,
+    corr_file=None
 ):
     """Create a 2D input dataset from a .csv file.
 
@@ -646,6 +648,41 @@ def create_2D_input(
                             )
                         else:
                             G_interp[t, i, j] = sw[t]
+                       
+    elif _cfg.radiation["radiationModule"] == "Horayzon2022":
+        print("Run the radiation moduel HORAYZON")
+        
+        #get correction factor which must be computed beforehand
+        try:
+            correction_factor = xr.open_dataset(corr_file)
+        except:
+            print("There is no HORAYZON LUT loaded. Please ensure you parsed the correct path.")
+            raise_nan_error()
+            
+        #impose limits on correction factor to ensure reasonable range
+        corr_vals = correction_factor['sw_dir_cor'].values
+        corr_vals_clip = np.where(corr_vals > 25, 25, corr_vals)
+        correction_factor['sw_dir_cor'] = (('time', 'lat', 'lon'), corr_vals_clip)
+        correction_factor['doy'] = correction_factor.time.dt.dayofyear
+        correction_factor['hour'] = correction_factor.time.dt.hour
+        #Create unique identifier for doy and hour and set as index
+        correction_factor['time_id'] = correction_factor['doy'] + correction_factor['hour']/100
+        correction_factor = correction_factor.set_index(time="time_id")
+        
+        #Start loop over each timestep
+        for t in range(time_index):
+            #get doy and timestep from df and check with doy and hour from static file
+            year = df.index[t].year
+            doy = df.index[t].dayofyear
+            hour = df.index[t].hour
+            #we rely on the fact that HORAYZON LUT was created for a leap year and factors dont change with time
+            if (year % 4 != 0 and doy > 59): #59th DOY = February 28th, leap year continues with 29th
+                doy = doy + 1
+            
+            time_identifier = doy + hour/100
+            sw_cor_val = correction_factor.sel(time=time_identifier)['sw_dir_cor']
+            #multiply correction factors with forcing
+            G_interp[t,:,:] = sw_cor_val * sw[t]
 
     elif _cfg.radiation["radiationModule"] == "Moelg2009":
         print("Run the radiation module Moelg2009")
@@ -1001,6 +1038,14 @@ def get_user_arguments(parser: argparse.ArgumentParser) -> argparse.Namespace:
         const=None,
         help="Upper latitude value of the subset",
     )
+    parser.add_argument(
+        "--sw",
+        dest="corr_file",
+        type=str,
+        metavar="<path>",
+        const=None,
+        help="Path to the HORAYZON LUT table",
+    )
     arguments = parser.parse_args()
 
     return arguments
@@ -1047,6 +1092,7 @@ def main():
             _args.xr,
             _args.yl,
             _args.yu,
+            _args.corr_file
         )
 
 
