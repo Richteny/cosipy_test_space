@@ -1,45 +1,97 @@
 """
- This file reads the DEM of the study site and the shapefile and creates the needed static.nc
- TODO: Implement 1D elevation band dataset in here as well in case usage with Moelg/Wohlfahrt scheme is desired
+Reads the DEM of the study site and the shapefile and creates a
+corresponding static file, ``static.nc``.
+
+Edit the configuration by supplying a valid .toml file. See the sample
+``utilities_config.toml`` for more information.
+
+Usage:
+
+From source:
+``python -m cosipy.utilities.createStatic.create_static_file [-u <path>]``
+
+Entry point:
+``cosipy-create-static [-u <path>]``
+
+Optional arguments:
+    -u, --u <path>  Relative path to utilities' configuration file.
 """
-import sys
+import argparse
 import os
-import xarray as xr
-import numpy as np
 from itertools import product
+
+import numpy as np
 import richdem as rd
+import xarray as xr
 import fiona
 from horayzon.domain import curved_grid
 
-static_folder = '../../data/static/HEF/'
+from cosipy.utilities.config_utils import UtilitiesConfig
+from cosipy.utilities.aws2cosipy.crop_file_to_glacier import crop_file_to_glacier
 
-sys.path.append("../..")
-from utilities.aws2cosipy.crop_file_to_glacier import crop_file_to_glacier
+_args = None
+_cfg = None
 
-## Define settings ##
-distributed_radiation = True
-tile = True
+def check_folder_path(path: str) -> str:
+    """Check the folder path includes a forward slash."""
+    if not path.endswith("/"):
+        path = f"{path}/"
 
-## If distributed radation is not desired, run default static file creation according to values below ##
-# to aggregate the DEM to a coarser spatial resolution
-aggregate = False
-aggregate_degree = '0.00277778' #300m
-automatic_domain = True #Do km buffer around glacier or set lat lon box by hand in functions below
-crop_file = False #crop to minimum extent
-# ref exist: If already have high res. static data set to True and skip calculation
-ref_exist = False
+    return path
 
-### input digital elevation model (DEM)
-dem_path_tif = static_folder + 'DEM/COPDEM30_HEF_Box.tif'  #n30
 
-### input shape of glacier or study area, e.g. from the Randolph glacier inventory
+def check_for_nan(ds,var=None):
+    for y,x in product(range(ds.dims['lat']),range(ds.dims['lon'])):
+        mask = ds.MASK.isel(lat=y, lon=x)
+        if mask==1:
+            if var is None:
+                if np.isnan(ds.isel(lat=y, lon=x).to_array()).any():
+                    raise ValueError("ERROR! There are NaNs in the static fields")
+            else:
+                if np.isnan(ds[var].isel(lat=y, lon=x)).any():
+                    raise ValueError("ERROR! There are NaNs in the static fields")
 
-shape_path = static_folder + 'Shapefiles/HEF_RGI6.shp'
 
-### path were the static.nc file is saved
-output_path = static_folder + 'HEF_static_raw.nc'
-output_path_crop = static_folder + 'HEF_static_raw_crop.nc'
-output_path_agg = static_folder + 'HEF_static_agg.nc'
+def insert_var(ds, var, name, units, long_name):
+    """Insert variables in dataset"""
+    ds[name] = (('lat','lon'), var)
+    ds[name].attrs['units'] = units
+    ds[name].attrs['long_name'] = long_name
+    ds[name].attrs['_FillValue'] = -9999
+
+
+def get_user_arguments(parser: argparse.ArgumentParser) -> argparse.Namespace:
+    """Get user arguments for converting AWS data.
+    
+    Args:
+        parser: An initialised argument parser.
+    
+    Returns:
+        User arguments for conversion.
+    """
+    parser.description = "Create static file."
+    parser.prog = __package__
+
+    arguments = parser.parse_args()
+
+    return arguments
+
+
+def load_config(module_name: str) -> tuple:
+    """Load configuration for module.
+    
+    Args:
+        module_name: name of this module.
+
+    Returns:
+        User arguments and configuration parameters.
+    """
+    params = UtilitiesConfig()
+    arguments = get_user_arguments(params.parser)
+    params.load(arguments.utilities_path)
+    params = params.get_config_expansion(name=module_name)
+
+    return arguments, params
 
 #domain creation assumes WGS84 is valid
 def domain_creation(shp_path, dist_search, ellps="WGS84"):
@@ -60,63 +112,92 @@ def domain_creation(shp_path, dist_search, ellps="WGS84"):
 
     return (longitude_upper_left, latitude_upper_left, longitude_lower_right, latitude_lower_right)
 
-def create_static(dem_path_tif=dem_path_tif, shape_path=shape_path, output_path=output_path, output_path_crop=output_path_crop, tile=tile, aggregate=aggregate, aggregate_degree=aggregate_degree, automatic_domain=automatic_domain, crop_file=crop_file, dist_search=20.0):
+
+def main():
+    _, _cfg = load_config(module_name="create_static")
+
+    static_folder = _cfg.paths["static_folder"]
+    tile = _cfg.coords["tile"]
+    aggregate = _cfg.coords["aggregate"]
+
+    # input digital elevation model (DEM)
+    dem_path_tif = f"{static_folder}{_cfg.paths['dem_path']}"
+    # input shape of glacier or study area, e.g. from the Randolph glacier inventory
+    shape_path = f"{static_folder}{_cfg.paths['shape_path']}"
+    # path where the static.nc file is saved
+    output_path = f"{static_folder}{_cfg.paths['output_file']}"
+    output_path_crop = f"{static_folder}{_cfg.paths['output_file_crop']}"
+
+    automatic_domain = _cfg.coords["automatic_domain"]
+    dist_search = _cfg.coords["dist_search"]
     if automatic_domain:
-        longitude_upper_left, latitude_upper_left, longitude_lower_right, latitude_lower_right = domain_creation(shape_path, dist_search=dist_search, ellps="WGS84")
+        longitude_upper_left, latitude_upper_left,\
+            longitude_lower_right, latitude_lower_right = domain_creation(shape_path,
+                                                                          dist_search=dist_search,
+                                                                          ellps="WGS84")
 
     else:
         ### to shrink the DEM use the following lat/lon corners
         print("Please be aware that you switched off the automatic domain creation which requires by-hand adjustment of the borders.")
-        longitude_upper_left = '90.62'
-        latitude_upper_left = '30.48'
-        longitude_lower_right = '90.66'
-        latitude_lower_right = '30.46'
+        
+        # to shrink the DEM use the following lat/lon corners
+        longitude_upper_left = str(_cfg.coords["longitude_upper_left"])
+        latitude_upper_left = str(_cfg.coords["latitude_upper_left"])
+        longitude_lower_right = str(_cfg.coords["longitude_lower_right"])
+        latitude_lower_right = str(_cfg.coords["latitude_lower_right"])
 
-    ### to aggregate the DEM to a coarser spatial resolution
-    aggregate_degree = aggregate_degree
+    # to aggregate the DEM to a coarser spatial resolution
+    aggregate_degree = str(_cfg.coords["aggregate_degree"])
 
-    ### intermediate files, will be removed afterwards
-    dem_path_tif_temp = static_folder + 'DEM_temp.tif'
-    dem_path_tif_temp2 = static_folder + 'DEM_temp2.tif'
-    dem_path = static_folder + 'dem.nc'
-    aspect_path = static_folder + 'aspect.nc'
-    mask_path = static_folder + 'mask.nc'
-    slope_path = static_folder + 'slope.nc'
+    # intermediate files, will be removed afterwards
+    dem_path_tif_temp = f"{static_folder}DEM_temp.tif"
+    dem_path_tif_temp2 = f"{static_folder}DEM_temp2.tif"
+    dem_path = f"{static_folder}dem.nc"
+    aspect_path = f"{static_folder}aspect.nc"
+    mask_path = f"{static_folder}mask.nc"
+    slope_path = f"{static_folder}slope.nc"
 
-    ### If you do not want to shrink the DEM, comment out the following to three lines
     if tile:
-        os.system('gdal_translate -projwin ' + longitude_upper_left + ' ' + latitude_upper_left + ' ' +
-              longitude_lower_right + ' ' + latitude_lower_right + ' ' + dem_path_tif + ' ' + dem_path_tif_temp)
+        os.system(
+            f"gdal_translate -projwin {longitude_upper_left} "
+            + f"{latitude_upper_left} {longitude_lower_right} "
+            + f"{latitude_lower_right} {dem_path_tif} {dem_path_tif_temp}"
+        )
         dem_path_tif = dem_path_tif_temp
 
-    ### If you do not want to aggregate DEM, comment out the following to two lines
     if aggregate:
-        print("Aggregating to ", aggregate_degree)
-        os.system('gdalwarp -tr ' + aggregate_degree + ' ' + aggregate_degree + ' -r average ' + dem_path_tif + ' ' + dem_path_tif_temp2)
+        os.system(
+            f"gdalwarp -tr {aggregate_degree} {aggregate_degree} -r average "
+            + f"{dem_path_tif} {dem_path_tif_temp2}"
+        )
         dem_path_tif = dem_path_tif_temp2
 
-    ### convert DEM from tif to NetCDF
-    os.system('gdal_translate -of NETCDF ' + dem_path_tif  + ' ' + dem_path)
+    # convert DEM from tif to NetCDF
+    os.system(f"gdal_translate -of NETCDF {dem_path_tif} {dem_path}")
 
-    ### calculate slope as NetCDF from DEM
-    os.system('gdaldem slope -of NETCDF ' + dem_path + ' ' + slope_path + ' -s 111120')
+    # calculate slope as NetCDF from DEM
+    os.system(f"gdaldem slope -of NETCDF {dem_path} {slope_path} -s 111120")
 
-    ### calculate aspect from DEM
-    #no_data value may differ from file to file, depending on your DEM you may need to change this
-    aspect = np.flipud(rd.TerrainAttribute(rd.LoadGDAL(dem_path_tif, no_data=-9999), attrib = 'aspect'))
+    # calculate aspect from DEM
+    #rd might throw an error when the no_data value is not directly specified
+    try:
+        aspect = np.flipud(rd.TerrainAttribute(rd.LoadGDAL(dem_path_tif), attrib = 'aspect'))
+    except:
+        aspect = np.flipud(rd.TerrainAttribute(rd.LoadGDAL(dem_path_tif, no_data=-9999), attrib = 'aspect'))
 
-    ### calculate mask as NetCDF with DEM and shapefile
-    os.system('gdalwarp -of NETCDF  --config GDALWARP_IGNORE_BAD_CUTLINE YES -cutline ' + shape_path + ' ' + dem_path_tif  + ' ' + mask_path)
+    # calculate mask as NetCDF with DEM and shapefile
+    os.system(
+        f"gdalwarp -of NETCDF --config GDALWARP_IGNORE_BAD_CUTLINE YES "
+        + f"-cutline {shape_path} {dem_path_tif} {mask_path}"
+    )
 
-    ### open intermediate netcdf files
+    # open intermediate netcdf files
     dem = xr.open_dataset(dem_path)
     mask = xr.open_dataset(mask_path)
     slope = xr.open_dataset(slope_path)
 
-    ### set NaNs in mask to -9999 and elevation within the shape to 1
+    # set NaNs in mask to -9999 and elevation within the shape to 1
     mask=mask.Band1.values
-    #some datasets have 0s instead of -9999 why do they occur when doing aggregate?
-    mask[mask == 0] = -9999
     mask[np.isnan(mask)]=-9999
     mask[mask>0]=1
     print(mask)
@@ -133,75 +214,41 @@ def create_static(dem_path_tif=dem_path_tif, shape_path=shape_path, output_path=
     ds.lat.attrs['long_name'] = 'latitude'
     ds.lat.attrs['units'] = 'degrees_north'
 
-    ### function to insert variables to dataset
-    def insert_var(ds, var, name, units, long_name):
-        ds[name] = (('lat','lon'), var)
-        ds[name].attrs['units'] = units
-        ds[name].attrs['long_name'] = long_name
-        ds[name].attrs['_FillValue'] = -9999
-
-    ### insert needed static variables
+    # insert needed static variables
     insert_var(ds, dem.Band1.values,'HGT','meters','meter above sea level')
     insert_var(ds, aspect,'ASPECT','degrees','Aspect of slope')
     insert_var(ds, slope.Band1.values,'SLOPE','degrees','Terrain slope')
     insert_var(ds, mask,'MASK','boolean','Glacier mask')
 
-    os.system('rm '+ dem_path + ' ' + mask_path + ' ' + slope_path + ' ' + dem_path_tif_temp + ' '+ dem_path_tif_temp2)
+    os.system(
+        f"rm {dem_path} {mask_path} {slope_path} "
+        + f"{dem_path_tif_temp} {dem_path_tif_temp2}"
+    )
 
-    ### save combined static file, delete intermediate files and print number of glacier grid points
-    def check_for_nan(ds,var=None):
-        for y,x in product(range(ds.dims['lat']),range(ds.dims['lon'])):
-            mask = ds.MASK.isel(lat=y, lon=x)
-            if mask==1:
-                if var is None:
-                    if np.isnan(ds.isel(lat=y, lon=x).to_array()).any():
-                        print('ERROR!!!!!!!!!!! There are NaNs in the static fields')
-                        sys.exit()
-                else:
-                    if np.isnan(ds[var].isel(lat=y, lon=x)).any():
-                        print('ERROR!!!!!!!!!!! There are NaNs in the static fields')
-                        sys.exit()
+    """Save combined static file, delete intermediate files, print
+    number of glacier grid points."""
     check_for_nan(ds)
-    print(output_path)
-    if crop_file == True:
-        ds_crop = crop_file_to_glacier(ds)
-        if aggregate == True: #saved cropped file only        
+    
+    # crop file to glacier if desired - but do not set to NaN using xr.where
+    crop_file = _cfg.coords['crop_file']
+    if crop_file:
+        ds_crop = crop_file_to_glacier(ds, WRF=False, check_vars=False)
+        if aggregate: #save cropped file only
             ds_crop.to_netcdf(output_path)
-        else: #save both files
+        else:
+            #uncropped file is needed for e.g., HORAYZON calculation (surrounding terrain)
+            #cropped file is needed as static data for simulation
             ds.to_netcdf(output_path)
             ds_crop.to_netcdf(output_path_crop)
         ds.close()
         ds_crop.close()
     else:
         ds.to_netcdf(output_path)
-        ds.close()
+        ds.close()    
+    
     print("Study area consists of ", np.nansum(mask[mask==1]), " glacier points")
     print("Done")
 
-#For some reason, runs are switched.
-
-if distributed_radiation:
-    #We need to first get a domain at high resolution and then if aggregate is True: create a second domain with lower resolution to use in later stage
-    if ref_exist:
-        print("Skipping calculation of high resolution static file.")
-    else:
-        #This needs to have a buffer
-        create_static(dem_path_tif=dem_path_tif, shape_path=shape_path, output_path=output_path, output_path_crop=output_path_crop,
-                      tile=tile, aggregate=False, aggregate_degree=aggregate_degree,
-                       automatic_domain=True, crop_file=True, dist_search=20.0)
-        print("\n----------------------------------------")
-        print("Created high resolution domain for LUTs.")
-        print("----------------------------------------\n")
-    #This doesn't really need a buffer so crop it to minimum extent possible next
-    create_static(dem_path_tif=dem_path_tif, shape_path=shape_path, output_path=output_path_agg, output_path_crop=output_path_crop,
-                  tile=tile, aggregate=True, aggregate_degree=aggregate_degree,
-                  automatic_domain=True, crop_file=True, dist_search=1.0)
-    print("\n----------------------------------------")
-    print("Stored aggregated domain for resampling.")
-    print("----------------------------------------\n")
-else:
-    #Generally less grid cells the better, so crop to minimum extent possible
-    create_static(dem_path_tif=dem_path_tif, shape_path=shape_path, output_path=output_path, output_path_crop=output_path_crop,
-                  tile=tile, aggregate=False, aggregate_degree=aggregate_degree,
-                  automatic_domain=True, crop_file=True, dist_search=20.0)
-#cropfile=False
+if __name__ == "__main__":
+    main()
+##old version has NaNs, new version only 0 and 1s
