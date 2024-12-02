@@ -29,7 +29,7 @@ aggregation_step = 'H'
 delimiter = ','
 
 [aws2cosipy.radiation]
-radiationModule = 'Wohlfahrt2016' # 'Moelg2009', 'Wohlfahrt2016', 'HORAYZON2022', 'none'
+radiationModule = 'Horayzon2022' # 'Moelg2009', 'Wohlfahrt2016', 'Horayzon2022', 'none'
 LUT = false  # If there is already a Look-up-table for topographic shading and sky-view-factor built for this area, set to True
 LUT_path = "./data/static/LUT_Rad.nc"
 dtstep = 10800  # time step (s)
@@ -40,7 +40,7 @@ ELEV_model = true
 delimiter = ','
 
 [aws2cosipy.points]
-point_model = false
+point_model = false #false
 plon = 90.64
 plat = 30.47
 hgt = 5665.0
@@ -59,18 +59,22 @@ lapse_SNOWFALL = 0.0000  # Snowfall % per m (0 to 1)
 # CREATE STATIC FILE
 [create_static.paths]
 static_folder = "./data/static/"
-dem_path = "DEM/n30_e090_3arc_v2.tif"
-shape_path = "Shapefiles/Zhadang_RGI6.shp"
-output_file = "Zhadang_static.nc"
+dem_path = "HEF/DEM/COPDEM30_HEF_Box.tif"
+shape_path = "HEF/Shapefiles/HEF_RGI6.shp"
+output_file = "HEF/HEF_static_300m_new.nc"
+output_file_crop = "HEF/HEF_static_30m_crop_new.nc"
 
 [create_static.coords]
 tile = true
 aggregate = true
-aggregate_degree = 0.003
-longitude_upper_left = 90.62
-latitude_upper_left = 30.48
-longitude_lower_right = 90.66
-latitude_lower_right = 30.46
+aggregate_degree = 0.00277778
+longitude_upper_left = 10.6
+latitude_upper_left = 46.9
+longitude_lower_right = 10.9
+latitude_lower_right = 46.7
+automatic_domain = true
+crop_file = true
+dist_search = 22.0 ## buffer size or lat lon corners influence how aggregated glacier is represented (changes no. GGPs)
 
 # WRF2COSIPY
 [wrf2cosipy.constants]
