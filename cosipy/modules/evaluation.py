@@ -144,8 +144,8 @@ def tsl_method_conservative(snowheights, hgts, mask, min_snowheight):
         #print("Processing ", n, "out of ", snowheights.shape[0])
         filtered_elev_snow = np.nanmin(np.where(snowheights[n,:,:]>=min_snowheight, hgts, np.nan).ravel())
         #print(filtered_elev_snow)
-        #this line is basically redudant, ensures that snowline altitude cannot fall below glacier altitude
-        filtered_elev_snow = np.nanmax(np.append(filtered_elev_snow, np.nanmin(np.where(mask==1, hgts, np.nan)))) #numba does not support np.maximum
+        #this line is basically redudant, and creates a bug when glacier is snow-free
+        #filtered_elev_snow = np.nanmax(np.append(filtered_elev_snow, np.nanmin(np.where(mask==1, hgts, np.nan)))) #numba does not support np.maximum
         #print(filtered_elev_snow)
         #now for snow-free surfaces
         filtered_elev_nosnow = np.nanmax(np.where(snowheights[n,:,:]<min_snowheight, hgts, np.nan))
