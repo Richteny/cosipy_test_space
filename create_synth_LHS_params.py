@@ -1,4 +1,5 @@
 import pandas as pd
+import xarray as xr
 from pathlib import Path
 import sys
 import os
@@ -35,18 +36,39 @@ geod_ref = geod_ref[['dmdtda','err_dmdtda']]
 print("Loading TSL file from:", Config.tsl_data_file)
 tsla_obs = pd.read_csv(Config.tsl_data_file)
 tsla_obs['LS_DATE'] = pd.to_datetime(tsla_obs['LS_DATE'])
-#time_start = "2000-01-01" #config starts with spinup - need to add 1 year
-time_start_dt = pd.to_datetime(Config.time_start_cali)
-time_end_dt = pd.to_datetime(Config.time_end_cali)
-print("Start date:", time_start_dt)
-print("End date:", time_end_dt)
+time_start = "2000-01-01" #config starts with spinup - need to add 1 year
+time_start_dt = pd.to_datetime(time_start)
+time_end_dt = pd.to_datetime(Config.time_end)
+print("Start date:", time_start)
+print("End date:", Config.time_end)
 tsla_obs = tsla_obs.loc[(tsla_obs['LS_DATE'] > time_start_dt) & (tsla_obs['LS_DATE'] <= time_end_dt)]
 tsla_obs.set_index('LS_DATE', inplace=True)
 #normalize standard deviation if necessary
 if Config.tsl_normalize:
     tsla_obs['SC_stdev'] = (tsla_obs['SC_stdev']) / (tsla_obs['glacier_DEM_max'] - tsla_obs['glacier_DEM_min'])
 
-obs = None
+path_to_synth = "/data/scratch/richteny/thesis/cosipy_test_space/data/output/synthetic/"
+
+#Load Synth TSL data
+tsl_data_file_synth = "tsla_hef_cosmo_1d10m_1999_2010_horayzon_20000101-20001231_rrr-2.2_0.94_0.2_0.555_num.csv"
+print("Loading TSL synth file from:", tsl_data_file_synth)
+tsla_synth = pd.read_csv(path_to_synth+tsl_data_file_synth)
+tsla_synth['time'] = pd.to_datetime(tsla_synth['time'])
+tsla_synth = tsla_synth.loc[(tsla_synth['time'] > time_start_dt) & (tsla_synth['time'] <= time_end_dt)]
+tsla_synth.set_index('time', inplace=True)
+tsla_synth = tsla_synth.loc[tsla_synth.index.isin(tsla_obs.index)]
+tsla_synth['Std_TSL'] = tsla_obs['SC_stdev']
+print(tsla_synth)
+
+# Load MB synth data
+geod_synth = xr.open_dataset(path_to_synth+"HEF_COSMO_1D10m_1999_2010_HORAYZON_20000101-20001231_RRR-2.2_0.94_0.2_0.555_num.nc")
+geod_synth = geod_synth.sel(time=slice(time_start,Config.time_end))
+geod_synth['weighted_mb'] = geod_synth['MB'] * geod_synth['N_Points'] / np.sum(geod_synth['N_Points'])
+spat_mean = geod_synth[['weighted_mb']].sum(dim=['lat','lon'])
+dfmb = spat_mean['weighted_mb'].to_dataframe()
+dfmb_ann = dfmb.resample("1Y").sum()
+geod_mb = np.nanmean(dfmb_ann['weighted_mb'].values)
+geod_ref['dmdtda'] = geod_mb
 
 # Number of iterations
 #N=(1+(4*M**2)*(1+(k−2)*d))*k
@@ -54,9 +76,9 @@ obs = None
 class spot_setup:
     # defining all parameters and the distribution
     print("Setting parameters.")
-    param = RRR_factor, alb_ice, alb_snow, alb_firn, albedo_aging, albedo_depth = [
+    param = alb_ice, alb_snow, alb_firn, albedo_aging, albedo_depth = [
             #aging_factor_roughness, roughness_fresh_snow, roughness_ice = [
-        Uniform(low=0.33, high=3), #1.235, high=1.265
+        #Uniform(low=0.33, high=3), #1.235, high=1.265
         Uniform(low= 0.1, high=0.4),
         Uniform(low=0.71, high=0.98),
         Uniform(low=0.41, high=0.7),
@@ -75,7 +97,7 @@ class spot_setup:
 
     def simulation(self, x):
         print("Count", self.count)
-        sim_mb, sim_tsla = runcosipy(RRR_factor=x.RRR_factor, alb_ice = x.alb_ice, alb_snow = x.alb_snow, alb_firn = x.alb_firn,
+        sim_mb, sim_tsla = runcosipy(alb_ice = x.alb_ice, alb_snow = x.alb_snow, alb_firn = x.alb_firn,
                    albedo_aging = x.albedo_aging, albedo_depth = x.albedo_depth, #aging_factor_roughness = x.aging_factor_roughness,
                    count=self.count) #roughness_fresh_snow = x.roughness_fresh_snow, roughness_ice = x.roughness_ice, count=self.count)
         sim_tsla = sim_tsla[sim_tsla['time'].isin(tsla_obs.index)]
@@ -89,12 +111,12 @@ class spot_setup:
         if not self.obj_func:
             print(evaluation[1])
             if Config.tsl_normalize:
-                eval_tsla = np.delete(evaluation[1]['TSL_normalized'].values, np.argwhere(np.isnan(simulation[1])))
+                eval_tsla = np.delete(evaluation[1]['Med_TSL'].values, np.argwhere(np.isnan(simulation[1])))
             else:
-                eval_tsla = np.delete(evaluation[1]['SC_median'].values, np.argwhere(np.isnan(simulation[1])))
+                eval_tsla = np.delete(evaluation[1]['Med_TSL'].values, np.argwhere(np.isnan(simulation[1])))
             eval_mb = evaluation[0]['dmdtda'].values
             sigma_mb = evaluation[0]['err_dmdtda'].values
-            sigma_tsla = np.delete(evaluation[1]['SC_stdev'].values, np.argwhere(np.isnan(simulation[1])))
+            sigma_tsla = np.delete(evaluation[1]['Std_TSL'].values, np.argwhere(np.isnan(simulation[1])))
             sim_tsla = simulation[1][~np.isnan(simulation[1])]
             sim_mb = simulation[0][~np.isnan(simulation[0])]
            
@@ -122,9 +144,9 @@ def psample(obs, count=None):
     
     rep= 3000
     count=count
-    name = "LHS_parameters_full"
+    name = "LHS_synth_surrogate_parameters_lowsnow"
     setup = spot_setup(obs, count=count)
     sampler = spotpy.algorithms.lhs(setup, dbname=name, dbformat='csv', db_precision=np.float64, random_state=42, save_sim=True)
     sampler.sample(rep)
         
-fast = psample(obs=(geod_ref, tsla_obs), count=1)
+fast = psample(obs=(geod_ref, tsla_synth), count=1)
