@@ -654,8 +654,34 @@ def load_config(module_name: str) -> tuple:
 def main():
     global _args  # Yes, it's bad practice
     global _cfg
+    #_args, _cfg = load_config(module_name="create_static")
     _args, _cfg = load_config(module_name="create_static")
-    _args, _cfg = load_config(module_name="create_static")
+
+    ### Add this here as well - to short-term fix hray.download error ###
+    # Load high resolution static data
+    ds = xr.open_dataset(_args.static_file)
+    elevation = ds["HGT"].values.copy() #else values get overwritten by later line
+    elevation_original = ds["HGT"].values.copy()
+    lon = ds["lon"].values
+    lat = ds["lat"].values
+
+    slice_in, slice_buffer, mask_glacier, mask_glacier_original = compute_and_slice(lat, lon, ds["MASK"].values)
+    
+    print("Inner domain size: " + str(elevation[slice_in].shape))
+    
+    #orthometric height (-> height above mean sea level)
+    elevation_ortho = np.ascontiguousarray(elevation[slice_in])
+    
+    # Compute ellipsoidal heights
+    elevation += hray.geoid.undulation(lon, lat, geoid="EGM96")  # [m]
+    del elevation_ortho
+    del elevation
+    del ds
+    del elevation_original
+    del slice_in
+    del slice_buffer
+    del mask_glacier
+    del mask_glacier_original
 
     run_horayzon_scheme(
         _args.static_file,
