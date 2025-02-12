@@ -64,12 +64,12 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
         count = count + 1
 
     # these values crashed previously [array(2.74724189), array(0.25), array(0.84), array(0.555), array(1.1), array(1.1)]
-    RRR_factor = float(2.2) #0.97 
-    alb_ice = float(0.2)
-    alb_snow = float(0.94)
-    alb_firn = float(0.555)
-    albedo_aging = float(23.0)
-    albedo_depth = float(3.0)
+    #RRR_factor = float(1.05) #0.97 
+    #alb_ice = float(0.2)
+    #alb_snow = float(0.94)
+    #alb_firn = float(0.555)
+    #albedo_aging = float(23.0)
+    #albedo_depth = float(3.0)
     #roughness_fresh_snow = float(0.24) #0.03 (https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2022JD037032) to max 1.6 from Brock et al. 2006
     #roughness_ice = float(1.7)
     #roughness_firn = float(4.0)
@@ -168,7 +168,7 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
     #version for parsed floats by hand here
     results_output_name = output_netcdf.split('.nc')[0] + f"_RRR-{round(RRR_factor,4)}_{round(alb_snow,4)}_{round(alb_ice,4)}_{round(alb_firn,4)}"\
                                                           f"_{round(albedo_aging,4)}_{round(albedo_depth,4)}_{round(roughness_fresh_snow,4)}"\
-                                                          f"_{round(roughness_ice,4)}_{round(roughness_firn,4)}_{round(aging_factor_roughness,4)}_num{count}.nc"
+                                                          f"_{round(roughness_ice,4)}_{round(roughness_firn,4)}_{round(aging_factor_roughness,6)}_num{count}.nc"
     #item below only works when objects are arrays and not given by hand
     #results_output_name = output_netcdf.split('.nc')[0] + f"_RRR-{round(RRR_factor.item(),4)}_{round(alb_snow.item(),4)}_{round(alb_ice.item(),4)}_{round(alb_firn.item(),4)}_num{count}.nc"
 
@@ -230,7 +230,7 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
         resampled_out['MASK'] = (('lat','lon'), IO.get_result()['MASK'].data)
 
         tsl_out = create_tsl_df(resampled_out, Config.min_snowheight, Config.tsl_method, Config.tsl_normalize)
-        #tsl_out.to_csv(os.path.join(output_path, tsl_csv_name))
+        tsl_out.to_csv(os.path.join(output_path, tsl_csv_name))
         tsla_stats = eval_tsl(tsla_observations,tsl_out, Config.time_col_obs, Config.tsla_col_obs)
         print("TSLA Observed vs. Modelled RMSE: " + str(tsla_stats[0])+ "; R-squared: " + str(tsla_stats[1]))
         ## Match to observation dates for pymc routine
@@ -241,7 +241,7 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
         ## Create DF that holds params to save ##
         if Config.write_csv_status:
             try:
-                param_df = pd.read_csv("./simulations/cosipy_synthetic_params_lhs-fixedrrr.csv", index_col=0)
+                param_df = pd.read_csv(f"./simulations/{Config.csv_filename}", index_col=0)
                 curr_df = pd.DataFrame( np.concatenate((np.array(opt_dict, dtype=float),np.array([geod_mb]),
                                         tsl_out_match.Med_TSL.values)) ).transpose()
                 curr_df.columns = ['rrr_factor', 'alb_ice', 'alb_snow', 'alb_firn', 'albedo_aging',
@@ -258,7 +258,7 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
                                       'albedo_depth', 'center_snow_transfer', 'spread_snow_transfer',
                                       'roughness_fresh_snow', 'roughness_ice', 'roughness_firn', 'aging_factor_roughness', 'mb'] +\
                                      [f'sim{i+1}' for i in range(tsl_out_match.shape[0])]
-            param_df.to_csv("./simulations/cosipy_synthetic_params_lhs-fixedrrr.csv")
+            param_df.to_csv(f"./simulations/{Config.csv_filename}")
 
     #-----------------------------------------------
     # Stop time measurement

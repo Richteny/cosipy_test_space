@@ -2,13 +2,13 @@
 # Please make your changes here.
 
 [SIMULATION_PERIOD]
-time_start = "2000-01-01T00:00"
-time_end = "2000-12-31T23:00"
+time_start = "1999-01-01T00:00"
+time_end = "2009-12-31T23:00"
 
 [FILENAMES]
 data_path = "./data/"
-input_netcdf = "HEF/HEF_COSMO_1D10m_HORAYZON_IntpolPRES_1999_2010.nc"
-output_prefix = "HEF_COSMO_1D10m_1999_2010_HORAYZON_"
+input_netcdf = "HEF/HEF_COSMO_1D20m_HORAYZON_IntpolPRES_1999_2010.nc"
+output_prefix = "HEF_COSMO_1D20m_1999_2010_HORAYZON_LHSnoRRR"
 
 [RESTART]
 restart = false # set to true if you want to start from restart file
@@ -25,6 +25,7 @@ time_start_cali = "2000-01-01T00:00"
 time_end_cali = "2009-12-31T23:00"
 tsl_evaluation = true #true
 write_csv_status = true #true
+csv_filename = "LHS_1D20m_1999_2010_noRRR.csv"
 time_col_obs = "LS_DATE"
 tsla_col_obs = "TSL_normalized"
 min_snowheight = 0.001 #1mm

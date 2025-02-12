@@ -17,4 +17,13 @@ slurm.out
 .coverage
 .vscode/
 simulations/*
-
+LHS_1D20m_1999_2010_AWSmetrics.csv
+LHS_1D20m_1999_2010_EBfromLHS.csv
+LHSlowsnow_1D20m_1999_2010_AWSmetrics.csv
+LHSlowsnow_1D20m_1999_2010_EBfromLHS.csv
+cosipy/utilities/aws2cosipy/slurm_run.out
+cosipy/utilities/aws2cosipy/slurm_run.err
+de421.bsp
+*.csv
+Control_master.err
+Control_master.out
