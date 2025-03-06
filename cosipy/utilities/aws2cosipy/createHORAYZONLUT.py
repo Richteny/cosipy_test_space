@@ -541,7 +541,12 @@ def run_horayzon_scheme(static_file, file_sw_dir_cor, coarse_static_file=None,
         combined[['HGT','ASPECT','SLOPE','MASK','N_Points']].to_netcdf(elev_stat_file)
     else:
         cropped_combined = combined.where(combined.MASK == 1, drop=True)
-        cropped_combined.to_netcdf(file_sw_dir_cor)
+        #for very low resolutions, gaps in the data (cutoff GGPs) can result in a reduced file after cropping with drop=True
+        if (combined.lon.shape == cropped_combined.lon.shape) and (combined.lat.shape == cropped_combined.lat.shape):
+            cropped_combined.to_netcdf(file_sw_dir_cor)
+        else:
+            cropped_combined = combined.where(combined.MASK ==1)
+            cropped_combined.to_netcdf(file_sw_dir_cor)
 
 #### !! BEWARE: elevation is not the same when using regridding. Files are the same when using 1D approach.
 
