@@ -51,6 +51,9 @@ import netCDF4 as nc
 import numpy as np
 import pandas as pd
 import xarray as xr
+import sys
+
+sys.path.append("/data/scratch/richteny/thesis/cosipy_test_space/")
 
 import cosipy.modules.radCor as mod_radCor
 from cosipy.utilities.config_utils import UtilitiesConfig

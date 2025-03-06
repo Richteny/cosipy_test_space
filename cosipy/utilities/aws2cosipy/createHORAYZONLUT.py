@@ -627,7 +627,7 @@ def get_user_arguments(parser: argparse.ArgumentParser) -> argparse.Namespace:
         default=None,
         metavar="<path>",
         required=False,
-        help="Left longitude value of the subset",
+        help="File path where to save elevation band static file",
     )
     arguments = parser.parse_args()
 
