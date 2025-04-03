@@ -120,6 +120,12 @@ def calculate_1d_elevationband(xds, elevation_var, mask_var, var_of_interest, el
             values = xds[var_of_interest].groupby_bins(xds[elevation_var], bins, labels=labels, include_lowest=True).sum(skipna=True, min_count=1)
         else:
             values = xds[var_of_interest][slice_idx].groupby_bins(xds[elevation_var][slice_idx], bins, labels=labels, include_lowest=True).sum(skipna=True, min_count=1)
+    elif var_of_interest == "SLOPE":
+        if slice_idx is None:
+            values = xds[var_of_interest].groupby_bins(xds[elevation_var], bins, labels=labels, include_lowest=True).mean(skipna=True)
+        else:
+            values = xds[var_of_interest][slice_idx].groupby_bins(xds[elevation_var][slice_idx], bins, labels=labels, include_lowest=True).mean(skipna=True)
+
         ## below calculation doesnt work
     #elif var_of_interest in ["aspect","ASPECT"]:
     #    if slice_idx is None:          
@@ -128,10 +134,10 @@ def calculate_1d_elevationband(xds, elevation_var, mask_var, var_of_interest, el
     #        values = xds[var_of_interest][slice_idx].groupby_bins(xds[elevation_var][slice_idx], bins, labels=labels, include_lowest=True).map(aspect_means)
     else:
         if slice_idx is None:
-            values = xds[var_of_interest].groupby_bins(xds[elevation_var], bins, labels=labels, include_lowest=True).mean(skipna=True)
+            values = xds[var_of_interest].groupby_bins(xds[elevation_var], bins, labels=labels, include_lowest=True).median(skipna=True)
             
         else:
-            values = xds[var_of_interest][slice_idx].groupby_bins(xds[elevation_var][slice_idx], bins, labels=labels, include_lowest=True).mean(skipna=True)
+            values = xds[var_of_interest][slice_idx].groupby_bins(xds[elevation_var][slice_idx], bins, labels=labels, include_lowest=True).median(skipna=True)
     
     return values    
 
@@ -149,7 +155,7 @@ def construct_1d_dataset(df):
     assign_attrs(elev_ds, 'SLOPE','degrees','Mean Terrain slope')
     assign_attrs(elev_ds, 'MASK','boolean','Glacier mask')
     assign_attrs(elev_ds, 'N_Points','count','Number of Points in each bin')
-    assign_attrs(elev_ds, 'sw_dir_cor','-','Average shortwave radiation correction factor per elevation band')
+    assign_attrs(elev_ds, 'sw_dir_cor','-','Median shortwave radiation correction factor per elevation band')
     
     return elev_ds
 
@@ -540,16 +546,25 @@ def run_horayzon_scheme(static_file, file_sw_dir_cor, coarse_static_file=None,
         combined.to_netcdf(file_sw_dir_cor)
         combined[['HGT','ASPECT','SLOPE','MASK','N_Points']].to_netcdf(elev_stat_file)
     else:
-        cropped_combined = combined.where(combined.MASK == 1, drop=True)
+        #cropped_combined = combined.where(combined.MASK == 1, drop=True)
         #for very low resolutions, gaps in the data (cutoff GGPs) can result in a reduced file after cropping with drop=True
-        if (combined.lon.shape == cropped_combined.lon.shape) and (combined.lat.shape == cropped_combined.lat.shape):
-            cropped_combined.to_netcdf(file_sw_dir_cor)
+        valid_lats = (combined.MASK == 1).any(dim="lon")  # True if at least one 1.0 exists per latitude
+        valid_lons = (combined.MASK == 1).any(dim="lat")  # True if at least one 1.0 exists per longitude
+
+        lat_indices = np.where(valid_lats.values)[0] # Indices where lat is valid
+        lon_indices = np.where(valid_lons.values)[0] # Indices where lon is valid 
+        # Detect gaps (skipped steps)
+        lat_gap = np.any(np.diff(lat_indices) > 1)
+        lon_gap = np.any(np.diff(lon_indices) > 1)
+
+        if not lat_gap and not lon_gap:
+            cropped_combined = combined.where(combined.MASK == 1, drop=True)
         else:
-            cropped_combined = combined.where(combined.MASK ==1)
-            cropped_combined.to_netcdf(file_sw_dir_cor)
+            print("Using drop=True would result in deletion of intermediate lats or lons.")
+            cropped_combined = combined.where(combined.MASK == 1)
 
-#### !! BEWARE: elevation is not the same when using regridding. Files are the same when using 1D approach.
-
+        cropped_combined.to_netcdf(file_sw_dir_cor)
+        #### !! BEWARE: elevation is not the same when using regridding. Files are the same when using 1D approach.
 
 def get_user_arguments(parser: argparse.ArgumentParser) -> argparse.Namespace:
     """Get user arguments for converting AWS data.

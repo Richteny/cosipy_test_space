@@ -3,7 +3,7 @@ import numpy as np
 import pathlib
 import xarray as xr
 
-path = "/data/scratch/richteny/thesis/cosipy_test_space/data/output/LHS-lowsnow/"
+path = "/data/scratch/richteny/thesis/cosipy_test_space/data/output/LHS/"
 awspath = "/data/scratch/richteny/thesis/Hintereisferner/Climate/AWS_Obleitner/"
 
 aws = pd.read_csv(awspath+"Fix_HEFupper_01102003_24102004.csv", index_col="time", parse_dates=True)
@@ -73,17 +73,18 @@ for fp in pathlib.Path(path).glob('*.nc'):
     holder['cspy_sfc'] = norm_totalheight.data
     holder['cspy_lwout'] = sub.LWout.values
     filename = str(fp.stem) + "AWSmetrics.csv"
-    holder.to_csv("/data/scratch/richteny/thesis/cosipy_test_space/data/output/LHS-lowsnow/AWScomp/"+filename)
+    holder.to_csv("/data/scratch/richteny/thesis/cosipy_test_space/data/output/LHS/AWScomp/"+filename)
     del holder 
 
     #get params from filename
-    raw_fp = str(fp.stem).split('HEF_COSMO_1D20m_1999_2010_HORAYZON_LHSnoRRR_19990101-20091231_RRR-')[-1]
+    raw_fp = str(fp.stem).split('HEF_COSMO_1D20m_1999_2010_HORAYZON_IntpPRES_19990101-20091231_RRR-')[-1]
     rrr_factor = float(raw_fp.split('_')[0])
     alb_snow = float(raw_fp.split('_')[1])
     alb_ice = float(raw_fp.split('_')[2])
     alb_firn = float(raw_fp.split('_')[3])
     alb_aging = float(raw_fp.split('_')[4])
     alb_depth = float(raw_fp.split('_')[5])
+    roughness_ice = float(raw_fp.split('_')[7])
     
     result = {'rrr_factor': rrr_factor,
               'alb_ice': alb_ice,
@@ -91,6 +92,7 @@ for fp in pathlib.Path(path).glob('*.nc'):
               'alb_firn': alb_firn,
               'albedo_aging': alb_aging,
               'albedo_depth': alb_depth,
+              'roughness_ice': roughness_ice,
               'mae_alb': mae_albedo,
               'rmse_alb': rmse_albedo,
               'mae_lwout': mae_lwout,
@@ -101,4 +103,4 @@ for fp in pathlib.Path(path).glob('*.nc'):
     results_list.append(result)
 
 results_df = pd.DataFrame(results_list)
-results_df.to_csv("/data/scratch/richteny/thesis/cosipy_test_space/LHSlowsnow_1D20m_1999_2010_AWSmetrics.csv")
+results_df.to_csv("/data/scratch/richteny/thesis/cosipy_test_space/LHS_1D20m_1999_2010_AWSmetrics.csv")

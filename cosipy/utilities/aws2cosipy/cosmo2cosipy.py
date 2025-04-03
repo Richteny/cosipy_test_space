@@ -571,7 +571,16 @@ def create_2D_input(
     U_interp = set_zero_field_memmap("memmappedU.dat", time_index, lat_index, lon_index)
     G_interp = set_zero_field_memmap("memmappedG.dat", time_index, lat_index, lon_index)
     P_interp = set_zero_field_memmap("memmappedP.dat", time_index, lat_index, lon_index)
-    
+
+    if _cfg.lapse['sf_temp_fix'] is True or _cfg.lapse['overwrite_sf_tp'] is True:
+        f_snow = set_zero_field_memmap("memmappedfsnow.dat", time_index, lat_index, lon_index)
+
+    ## After applying snowfall lapse rates and temperature lapse rates indepedently, ensure no unphysical behaviour
+    ## temperature dependent thresholding based on equation from Hantel et al. (2000)
+    zero_temperature = 273.16 #K
+    center_snow_transfer = float(_cfg.lapse['center_snow'])
+    spread_snow = float(_cfg.lapse['spread_snow'])
+
     #T_interp = set_zero_field(time_index, lat_index, lon_index)
     #RH_interp = set_zero_field(time_index, lat_index, lon_index)
     #U_interp = set_zero_field(time_index, lat_index, lon_index)
@@ -680,6 +689,19 @@ def create_2D_input(
         if _cfg.names["N_var"] in df:
             N_interp[t, :, :] = N[t]
 
+        if _cfg.lapse['sf_temp_fix'] is True:
+            print("Applying temperature-dependent snowfall adjustment")
+            f_snow[t,:,:] = 0.5 * (-np.tanh((T_interp[t,:,:] - zero_temperature - center_snow_transfer) * spread_snow) + 1.0)
+            ## correct snowfall
+            SNOWFALL_interp[t,:,:] = SNOWFALL_interp[t,:,:] * f_snow[t,:,:]
+
+        if _cfg.lapse['overwrite_sf_tp'] is True:
+            #overwrite snowfall field
+            f_snow[t,:,:] = 0.5 * (-np.tanh((T_interp[t,:,:] - zero_temperature - center_snow_transfer) * spread_snow) + 1.0)
+            SNOWFALL_interp[t,:,:] = 0
+            SNOWFALL_interp[t,:,:] = RRR_interp[t,:,:] * f_snow[t,:,:] #unit is now in kg/m2/h - need unit [m], conversion via density fresh snow
+            density_fresh_snow = np.maximum(109.0+6.0*(T_interp[t,:,:]-273.16)+26.0*np.sqrt(U_interp[t,:,:]), 50.0)
+            SNOWFALL_interp[t,:,:] = SNOWFALL_interp[t,:,:] / density_fresh_snow #SNOWFALL from unit mm w.e. to [m]
     print(
         f"Number of glacier cells: {int(np.count_nonzero(~np.isnan(ds['MASK'].values))):d}"
     )
@@ -899,6 +921,8 @@ def create_2D_input(
     if _cfg.names["N_var"] in df:
         add_variable_along_timelatlon(ds=dso, var=N_interp, **get_variable_metadata("N"))
         del N_interp
+    if _cfg.lapse['sf_temp_fix'] is True:
+        del f_snow
         
     os.system("rm memmapped*.dat")
 
