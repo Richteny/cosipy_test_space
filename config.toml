@@ -7,8 +7,8 @@ time_end = "2009-12-31T23:00"
 
 [FILENAMES]
 data_path = "./data/"
-input_netcdf = "HEF/HEF_COSMO_1D20m_HORAYZON_IntpolPRES_1999_2010.nc"
-output_prefix = "HEF_COSMO_1D20m_1999_2010_HORAYZON_LHSnoRRR"
+input_netcdf = "HEF/HEF_COSMO_1D20m_HORAYZON_1999_2010_IntpPRES.nc"
+output_prefix = "HEF_COSMO_1D20m_1999_2010_HORAYZON_IntpPRES"
 
 [RESTART]
 restart = false # set to true if you want to start from restart file
@@ -25,7 +25,7 @@ time_start_cali = "2000-01-01T00:00"
 time_end_cali = "2009-12-31T23:00"
 tsl_evaluation = true #true
 write_csv_status = true #true
-csv_filename = "LHS_1D20m_1999_2010_noRRR.csv"
+csv_filename = "LHS_1D20m_1999_2010_fullprior.csv"
 time_col_obs = "LS_DATE"
 tsla_col_obs = "TSL_normalized"
 min_snowheight = 0.001 #1mm
@@ -74,6 +74,9 @@ yend = 40
 
 [OUTPUT_VARIABLES]
 # Select which output variables are written to disk. Comma-separated. Edit with caution.
+#output_atm=""
+#output_internal="MB,SNOWHEIGHT"
+#output_full="HEIGHT"
 output_atm = "T2,RH2,U2,RAIN,SNOWFALL,RRR,PRES,N,G,LWin,LWout,H,LE,B,QRR,Z0,ALBEDO,TS"
 output_internal = "ME,MB,surfMB,intMB,EVAPORATION,SUBLIMATION,CONDENSATION,DEPOSITION,surfM,subM,Q,REFREEZE,SNOWHEIGHT,TOTALHEIGHT,LAYERS"
 output_full = "HEIGHT,RHO,T,LWC,CC,POROSITY,LW,ICE_FRACTION,IRREDUCIBLE_WATER,REFREEZE"

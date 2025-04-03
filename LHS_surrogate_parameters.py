@@ -54,14 +54,15 @@ obs = None
 class spot_setup:
     # defining all parameters and the distribution
     print("Setting parameters.")
-    param = RRR_factor, alb_ice, alb_snow, alb_firn, albedo_aging, albedo_depth = [
+    param = RRR_factor, alb_ice, alb_snow, alb_firn, albedo_aging, albedo_depth, roughness_ice = [
             #aging_factor_roughness, roughness_fresh_snow, roughness_ice = [
-        Uniform(low=0.33, high=3), #1.235, high=1.265
-        Uniform(low= 0.1, high=0.4),
-        Uniform(low=0.71, high=0.98),
-        Uniform(low=0.41, high=0.7),
-        Uniform(low=0.1, high=31),
-        Uniform(low=0.1, high=31)]
+        Uniform(low=np.log(0.51), high=np.log(1.98)), #1.235, high=1.265
+        Uniform(low=0.115, high=0.233),
+        Uniform(low=0.887, high=0.93),
+        Uniform(low=0.506, high=0.692),
+        Uniform(low=1, high=25),
+        Uniform(low=1, high=15),
+        Uniform(low=0.7, high=20)]
         #Uniform(low=0.005, high=0.0026+0.0026),
         #Uniform(low=0.2, high=3.56),
         #Uniform(low=0.1, high=7.0)]
@@ -75,8 +76,8 @@ class spot_setup:
 
     def simulation(self, x):
         print("Count", self.count)
-        sim_mb, sim_tsla = runcosipy(RRR_factor=x.RRR_factor, alb_ice = x.alb_ice, alb_snow = x.alb_snow, alb_firn = x.alb_firn,
-                   albedo_aging = x.albedo_aging, albedo_depth = x.albedo_depth, #aging_factor_roughness = x.aging_factor_roughness,
+        sim_mb, sim_tsla = runcosipy(RRR_factor=np.exp(x.RRR_factor), alb_ice = x.alb_ice, alb_snow = x.alb_snow, alb_firn = x.alb_firn,
+                   albedo_aging = x.albedo_aging, albedo_depth = x.albedo_depth, roughness_ice = x.roughness_ice, #aging_factor_roughness = x.aging_factor_roughness,
                    count=self.count) #roughness_fresh_snow = x.roughness_fresh_snow, roughness_ice = x.roughness_ice, count=self.count)
         sim_tsla = sim_tsla[sim_tsla['time'].isin(tsla_obs.index)]
         return (np.array([sim_mb]), sim_tsla['Med_TSL'].values)
@@ -103,9 +104,10 @@ class spot_setup:
             #loglike_mb = np.log(( 1 / np.sqrt( (2*np.pi* (sigma_mb**2) ) ) ) * np.exp( (-1* ( (eval_mb-sim_mb) **2 ) / (2*sigma_mb**2))))
             loglike_mb = -0.5 * (np.log(2 * np.pi * sigma_mb**2) + ( ((eval_mb-sim_mb)**2) / sigma_mb**2))
             loglike_tsla = -0.5 * np.sum(np.log(2 * np.pi * sigma_tsla**2) + ( ((eval_tsla-sim_tsla)**2) / sigma_tsla**2))
+            mean_logliketsla = loglike_tsla / len(sim_tsla)
             #equation below works for constant sigma
             #loglike_tsla = np.log(( 1 / np.sqrt( (2*np.pi* (sigma_tsla**2) ) ) ) * np.exp( (-1* ( (eval_tsla-sim_tsla) **2 ) / (2*sigma_tsla**2))))
-            like = loglike_mb + loglike_tsla
+            like = loglike_mb + mean_logliketsla
         return like
 
  

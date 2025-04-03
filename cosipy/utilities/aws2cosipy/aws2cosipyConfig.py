@@ -40,7 +40,7 @@ N_var = 'N'
 #------------------------
 aggregate = False
 aggregation_step = 'H'
-ELEV_model = True
+ELEV_model = False
 
 # Delimiter in csv file
 delimiter = ','

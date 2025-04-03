@@ -4,7 +4,7 @@ import pathlib
 import xarray as xr
 
 path = "/data/scratch/richteny/thesis/cosipy_test_space/data/output/"
-path += "LHS-lowsnow/"
+path += "LHS/"
 
 def get_season(month):
     if month in [10,11,12,1,2,3,4]: #Accumulation (Oct 1 to Apr 30)
@@ -48,7 +48,7 @@ for fp in pathlib.Path(path).glob('*.nc'):
     abl_ts = float(sum_eb_season(ds, "TS").sel(season="Abl"))
 
     print(fp.stem)
-    raw_fp = str(fp.stem).split('HEF_COSMO_1D20m_1999_2010_HORAYZON_LHSnoRRR_19990101-20091231_RRR-')[-1]
+    raw_fp = str(fp.stem).split('HEF_COSMO_1D20m_1999_2010_HORAYZON_IntpPRES_19990101-20091231_RRR-')[-1]
     rrr_factor = float(raw_fp.split('_')[0])
     alb_snow = float(raw_fp.split('_')[1])
     alb_ice = float(raw_fp.split('_')[2])
@@ -84,4 +84,4 @@ for fp in pathlib.Path(path).glob('*.nc'):
     results_list.append(result)
 
 results_df = pd.DataFrame(results_list)
-results_df.to_csv("/data/scratch/richteny/thesis/cosipy_test_space/LHSlowsnow_1D20m_1999_2010_EBfromLHS.csv")
+results_df.to_csv("/data/scratch/richteny/thesis/cosipy_test_space/LHS_1D20m_1999_2010_EBfromLHS.csv")

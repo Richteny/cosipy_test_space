@@ -58,7 +58,7 @@ def main():
 
 
     # Load TSL data
-    tsl_data_file_synth = "tsla_hef_cosmo_1d10m_1999_2010_horayzon_20000101-20001231_rrr-2.2_0.94_0.2_0.555_num.csv"
+    tsl_data_file_synth = "tsla_hef_cosmo_1d20m_1999_2010_horayzon_fullsynthtest_19990101-20091231_rrr-0.9_0.91_0.2_0.55_22.0_3.0_0.24_1.7_4.0_0.0026_num.csv"
     print("Loading TSL file from:", tsl_data_file_synth)
     tsla_synth = pd.read_csv(path_to_synth+tsl_data_file_synth)
     tsla_synth['time'] = pd.to_datetime(tsla_synth['time'])
@@ -77,14 +77,14 @@ def main():
     print(tsla_synth)
     
     # Load MB data
-    geod_synth = xr.open_dataset(path_to_synth+"HEF_COSMO_1D10m_1999_2010_HORAYZON_20000101-20001231_RRR-2.2_0.94_0.2_0.555_num.nc")
+    geod_synth = xr.open_dataset(path_to_synth+"HEF_COSMO_1D20m_1999_2010_HORAYZON_fullsynthtest_19990101-20091231_RRR-0.9_0.91_0.2_0.55_22.0_3.0_0.24_1.7_4.0_0.0026_num.nc")
     geod_synth = geod_synth.sel(time=slice(time_start,Config.time_end))
     geod_synth['weighted_mb'] = geod_synth['MB'] * geod_synth['N_Points'] / np.sum(geod_synth['N_Points'])
     spat_mean = geod_synth[['weighted_mb']].sum(dim=['lat','lon'])
     dfmb = spat_mean['weighted_mb'].to_dataframe()
     dfmb_ann = dfmb.resample("1Y").sum()
     geod_mb = np.nanmean(dfmb_ann['weighted_mb'].values)
-    
+    print("Target MB:", geod_mb)
     #use stdevs from observations
     
 
@@ -92,20 +92,20 @@ def main():
     count = 0
 
     ## Define cosipy function #dvector or matrix
-    #@as_op(itypes=[pt.dscalar, pt.dscalar, pt.dscalar, pt.dscalar, pt.dscalar, pt.dscalar], otypes=[pt.dscalar, pt.dvector])
-    @as_op(itypes=[pt.dscalar], otypes=[pt.dscalar, pt.dvector])
-    def run_cspy(rrr_factor): #, alb_ice, alb_snow, alb_firn, albedo_aging, albedo_depth):
+    @as_op(itypes=[pt.dscalar, pt.dscalar, pt.dscalar, pt.dscalar, pt.dscalar, pt.dscalar], otypes=[pt.dscalar, pt.dvector])
+    #@as_op(itypes=[pt.dscalar], otypes=[pt.dscalar, pt.dvector])
+    def run_cspy(rrr_factor, alb_ice, alb_snow, alb_firn, albedo_aging, albedo_depth):
         #params
         rrrfactor = rrr_factor
-        #albice = alb_ice
-        #albsnow = alb_snow
-        #albfirn = alb_firn
-        #albaging = albedo_aging
-        #albdepth = albedo_depth
+        albice = alb_ice
+        albsnow = alb_snow
+        albfirn = alb_firn
+        albaging = albedo_aging
+        albdepth = albedo_depth
         
         #start cosipy
-        modmb, modtsl = runcosipy(RRR_factor=rrrfactor, #, alb_ice=albice, alb_snow=albsnow, alb_firn=albfirn, albedo_aging=albaging,
-                                  count=count)  #albedo_depth=albdepth, count=count)
+        modmb, modtsl = runcosipy(RRR_factor=rrrfactor,  alb_ice=albice, alb_snow=albsnow, alb_firn=albfirn, albedo_aging=albaging,
+                                  albedo_depth=albdepth, count=count)
         print("Calculated MB is: ", modmb)
         return np.array([modmb]), modtsl['Med_TSL'].values
 
@@ -114,17 +114,17 @@ def main():
     with pm.Model() as model:
 
         # Defining priors for the model parameters to calibrate
-        rrr_factor = pm.TruncatedNormal('rrrfactor', mu=1, sigma=20, lower=0.33, upper=3)
-        #alb_snow = pm.TruncatedNormal('albsnow', mu=0.89, sigma=0.5, lower=0.71, upper=0.97)
-        #alb_ice = pm.TruncatedNormal('albice', mu=0.25, sigma=0.5, lower=0.1, upper=0.4)
-        #alb_firn = pm.TruncatedNormal('albfirn', mu=0.55, sigma=0.5, lower=0.41, upper=0.7)
-        #alb_aging = pm.TruncatedNormal('albaging', mu=14, sigma=50, lower=0.1, upper=31) #bound to positive, mu at Moelg value
-        #alb_depth = pm.TruncatedNormal('albdepth', mu=6, sigma=50, lower=0.1, upper=31) #see where this comes from
+        rrr_factor = pm.TruncatedNormal('rrrfactor', mu=0.865, sigma=0.233, lower=0.5, upper=1.28)
+        alb_snow = pm.TruncatedNormal('albsnow', mu=0.9, sigma=0.5, lower=0.887, upper=0.92)
+        alb_ice = pm.TruncatedNormal('albice', mu=0.18, sigma=0.5, lower=0.13, upper=0.23)
+        alb_firn = pm.TruncatedNormal('albfirn', mu=0.53, sigma=0.5, lower=0.41, upper=0.65)
+        alb_aging = pm.TruncatedNormal('albaging', mu=14, sigma=50, lower=1, upper=31) #bound to positive, mu at Moelg value
+        alb_depth = pm.TruncatedNormal('albdepth', mu=6, sigma=50, lower=1, upper=31) #see where this comes from
         print("Set priors.")
 
         #Get output of COSIPY
-        modmb, modtsl = run_cspy(rrr_factor) #, alb_ice, alb_snow, alb_firn, alb_aging, 
-                                 #alb_depth)
+        modmb, modtsl = run_cspy(rrr_factor, alb_ice, alb_snow, alb_firn, alb_aging, 
+                                 alb_depth)
 
 
         #Setup observations
@@ -144,22 +144,30 @@ def main():
         mb_obs = pm.Normal("mb_obs", mu=mu_mb, sigma=geod_ref['err_dmdtda'], observed=geod_data)
         tsl_obs = pm.Normal("tsl_obs", mu=mu_tsl, sigma=np.array(tsla_synth['Std_TSL']), observed=tsl_data, shape=mu_tsl.shape[0])
 
+        avg_tsl_logp = pm.math.sum(pm.logp(tsl_obs, tsl_data, mu=mu_tsl, sigma=np.array(tsla_synth['Std_TSL']))) / mu_tsl.shape[0]
+
+        potential = pm.Potential("avg_tsl_logps", avg_tsl_logp)
+        
+        #add zero constraint
+        zero_constraint = pm.math.eq(pm.math.sum(tsl_data), 0)
+        pottest = pm.Potential("tsl_nonzero_constraint", pm.math.switch(zero_constraint, -1e6, 0))
+        
         ## Setup sampler
-        #step = pm.Metropolis()
+        step = pm.Metropolis()
         #step = pm.Slice()
         
         # Define different initial values for each chain (6 chains in total)
-        initvals = [
-            {'rrrfactor': 0.6, 'albsnow': 0.75, 'albice': 0.2, 'albfirn': 0.5, 'albaging': 20, 'albdepth': 10},  # Initial values for chain 1
-            {'rrrfactor': 1.0, 'albsnow': 0.79, 'albice': 0.24, 'albfirn': 0.45, 'albaging': 2, 'albdepth': 16}, # Initial values for chain 2
-            {'rrrfactor': 0.4, 'albsnow': 0.72, 'albice': 0.3, 'albfirn': 0.55, 'albaging': 15, 'albdepth': 9},  # Initial values for chain 3
-            {'rrrfactor': 2.6, 'albsnow': 0.8, 'albice': 0.39, 'albfirn': 0.65, 'albaging': 7, 'albdepth': 3}, # Initial values for chain 4
-            {'rrrfactor': 1.6, 'albsnow': 0.9, 'albice': 0.34, 'albfirn': 0.6, 'albaging': 3, 'albdepth': 1},  # Initial values for chain 5
-            {'rrrfactor': 2.0, 'albsnow': 0.95, 'albice': 0.18, 'albfirn': 0.69, 'albaging': 25, 'albdepth': 30}, # Initial values for chain 6
-            ]
+        #initvals = [
+        #    {'rrrfactor': 0.6, 'albsnow': 0.75, 'albice': 0.2, 'albfirn': 0.5, 'albaging': 20, 'albdepth': 10},  # Initial values for chain 1
+        #    {'rrrfactor': 1.0, 'albsnow': 0.79, 'albice': 0.24, 'albfirn': 0.45, 'albaging': 2, 'albdepth': 16}, # Initial values for chain 2
+        #    {'rrrfactor': 0.4, 'albsnow': 0.72, 'albice': 0.3, 'albfirn': 0.55, 'albaging': 15, 'albdepth': 9},  # Initial values for chain 3
+        #    {'rrrfactor': 2.6, 'albsnow': 0.8, 'albice': 0.39, 'albfirn': 0.65, 'albaging': 7, 'albdepth': 3}, # Initial values for chain 4
+        #    {'rrrfactor': 1.6, 'albsnow': 0.9, 'albice': 0.34, 'albfirn': 0.6, 'albaging': 3, 'albdepth': 1},  # Initial values for chain 5
+        #    {'rrrfactor': 2.0, 'albsnow': 0.95, 'albice': 0.18, 'albfirn': 0.69, 'albaging': 25, 'albdepth': 30}, # Initial values for chain 6
+        #    ]
         #initvals = {'rrrfactor': 0.6, 'albsnow': 0.75, 'albice': 0.2, 'albfirn': 0.5, 'albaging': 20, 'albdepth': 10}
-        step = pm.DEMetropolisZ()
-        post = pm.sample(draws=2000, tune=200, step=step, return_inferencedata=True, chains=1, cores=1,
+        #step = pm.DEMetropolisZ()
+        post = pm.sample(draws=10000, tune=100, step=step, return_inferencedata=True, chains=1, cores=1,
                          progressbar=True, discard_tuned_samples=False) #initvals=initvals
 
         ## testing to save samples

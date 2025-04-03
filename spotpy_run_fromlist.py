@@ -47,7 +47,7 @@ if Config.tsl_normalize:
 obs = None
 
 ## Load parameter list ##
-param_list = pd.read_csv('/data/scratch/richteny/thesis/cosipy_test_space/lowsnow_manual_sens_params.csv')
+param_list = pd.read_csv('/data/scratch/richteny/thesis/cosipy_test_space/manual_sens_params_fullprior.csv')
 print(param_list.head(5))
 
 fromlist=True
@@ -135,7 +135,7 @@ class spot_setup:
             like = loglike_mb + loglike_tsla
         return like
 
-def psample(obs, rep=10, count=None, dbname='lowsnow_sens', dbformat="csv", algorithm='mc'):
+def psample(obs, rep=10, count=None, dbname='manualsens_full', dbformat="csv", algorithm='mc'):
     #try lhs which allows for multi-objective calibration which mcmc here does not
     #set seed to make results reproducable, -> for running from list only works with mc
     np.random.seed(42)
