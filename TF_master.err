@@ -1,0 +1,15 @@
+2025-03-12 18:07:53.764452: I external/local_xla/xla/tsl/cuda/cudart_stub.cc:32] Could not find cuda drivers on your machine, GPU will not be used.
+2025-03-12 18:07:53.768232: I external/local_xla/xla/tsl/cuda/cudart_stub.cc:32] Could not find cuda drivers on your machine, GPU will not be used.
+2025-03-12 18:07:53.778958: E external/local_xla/xla/stream_executor/cuda/cuda_fft.cc:477] Unable to register cuFFT factory: Attempting to register factory for plugin cuFFT when one has already been registered
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+E0000 00:00:1741799273.796347 1033168 cuda_dnn.cc:8310] Unable to register cuDNN factory: Attempting to register factory for plugin cuDNN when one has already been registered
+E0000 00:00:1741799273.801630 1033168 cuda_blas.cc:1418] Unable to register cuBLAS factory: Attempting to register factory for plugin cuBLAS when one has already been registered
+2025-03-12 18:07:53.820512: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+2025-03-12 18:08:19.000729: E external/local_xla/xla/stream_executor/cuda/cuda_driver.cc:152] failed call to cuInit: INTERNAL: CUDA error: Failed call to cuInit: UNKNOWN ERROR (303)
+/data/scratch/richteny/thesis/cosipy_test_space/run_NN_dailyTSLA.py:450: UserWarning: FigureCanvasAgg is non-interactive, and thus cannot be shown
+  plt.show()
+/data/scratch/richteny/thesis/cosipy_test_space/run_NN_dailyTSLA.py:569: UserWarning: FigureCanvasAgg is non-interactive, and thus cannot be shown
+  plt.show()
+/data/scratch/richteny/thesis/cosipy_test_space/run_NN_dailyTSLA.py:581: UserWarning: FigureCanvasAgg is non-interactive, and thus cannot be shown
+  plt.show()

@@ -63,15 +63,15 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
     if isinstance(count, int):
         count = count + 1
 
-    # these values crashed previously [array(2.74724189), array(0.25), array(0.84), array(0.555), array(1.1), array(1.1)]
-    #RRR_factor = float(1.05) #0.97 
-    #alb_ice = float(0.2)
-    #alb_snow = float(0.94)
-    #alb_firn = float(0.555)
-    #albedo_aging = float(23.0)
-    #albedo_depth = float(3.0)
+    # target geodetic 2000-2010 = -1.0425, unc= 0.26 == roughly -1.3 to -0.7825
+    #RRR_factor = float(0.51) #0.97 
+    #alb_ice = float(0.233) #range LHS after satellite 0.115  to 0.233
+    #alb_snow = float(0.93) #range LHS after satellite 0.887 to 0.93
+    #alb_firn = float(0.692) #range LHS after satellite 0.506 to 0.692
+    #albedo_aging = float(25.0) #range LHS 1 to 25
+    #albedo_depth = float(1.0) #range  LHS 1 to 15 the lower the more positive MB
     #roughness_fresh_snow = float(0.24) #0.03 (https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2022JD037032) to max 1.6 from Brock et al. 2006
-    #roughness_ice = float(1.7)
+    #roughness_ice = float(0.7) #range LHS 0.7 to 20 the lower the more positive MB
     #roughness_firn = float(4.0)
     #aging_factor_roughness = float(0.0026)
     opt_dict = (RRR_factor, alb_ice, alb_snow, alb_firn, albedo_aging, albedo_depth, center_snow_transfer_function,
@@ -166,17 +166,21 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
     output_netcdf = set_output_netcdf_path()
     output_path = create_data_directory(path='output')
     #version for parsed floats by hand here
-    results_output_name = output_netcdf.split('.nc')[0] + f"_RRR-{round(RRR_factor,4)}_{round(alb_snow,4)}_{round(alb_ice,4)}_{round(alb_firn,4)}"\
-                                                          f"_{round(albedo_aging,4)}_{round(albedo_depth,4)}_{round(roughness_fresh_snow,4)}"\
-                                                          f"_{round(roughness_ice,4)}_{round(roughness_firn,4)}_{round(aging_factor_roughness,6)}_num{count}.nc"
-    #item below only works when objects are arrays and not given by hand
-    #results_output_name = output_netcdf.split('.nc')[0] + f"_RRR-{round(RRR_factor.item(),4)}_{round(alb_snow.item(),4)}_{round(alb_ice.item(),4)}_{round(alb_firn.item(),4)}_num{count}.nc"
+    try:
+        results_output_name = output_netcdf.split('.nc')[0] + f"_RRR-{round(RRR_factor,4)}_{round(alb_snow,4)}_{round(alb_ice,4)}_{round(alb_firn,4)}"\
+                                                              f"_{round(albedo_aging,4)}_{round(albedo_depth,4)}_{round(roughness_fresh_snow,4)}"\
+                                                              f"_{round(roughness_ice,4)}_{round(roughness_firn,4)}_{round(aging_factor_roughness,6)}_num{count}.nc"
+    #item below only works when objects are arrays and not given by hand, parameters not taken from pymc or sorts are floats
+    except:
+        results_output_name = output_netcdf.split('.nc')[0] + f"_RRR-{round(RRR_factor.item(),4)}_{round(alb_snow.item(),4)}_{round(alb_ice.item(),4)}_{round(alb_firn.item(),4)}"\
+                                                              f"_{round(albedo_aging.item(),4)}_{round(albedo_depth.item(),4)}_{round(roughness_fresh_snow,4)}"\
+                                                              f"_{round(roughness_ice,4)}_{round(roughness_firn,4)}_{round(aging_factor_roughness,6)}_num{count}.nc"
 
     IO.get_result().to_netcdf(os.path.join(output_path,results_output_name), encoding=encoding, mode='w')
     
-    print(np.nanmax(IO.get_result().ALBEDO))
-    print(np.nanmin(IO.get_result().ALBEDO))
-    print(np.nanmax(IO.get_result().Z0))
+    #print(np.nanmax(IO.get_result().ALBEDO))
+    #print(np.nanmin(IO.get_result().ALBEDO))
+    #print(np.nanmax(IO.get_result().Z0))
 
     #Check if 1D or 2D
     times = datetime.now()
@@ -230,6 +234,7 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
         resampled_out['MASK'] = (('lat','lon'), IO.get_result()['MASK'].data)
 
         tsl_out = create_tsl_df(resampled_out, Config.min_snowheight, Config.tsl_method, Config.tsl_normalize)
+        print("Max. TSLA:", np.nanmax(tsl_out['Med_TSL'].values))
         tsl_out.to_csv(os.path.join(output_path, tsl_csv_name))
         tsla_stats = eval_tsl(tsla_observations,tsl_out, Config.time_col_obs, Config.tsla_col_obs)
         print("TSLA Observed vs. Modelled RMSE: " + str(tsla_stats[0])+ "; R-squared: " + str(tsla_stats[1]))
