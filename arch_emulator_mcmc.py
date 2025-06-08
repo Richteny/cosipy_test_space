@@ -24,7 +24,14 @@ path_snowlines = "/data/scratch/richteny/thesis/cosipy_test_space//data/input/HE
 
 tsl = pd.read_csv(path_snowlines, parse_dates=True, index_col="LS_DATE")
 tsl['SC_norm'] = (tsl['SC_stdev']) / (tsl['glacier_DEM_max'] - tsl['glacier_DEM_min'])
+thres_unc = (20) / (tsl['glacier_DEM_max'].iloc[0] - tsl['glacier_DEM_min'].iloc[0])
+print(thres_unc)
+
+## Set observational uncertainty where smaller to atleast model resolution (20m) and where larger keep it
+sc_norm = np.where(tsl['SC_norm'] < thres_unc, thres_unc, tsl['SC_norm'])
+tsl['SC_norm'] = sc_norm
 tsla_obs = tsl.loc["2000-01-01":"2010-01-01"]
+
 
 ## MB
 rgi_id = "RGI60-11.00897"
@@ -340,7 +347,7 @@ with pm.Model() as model:
     #alb_snow = pm.TruncatedNormal("albsnow", mu=0.907, sigma=0.1, lower=0.887, upper=0.93)
     #alb_ice = pm.TruncatedNormal("albice", mu=0.173, sigma=0.1, lower=0.115, upper=0.233)
     #alb_firn = pm.TruncatedNormal("albfirn", mu=0.593, sigma=0.1, lower=0.506, upper=0.692)
-    alb_aging = pm.TruncatedNormal("albaging", mu=11.15, sigma=9, lower=1, upper=25)
+    #alb_aging = pm.TruncatedNormal("albaging", mu=11.15, sigma=9, lower=1, upper=25)
     alb_depth = pm.TruncatedNormal("albdepth", mu=3, sigma=1.31, lower=1, upper=10)
     #roughness_ice = pm.TruncatedNormal("iceroughness", mu=9.875, sigma=9, lower=0.94, upper=20)
     
@@ -349,7 +356,7 @@ with pm.Model() as model:
     alb_snow = pt.constant(0.907)  # Mean of original distribution
     alb_ice = pt.constant(0.173)
     alb_firn = pt.constant(0.6)
-    #alb_aging = pt.constant(15)  # 6+3 from your original code
+    alb_aging = pt.constant(8)  # 6+3 from your original code
     roughness_ice = pt.constant(1.7)
     #alb_depth = pt.constant(8)
 
@@ -370,7 +377,7 @@ with pm.Model() as model:
     
     # Likelihood definitions
     mb_obs = pm.Normal("mb_obs", mu=mu_mb, sigma=geod_ref['err_dmdtda'], observed=geod_data)
-    tsl_obs = pm.Normal("tsl_obs", mu=mu_tsl, sigma=np.array(tsla_obs['SC_norm']*2), observed=tsl_data, shape=mu_tsl.shape[0])
+    tsl_obs = pm.Normal("tsl_obs", mu=mu_tsl, sigma=np.array(tsla_obs['SC_norm']), observed=tsl_data, shape=mu_tsl.shape[0])
     #tsl_obs = pm.Normal("tsl_obs", mu=mu_tsl, sigma=np.array([0.023697]), observed=tsl_data, shape=mu_tsl.shape[0])
     # Manually compute log-likelihoods
     loglike_mb = pm.logp(mb_obs, geod_data)  # Mass balance log-likelihood
@@ -391,9 +398,9 @@ with pm.Model() as model:
     step = pm.DEMetropolisZ()
     #step = pm.DEMetropolis()
     #step = pm.Metropolis()
-    initvals = [{'rrrfactor': 0.55, 'albaging': 1.2, 'albdepth': 1.2}, {'rrrfactor': 1.2, 'albaging': 24, 'albdepth': 8},
-                {'rrrfactor': 0.9, 'albaging': 12, 'albdepth': 6},{'rrrfactor': 0.7, 'albaging': 18, 'albdepth': 7}]
+    initvals = [{'rrrfactor': 0.55, 'albdepth': 1.2}, {'rrrfactor': 1.3,  'albdepth': 8},
+                {'rrrfactor': 0.9,  'albdepth': 6},{'rrrfactor': 0.7,  'albdepth': 5}]
 
-    post = pm.sample(draws=20000, tune=2000, step=step, initvals=initvals, return_inferencedata=True, chains=4, cores=1, progressbar=False) #discard_tuned_samples=False)
+    post = pm.sample(draws=10000, tune=1000, step=step, initvals=initvals, return_inferencedata=True, chains=4, cores=1, progressbar=False) #discard_tuned_samples=False)
     post.to_netcdf("/data/scratch/richteny/thesis/cosipy_test_space/simulations/emulator/simulations_HEF_emulator_MCMC_big.nc")
     

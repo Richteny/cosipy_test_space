@@ -66,10 +66,10 @@ zeni_thld = 89.0              # If you do not know the exact value for your loca
 #------------------------
 # Point model 
 #------------------------
-point_model = False
-plon = 90.64
-plat = 30.47
-hgt = 5665.0
+point_model = True
+plon = 46.790453 #90.64
+plat = 10.747121 #30.47
+hgt = 3048.0 #5665.0
 
 #------------------------
 # Interpolation arguments 

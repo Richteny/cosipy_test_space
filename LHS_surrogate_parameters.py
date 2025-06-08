@@ -46,6 +46,13 @@ tsla_obs.set_index('LS_DATE', inplace=True)
 if Config.tsl_normalize:
     tsla_obs['SC_stdev'] = (tsla_obs['SC_stdev']) / (tsla_obs['glacier_DEM_max'] - tsla_obs['glacier_DEM_min'])
 
+    thres_unc = (20) / (tsla_obs['glacier_DEM_max'].iloc[0] - tsla_obs['glacier_DEM_min'].iloc[0])
+    print(thres_unc)
+
+    ## Set observational uncertainty where smaller to atleast model resolution (20m) and where larger keep it
+    sc_norm = np.where(tsla_obs['SC_stdev'] < thres_unc, thres_unc, tsla_obs['SC_stdev'])
+    tsla_obs['SC_stdev'] = sc_norm
+
 obs = None
 
 # Number of iterations
@@ -56,13 +63,13 @@ class spot_setup:
     print("Setting parameters.")
     param = RRR_factor, alb_ice, alb_snow, alb_firn, albedo_aging, albedo_depth, roughness_ice = [
             #aging_factor_roughness, roughness_fresh_snow, roughness_ice = [
-        Uniform(low=np.log(0.51), high=np.log(1.98)), #1.235, high=1.265
+        Uniform(low=np.log(0.57), high=np.log(1.1422)), #1.235, high=1.265
         Uniform(low=0.115, high=0.233),
         Uniform(low=0.887, high=0.93),
-        Uniform(low=0.506, high=0.692),
-        Uniform(low=1, high=25),
-        Uniform(low=1, high=15),
-        Uniform(low=0.7, high=20)]
+        Uniform(low=0.506, high=0.685),
+        Uniform(low=3, high=25),
+        Uniform(low=1, high=13.0),
+        Uniform(low=0.96, high=20)]
         #Uniform(low=0.005, high=0.0026+0.0026),
         #Uniform(low=0.2, high=3.56),
         #Uniform(low=0.1, high=7.0)]
@@ -122,9 +129,9 @@ def psample(obs, count=None):
     #k = 9
     #par_iter = (1 + 4 * M ** 2 * (1 + (k -2) * d)) * k
     
-    rep= 3000
+    rep= 2500
     count=count
-    name = "LHS_parameters_full"
+    name = "LHS-narrow_parameters_full"
     setup = spot_setup(obs, count=count)
     sampler = spotpy.algorithms.lhs(setup, dbname=name, dbformat='csv', db_precision=np.float64, random_state=42, save_sim=True)
     sampler.sample(rep)

@@ -65,6 +65,8 @@ import netCDF4 as nc
 import numpy as np
 import pandas as pd
 import xarray as xr
+import sys
+sys.path.append("/data/scratch/richteny/thesis/cosipy_test_space/")
 
 import cosipy.modules.radCor as mod_radCor
 from cosipy.utilities.config_utils import UtilitiesConfig
@@ -340,11 +342,14 @@ def create_1D_input(cs_file, cosipy_file, static_file, start_date, end_date):
         if static_file:
             print(f"Read static file {static_file}\n")
             ds = xr.open_dataset(static_file)
-            ds = ds.sel(
-                lat=_cfg.points["plat"],
-                lon=_cfg.points["plon"],
-                method="nearest",
-            )
+            try:
+                ds = ds.sel(
+                    lat=_cfg.points["plat"],
+                    lon=_cfg.points["plon"],
+                    method="nearest",
+                )
+            except:
+                ds = ds
             ds.coords["lon"] = np.array([ds.lon.values])
             ds.coords["lat"] = np.array([ds.lat.values])
 

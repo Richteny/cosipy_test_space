@@ -201,8 +201,12 @@ def set_bias_local(
         altitude: The height difference between a location and sensor.
         limit: If True, set negative values to zero. Default True.
     """
-
-    biased_data = data + altitude * lapse_rate
+    #print("Using adjusted bias calc. with the following arguments", altitude[0], lapse_rate)
+    biased_data = np.where(data > 0, data + altitude * lapse_rate, 0)
+    #biased_data2 = data + altitude * lapse_rate
+    #abs_diff = np.abs(biased_data - biased_data2)
+    #if np.any(abs_diff > 0):
+    #    print("AHA!", np.nanmax(abs_diff))
     if limit:
         biased_data = np.maximum(biased_data, 0.0)
 
@@ -673,12 +677,16 @@ def create_2D_input(
             )
 
         if _cfg.names["SNOWFALL_var"] in df:
+            #print(SNOWFALL_interp[t, :, :])
             SNOWFALL_interp[t, :, :] = set_bias_local(
                 data=SNOWFALL[t],
+                #lapse_rate=0.0,
                 lapse_rate=lapse_SF[t],
                 altitude=altitude,
                 limit=True,
             )
+            #SNOWFALL_interp[t, :, :] = SNOWFALL[t]
+            print(SNOWFALL_interp[t,:,:])
 
         if _cfg.names["LWin_var"] in df:
             #LW_interp[t, :, :] = LW[t]
@@ -696,6 +704,7 @@ def create_2D_input(
             SNOWFALL_interp[t,:,:] = SNOWFALL_interp[t,:,:] * f_snow[t,:,:]
 
         if _cfg.lapse['overwrite_sf_tp'] is True:
+            print("Overwrite.")
             #overwrite snowfall field
             f_snow[t,:,:] = 0.5 * (-np.tanh((T_interp[t,:,:] - zero_temperature - center_snow_transfer) * spread_snow) + 1.0)
             SNOWFALL_interp[t,:,:] = 0
@@ -913,6 +922,7 @@ def create_2D_input(
         add_variable_along_timelatlon(ds=dso, var=RRR_interp, **get_variable_metadata("RRR"))
         del RRR_interp
     if _cfg.names["SNOWFALL_var"] in df:
+        print(SNOWFALL_interp)
         add_variable_along_timelatlon(ds=dso, var=SNOWFALL_interp, **get_variable_metadata("SNOWFALL"))
         del SNOWFALL_interp
     if _cfg.names["LWin_var"] in df:

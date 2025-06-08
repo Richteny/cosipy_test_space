@@ -7,13 +7,16 @@ path = "/data/scratch/richteny/for_emulator/"
 # ============ Init Value Generation =============
 def generate_initvals(N):
     priors = {
-	'rrrfactor': (0.5738, 1.29),
+	'rrrfactor': (0.6218, 0.9419),
+        #'rrrfactor': (0.1, 0.7),
         'albsnow': (0.887, 0.93),
-        'albice': (0.115, 0.233),
-        'albfirn': (0.5, 0.692),
-        'albaging': (2, 25),
-        'albdepth': (1, 14),
-        'iceroughness': (0.92, 20),
+        'albice': (0.118, 0.232),
+        'albfirn': (0.51, 0.69),
+        'albaging': (3, 12),
+#        'albaging': (7.37, 24.76),
+        'albdepth': (1.08, 10.753),
+        'iceroughness': (1.22, 19.52),
+#        'centersnow': (-3, 2) #option
     }
 
     param_names = list(priors.keys())
@@ -31,5 +34,5 @@ def generate_initvals(N):
 
 ## Make sure that bounds, number of chains etc. are aligned with main script!!
 initvals = generate_initvals(20)
-with open(path+"initvals.pkl", "wb") as f:
+with open(path+"albaging_initvals.pkl", "wb") as f: #adjust
     pickle.dump(initvals, f)

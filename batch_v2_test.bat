@@ -1,6 +1,6 @@
 #!/bin/bash -l
 
-#SBATCH --job-name="emulator_mcmc"
+#SBATCH --job-name="surrogate_mcmc"
 #SBATCH --output=logs/mcmc_%A_%a.out
 #SBATCH --qos=medium
 #SBATCH --error=logs/mcmc_%A_%a.err
@@ -17,5 +17,5 @@
 conda activate pymc_env
 
 #python -u emulator_test_mcmc.py ${SLURM_ARRAY_TASK_ID}
-#python -u point_emulator_test_mcmc.py ${SLURM_ARRAY_TASK_ID}
-python -u emulator_testsyserr_mcmc.py ${SLURM_ARRAY_TASK_ID}
+python -u point_emulator_v2_test.py ${SLURM_ARRAY_TASK_ID}
+#python -u emulator_testsyserr_mcmc.py ${SLURM_ARRAY_TASK_ID}
