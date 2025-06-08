@@ -52,7 +52,7 @@ time_features_alb = np.stack([np.sin(2 * np.pi * doy_alb / 365), np.cos(2 * np.p
 # Subset parameters
 param_data = params.drop(['center_snow_transfer', 'spread_snow_transfer','roughness_fresh_snow', 'roughness_firn','aging_factor_roughness'], axis=1)
 scaler = StandardScaler()
-scaler.fit(param_data.drop(['mb'] + [c for c in param_data.columns if 'sim' in c], axis=1))
+scaler.fit(param_data.drop(['mb'] + [c for c in param_data.columns if 'sim' in c], axis=1).values)
 
 # ============ Emulator Interface =============
 def tsl_emulator_input(param_values):
@@ -72,10 +72,14 @@ def run_emulators(param_stack):
 
     # Extract outputs
     mass_balance_pred = predictions[0].flatten()
+    #filtered indices to exclude
+    #to_exclude_filter = [4,7,9,18,21,24,29,32,39,40,45,49,52,53,55,57,60,62,69,77,78]
     snowlines_pred = predictions[1].flatten()
     albedos_pred = predictions[2].flatten()
 
     mod_mb = np.array(mass_balance_pred, dtype=np.float64)
+    #amod_tsl = np.array(snowlines_pred, dtype=np.float64)
+    #mod_tsl = np.delete(amod_tsl, to_exclude_filter) #extra 
     mod_tsl = np.array(snowlines_pred, dtype=np.float64)
     mod_alb = np.array(albedos_pred, dtype=np.float64)
     
@@ -110,7 +114,8 @@ def generate_initvals(N):
 if __name__ == "__main__":
     chain_id = int(sys.argv[1])
     #initvals = generate_initvals(20)
-    with open(path+"initvals.pkl", "rb") as f:
+    #with open(path+"initvals.pkl", "rb") as f:
+    with open (path+"albaging_initvals.pkl", "rb") as f:
         initvals = pickle.load(f)
 
     initval = initvals[chain_id]
@@ -118,16 +123,34 @@ if __name__ == "__main__":
     model_full = tf.keras.models.load_model(path + "first_test.keras")
 
     with pm.Model() as model:
-        rrr = pm.TruncatedNormal('rrrfactor', mu=0.84, sigma=0.13, lower=0.5738, upper=1.29)
-        snow = pm.TruncatedNormal("albsnow", mu=0.907, sigma=0.1, lower=0.887, upper=0.93)
-        ice = pm.TruncatedNormal("albice", mu=0.173, sigma=0.1, lower=0.115, upper=0.233)
-        firn = pm.TruncatedNormal("albfirn", mu=0.593, sigma=0.1, lower=0.5, upper=0.692)
-        aging = pm.TruncatedNormal("albaging", mu=14.37, sigma=9, lower=2, upper=25)
-        depth = pm.TruncatedNormal("albdepth", mu=6.07, sigma=3.53, lower=1, upper=14)
-        rough = pm.TruncatedNormal("iceroughness", mu=9.875, sigma=9, lower=0.92, upper=20)
+        #rrr = pm.TruncatedNormal('rrrfactor', mu=0.769, sigma=0.08, lower=0.6218, upper=0.9419)
+        rrr = pm.TruncatedNormal('rrrfactor', mu=0.77, sigma=0.1, lower=0.6218, upper=0.9419)
+        snow = pm.TruncatedNormal("albsnow", mu=0.9065, sigma=0.1, lower=0.887, upper=0.93)
+        #test snow = pm.TruncatedNormal("albsnow", mu=0.9065, sigma=0.15, lower=0.75, upper=0.98)
+        ice = pm.TruncatedNormal("albice", mu=0.1807, sigma=0.1, lower=0.118, upper=0.232)
+        firn = pm.TruncatedNormal("albfirn", mu=0.6155, sigma=0.1, lower=0.50, upper=0.69)
+        #aging = pm.TruncatedNormal("albaging", mu=17.33, sigma=5.23, lower=7.37, upper=24.76)
+        aging = pm.TruncatedNormal("albaging", mu=5, sigma=5.23, lower=3, upper=12)
+        #test aging = pm.TruncatedNormal("albaging", mu=15.33, sigma=10, lower=2, upper=25)
+        depth = pm.TruncatedNormal("albdepth", mu=3.99, sigma=2.451, lower=1.0, upper=10.753)
+        rough = pm.TruncatedNormal("iceroughness", mu=8.9, sigma=9, lower=1.22, upper=19.52)
+
+        # Define fixed values for the other parameters
+        #rrr_factor = pt.constant(0.88)
+        #alb_snow = pt.constant(0.927)  # Mean of original distribution
+        #alb_ice = pt.constant(0.18) #mean of 3sigma ensemble
+        #alb_firn = pt.constant(0.6)
+        #alb_aging = pt.constant(15)  # 6+3 from your original code
+        #roughness_ice = pt.constant(1.7)
+        #alb_depth = pt.constant(3)
 
         #Setup observations
         geod_data = pm.Data('geod_data', np.array([geod_ref['dmdtda']]))
+        #filtered tsla
+        #to_exclude_filter = [4,7,9,18,21,24,29,32,39,40,45,49,52,53,55,57,60,62,69,77,78]
+        #filt_tsla = np.delete(tsla_obs['TSL_normalized'].values,to_exclude_filter)
+        #filt_tsla_sigma = np.delete(tsla_obs['SC_norm'].values, to_exclude_filter) 
+        #tsl_data = pm.Data('tsl_data', filt_tsla) 
         tsl_data = pm.Data('tsl_data', np.array(tsla_obs['TSL_normalized']))
         alb_data = pm.Data('alb_data', np.array(alb_obs_data['mean_albedo'].values))
 
@@ -142,8 +165,9 @@ if __name__ == "__main__":
         # Likelihood definitions
         mb_obs = pm.Normal("mb_obs", mu=mu_mb, sigma=geod_ref['err_dmdtda'], observed=geod_data)
         tsl_obs = pm.Normal("tsl_obs", mu=mu_tsl, sigma=np.array(tsla_obs['SC_norm']), observed=tsl_data, shape=mu_tsl.shape[0])
+        #tsl_obs = pm.Normal("tsl_obs", mu=mu_tsl, sigma=filt_tsla_sigma, observed=tsl_data, shape=mu_tsl.shape[0])
         alb_obs = pm.Normal("alb_obs", mu=mu_alb, sigma=np.array(alb_obs_data['sigma_albedo'].values), observed=alb_data, shape=mu_alb.shape[0])
-        #tsl_obs = pm.Normal("tsl_obs", mu=mu_tsl, sigma=np.array([0.023697]), observed=tsl_data, shape=mu_tsl.shape[0])
+
         # Manually compute log-likelihoods
         loglike_mb = pm.logp(mb_obs, geod_data)  # Mass balance log-likelihood
         loglike_tsl = pm.logp(tsl_obs, tsl_data).mean() # Snowline log-likelihood (vector)
@@ -153,7 +177,7 @@ if __name__ == "__main__":
         # Standardize log-likelihoods using LHS-derived stats
         # ------------------------------------------------------------------------------
         loglike_mb_std = (loglike_mb - median_mb) / std_mb
-        loglike_tsl_std = (loglike_tsl - median_tsl) / std_tsl
+        loglike_tsl_std = ((loglike_tsl - median_tsl) / std_tsl)
         loglike_alb_std = (loglike_alb - median_alb) / std_alb
 
         # ------------------------------------------------------------------------------
@@ -171,9 +195,9 @@ if __name__ == "__main__":
         pm.Potential("balanced_loglike", total_loglike)
 
         step = pm.DEMetropolisZ()
-        #step = pm.DEMetropolis()
+        ##step = pm.DEMetropolis()
         #step = pm.Metropolis()
 
-        trace = pm.sample(draws=10000, tune=1000, chains=1, cores=1, initvals=[initval], step=step, discard_tuned_samples=True, return_inferencedata=True)
+        trace = pm.sample(draws=100000, tune=10000, chains=1, cores=1, initvals=[initval], step=step, discard_tuned_samples=True, return_inferencedata=True, progressbar=False)
         trace.to_netcdf(f"{outpath}/chain_{chain_id}.nc")
 

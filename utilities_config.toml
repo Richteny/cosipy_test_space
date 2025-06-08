@@ -41,9 +41,9 @@ delimiter = ','
 
 [aws2cosipy.points]
 point_model = false #false
-plon = 90.64
-plat = 30.47
-hgt = 5665.0
+plon = 46.790453 #90.64
+plat = 10.747121 #30.47
+hgt = 3048.0 #5665.0
 
 [aws2cosipy.station]
 stationName = 'HEF'
@@ -55,10 +55,10 @@ lapse_T = -0.0065  # Temp K per  m
 lapse_RH = 0.000  # RH % per m (0 to 1)
 lapse_RRR = 0.0000  # mm per m
 lapse_SNOWFALL = 0.0000  # Snowfall % per m (0 to 1)
-sf_temp_fix = true
+sf_temp_fix = true #true
 center_snow = 1.5553
 spread_snow = 1.0
-overwrite_sf_tp = false 
+overwrite_sf_tp = true #false 
 
 # CREATE STATIC FILE
 [create_static.paths]

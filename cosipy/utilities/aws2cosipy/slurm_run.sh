@@ -39,7 +39,11 @@ cd /data/scratch/richteny/thesis/cosipy_test_space/
 # 1D below
 
 #python ./cosipy/utilities/aws2cosipy/cosmo2cosipy.py -i "./data/input/HEF/COSMO_forcing_1999-2010_PRESintp.csv" -o ./data/input/HEF/HEF_COSMO_1D10m_mean_HORAYZON_1999_2001_IntpPRES_nosfcor.nc -s ./data/static/HEF/HEF_static_1D10m_new.nc -b 19990101 -e 20010101 --sw ./data/static/HEF/HEF_HORAYZON-LUT_mean_1D10m.nc
-python ./cosipy/utilities/aws2cosipy/cosmo2cosipy.py -i "./data/input/HEF/COSMO_forcing_1999-2010_PRESintp.csv" -o ./data/input/HEF/HEF_COSMO_1D20m_HORAYZON_1999_2010_IntpPRES.nc -s ./data/static/HEF/HEF_static_1D20m_new.nc -b 19990101 -e 20100101 --sw ./data/static/HEF/HEF_HORAYZON-LUT_1D20m.nc
+python ./cosipy/utilities/aws2cosipy/cosmo2cosipy.py -i "./data/input/HEF/COSMO_forcing_1999-2010_PRESintp.csv" -o ./data/input/HEF/HEF_COSMO_1D20m_HORAYZON_1999_2010_IntpPRES_SFadj2.nc -s ./data/static/HEF/HEF_static_1D20m_new.nc -b 19990101 -e 20100101 --sw ./data/static/HEF/HEF_HORAYZON-LUT_1D20m.nc
 #python ./cosipy/utilities/aws2cosipy/cosmo2cosipy.py -i "./data/input/HEF/COSMO_forcing_1999-2010_PRESintp.csv" -o ./data/input/HEF/HEF_COSMO_1D30m_HORAYZON_1999_2001_IntpPRES_nosfcor.nc -s ./data/static/HEF/HEF_static_1D30m_new.nc -b 19990101 -e 20010101 --sw ./data/static/HEF/HEF_HORAYZON-LUT_1D30m.nc
 #python ./cosipy/utilities/aws2cosipy/cosmo2cosipy.py -i "./data/input/HEF/COSMO_forcing_1999-2010_PRESintp.csv" -o ./data/input/HEF/HEF_COSMO_1D50m_HORAYZON_1999_2001_IntpPRES_nosfcor.nc -s ./data/static/HEF/HEF_static_1D50m_new.nc -b 19990101 -e 20010101 --sw ./data/static/HEF/HEF_HORAYZON-LUT_1D50m.nc
 #python ./cosipy/utilities/aws2cosipy/cosmo2cosipy.py -i "./data/input/HEF/COSMO_forcing_1999-2010_PRESintp.csv" -o ./data/input/HEF/HEF_COSMO_1D100m_HORAYZON_1999_2001_IntpPRES_nosfcor.nc -s ./data/static/HEF/HEF_static_1D100m_new.nc -b 19990101 -e 20010101 --sw ./data/static/HEF/HEF_HORAYZON-LUT_1D100m.nc
+
+# Point scale
+#python ./cosipy/utilities/aws2cosipy/aws2cosipy.py -i "./data/input/HEF/cosipy_forcing_upper_station.csv" -o ./data/input/HEF/HEF_AWSU_2002-2004_RFpr.nc -s ./data/static/HEF/HEF_static_30m_AWSpoint.nc -b 20020901 -e 20040930
+

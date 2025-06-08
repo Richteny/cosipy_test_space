@@ -64,14 +64,14 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
         count = count + 1
 
     # target geodetic 2000-2010 = -1.0425, unc= 0.26 == roughly -1.3 to -0.7825
-    #RRR_factor = float(0.51) #0.97 
-    #alb_ice = float(0.233) #range LHS after satellite 0.115  to 0.233
-    #alb_snow = float(0.93) #range LHS after satellite 0.887 to 0.93
-    #alb_firn = float(0.692) #range LHS after satellite 0.506 to 0.692
-    #albedo_aging = float(25.0) #range LHS 1 to 25
-    #albedo_depth = float(1.0) #range  LHS 1 to 15 the lower the more positive MB
+    #RRR_factor = float(0.741) #0.97 
+    #alb_ice = float(0.2153) #range LHS after satellite 0.115  to 0.233
+    #alb_snow = float(0.916) #range LHS after satellite 0.887 to 0.93
+    #alb_firn = float(0.566) #range LHS after satellite 0.506 to 0.692
+    #albedo_aging = float(15.6) #range LHS 1 to 25
+    #albedo_depth = float(3.0) #range  LHS 1 to 15 the lower the more positive MB
     #roughness_fresh_snow = float(0.24) #0.03 (https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2022JD037032) to max 1.6 from Brock et al. 2006
-    #roughness_ice = float(0.7) #range LHS 0.7 to 20 the lower the more positive MB
+    #roughness_ice = float(1.7) #range LHS 0.7 to 20 the lower the more positive MB
     #roughness_firn = float(4.0)
     #aging_factor_roughness = float(0.0026)
     opt_dict = (RRR_factor, alb_ice, alb_snow, alb_firn, albedo_aging, albedo_depth, center_snow_transfer_function,

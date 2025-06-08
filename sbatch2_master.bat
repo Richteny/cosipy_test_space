@@ -1,15 +1,15 @@
 #!/bin/bash -l
 
 #SBATCH --job-name="HEF-PyMC"
-#SBATCH --qos=long
-#SBATCH --nodes=1
+##SBATCH --qos=long
+#SBATCH --nodes=4
 #SBATCH --ntasks-per-node=20
 ##SBATCH --ntasks=40
 #SBATCH --chdir=/data/scratch/richteny/thesis/cosipy_test_space/
 #SBATCH --account=morsanat
 #SBATCH --error=Control_master2.err
 ##SBATCH --reservation=PyMC
-#SBATCH --partition=computehm
+##SBATCH --partition=computehm
 #SBATCH --output=Control_master2.out
 ##SBATCH --mail-type=ALL
 
@@ -32,4 +32,4 @@ conda activate pymc_env
 #python -u /data/scratch/richteny/thesis/cosipy_test_space/LHS_synth_surrogate_params.py
 #python -u /data/scratch/richteny/thesis/cosipy_test_space/EMERGENCY_pymc_calibration.py
 
-python -u /data/scratch/richteny/thesis/cosipy_test_space/emulator_mcmc.py
+python -u /data/scratch/richteny/thesis/cosipy_test_space/emulator_easy_mcmc.py
