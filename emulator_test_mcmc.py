@@ -19,18 +19,18 @@ outpath = "/data/scratch/richteny/thesis/cosipy_test_space/simulations/emulator/
 
 # Input
 params = pd.read_csv("/data/scratch/richteny/thesis/cosipy_test_space/simulations/LHS-narrow_1D20m_1999_2010_fullprior.csv", index_col=0)
-path_snowlines = "/data/scratch/richteny/thesis/cosipy_test_space/data/input/HEF/snowlines/HEF-snowlines-1999-2010_manual.csv"
+path_snowlines = "/data/scratch/richteny/thesis/cosipy_test_space/data/input/HEF/snowlines/HEF-snowlines-1999-2010_manual_filtered.csv"
 path_to_geodetic = "/data/scratch/richteny/Hugonnet_21_MB/dh_11_rgi60_pergla_rates.csv"
 alb_obs_data = xr.open_dataset("/data/scratch/richteny/Ren_21_Albedo/HEF_processed_HRZ-20CC-filter_albedos.nc")
 
 # Load emulator statistics
 with open(path+"loglike_stats.pkl", "rb") as f:
     all_stats = pickle.load(f)
-median_mb = all_stats["mass"]["median"]
+median_mb = all_stats["mass"]["mean"]
 std_mb = all_stats["mass"]["std"]
-median_tsl = all_stats["snow"]["median"]
+median_tsl = all_stats["snow"]["mean"]
 std_tsl = all_stats["snow"]["std"]
-median_alb = all_stats["albedo"]["median"]
+median_alb = all_stats["albedo"]["mean"]
 std_alb = all_stats["albedo"]["std"]
 
 # Normalize and preprocess snowline
@@ -114,8 +114,8 @@ def generate_initvals(N):
 if __name__ == "__main__":
     chain_id = int(sys.argv[1])
     #initvals = generate_initvals(20)
-    #with open(path+"initvals.pkl", "rb") as f:
-    with open (path+"albaging_initvals.pkl", "rb") as f:
+    with open(path+"initvals.pkl", "rb") as f:
+    #with open (path+"albaging_initvals.pkl", "rb") as f:
         initvals = pickle.load(f)
 
     initval = initvals[chain_id]
@@ -123,16 +123,14 @@ if __name__ == "__main__":
     model_full = tf.keras.models.load_model(path + "first_test.keras")
 
     with pm.Model() as model:
-        #rrr = pm.TruncatedNormal('rrrfactor', mu=0.769, sigma=0.08, lower=0.6218, upper=0.9419)
-        rrr = pm.TruncatedNormal('rrrfactor', mu=0.77, sigma=0.1, lower=0.6218, upper=0.9419)
-        snow = pm.TruncatedNormal("albsnow", mu=0.9065, sigma=0.1, lower=0.887, upper=0.93)
+        rrr = pm.TruncatedNormal('rrrfactor', mu=0.75, sigma=0.1, lower=0.633, upper=0.897)
+        snow = pm.TruncatedNormal("albsnow", mu=0.908, sigma=0.1, lower=0.887, upper=0.93)
         #test snow = pm.TruncatedNormal("albsnow", mu=0.9065, sigma=0.15, lower=0.75, upper=0.98)
-        ice = pm.TruncatedNormal("albice", mu=0.1807, sigma=0.1, lower=0.118, upper=0.232)
-        firn = pm.TruncatedNormal("albfirn", mu=0.6155, sigma=0.1, lower=0.50, upper=0.69)
-        #aging = pm.TruncatedNormal("albaging", mu=17.33, sigma=5.23, lower=7.37, upper=24.76)
-        aging = pm.TruncatedNormal("albaging", mu=5, sigma=5.23, lower=3, upper=12)
+        ice = pm.TruncatedNormal("albice", mu=0.1767, sigma=0.1, lower=0.117, upper=0.232)
+        firn = pm.TruncatedNormal("albfirn", mu=0.60, sigma=0.1, lower=0.51, upper=0.683)
+        aging = pm.TruncatedNormal("albaging", mu=16.44, sigma=5.2, lower=6, upper=24.8)
         #test aging = pm.TruncatedNormal("albaging", mu=15.33, sigma=10, lower=2, upper=25)
-        depth = pm.TruncatedNormal("albdepth", mu=3.99, sigma=2.451, lower=1.0, upper=10.753)
+        depth = pm.TruncatedNormal("albdepth", mu=2.1, sigma=1.0, lower=1.0, upper=10.753)
         rough = pm.TruncatedNormal("iceroughness", mu=8.9, sigma=9, lower=1.22, upper=19.52)
 
         # Define fixed values for the other parameters
@@ -146,13 +144,8 @@ if __name__ == "__main__":
 
         #Setup observations
         geod_data = pm.Data('geod_data', np.array([geod_ref['dmdtda']]))
-        #filtered tsla
-        #to_exclude_filter = [4,7,9,18,21,24,29,32,39,40,45,49,52,53,55,57,60,62,69,77,78]
-        #filt_tsla = np.delete(tsla_obs['TSL_normalized'].values,to_exclude_filter)
-        #filt_tsla_sigma = np.delete(tsla_obs['SC_norm'].values, to_exclude_filter) 
-        #tsl_data = pm.Data('tsl_data', filt_tsla) 
         tsl_data = pm.Data('tsl_data', np.array(tsla_obs['TSL_normalized']))
-        alb_data = pm.Data('alb_data', np.array(alb_obs_data['mean_albedo'].values))
+        alb_data = pm.Data('alb_data', np.array(alb_obs_data['median_albedo'].values))
 
         param_values = pm.math.stack([rrr, ice, snow, firn, aging, depth, rough], axis=0).reshape((1, 7))
         modmb, modtsl, modalb = run_emulators(param_values)
@@ -165,7 +158,6 @@ if __name__ == "__main__":
         # Likelihood definitions
         mb_obs = pm.Normal("mb_obs", mu=mu_mb, sigma=geod_ref['err_dmdtda'], observed=geod_data)
         tsl_obs = pm.Normal("tsl_obs", mu=mu_tsl, sigma=np.array(tsla_obs['SC_norm']), observed=tsl_data, shape=mu_tsl.shape[0])
-        #tsl_obs = pm.Normal("tsl_obs", mu=mu_tsl, sigma=filt_tsla_sigma, observed=tsl_data, shape=mu_tsl.shape[0])
         alb_obs = pm.Normal("alb_obs", mu=mu_alb, sigma=np.array(alb_obs_data['sigma_albedo'].values), observed=alb_data, shape=mu_alb.shape[0])
 
         # Manually compute log-likelihoods

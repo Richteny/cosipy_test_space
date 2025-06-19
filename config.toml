@@ -11,7 +11,7 @@ time_end = "2009-12-31T23:00"
 data_path = "./data/"
 input_netcdf = "HEF/HEF_COSMO_1D20m_HORAYZON_1999_2010_IntpPRES.nc"
 #input_netcdf = "HEF/HEF_AWSU_2002-2004_RFpr.nc"
-output_prefix = "HEF_COSMO_1D20m_1999_2010_HORAYZON_IntpPRES_LHS-narrow" #"HEF_COSMO_1D20m_1999_2010_HORAYZON_IntpPRES"
+output_prefix = "HEF_COSMO_1D20m_1999_2010_HORAYZON_IntpPRES_MCMC-ensemble" #"HEF_COSMO_1D20m_1999_2010_HORAYZON_IntpPRES"
 #output_prefix = "HEF_AWSU_Point_2002-2004_LHS"
 
 [RESTART]
@@ -29,7 +29,7 @@ time_start_cali = "2000-01-01T00:00"
 time_end_cali = "2009-12-31T23:00"
 tsl_evaluation = true #true
 write_csv_status = true #true
-csv_filename = "LHS-narrow_1D20m_1999_2010_fullprior.csv"
+csv_filename = "MCMC-ensemble_1D20m_1999_2010.csv"
 time_col_obs = "LS_DATE"
 tsla_col_obs = "TSL_normalized"
 min_snowheight = 0.001 #1mm
