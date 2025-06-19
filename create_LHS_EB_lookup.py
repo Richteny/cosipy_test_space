@@ -48,7 +48,7 @@ for fp in pathlib.Path(path).glob('*.nc'):
     abl_ts = float(sum_eb_season(ds, "TS").sel(season="Abl"))
 
     print(fp.stem)
-    raw_fp = str(fp.stem).split('HEF_COSMO_1D20m_1999_2010_HORAYZON_IntpPRES_LHS-wide_19990101-20091231_RRR-')[-1]
+    raw_fp = str(fp.stem).split('HEF_COSMO_1D20m_1999_2010_HORAYZON_IntpPRES_LHS-narrow_19990101-20091231_RRR-')[-1]
     rrr_factor = float(raw_fp.split('_')[0])
     alb_snow = float(raw_fp.split('_')[1])
     alb_ice = float(raw_fp.split('_')[2])
