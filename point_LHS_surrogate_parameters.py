@@ -15,6 +15,7 @@ from cosipy.constants import Constants
 from point_COSIPY import main as runcosipy
 #from constants import * #old files and importing with * not good
 #from config import *
+import gc
 import random
 
 #initiate config and constants
@@ -26,7 +27,7 @@ observed = pd.read_csv("/data/scratch/richteny/thesis/cosipy_test_space/data/inp
                        parse_dates=True, index_col="time")
 unc_lwo = 15 #Wm-2
 unc_alb = 0.05 
-unc_sfc = 0.03
+unc_sfc = 0.12
 obs = None
 
 # Number of iterations
@@ -37,14 +38,14 @@ class spot_setup:
     print("Setting parameters.")
     param = RRR_factor, alb_ice, alb_snow, alb_firn, albedo_aging, albedo_depth, roughness_ice, center_snow_transfer_function = [
             #aging_factor_roughness, roughness_fresh_snow, roughness_ice = [
-        Uniform(low=np.log(0.1), high=np.log(0.8)), #1.235, high=1.265
-        Uniform(low=0.115, high=0.233),
-        Uniform(low=0.887, high=0.93),
-        Uniform(low=0.506, high=0.692),
-        Uniform(low=2, high=25),
-        Uniform(low=1, high=14.2),
-        Uniform(low=0.9, high=20),
-        Uniform(low=-3.0, high=2.0)]
+        Uniform(low=np.log(0.3), high=np.log(0.9)), #1.235, high=1.265
+        Uniform(low=0.115, high=0.263),
+        Uniform(low=0.887, high=0.94),
+        Uniform(low=0.46, high=0.692),
+        Uniform(low=1, high=25),
+        Uniform(low=0.9, high=14.2),
+        Uniform(low=0.7, high=20),
+        Uniform(low=-1.0, high=2.5)]
         #Uniform(low=0.005, high=0.0026+0.0026),
         #Uniform(low=0.2, high=3.56),
         #Uniform(low=0.1, high=7.0)]
@@ -53,14 +54,23 @@ class spot_setup:
         self.obj_func = obj_func
         self.obs = obs
         self.trueObs = []
-        self.count = 1
+        self.count = count
         print("Initialised.")
 
     def simulation(self, x):
+        if isinstance(self.count,int):
+            self.count += 1
         print("Count", self.count)
-        sim_lwo, sim_alb, sim_sfc = runcosipy(RRR_factor=np.exp(x.RRR_factor), alb_ice = x.alb_ice, alb_snow = x.alb_snow, alb_firn = x.alb_firn,
-                   albedo_aging = x.albedo_aging, albedo_depth = x.albedo_depth, roughness_ice = x.roughness_ice, center_snow_transfer_function = x.center_snow_transfer_function, #aging_factor_roughness = x.aging_factor_roughness,
-                   count=self.count) #roughness_fresh_snow = x.roughness_fresh_snow, roughness_ice = x.roughness_ice, count=self.count)
+        try:
+            sim_lwo, sim_alb, sim_sfc = runcosipy(RRR_factor=np.exp(x.RRR_factor), alb_ice = x.alb_ice, alb_snow = x.alb_snow, alb_firn = x.alb_firn,
+                       albedo_aging = x.albedo_aging, albedo_depth = x.albedo_depth, roughness_ice = x.roughness_ice, center_snow_transfer_function = x.center_snow_transfer_function, #aging_factor_roughness = x.aging_factor_roughness,
+                       count=self.count) #roughness_fresh_snow = x.roughness_fresh_snow, roughness_ice = x.roughness_ice, count=self.count)
+        except Exception as e:
+            print(f"Simulation failed at count {self.count} with error: {e}")
+            return (np.nan, np.nan, np.nan)
+        finally:
+            gc.collect()  # Force garbage collection to avoid memory leaks
+
         #sim_tsla = sim_tsla[sim_tsla['time'].isin(tsla_obs.index)]
         return (sim_lwo, sim_alb, sim_sfc)
 
@@ -70,29 +80,32 @@ class spot_setup:
 
     def objectivefunction(self, simulation, evaluation, params=None):
         if not self.obj_func:
-            eval_lwo = evaluation[0].values
-            sigma_lwo = unc_lwo
-            eval_alb = evaluation[1].values
-            sigma_alb = unc_alb
-            eval_sfc = evaluation[2].values
-            sigma_sfc = unc_sfc
+            try:
+                eval_lwo = evaluation[0].values
+                sigma_lwo = unc_lwo
+                eval_alb = evaluation[1].values
+                sigma_alb = unc_alb
+                eval_sfc = evaluation[2].values
+                sigma_sfc = unc_sfc
 
-            sim_lwo = simulation[0]
-            sim_alb = simulation[1]
-            sim_sfc = simulation[2]
+                sim_lwo = simulation[0]
+                sim_alb = simulation[1]
+                sim_sfc = simulation[2]
 
-            #calculate loglikelihood of both
-            # Equation the same as the one below
-            #loglike_mb = np.log(( 1 / np.sqrt( (2*np.pi* (sigma_mb**2) ) ) ) * np.exp( (-1* ( (eval_mb-sim_mb) **2 ) / (2*sigma_mb**2))))
-            loglike_lwo = -0.5 * np.sum(np.log(2 * np.pi * sigma_lwo**2) + ( ((eval_lwo-sim_lwo)**2) / sigma_lwo**2))
-            loglike_alb = -0.5 * np.sum(np.log(2 * np.pi * sigma_alb**2) + ( ((eval_alb-sim_alb)**2) / sigma_alb**2))
-            loglike_sfc = -0.5 * np.sum(np.log(2 * np.pi * sigma_sfc**2) + ( ((eval_sfc-sim_sfc)**2) / sigma_sfc**2))
-            mean_loglike_lwo = loglike_lwo / len(sim_lwo)
-            mean_loglike_alb = loglike_alb / len(sim_alb)
-            mean_loglike_sfc = loglike_sfc / len(sim_sfc)
-            #equation below works for constant sigma
-            #loglike_tsla = np.log(( 1 / np.sqrt( (2*np.pi* (sigma_tsla**2) ) ) ) * np.exp( (-1* ( (eval_tsla-sim_tsla) **2 ) / (2*sigma_tsla**2))))
-            like = mean_loglike_lwo + mean_loglike_alb + mean_loglike_sfc
+                #calculate loglikelihood of both
+                # Equation the same as the one below
+                #loglike_mb = np.log(( 1 / np.sqrt( (2*np.pi* (sigma_mb**2) ) ) ) * np.exp( (-1* ( (eval_mb-sim_mb) **2 ) / (2*sigma_mb**2))))
+                loglike_lwo = -0.5 * np.sum(np.log(2 * np.pi * sigma_lwo**2) + ( ((eval_lwo-sim_lwo)**2) / sigma_lwo**2))
+                loglike_alb = -0.5 * np.sum(np.log(2 * np.pi * sigma_alb**2) + ( ((eval_alb-sim_alb)**2) / sigma_alb**2))
+                loglike_sfc = -0.5 * np.sum(np.log(2 * np.pi * sigma_sfc**2) + ( ((eval_sfc-sim_sfc)**2) / sigma_sfc**2))
+                mean_loglike_lwo = loglike_lwo / len(sim_lwo)
+                mean_loglike_alb = loglike_alb / len(sim_alb)
+                mean_loglike_sfc = loglike_sfc / len(sim_sfc)
+                #equation below works for constant sigma
+                #loglike_tsla = np.log(( 1 / np.sqrt( (2*np.pi* (sigma_tsla**2) ) ) ) * np.exp( (-1* ( (eval_tsla-sim_tsla) **2 ) / (2*sigma_tsla**2))))
+                like = mean_loglike_lwo + mean_loglike_alb + mean_loglike_sfc
+            except:
+                like = 999
         return like
 
  
@@ -107,7 +120,7 @@ def psample(obs, count=None):
     #k = 9
     #par_iter = (1 + 4 * M ** 2 * (1 + (k -2) * d)) * k
     
-    rep= 2500
+    rep= 10000
     count=count
     name = "pointLHS-parameters_full"
     setup = spot_setup(obs, count=count)

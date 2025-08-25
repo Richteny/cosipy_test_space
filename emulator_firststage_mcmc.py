@@ -21,7 +21,21 @@ outpath = "/data/scratch/richteny/thesis/cosipy_test_space/simulations/emulator/
 params = pd.read_csv("/data/scratch/richteny/thesis/cosipy_test_space/simulations/LHS-narrow_1D20m_1999_2010_fullprior.csv", index_col=0)
 path_snowlines = "/data/scratch/richteny/thesis/cosipy_test_space/data/input/HEF/snowlines/HEF-snowlines-1999-2010_manual_filtered.csv"
 path_to_geodetic = "/data/scratch/richteny/Hugonnet_21_MB/dh_11_rgi60_pergla_rates.csv"
-alb_obs_data = xr.open_dataset("/data/scratch/richteny/Ren_21_Albedo/HEF_processed_HRZ-20CC-filter_albedos.nc")
+alb_obs_data = xr.open_dataset("/data/scratch/richteny/Ren_21_Albedo/HEF_processed_HRZ-30CC-filter_albedos.nc")
+alb_obs_data = alb_obs_data.sortby("time") #ensure correct order - prob. not necessary
+
+#Season lookup (only JJAS, rest winter)
+season_lookup = {
+    12: "winter", 1: "winter", 2: "winter",
+    3: "winter", 4: "winter", 5: "summer",
+    6: "summer", 7: "summer", 8: "summer",
+    9: "summer", 10: "winter", 11: "winter"
+}
+
+months = alb_obs_data["time"].dt.month
+season_str = xr.DataArray([season_lookup[m.item()] for m in months], coords={"time": alb_obs_data["time"]}, dims="time")
+alb_obs_data = alb_obs_data.assign_coords(season=season_str)
+
 
 # Load emulator statistics
 with open(path+"loglike_stats.pkl", "rb") as f:
@@ -38,6 +52,7 @@ tsl = pd.read_csv(path_snowlines, parse_dates=True, index_col="LS_DATE")
 thres_unc = 20 / (tsl['glacier_DEM_max'].iloc[0] - tsl['glacier_DEM_min'].iloc[0])
 tsla_obs = tsl.loc["2000-01-01":"2010-01-01"]
 tsla_obs['SC_norm'] = np.maximum(tsla_obs['SC_stdev'] / (tsla_obs['glacier_DEM_max'] - tsla_obs['glacier_DEM_min']), thres_unc)
+tsla_obs['season'] = tsla_obs.index.month.map(season_lookup)
 
 # Preprocess geodetic
 geod_ref = pd.read_csv(path_to_geodetic)
@@ -124,17 +139,18 @@ if __name__ == "__main__":
 
     with pm.Model() as model:
         #Stage 1 Params: TSLA + ALB only
-        rrr = pm.TruncatedNormal('rrrfactor', mu=0.75, sigma=0.1, lower=0.633, upper=0.897)
-        snow = pm.TruncatedNormal("albsnow", mu=0.908, sigma=0.1, lower=0.887, upper=0.93)
-        #ice = pm.TruncatedNormal("albice", mu=0.1767, sigma=0.1, lower=0.117, upper=0.232)
-        firn = pm.TruncatedNormal("albfirn", mu=0.60, sigma=0.1, lower=0.51, upper=0.683)
-        aging = pm.TruncatedNormal("albaging", mu=16.44, sigma=5.2, lower=6, upper=24.8)
-        depth = pm.TruncatedNormal("albdepth", mu=2.1, sigma=1.0, lower=1.0, upper=10.753)
-        #rough = pm.TruncatedNormal("iceroughness", mu=8.9, sigma=9, lower=1.22, upper=19.52)
+        rrr = pm.TruncatedNormal('rrrfactor', mu=0.7785, sigma=0.781, lower=0.648, upper=0.946)
+        snow = pm.TruncatedNormal("albsnow", mu=0.903, sigma=0.1, lower=0.887, upper=0.928)
+        ice = pm.TruncatedNormal("albice", mu=0.17523, sigma=0.1, lower=0.1182, upper=0.2302)
+        firn = pm.TruncatedNormal("albfirn", mu=0.6036, sigma=0.1, lower=0.51, upper=0.6747)
+        aging = pm.TruncatedNormal("albaging", mu=13.82, sigma=5.372, lower=5, upper=24.77)
+        depth = pm.TruncatedNormal("albdepth", mu=1.776, sigma=0.666, lower=1.0, upper=4)
+        rough = pm.TruncatedNormal("iceroughness", mu=8.612, sigma=9, lower=1.2, upper=19.65)
         
         #Stage 2 Params: Keep separate
-        rough = pm.Uniform("iceroughness", lower=1.22, upper=19.52)
-        ice = pm.Uniform("albice", lower=0.117, upper=0.232)
+        #rough = pm.Uniform("iceroughness", lower=1.22, upper=19.52)
+        #ice = pm.Uniform("albice", lower=0.117, upper=0.232)
+        
         # Define fixed values for the other parameters
         #rrr_factor = pt.constant(0.88)
         #alb_snow = pt.constant(0.927)  # Mean of original distribution
@@ -143,6 +159,15 @@ if __name__ == "__main__":
         #alb_aging = pt.constant(15)  # 6+3 from your original code
         #roughness_ice = pt.constant(1.7)
         #alb_depth = pt.constant(3)
+
+        # Priors for additional systematic errors
+        #sigma_mb_sys = pm.HalfNormal("sigma_mb_sys", sigma=0.2)  # in dmdtda units
+        sigma_tsl_winter = pt.constant(0)
+        #sigma_tsl_winter = pm.HalfNormal("sigma_tsl_winter", sigma=0.01)  # normalized units
+        sigma_tsl_summer = pt.constant(0)
+        #sigma_tsl_summer = pm.HalfNormal("sigma_tsl_summer", sigma=0.03)
+        sigma_alb_winter = pt.constant(0)
+        sigma_alb_summer = pm.HalfNormal("sigma_alb_summer", sigma=0.02)
 
         #Setup observations
         geod_data = pm.Data('geod_data', np.array([geod_ref['dmdtda']]))
@@ -157,27 +182,52 @@ if __name__ == "__main__":
         mu_tsl = pm.Deterministic('mu_tsl', modtsl)
         mu_alb = pm.Deterministic('mu_alb', modalb)
 
+        # --------------------------------------------------------------------------
+        # Build full error terms: sqrt(obs^2 + sys^2)
+        # --------------------------------------------------------------------------
+
+        # MB (scalar)
+        mb_obs_unc = np.array([geod_ref['err_dmdtda'].item()])
+        #sigma_mb_total = pm.Deterministic("sigma_mb_total", pm.math.sqrt(mb_obs_unc**2 + sigma_mb_sys**2))
+
+        # TSL (vector)
+        tsl_obs_unc = np.array(tsla_obs['SC_norm'])
+        is_winter_tsl = tsla_obs['season'].values == "winter"
+        tsl_sys_errors = pt.where(is_winter_tsl, sigma_tsl_winter, sigma_tsl_summer)
+        #print(tsl_sys_errors)
+        sigma_tsl_total = pm.Deterministic("sigma_tsl_total",
+             pm.math.sqrt(tsl_obs_unc**2 + tsl_sys_errors**2))
+
+        # Albedo (vector)
+        alb_obs_unc = np.array(alb_obs_data['sigma_albedo'].values)
+        is_winter_alb = alb_obs_data['season'].values == "winter"
+        alb_sys_errors = pt.where(is_winter_alb, sigma_alb_winter, sigma_alb_summer)
+        sigma_alb_total = pm.Deterministic("sigma_alb_total",
+            pm.math.sqrt(alb_obs_unc**2 + alb_sys_errors**2))
+
         # Likelihood definitions
-        mb_obs = pm.Normal("mb_obs", mu=mu_mb, sigma=geod_ref['err_dmdtda'], observed=geod_data)
-        tsl_obs = pm.Normal("tsl_obs", mu=mu_tsl, sigma=np.array(tsla_obs['SC_norm']), observed=tsl_data, shape=mu_tsl.shape[0])
-        alb_obs = pm.Normal("alb_obs", mu=mu_alb, sigma=np.array(alb_obs_data['sigma_albedo'].values), observed=alb_data, shape=mu_alb.shape[0])
+        mb_obs = pm.Normal("mb_obs", mu=mu_mb, sigma=mb_obs_unc, observed=geod_data)
+        tsl_obs = pm.Normal("tsl_obs", mu=mu_tsl, sigma=sigma_tsl_total, observed=tsl_data, shape=mu_tsl.shape[0])
+        alb_obs = pm.Normal("alb_obs", mu=mu_alb, sigma=sigma_alb_total, observed=alb_data, shape=mu_alb.shape[0])
 
         # Manually compute log-likelihoods
         loglike_mb = pm.logp(mb_obs, geod_data)  # Mass balance log-likelihood
-        loglike_tsl = pm.logp(tsl_obs, tsl_data).mean() # Snowline log-likelihood (vector)
+        loglike_tsl_std = pm.logp(tsl_obs, tsl_data).mean() # Snowline log-likelihood (vector)
         loglike_alb = pm.logp(alb_obs, alb_data).mean()
 
         # ------------------------------------------------------------------------------
         # Standardize log-likelihoods using LHS-derived stats
         # ------------------------------------------------------------------------------
         loglike_mb_std = (loglike_mb - median_mb) / std_mb
-        loglike_tsl_std = ((loglike_tsl - median_tsl) / std_tsl)
+        #loglike_tsl_std = ((loglike_tsl - median_tsl) / std_tsl)
         loglike_alb_std = (loglike_alb - median_alb) / std_alb
 
         # ------------------------------------------------------------------------------
         # Combine standardized log-likelihoods
         # ------------------------------------------------------------------------------
-        total_loglike = loglike_tsl_std + loglike_alb_std #first stage only alb and tsla
+        #w1 = 1.0
+        #w2 = 3.0
+        total_loglike = (0.1*loglike_alb_std) + (0.9*loglike_mb_std) #first stage only alb and mb
 
         # Store components
         pm.Deterministic("loglike_mb", loglike_mb_std)

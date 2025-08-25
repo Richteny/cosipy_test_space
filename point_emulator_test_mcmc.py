@@ -19,15 +19,16 @@ path = "/data/scratch/richteny/for_emulator/"
 outpath = "/data/scratch/richteny/thesis/cosipy_test_space/simulations/emulator/"
 
 # Input
-df = pd.read_csv("/data/scratch/richteny/thesis/cosipy_test_space/pointLHS-parameters_full.csv")
+df = pd.read_csv("/data/scratch/richteny/thesis/cosipy_test_space/pointLHS-params_fullv1.csv")
 params = df.drop(['chain','like1'], axis=1)
 params['parRRR_factor'] = np.exp(params['parRRR_factor'])
 
 observed = pd.read_csv("/data/scratch/richteny/thesis/cosipy_test_space/data/input/HEF/cosipy_validation_upper_station.csv",
                        parse_dates=True, index_col="time")
-unc_lwo = 15
-unc_alb = 0.05
-unc_sfc = 0.03
+observed = observed.resample("5D").agg({'LWout': np.nanmean, 'SR50': "last", 'albedo': np.nanmin})
+unc_lwo = 15 #25 Wm2
+unc_alb = 0.05 #10%
+unc_sfc = 0.12 #0.4m
 
 # Load stats
 with open(path+"point_loglike_stats.pkl", "rb") as f:
@@ -39,29 +40,76 @@ std_alb = all_stats["alb_std"]
 mean_lwo = all_stats["lwo_mean"]
 std_lwo = all_stats["lwo_std"]
 
+param_cols = [col for col in params.columns if not col.startswith('simulation')]
+sim_cols = [col for col in params.columns if col.startswith('simulation')]
+
+print(f"Param cols: {len(param_cols)}, Sim cols: {len(sim_cols)}")  # sim_cols should be 1098
+
+# 2) Split sim_cols into 3 equal parts (for the 3 simulations)
+sim_len = 366  # days per simulation
+simulation1_cols = sim_cols[0:sim_len]
+simulation2_cols = sim_cols[sim_len:2*sim_len]
+simulation3_cols = sim_cols[2*sim_len:3*sim_len]
+
+# 3) Create date index for daily data
+dates = pd.date_range(start='2003-10-01', periods=sim_len, freq='D')
+
+def resample_simulation(simulation_cols, sim_name, agg):
+    sim_df = params[simulation_cols].copy()
+    sim_df.columns = dates  # assign dates as columns
+    
+    # Resample weekly (7-day bins)
+    if agg == "mean":
+        weekly_df = sim_df.resample('5D', axis=1).mean()
+    elif agg == "min":
+        weekly_df = sim_df.resample('5D', axis=1).min()
+    else:
+        weekly_df = sim_df.resample('5D', axis=1).last()
+    
+    # Rename columns: simulationX_weekY
+    weekly_colnames = [f"{sim_name}_week{week+1}" for week in range(len(weekly_df.columns))]
+    weekly_df.columns = weekly_colnames
+    
+    return weekly_df
+
+# 4) Resample each simulation separately
+weekly_sim1 = resample_simulation(simulation1_cols, "simulation1", "mean") #lwo
+weekly_sim2 = resample_simulation(simulation2_cols, "simulation2", "min") #alb
+weekly_sim3 = resample_simulation(simulation3_cols, "simulation3", "last") #sfc
+
+# 5) Concatenate parameter columns and all resampled simulations
+final_df = pd.concat([params[param_cols], weekly_sim1, weekly_sim2, weekly_sim3], axis=1)
+
+print(final_df.shape)
+params = final_df.copy()
+list_sims_lwo = [x for x in params.columns if 'simulation1_' in x]
+list_sims_alb = [x for x in params.columns if 'simulation2_' in x]
+list_sims_sfc = [x for x in params.columns if 'simulation3_' in x]
+
 ### Create training data! ###
 doy = observed.index.dayofyear
+n_steps = len(observed)
+relative_time = np.arange(n_steps) / (n_steps - 1)
 # Time features
 time_sin = np.sin(2 * np.pi * doy / 366) #leap year
 time_cos = np.cos(2 * np.pi * doy / 366) #leap year
-time_features_lwo = np.stack([time_sin, time_cos], axis=-1)  # Shape: (62, 2)
+time_features_lwo = np.stack([time_sin, time_cos, relative_time], axis=-1)  # Shape: (62, 2)
 
 time_features_alb = np.copy(time_features_lwo)
 time_features_sfc = np.copy(time_features_lwo)
 
 #Select test/train split
+params['stratify_col'] = params[list_sims_alb].min(axis=1)  # or .mean(axis=1)
+
+# Bin the values to create stratification categories
+params['stratify_bin'] = pd.qcut(params['stratify_col'], q=5, duplicates='drop')
 train_dataset, validation_dataset = train_test_split(params.index, 
-                                               train_size=0.8,
-                                               test_size=0.2, random_state=77)
+                                               train_size=0.7,
+                                               test_size=0.3, stratify=params['stratify_bin'],
+                                               random_state=42)
 
-df_train = params.loc[train_dataset]
-df_validation = params.loc[validation_dataset]
-
-#define lists
-list_sims_lwo = [x for x in params.columns if 'simulation1_' in x]
-list_sims_alb = [x for x in params.columns if 'simulation2_' in x]
-list_sims_sfc = [x for x in params.columns if 'simulation3_' in x]
-
+df_train = params.loc[train_dataset].drop(['stratify_bin','stratify_col'], axis=1)
+df_validation = params.loc[validation_dataset].drop(['stratify_bin','stratify_col'], axis=1)
 
 # Subset parameters
 features_to_drop = list_sims_lwo + list_sims_alb + list_sims_sfc
@@ -117,16 +165,16 @@ if __name__ == "__main__":
     model_full = tf.keras.models.load_model(path + "point_model_emul.keras")
 
     with pm.Model() as model:
-        rrr = pm.TruncatedNormal('rrrfactor', mu=0.333, sigma=0.1, lower=0.1, upper=0.7)
-        snow = pm.TruncatedNormal("albsnow", mu=0.9065, sigma=0.1, lower=0.887, upper=0.93)
+        rrr = pm.TruncatedNormal('rrrfactor', mu=0.27, sigma=0.1, lower=0.1, upper=0.6)
+        snow = pm.TruncatedNormal("albsnow", mu=0.90, sigma=0.1, lower=0.88, upper=0.93)
         #test snow = pm.TruncatedNormal("albsnow", mu=0.9065, sigma=0.15, lower=0.75, upper=0.98)
-        ice = pm.TruncatedNormal("albice", mu=0.1807, sigma=0.1, lower=0.118, upper=0.232)
-        firn = pm.TruncatedNormal("albfirn", mu=0.6155, sigma=0.1, lower=0.50, upper=0.69)
-        aging = pm.TruncatedNormal("albaging", mu=12.33, sigma=9, lower=1, upper=24.76)
+        ice = pm.TruncatedNormal("albice", mu=0.18, sigma=0.1, lower=0.11, upper=0.25)
+        firn = pm.TruncatedNormal("albfirn", mu=0.55, sigma=0.04, lower=0.46, upper=0.65)
+        aging = pm.TruncatedNormal("albaging", mu=3, sigma=0.81, lower=1, upper=8)
         #test aging = pm.TruncatedNormal("albaging", mu=15.33, sigma=10, lower=2, upper=25)
-        depth = pm.TruncatedNormal("albdepth", mu=3.99, sigma=9, lower=1.0, upper=10.753)
-        rough = pm.TruncatedNormal("iceroughness", mu=8.9, sigma=9, lower=1.22, upper=19.52)
-        centersnow = pm.TruncatedNormal("centersnow", mu=-0.5, sigma=1, lower=-3, upper=2)
+        depth = pm.TruncatedNormal("albdepth", mu=7.66, sigma=3.96, lower=0.9, upper=15.00)
+        rough = pm.TruncatedNormal("iceroughness", mu=9.86, sigma=5.63, lower=0.7, upper=19.52)
+        centersnow = pm.TruncatedNormal("centersnow", mu=-0.49, sigma=1.27, lower=-3, upper=1)
 
         # Define fixed values for the other parameters
         #rrr_factor = pt.constant(0.88)
@@ -151,7 +199,7 @@ if __name__ == "__main__":
         mu_sfc = pm.Deterministic('mu_sfc', modsfc)
 
         # Likelihood definitions
-        lwo_obs = pm.Normal("lwo_obs", mu=mu_lwo, sigma=np.array([unc_lwo]), observed=lwo_data)
+        lwo_obs = pm.Normal("lwo_obs", mu=mu_lwo, sigma=np.array([unc_lwo]), observed=lwo_data, shape=mu_lwo.shape[0])
         alb_obs = pm.Normal("alb_obs", mu=mu_alb, sigma=np.array([unc_alb]), observed=alb_data, shape=mu_alb.shape[0])
         sfc_obs = pm.Normal("sfc_obs", mu=mu_sfc, sigma=np.array([unc_sfc]), observed=sfc_data, shape=mu_sfc.shape[0])
 
@@ -183,6 +231,6 @@ if __name__ == "__main__":
         ##step = pm.DEMetropolis()
         #step = pm.Metropolis()
 
-        trace = pm.sample(draws=100000, tune=10000, chains=1, cores=1, initvals=[initval], step=step, discard_tuned_samples=True, return_inferencedata=True, progressbar=False)
-        trace.to_netcdf(f"{outpath}/chain_{chain_id}.nc")
+        trace = pm.sample(draws=100000, tune=20000, chains=1, cores=1, initvals=[initval], step=step, discard_tuned_samples=True, return_inferencedata=True, progressbar=False)
+        trace.to_netcdf(f"{outpath}/point_chain_{chain_id}.nc")
 
