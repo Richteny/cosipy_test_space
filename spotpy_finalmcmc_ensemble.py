@@ -97,6 +97,8 @@ class spot_setup:
         def parameters(self):
             return spotpy.parameter.generate(self.params)
     def simulation(self, x):
+        if isinstance(self.count,int):
+            self.count += 1
         print("Count", self.count)
         sim_mb, sim_tsla = runcosipy(RRR_factor=x.RRR_factor, alb_ice = x.alb_ice, alb_snow = x.alb_snow, alb_firn = x.alb_firn,
                    albedo_aging = x.albedo_aging, albedo_depth = x.albedo_depth,
@@ -157,4 +159,4 @@ def psample(obs, rep=10, count=None, dbname='MCMC_finalensemble', dbformat="csv"
 
 #mc to allow to read from list
 rep = len(param_list)
-mcmc = psample(obs=(geod_ref, tsla_obs), count=1, rep=rep, algorithm='mc')
+mcmc = psample(obs=(geod_ref, tsla_obs), count=0, rep=rep, algorithm='mc')

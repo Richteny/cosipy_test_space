@@ -15,8 +15,8 @@ local_directory = "./logs/dask-worker-space"
 [MEMORY]
 port = 8786  # Network port number.
 cores = 20  # One grid point per core: do not change.
-nodes = 4 #7  # Grid points submitted in one sbatch script.
-processes = 20  # Number of processes.
+nodes = 3 #7  # Grid points submitted in one sbatch script.
+processes = 10  # Number of processes.
 memory = "3G"  # Total allocated memory per submitted Slurm job.
 
 [OVERRIDES]

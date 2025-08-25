@@ -21,7 +21,7 @@ outpath = "/data/scratch/richteny/thesis/cosipy_test_space/simulations/emulator/
 params = pd.read_csv("/data/scratch/richteny/thesis/cosipy_test_space/simulations/LHS-narrow_1D20m_1999_2010_fullprior.csv", index_col=0)
 path_snowlines = "/data/scratch/richteny/thesis/cosipy_test_space/data/input/HEF/snowlines/HEF-snowlines-1999-2010_manual_filtered.csv"
 path_to_geodetic = "/data/scratch/richteny/Hugonnet_21_MB/dh_11_rgi60_pergla_rates.csv"
-alb_obs_data = xr.open_dataset("/data/scratch/richteny/Ren_21_Albedo/HEF_processed_HRZ-20CC-filter_albedos.nc")
+alb_obs_data = xr.open_dataset("/data/scratch/richteny/Ren_21_Albedo/HEF_processed_HRZ-30CC-filter_albedos.nc")
 
 # Load emulator statistics
 with open(path+"loglike_stats.pkl", "rb") as f:

@@ -13,6 +13,7 @@ from spotpy.objectivefunctions import rmse, mae
 from cosipy.config import Config
 from cosipy.constants import Constants
 from COSIPY import main as runcosipy
+import gc
 import random
 
 # initiate config and constants
@@ -43,7 +44,9 @@ tsla_obs.set_index('LS_DATE', inplace=True)
 #normalize standard deviation if necessary
 if Config.tsl_normalize:
     tsla_obs['SC_stdev'] = (tsla_obs['SC_stdev']) / (tsla_obs['glacier_DEM_max'] - tsla_obs['glacier_DEM_min'])
-
+thres_unc = (20) / (tsla_obs['glacier_DEM_max'].iloc[0] - tsla_obs['glacier_DEM_min'].iloc[0])
+sc_norm = np.where(tsla_obs['SC_stdev'] < thres_unc, thres_unc, tsla_obs['SC_stdev'])
+tsla_obs['SC_stdev'] = sc_norm
 obs = None
 
 ## Load parameter list ##
@@ -101,11 +104,17 @@ class spot_setup:
             return spotpy.parameter.generate(self.params)
     def simulation(self, x):
         print("Count", self.count)
-        sim_mb, sim_tsla = runcosipy(RRR_factor=x.RRR_factor, alb_ice = x.alb_ice, alb_snow = x.alb_snow, alb_firn = x.alb_firn,
-                   albedo_aging = x.albedo_aging, albedo_depth = x.albedo_depth, roughness_fresh_snow=x.roughness_fresh_snow,
-                   roughness_ice = x.roughness_ice, roughness_firn = x.roughness_firn, aging_factor_roughness = x.aging_factor_roughness,
-                   count=self.count)
-        sim_tsla = sim_tsla[sim_tsla['time'].isin(tsla_obs.index)]
+        try:
+            sim_mb, sim_tsla = runcosipy(RRR_factor=x.RRR_factor, alb_ice = x.alb_ice, alb_snow = x.alb_snow, alb_firn = x.alb_firn,
+                       albedo_aging = x.albedo_aging, albedo_depth = x.albedo_depth, roughness_fresh_snow=x.roughness_fresh_snow,
+                       roughness_ice = x.roughness_ice, roughness_firn = x.roughness_firn, aging_factor_roughness = x.aging_factor_roughness,
+                       count=self.count)
+            sim_tsla = sim_tsla[sim_tsla['time'].isin(tsla_obs.index)]
+        except Exception as e:
+            print(f"Simulation failed with error: {e}")
+            return (np.nan, np.nan)
+        finally:
+            gc.collect()
         return (np.array([sim_mb]), sim_tsla['Med_TSL'].values)
 
     def evaluation(self):

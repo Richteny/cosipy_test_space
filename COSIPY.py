@@ -24,6 +24,15 @@ Correspondence: tobias.sauter@fau.de
 """
 import cProfile
 import logging
+#for name in [
+#    "distributed",
+#    "distributed.scheduler",
+#    "distributed.worker",
+#    "distributed.core",
+#    "distributed.comm",
+#]:
+#    logging.getLogger(name).setLevel(logging.WARNING)
+#logging.getLogger("distributed").setLevel(logging.WARNING) #silence the print outs which overcrowd the .err files
 import os
 from datetime import datetime
 from itertools import product
@@ -191,13 +200,13 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
             dsmb['weighted_mb'] = dsmb['MB'] * dsmb['N_Points'] / np.sum(dsmb['N_Points'])
             spatial_mean = dsmb[['weighted_mb']].sum(dim=['lat','lon'])
             dfmb = spatial_mean['weighted_mb'].to_dataframe()
-            mean_annual_df =  dfmb.resample("1Y").sum() #resample to fixed year to match geodetic
+            mean_annual_df =  dfmb.resample("1YE").sum() #resample to fixed year to match geodetic
             geod_mb = np.nanmean(mean_annual_df['weighted_mb'].values)
         else:
             print("2D case.")
             spatial_mean = IO.get_result()['MB'].mean(dim=['lat','lon'], keep_attrs=True)
             geod_df = spatial_mean.sel(time=slice(Config.time_start_cali,Config.time_end_cali)).to_dataframe()
-            mean_annual_df = geod_df.resample("1Y").sum()
+            mean_annual_df = geod_df.resample("1YE").sum()
             geod_mb = np.nanmean(mean_annual_df.MB.values)
         print("Geod. MB test.") 
         print(geod_mb)

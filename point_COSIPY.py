@@ -177,7 +177,7 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
                                                               f"_{round(albedo_aging.item(),4)}_{round(albedo_depth.item(),4)}_{round(roughness_fresh_snow,4)}"\
                                                               f"_{round(roughness_ice,4)}_{round(roughness_firn,4)}_{round(aging_factor_roughness,6)}_num{count}.nc"
 
-    #IO.get_result().to_netcdf(os.path.join(output_path,results_output_name), encoding=encoding, mode='w')
+    IO.get_result().to_netcdf(os.path.join(output_path,results_output_name), encoding=encoding, mode='w')
     
     #print(np.nanmax(IO.get_result().ALBEDO))
     #print(np.nanmin(IO.get_result().ALBEDO))
@@ -226,6 +226,11 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
         daily_albedo = daily_means['ALBEDO'].values.flatten()
         daily_sfc = daily_means['TOTALHEIGHT'] - daily_means['TOTALHEIGHT'].isel(time=0)
         daily_sfc = daily_sfc.values.flatten()
+        ## LHS mode - save time and just set it to sth. ##
+        #date_range = pd.date_range("2003-10-01","2004-09-30", freq="1D")
+        #daily_lwo = IO.get_result()['LWout'].isel(time=slice(0, len(date_range))).values.flatten()
+        #daily_albedo = IO.get_result()['LWout'].isel(time=slice(0, len(date_range))).values.flatten()
+        #daily_sfc = IO.get_result()['LWout'].isel(time=slice(0, len(date_range))).values.flatten()
         #print(daily_sfc.shape)
     if Config.tsl_evaluation is True:
         print("Starting TSL eval.")
