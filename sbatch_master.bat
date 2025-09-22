@@ -22,13 +22,14 @@ echo $SLURM_CPUS_ON_NODE
 #conda activate pymc3_env
 conda activate pymc_env
 #module load anaconda/2019.07
+#export DASK_DISTRIBUTED__LOGGING__DISTRIBUTED="WARNING"
 
 #python -u /data/scratch/richteny/thesis/cosipy_test_space/COSIPY.py
 #python -u /data/scratch/richteny/thesis/cosipy_test_space/FAST_spotpy.py
 #python -u /data/scratch/richteny/thesis/cosipy_test_space/pymc_calibration.py
 #python -u /data/scratch/richteny/thesis/cosipy_test_space/synthetic_pymc_calibration.py
 #python -u /data/scratch/richteny/thesis/cosipy_test_space/spotpy_run_fromlist.py
-python -u /data/scratch/richteny/thesis/cosipy_test_space/spotpy_finalmcmc_ensemble.py
+#python -u /data/scratch/richteny/thesis/cosipy_test_space/spotpy_finalmcmc_ensemble.py
 #python -u /data/scratch/richteny/thesis/cosipy_test_space/LHS_surrogate_parameters.py
 #python -u /data/scratch/richteny/thesis/cosipy_test_space/LHS_synth_surrogate_params.py
 #python -u /data/scratch/richteny/thesis/cosipy_test_space/EMERGENCY_pymc_calibration.py
@@ -36,4 +37,4 @@ python -u /data/scratch/richteny/thesis/cosipy_test_space/spotpy_finalmcmc_ensem
 #python -u /data/scratch/richteny/thesis/cosipy_test_space/emulator_mcmc.py
 
 #python -u /data/scratch/richteny/thesis/cosipy_test_space/point_COSIPY.py
-#python -u /data/scratch/richteny/thesis/cosipy_test_space/point_LHS_surrogate_parameters.py
+python -u /data/scratch/richteny/thesis/cosipy_test_space/point_LHS_surrogate_parameters.py

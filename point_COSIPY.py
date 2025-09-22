@@ -34,7 +34,7 @@ import scipy
 import yaml
 # from dask import compute, delayed
 # from dask.diagnostics import ProgressBar
-from dask.distributed import as_completed, progress
+from dask.distributed import as_completed, progress, TimeoutError
 from dask_jobqueue import SLURMCluster
 from distributed import Client, LocalCluster
 # import dask
@@ -129,18 +129,20 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
         with SLURMCluster(
             job_name=SlurmConfig.name,
             cores=SlurmConfig.cores,
-            processes=SlurmConfig.cores,
+            processes=SlurmConfig.processes,
             memory=SlurmConfig.memory,
             account=SlurmConfig.account,
             job_extra_directives=SlurmConfig.slurm_parameters,
             local_directory=SlurmConfig.local_directory,
+            #walltime="01:30:00",
+            #scheduler_options={ #"dashboard_address": ":0",
+            #                   "port": SlurmConfig.port}
         ) as cluster:
             cluster.scale(SlurmConfig.nodes * SlurmConfig.cores)
             print(cluster.job_script())
             print("You are using SLURM!\n")
             print(cluster)
             run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures, opt_dict=opt_dict)
-
     else:
         with LocalCluster(scheduler_port=Config.local_port, n_workers=Config.workers, local_directory='logs/dask-worker-space', threads_per_worker=1, silence_logs=True) as cluster:
             print(cluster)
@@ -470,7 +472,6 @@ def run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures, opt_dict=None):
                         df_val[i] = df_eval.mb
                     if Config.obs_type == 'snowheight':
                         df_val[i] = df_eval.snowheight
-
         # Measure time
         end_res = datetime.now()-start_res
         get_time_required(action="do calculations", times=end_res)

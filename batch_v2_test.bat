@@ -17,5 +17,6 @@
 conda activate pymc_env
 
 #python -u emulator_test_mcmc.py ${SLURM_ARRAY_TASK_ID}
-python -u point_emulator_v2_test.py ${SLURM_ARRAY_TASK_ID}
+#python -u point_emulator_v2_test.py ${SLURM_ARRAY_TASK_ID}
+python -u point_emulator_test_mcmc.py ${SLURM_ARRAY_TASK_ID}
 #python -u emulator_testsyserr_mcmc.py ${SLURM_ARRAY_TASK_ID}

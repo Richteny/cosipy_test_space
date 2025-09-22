@@ -17,6 +17,7 @@ from point_COSIPY import main as runcosipy
 #from config import *
 import gc
 import random
+import time
 
 #initiate config and constants
 Config()
@@ -36,16 +37,16 @@ obs = None
 class spot_setup:
     # defining all parameters and the distribution
     print("Setting parameters.")
-    param = RRR_factor, alb_ice, alb_snow, alb_firn, albedo_aging, albedo_depth, roughness_ice, center_snow_transfer_function = [
+    param = RRR_factor, alb_ice, alb_snow, alb_firn, albedo_aging, albedo_depth, roughness_ice = [ #center_snow_transfer_function = [
             #aging_factor_roughness, roughness_fresh_snow, roughness_ice = [
-        Uniform(low=np.log(0.3), high=np.log(0.9)), #1.235, high=1.265
+        Uniform(low=np.log(0.5), high=np.log(0.95)), #1.235, high=1.265
         Uniform(low=0.115, high=0.263),
         Uniform(low=0.887, high=0.94),
         Uniform(low=0.46, high=0.692),
         Uniform(low=1, high=25),
         Uniform(low=0.9, high=14.2),
-        Uniform(low=0.7, high=20),
-        Uniform(low=-1.0, high=2.5)]
+        Uniform(low=0.7, high=20)]
+        #Uniform(low=-1.0, high=2.5)]
         #Uniform(low=0.005, high=0.0026+0.0026),
         #Uniform(low=0.2, high=3.56),
         #Uniform(low=0.1, high=7.0)]
@@ -61,17 +62,14 @@ class spot_setup:
         if isinstance(self.count,int):
             self.count += 1
         print("Count", self.count)
-        try:
-            sim_lwo, sim_alb, sim_sfc = runcosipy(RRR_factor=np.exp(x.RRR_factor), alb_ice = x.alb_ice, alb_snow = x.alb_snow, alb_firn = x.alb_firn,
-                       albedo_aging = x.albedo_aging, albedo_depth = x.albedo_depth, roughness_ice = x.roughness_ice, center_snow_transfer_function = x.center_snow_transfer_function, #aging_factor_roughness = x.aging_factor_roughness,
-                       count=self.count) #roughness_fresh_snow = x.roughness_fresh_snow, roughness_ice = x.roughness_ice, count=self.count)
-        except Exception as e:
-            print(f"Simulation failed at count {self.count} with error: {e}")
-            return (np.nan, np.nan, np.nan)
-        finally:
-            gc.collect()  # Force garbage collection to avoid memory leaks
+        sim_lwo, sim_alb, sim_sfc = runcosipy(RRR_factor=np.exp(x.RRR_factor), alb_ice = x.alb_ice, alb_snow = x.alb_snow, alb_firn = x.alb_firn,
+                   albedo_aging = x.albedo_aging, albedo_depth = x.albedo_depth, roughness_ice = x.roughness_ice, #center_snow_transfer_function = x.center_snow_transfer_function, #aging_factor_roughness = x.aging_factor_roughness,
+                   count=self.count) #roughness_fresh_snow = x.roughness_fresh_snow, roughness_ice = x.roughness_ice, count=self.count)
+        gc.collect()  # Force garbage collection to avoid memory leaks
 
         #sim_tsla = sim_tsla[sim_tsla['time'].isin(tsla_obs.index)]
+        #put a pause - waits n seconds after runcosipy has finished giving SLURM time to clean up, maybe that fixes problems
+        time.sleep(3)
         return (sim_lwo, sim_alb, sim_sfc)
 
     def evaluation(self):
