@@ -100,31 +100,6 @@ def run_emulators(param_stack):
     
     return (mod_mb, mod_tsl, mod_alb)
 
-# ============ Init Value Generation =============
-def generate_initvals(N):
-    priors = {
-        'rrrfactor': (0.5738, 1.29),
-        'albsnow': (0.887, 0.93),
-        'albice': (0.115, 0.233),
-        'albfirn': (0.5, 0.692),
-        'albaging': (2, 25),
-        'albdepth': (1, 14),
-        'iceroughness': (0.92, 20),
-    }
-
-    param_names = list(priors.keys())
-    bounds = np.array(list(priors.values()))
-
-    sampler = qmc.LatinHypercube(d=len(priors))
-    lhs_unit = sampler.random(n=N)
-    lhs_scaled = qmc.scale(lhs_unit, bounds[:,0], bounds[:,1])
-
-    initvals = [
-        {param: float(lhs_scaled[i, j]) for j, param in enumerate(param_names)}
-        for i in range(N)
-    ]
-    return initvals
-
 # ============ Main Chain Runner =============
 if __name__ == "__main__":
     chain_id = int(sys.argv[1])
@@ -138,7 +113,7 @@ if __name__ == "__main__":
     model_full = tf.keras.models.load_model(path + "first_test.keras")
 
     with pm.Model() as model:
-        #Stage 1 Params: TSLA + ALB only
+        #Stage 1 Params: MB + ALB only
         rrr = pm.TruncatedNormal('rrrfactor', mu=0.7785, sigma=0.781, lower=0.648, upper=0.946)
         snow = pm.TruncatedNormal("albsnow", mu=0.903, sigma=0.1, lower=0.887, upper=0.928)
         ice = pm.TruncatedNormal("albice", mu=0.17523, sigma=0.1, lower=0.1182, upper=0.2302)
