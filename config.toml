@@ -2,17 +2,17 @@
 # Please make your changes here.
 
 [SIMULATION_PERIOD]
-time_start = "1999-01-01T00:00"
-time_end = "2009-12-31T23:00"
-#time_start = "2002-09-30T00:00"
-#time_end = "2004-09-30T23:00"
+#time_start = "1999-01-01T00:00"
+#time_end = "2009-12-31T23:00"
+time_start = "2002-10-01T00:00"
+time_end = "2004-09-30T23:00"
 
 [FILENAMES]
 data_path = "./data/"
-input_netcdf = "HEF/HEF_COSMO_1D20m_HORAYZON_1999_2010_IntpPRES.nc"
-#input_netcdf = "HEF/HEF_AWSU_2002-2004_COSMO-RRR.nc"
-output_prefix = "HEF_COSMO_1D20m_1999_2010_HORAYZON_IntpPRES_localsens" #"HEF_COSMO_1D20m_1999_2010_HORAYZON_IntpPRES"
-#output_prefix = "HEF_AWSU_Point_2002-2004_COSMO-RRR_LHS"
+#input_netcdf = "HEF/HEF_COSMO_1D20m_HORAYZON_1999_2010_IntpPRES.nc"
+input_netcdf = "HEF/HEF_AWSU_2002-2004_COSMO-RRR.nc"
+#output_prefix = "HEF_COSMO_1D20m_1999_2010_HORAYZON_IntpPRES_localsens" #"HEF_COSMO_1D20m_1999_2010_HORAYZON_IntpPRES"
+output_prefix = "HEF_AWSU_Point_2002-2004_COSMO-RRR_LHS"
 
 [RESTART]
 restart = false # set to true if you want to start from restart file
@@ -27,8 +27,8 @@ obs_type = "snowheight" # What kind of stake data is used "mb" or "snowheight"
 ["TRANSIENT SNOWLINE DATA"]
 time_start_cali = "2000-01-01T00:00"
 time_end_cali = "2009-12-31T23:00"
-tsl_evaluation = true #true
-write_csv_status = true #true
+tsl_evaluation = false #true
+write_csv_status = false #true
 csv_filename = "localsens_1D20m_1999_2010.csv"
 time_col_obs = "LS_DATE"
 tsla_col_obs = "TSL_normalized"
@@ -36,7 +36,7 @@ min_snowheight = 0.001 #1mm
 tsl_method = "conservative"
 tsl_normalize = true
 tsl_data_file = "./data/input/HEF/snowlines/HEF-snowlines-1999-2010_manual_filtered.csv"
-point_evaluation = false #false
+point_evaluation = true #false
 
 ["RUN LAPSE RATES ONLINE"]
 station_altitude = 3030.0283
@@ -64,10 +64,10 @@ full_field = false # write full fields (2D data) to file
 
 [FORCINGS]
 # TOTAL PRECIPITATION
-force_use_TP = false #!! aws set true # If total precipitation and snowfall in input data, use total precipitation
+force_use_TP = true #!! aws set true # If total precipitation and snowfall in input data, use total precipitation
 # CLOUD COVER FRACTION
 # If cloud cover fraction and incoming longwave radiation in input data, use cloud cover fraction
-force_use_N = true #!! aws set false
+force_use_N = false #!! aws set false
 
 [SUBSET]
 # provide pixel values
