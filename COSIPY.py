@@ -24,8 +24,16 @@ Correspondence: tobias.sauter@fau.de
 """
 import cProfile
 import logging
+#for name in [
+#    "distributed",
+#    "distributed.scheduler",
+#    "distributed.worker",
+#    "distributed.core",
+#    "distributed.comm",
+#]:
+#    logging.getLogger(name).setLevel(logging.WARNING)
+#logging.getLogger("distributed").setLevel(logging.WARNING) #silence the print outs which overcrowd the .err files
 import os
-import sys
 from datetime import datetime
 from itertools import product
 
@@ -46,9 +54,7 @@ from cosipy.constants import Constants
 from cosipy.cpkernel.cosipy_core import cosipy_core
 from cosipy.cpkernel.io import IOClass
 from cosipy.modules.evaluation import evaluate, resample_output, create_tsl_df, eval_tsl, resample_by_hand
-
-from numba import njit, typeof
-
+from numba import njit
 import xarray as xr
 
 def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, alb_ice=Constants.albedo_ice,
@@ -62,112 +68,59 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
     Constants()
 
     start_logging()
-    times = datetime.now()
     #Load count variable 
     if isinstance(count, int):
         count = count + 1
 
-<<<<<<< HEAD
-    '''
-    TEST TO PARSE A TUPLE OF PARAM VALUES AND NOT CALL IN DICTIONARY
-    '''
-    # these values crashed previously [array(2.74724189), array(0.25), array(0.84), array(0.555), array(1.1), array(1.1)]
-    RRR_factor = float(0.97) #mean of prior
-    #alb_ice = float(0.234798)
-    #alb_snow = float(0.901503)
-    #alb_firn = float(0.525673)
-    #albedo_aging = float(0.348963)
-    #albedo_depth = float(21.457584)
+    # target geodetic 2000-2010 = -1.0425, unc= 0.26 == roughly -1.3 to -0.7825
+    #RRR_factor = float(0.741) #0.97 
+    #alb_ice = float(0.2153) #range LHS after satellite 0.115  to 0.233
+    #alb_snow = float(0.916) #range LHS after satellite 0.887 to 0.93
+    #alb_firn = float(0.566) #range LHS after satellite 0.506 to 0.692
+    #albedo_aging = float(15.6) #range LHS 1 to 25
+    #albedo_depth = float(3.0) #range  LHS 1 to 15 the lower the more positive MB
     #roughness_fresh_snow = float(0.24) #0.03 (https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2022JD037032) to max 1.6 from Brock et al. 2006
-    #roughness_ice = float(7)
-    #roughness_firn = float()
-    #aging_factor_roughness = float()
+    #roughness_ice = float(1.7) #range LHS 0.7 to 20 the lower the more positive MB
+    #roughness_firn = float(4.0)
+    #aging_factor_roughness = float(0.0026)
     opt_dict = (RRR_factor, alb_ice, alb_snow, alb_firn, albedo_aging, albedo_depth, center_snow_transfer_function,
                 spread_snow_transfer_function, roughness_fresh_snow, roughness_ice, roughness_firn, aging_factor_roughness)
     #0 to 5 - base, 6 center snow , 7 spreadsnow, 8 to 10 roughness length 
-    #Initialise dictionary and load Params#
-    #opt_dict = Dict.empty(key_type=types.unicode_type, value_type=types.float64)
-    #opt_dict['mult_factor_RRR'] = RRR_factor
-    #opt_dict['albedo_ice'] = alb_ice
-    #opt_dict['albedo_fresh_snow'] = alb_snow
-    #opt_dict['albedo_firn'] = alb_firn
-    #opt_dict['albedo_mod_snow_aging'] = albedo_aging
-    #opt_dict['albedo_mod_snow_depth'] = albedo_depth
-    #opt_dict['center_snow_transfer_function'] = center_snow_transfer_function
-    #opt_dict['spread_snow_transfer_function'] = spread_snow_transfer_function
-    #opt_dict['roughness_fresh_snow'] = roughness_fresh_snow
-    #opt_dict['roughness_ice'] = roughness_ice
-    #opt_dict['roughness_firn'] = roughness_firn
-    #print(opt_dict)
-    #print(typeof(opt_dict))
-=======
-    #Initialise dictionary and load Spotpy Params#
-    opt_dict = dict()
-    opt_dict['mult_factor_RRR'] = RRR_factor
-    opt_dict['albedo_ice'] = alb_ice
-    opt_dict['albedo_fresh_snow'] = alb_snow
-    opt_dict['albedo_firn'] = alb_firn
-    opt_dict['albedo_mod_snow_aging'] = albedo_aging
-    opt_dict['albedo_mod_snow_depth'] = albedo_depth
-    opt_dict['center_snow_transfer_function'] = center_snow_transfer_function
-    opt_dict['spread_snow_transfer_function'] = spread_snow_transfer_function
-    opt_dict['roughness_fresh_snow'] = roughness_fresh_snow
-    opt_dict['roughness_ice'] = roughness_ice
-    opt_dict['roughness_firn'] = roughness_firn
->>>>>>> 236b0b7 (feat: now works with pymc and starts to incorporate recent pushes to allow it to run with newer versions of xarray and dask distributed)
+    #opt_dict=None
     lapse_T = float(lr_T)
     lapse_RRR = float(lr_RRR)
     lapse_RH = float(lr_RH)
-    #print("Lapse rates are:", lapse_T, lapse_RRR, lapse_RH)
-    #print("Time required to load in opt_dic: ", datetime.now()-times)
     print("#--------------------------------------#")
     print("Starting simulations with the following parameters.")
     print(opt_dict)
-    #[print("Parameter ", x,"=",opt_dict[x]) for x in opt_dict.keys()]
-    #for key in opt_dict.keys():
-    #    print("Parameter ", key,"=",opt_dict[key])
     print("\n#--------------------------------------#")
-    #additionally initial snowheight constant, snow_layer heights, temperature bottom, albedo aging and depth
     #------------------------------------------
     # Create input and output dataset
     #------------------------------------------
-    #setup IO with new values from dictionary 
-    times = datetime.now()
-    #test_dict(opt_dict)
     IO = IOClass(opt_dict=opt_dict)
-    start_time = datetime.now() 
-    if Config.restart:
-        #DATA = IO.create_data_file(suffix="_num{}_lrT_{}_lrRRR_{}_prcp_{}".format(count, round(abs(lapse_T),7),round(lapse_RRR,7),round(opt_dict['mult_factor_RRR'],5)))
-         DATA = IO.create_data_file(suffix="_num{}_lrT_{}_lrRRR_{}_prcp_{}".format(count, round(abs(lapse_T),6),round(lapse_RRR, 6),round(opt_dict[0],5)))
-    else:
-        DATA = IO.create_data_file()
+    DATA = IO.create_data_file()
+
     # Create global result and restart datasets
     RESULT = IO.create_result_file(opt_dict=opt_dict) 
     RESTART = IO.create_restart_file()
-    print("Time required to init IO, DATA, RESULT, RESTART: ", datetime.now()-times)
-    #----------------------------------------------
-    # Calculation - Multithreading using all cores  
-    #----------------------------------------------
 
+    #----------------------------------------------
+    # Calculation - Multithreading using all cores
+    #----------------------------------------------
 
     # Auxiliary variables for futures
-    futures= []
-    #adjust lapse rates
-    #print("#--------------------------------------#") 
-    #print("\nStarting run with lapse rates:", lapse_T, "and:", lapse_RRR) 
-    #print("\nAlbedo ice, snow and firn:", opt_dict['albedo_ice'],",",opt_dict['albedo_fresh_snow'],"and", opt_dict['albedo_firn'])
-    #print("\nRRR mult factor is:", opt_dict['mult_factor_RRR'])
-    #print("\n#--------------------------------------#")
-    
-    start2 = datetime.now()
+    futures = []
+
+
+    # Measure time
+    start_time = datetime.now()
     t2 = DATA.T2.values
     rh2 = DATA.RH2.values
     rrr = DATA.RRR.values
     hgt = DATA.HGT.values
-    #print(np.nanmean(t2))
     station_altitude = Config.station_altitude #define outside for numba
     t2, rh2, rrr = online_lapse_rate(t2,rh2,rrr,hgt,station_altitude,lapse_T,lapse_RH, lapse_RRR)
-    #print(np.nanmean(t2))
+
     print("Assigning values back to DATA")
     DATA['T2'] = (('time','lat','lon'), t2)
     DATA['RH2'] = (('time','lat','lon'), rh2)
@@ -175,12 +128,10 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
     print(np.nanmax(DATA.RH2.values))
     print(np.min(DATA.RH2.values))
     print(rh2.shape)
-    #print(np.nanmean(DATA.T2.values))
-    print("Seconds needed for lapse rate:", datetime.now()-start2)
+    print("Seconds needed for lapse rate:", datetime.now()-start_time)
     #-----------------------------------------------
     # Create a client for distributed calculations
     #-----------------------------------------------
-<<<<<<< HEAD
     if Config.slurm_use:
         SlurmConfig()
         with SLURMCluster(
@@ -193,13 +144,6 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
             local_directory=SlurmConfig.local_directory,
         ) as cluster:
             cluster.scale(SlurmConfig.nodes * SlurmConfig.cores)
-=======
-    if (slurm_use):
-        #scheduler_port=port
-        with SLURMCluster(job_name=name, cores=cores, processes=cores, memory=memory, account=account,
-                          job_extra_directives=slurm_parameters, local_directory='logs/dask-worker-space') as cluster:
-            cluster.scale(nodes*cores)   
->>>>>>> 236b0b7 (feat: now works with pymc and starts to incorporate recent pushes to allow it to run with newer versions of xarray and dask distributed)
             print(cluster.job_script())
             print("You are using SLURM!\n")
             print(cluster)
@@ -227,70 +171,46 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
         # FillValue = -9999
         # scale_factor, add_offset = compute_scale_and_offset(dataMin, dataMax, 16)
         #encoding[var] = dict(zlib=True, complevel=compression_level, dtype=dtype, scale_factor=scale_factor, add_offset=add_offset, _FillValue=FillValue)
-<<<<<<< HEAD
         encoding[var] = dict(zlib=True, complevel=Config.compression_level)
-    
     output_netcdf = set_output_netcdf_path()
     output_path = create_data_directory(path='output')
     #version for parsed floats by hand here
-    results_output_name = output_netcdf.split('.nc')[0] + f"_RRR-{round(RRR_factor,4)}_{round(alb_snow,4)}_{round(alb_ice,4)}_{round(alb_firn,4)}"\
-                                                          f"_{round(albedo_aging,4)}_{round(albedo_depth,4)}_{round(roughness_fresh_snow,4)}"\
-                                                          f"{round(roughness_ice,4)}_{round(roughness_firn,4)}_{round(aging_factor_roughness,4)}_num{count}.nc"
-    #item below only works when objects are arrays and not given by hand
-    #results_output_name = output_netcdf.split('.nc')[0] + f"_RRR-{round(RRR_factor.item(),4)}_{round(alb_snow.item(),4)}_{round(alb_ice.item(),4)}_{round(alb_firn.item(),4)}_num{count}.nc"
-    #results_output_name = output_netcdf
-    #IO.get_result().to_netcdf(os.path.join(output_path,results_output_name), encoding=encoding, mode = 'w')
+    try:
+        results_output_name = output_netcdf.split('.nc')[0] + f"_RRR-{round(RRR_factor,4)}_{round(alb_snow,4)}_{round(alb_ice,4)}_{round(alb_firn,4)}"\
+                                                              f"_{round(albedo_aging,4)}_{round(albedo_depth,4)}_{round(roughness_fresh_snow,4)}"\
+                                                              f"_{round(roughness_ice,4)}_{round(roughness_firn,4)}_{round(aging_factor_roughness,6)}_num{count}.nc"
+    #item below only works when objects are arrays and not given by hand, parameters not taken from pymc or sorts are floats
+    except:
+        results_output_name = output_netcdf.split('.nc')[0] + f"_RRR-{round(RRR_factor.item(),4)}_{round(alb_snow.item(),4)}_{round(alb_ice.item(),4)}_{round(alb_firn.item(),4)}"\
+                                                              f"_{round(albedo_aging.item(),4)}_{round(albedo_depth.item(),4)}_{round(roughness_fresh_snow,4)}"\
+                                                              f"_{round(roughness_ice,4)}_{round(roughness_firn,4)}_{round(aging_factor_roughness,6)}_num{count}.nc"
+
+    IO.get_result().to_netcdf(os.path.join(output_path,results_output_name), encoding=encoding, mode='w')
     
-    print(np.nanmax(IO.get_result().ALBEDO))
-    print(np.nanmin(IO.get_result().ALBEDO))
-    print(np.nanmax(IO.get_result().Z0))
-=======
-        encoding[var] = dict(zlib=True, complevel=compression_level)
-                    
-    results_output_name = output_netcdf.split('.nc')[0]+'_num{}.nc'.format(count)  
-    IO.get_result().to_netcdf(os.path.join(data_path,'output',results_output_name), encoding=encoding, mode = 'w')
->>>>>>> 236b0b7 (feat: now works with pymc and starts to incorporate recent pushes to allow it to run with newer versions of xarray and dask distributed)
-    #dataset = IO.get_result()
-    #calculate MB for geod. reference
+    #print(np.nanmax(IO.get_result().ALBEDO))
+    #print(np.nanmin(IO.get_result().ALBEDO))
+    #print(np.nanmax(IO.get_result().Z0))
+
     #Check if 1D or 2D
     times = datetime.now()
-    #this takes 1min, make it faster! CHANGE IT BACK ONCE DONE WITH TESTS!
     if Config.tsl_evaluation is True:
         if 'N_Points' in list(IO.get_result().keys()):
             print("Compute area weighted MB for 1D case.")
             dsmb = IO.get_result().sel(time=slice(Config.time_start_cali, Config.time_end_cali))
             dsmb['weighted_mb'] = dsmb['MB'] * dsmb['N_Points'] / np.sum(dsmb['N_Points'])
-            #print("time 1:", datetime.now()-times)
-            #time_vals = pd.to_datetime(dsmb.time.values)
-            #secs = np.array([time_vals.astype('int64')]).ravel()
-            #years = np.unique(time_vals.year)
-            #clean_year_vals = np.array([np.datetime64(pd.datetime(x,1,1,0,0,0)) for x in years])
-            #clean_year_vals = clean_year_vals.astype('int64')
-            #print(secs)
-            #print(clean_year_vals)
-            #sum over glacier - all grid cell
             spatial_mean = dsmb[['weighted_mb']].sum(dim=['lat','lon'])
             dfmb = spatial_mean['weighted_mb'].to_dataframe()
-            #dfmb.reset_index(inplace=True)
-            #dfmb['FY'] =  dfmb.apply(lambda x: pd.datetime(x.time.year,1,1).year, axis=1)
-            mean_annual_df =  dfmb.resample("1Y").sum() #resample to fixed year to match geodetic
+            mean_annual_df =  dfmb.resample("1YE").sum() #resample to fixed year to match geodetic
             geod_mb = np.nanmean(mean_annual_df['weighted_mb'].values)
         else:
             print("2D case.")
             spatial_mean = IO.get_result()['MB'].mean(dim=['lat','lon'], keep_attrs=True)
-            #mean glacier-wide MB
-            #select timeframe from 2010 to 2020 (do not include first day of 2020)
             geod_df = spatial_mean.sel(time=slice(Config.time_start_cali,Config.time_end_cali)).to_dataframe()
-            #geod_df = spatial_mean.sel(time=slice("2010-01-01","2019-12-31")).to_dataframe()
-            #geod_df['FY'] = geod_df.apply(lambda x: str(pd.to_datetime(str(x.time.year)+'-01-01').year), axis=1)
-            mean_annual_df = geod_df.resample("1Y").sum()
+            mean_annual_df = geod_df.resample("1YE").sum()
             geod_mb = np.nanmean(mean_annual_df.MB.values)
         print("Geod. MB test.") 
         print(geod_mb)
-        print("Time it took to calculate geod. MB ", datetime.now()-times)
-    #else:
-    #    geod_mb = np.array([np.nan])
-    #cmb_spatial_mean_cum = np.cumsum(cmb_spatial_mean)    
+        print("Time it took to calculate geod. MB ", datetime.now()-times) 
 
     encoding = dict()
     for var in IO.get_restart().data_vars:
@@ -302,146 +222,57 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
         #encoding[var] = dict(zlib=True, complevel=compression_level, dtype=dtype, scale_factor=scale_factor, add_offset=add_offset, _FillValue=FillValue)
         encoding[var] = dict(zlib=True, complevel=Config.compression_level)
     
-    restart_path = create_data_directory(path='restart')                    
-    #IO.get_restart().to_netcdf(os.path.join(restart_path,f'restart_'{timestamp}+'_num{}_lrT_{}_lrRRR_{}_prcp_{}.nc'.format(count,round(abs(lapse_T),7), round(lapse_RRR,7),round(opt_dict['mult_factor_RRR'],5))), encoding=encoding)
+    restart_path = create_data_directory(path='restart')
+    #IO.get_restart().to_netcdf(os.path.join(restart_path,f'restart_{timestamp}.nc'), encoding=encoding)
     
-    #----------------------------------------------
-    # Implement TSL Extraction
-    #----------------------------------------------
-    #if (Config.restart == True) and (Config.merge == True):
-    #    print("Trying to concatenate files. Requires some time.")
-    #    #Get name of files 
-    #    previous_output_name = results_output_name.replace(time_start_str, time_start_old_file).replace(time_end_str, time_start_str)
-    #    merged_output_name = results_output_name.replace(time_start_str, time_start_old_file)
-    #    print("Merging with :", previous_output_name)
-    #    previous_output = xr.open_dataset(os.path.join(data_path,'output',previous_output_name))
-        #Get variables to concat on
-    #    list_vars = list(IO.get_result().keys())
-    #    [list_vars.remove(x) for x in ['HGT','SLOPE','ASPECT','MASK','MB']]
-        #To prevent OOM-Kill Event split into multiple datasets and add variable
-        #sub_lists = [list_vars[i:i+2] for i in range(0, len(list_vars),2)]
-        #do subset to only those variables for now to avoid memory error
-    #    list_vars = [x for x in list_vars if x in ['surfM','surfMB']]
-    #    print(list_vars)
-    #    ds_merged = xr.concat([previous_output[['MB','SNOWHEIGHT']],IO.get_result()[['MB','SNOWHEIGHT']]], dim='time')
-    #    for var in list_vars:
-    #        print(var)
-            #this produces memory error sometimes, why?
-            #Reconstruct by hand?
-    #        var_concat = np.concatenate((previous_output[var].values,IO.get_result()[var].values))
-    #        ds_merged[var] = (('time','lat','lon'), var_concat)
-    #        ds_merged[var].attrs['units'] = IO.get_result()[var].attrs['units']
-    #        ds_merged[var].attrs['long_name'] = IO.get_result()[var].attrs['long_name']
-    #        ds_merged[var].encoding['_FillValue'] = -9999
-    #        del var_concat
-    #    print("Part 1/2 of concat done.")
-                        
-    #    for var in ['HGT','MASK','SLOPE','ASPECT']:
-    #        ds_merged[var] = IO.get_result()[var]
-    #        print("Part 2/2 of concat done.")
-    #        ds_merged.to_netcdf(os.path.join(data_path,'output',merged_output_name))    
-    #        print("Concat successful.")
+    
     times = datetime.now()
     if Config.tsl_evaluation is True:
         print("Starting TSL eval.")
-        #times = datetime.now()
+        tsla_observations = pd.read_csv(Config.tsl_data_file) 
+
+        tsl_csv_name = 'tsla_'+results_output_name.split('.nc')[0].lower()+'.csv'    
         tsla_observations = pd.read_csv(Config.tsl_data_file)
-        
-        if (Config.restart == True) and (Config.merge == True):
-            tsl_csv_name = 'tsla_'+merged_output_name.split('.nc')[0].lower()+'.csv'
-            resampled_out = resample_output(ds_merged)
-            tsl_out = calculate_tsl(resampled_out, Config.min_snowheight)
-            tsla_stats = eval_tsl(tsla_observations, tsl_out, Config.time_col_obs, Config.tsla_col_obs)
-            print("TSLA Observed vs Modelled RMSE: " + str(tsla_stats[0]) + "; R-squared: " + str(tsla_stats[1]))
-            #tsl_out.to_csv(os.path.join(output_path,tsl_csv_name))
-            del ds_merged
-        else:
-            tsl_csv_name = 'tsla_'+results_output_name.split('.nc')[0].lower()+'.csv'    
-            tsla_observations = pd.read_csv(Config.tsl_data_file)
-            #a_resampled_out = resample_output(IO.get_result())
-            times = datetime.now()
-            dates,clean_day_vals,secs,holder = prereq_res(IO.get_result().sel(time=slice(Config.time_start_cali,Config.time_end_cali)))
-            resampled_array = resample_by_hand(holder, IO.get_result().sel(time=slice(Config.time_start_cali,Config.time_end_cali)).SNOWHEIGHT.values, secs, clean_day_vals)
-            resampled_out = construct_resampled_ds(IO.get_result().sel(time=slice(Config.time_start_cali,Config.time_end_cali)),resampled_array,dates.values)
-            #print(resampled_out)
-            print("Time required for resampling of output: ", datetime.now()-times)
-            #Need HGT values as 2D, ensured with following line of code.
-            resampled_out['HGT'] = (('lat','lon'), IO.get_result()['HGT'].data)
-            resampled_out['MASK'] = (('lat','lon'), IO.get_result()['MASK'].data)
-            #print("Time required for resampling: ", datetime.now()-times)
-            #a_tsl_out = create_tsl_df(a_resampled_out, min_snowheight, tsl_method, tsl_normalize)
-            tsl_out = create_tsl_df(resampled_out, Config.min_snowheight, Config.tsl_method, Config.tsl_normalize)
-            #tsl_out = calculate_tsl(resampled_out, min_snowheight)
-            #print(tsla_observations)
-            #print(tsl_out)
-            #print(np.nanmedian(tsl_out['Med_TSL']))
-            tsla_stats = eval_tsl(tsla_observations,tsl_out, Config.time_col_obs, Config.tsla_col_obs)
-            print("TSLA Observed vs. Modelled RMSE: " + str(tsla_stats[0])+ "; R-squared: " + str(tsla_stats[1]))
-<<<<<<< HEAD
-            #tsl_out.to_csv(os.path.join(output_path,tsl_csv_name))
-            ## Match to observation dates for pymc routine
-            tsl_out_match = tsl_out.loc[tsl_out['time'].isin(tsla_observations['LS_DATE'])]
-            #print(np.array(tsl_out_match['Med_TSL']))
-            #print(tsl_out_match['Med_TSL'].values.shape)
-            #tsla_obs_v2 = tsla_observations.loc[tsla_observations['LS_DATE'].isin(tsl_out_match['time'])]
-            
-            #if tsl_normalize:
-            #    tsla_obs_v2['SC_stdev'] = (tsla_obs_v2['SC_stdev']) / (tsla_obs_v2['glacier_DEM_max'] - tsla_obs_v2['glacier_DEM_min'])
-=======
-            tsl_out.to_csv(os.path.join(data_path,'output',tsl_csv_name))
->>>>>>> 236b0b7 (feat: now works with pymc and starts to incorporate recent pushes to allow it to run with newer versions of xarray and dask distributed)
-            #a_tsl_out.to_csv(os.path.join(data_path,'output','test_for_resample.csv'))
-            ### PUTTING TEST FOR COMB COST FUNCTION SCORE HERE ###
-            #eval_tsla = np.delete(tsla_obs_v2.TSL_normalized.values, np.argwhere(np.isnan(tsl_out_match.Med_TSL.values)))
-            #path_to_geod = "/data/scratch/richteny/Hugonnet_21_MB/"
-            #rgi_id = "RGI60-11.00897"
-            #rgi_region = rgi_id.split('-')[-1][:2]
-            #geod_ref = pd.read_csv(path_to_geod+"dh_{}_rgi60_pergla_rates.csv".format(rgi_region))
-            #geod_ref = geod_ref.loc[geod_ref['rgiid'] == rgi_id]
-            #geod_ref = geod_ref.loc[geod_ref['period'] == "2000-01-01_2010-01-01"]
-            #geod_mb_ref = geod_ref[['dmdtda','err_dmdtda']]
-            #eval_mb = geod_mb_ref['dmdtda'].values
-            #sigma_mb = geod_mb_ref['err_dmdtda'].values
-            #sigma_tsla = np.delete(tsla_obs_v2.SC_stdev.values, np.argwhere(np.isnan(tsl_out_match.Med_TSL.values)))
-            #sim_tsla = tsl_out_match.Med_TSL.values[~np.isnan(tsl_out_match.Med_TSL.values)]
-            #mbe_tsla = (((eval_tsla - sim_tsla)**2) / (sigma_tsla**2)).mean() 
-            #mbe = ((eval_mb - geod_mb)**2) / (sigma_mb**2)
-            #cost = -(1*mbe_tsla + 1*mbe)
-            #print("Full cost function value is: ", cost)
+        dates,clean_day_vals,secs,holder = prereq_res(IO.get_result().sel(time=slice(Config.time_start_cali,Config.time_end_cali)))
+        resampled_array = resample_by_hand(holder, IO.get_result().sel(time=slice(Config.time_start_cali,Config.time_end_cali)).SNOWHEIGHT.values, secs, clean_day_vals)
+        resampled_out = construct_resampled_ds(IO.get_result().sel(time=slice(Config.time_start_cali,Config.time_end_cali)),resampled_array,dates.values)
+
+        print("Time required for resampling of output: ", datetime.now()-times)
+        #Need HGT values as 2D, ensured with following line of code.
+        resampled_out['HGT'] = (('lat','lon'), IO.get_result()['HGT'].data)
+        resampled_out['MASK'] = (('lat','lon'), IO.get_result()['MASK'].data)
+
+        tsl_out = create_tsl_df(resampled_out, Config.min_snowheight, Config.tsl_method, Config.tsl_normalize)
+        print("Max. TSLA:", np.nanmax(tsl_out['Med_TSL'].values))
+        tsl_out.to_csv(os.path.join(output_path, tsl_csv_name))
+        tsla_stats = eval_tsl(tsla_observations,tsl_out, Config.time_col_obs, Config.tsla_col_obs)
+        print("TSLA Observed vs. Modelled RMSE: " + str(tsla_stats[0])+ "; R-squared: " + str(tsla_stats[1]))
+        ## Match to observation dates for pymc routine
+        tsl_out_match = tsl_out.loc[tsl_out['time'].isin(tsla_observations['LS_DATE'])]
+    
         print("Time required for full TSL EVAL: ", datetime.now()-times)
-        
+
         ## Create DF that holds params to save ##
         if Config.write_csv_status:
             try:
-                param_df = pd.read_csv("./simulations/cosipy_synthetic_params_lhs-fixedrrr.csv", index_col=0)
+                param_df = pd.read_csv(f"./simulations/{Config.csv_filename}", index_col=0)
                 curr_df = pd.DataFrame( np.concatenate((np.array(opt_dict, dtype=float),np.array([geod_mb]),
-                                                        tsl_out_match.Med_TSL.values)) ).transpose()
+                                        tsl_out_match.Med_TSL.values)) ).transpose()
                 curr_df.columns = ['rrr_factor', 'alb_ice', 'alb_snow', 'alb_firn', 'albedo_aging',
                                    'albedo_depth', 'center_snow_transfer', 'spread_snow_transfer',
                                    'roughness_fresh_snow', 'roughness_ice', 'roughness_firn', 'aging_factor_roughness', 'mb'] +\
                                   [f'sim{i+1}' for i in range(tsl_out_match.shape[0])]
-                #print("\n--------------------------------")
-                #print(curr_df)
-                #curr_df.to_csv("./simulations/curr_df.csv")
+
                 param_df = pd.concat([param_df, curr_df], ignore_index=True)
-                #print(param_df)
-                #print("\n----------------------------------")
             except:
-                #param_df does not exist yet, create
-                #print(tsl_out_match)
-                #print(tsl_out_match.shape[1])
-                print(opt_dict)
-                #dtype float in np.array(opt_dict, dtype=float) not working when using prescribed parameters in earlier instance
-                #test = np.concatenate((np.array(opt_dict, dtype=object), np.array([geod_mb]), tsl_out_match.Med_TSL.values))
-                #print(test)
+                #print(opt_dict)
                 param_df = pd.DataFrame( np.concatenate((np.array(opt_dict, dtype=float), np.array([geod_mb]),
-                                                         tsl_out_match.Med_TSL.values)) ).transpose()
-                #print(param_df)
+                                         tsl_out_match.Med_TSL.values)) ).transpose()
                 param_df.columns =   ['rrr_factor', 'alb_ice', 'alb_snow', 'alb_firn', 'albedo_aging',
                                       'albedo_depth', 'center_snow_transfer', 'spread_snow_transfer',
                                       'roughness_fresh_snow', 'roughness_ice', 'roughness_firn', 'aging_factor_roughness', 'mb'] +\
                                      [f'sim{i+1}' for i in range(tsl_out_match.shape[0])]
-            param_df.to_csv("./simulations/cosipy_synthetic_params_lhs-fixedrrr.csv")
+            param_df.to_csv(f"./simulations/{Config.csv_filename}")
 
     #-----------------------------------------------
     # Stop time measurement
@@ -452,58 +283,34 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
     #-----------------------------------------------
     # Print out some information
     #-----------------------------------------------
-<<<<<<< HEAD
     get_time_required(
         action="write restart and output files", times=duration_run_writing
     )
     run_time = duration_run.total_seconds()
     print(f"\tTotal run duration: {run_time // 60.0:4g} minutes {run_time % 60.0:2g} seconds\n")
     print_notice(msg="\tSIMULATION WAS SUCCESSFUL")
-=======
-    print("\t Time required to write restart and output files: %4g minutes %2g seconds \n" % (duration_run_writing.total_seconds()//60.0,duration_run_writing.total_seconds()%60.0))
-    print("\t Total run duration: %4g minutes %2g seconds \n" % (duration_run.total_seconds()//60.0,duration_run.total_seconds()%60.0))
-    print('--------------------------------------------------------------')
-    print('\t SIMULATION WAS SUCCESSFUL')
-    print('--------------------------------------------------------------')
-    
-    return (geod_mb,tsl_out_match)
-    #return geod_mb
-    #return tsl_out
->>>>>>> 236b0b7 (feat: now works with pymc and starts to incorporate recent pushes to allow it to run with newer versions of xarray and dask distributed)
 
     return (geod_mb,tsl_out_match)
 
 def run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures, opt_dict=None):
-    
     Config()
     Constants()
-    
+
     with Client(cluster) as client:
         print_notice(msg="\tStarting clients and submitting jobs ...")
         print(cluster)
         print(client)
 
         # Get dimensions of the whole domain
-<<<<<<< HEAD
         # ny = DATA.sizes[Config.northing]
         # nx = DATA.sizes[Config.easting]
-=======
-        ny = DATA.sizes[northing]
-        nx = DATA.sizes[easting]
->>>>>>> 236b0b7 (feat: now works with pymc and starts to incorporate recent pushes to allow it to run with newer versions of xarray and dask distributed)
 
         # cp = cProfile.Profile()
 
         # Get some information about the cluster/nodes
-<<<<<<< HEAD
         total_grid_points = DATA.sizes[Config.northing]*DATA.sizes[Config.easting]
         if Config.slurm_use:
             total_cores = SlurmConfig.cores * SlurmConfig.nodes
-=======
-        total_grid_points = DATA.sizes[northing]*DATA.sizes[easting]
-        if slurm_use is True:
-            total_cores = cores*nodes
->>>>>>> 236b0b7 (feat: now works with pymc and starts to incorporate recent pushes to allow it to run with newer versions of xarray and dask distributed)
             points_per_core = total_grid_points // total_cores
             print(total_grid_points, total_cores, points_per_core)
 
@@ -548,13 +355,8 @@ def run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures, opt_dict=None):
 
         # Distribute data and model to workers
         start_res = datetime.now()
-<<<<<<< HEAD
         for y,x in product(range(DATA.sizes[Config.northing]),range(DATA.sizes[Config.easting])):
             if Config.stake_evaluation:
-=======
-        for y,x in product(range(DATA.sizes[northing]),range(DATA.sizes[easting])):
-            if stake_evaluation is True:
->>>>>>> 236b0b7 (feat: now works with pymc and starts to incorporate recent pushes to allow it to run with newer versions of xarray and dask distributed)
                 stake_names = []
                 # Check if the grid cell contain stakes and store the stake names in a list
                 for idx, (stake_loc_y, stake_loc_x, stake_name) in enumerate(stakes_list):
@@ -567,12 +369,10 @@ def run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures, opt_dict=None):
                 mask = DATA.MASK.sel(south_north=y, west_east=x)
                 # Provide restart grid if necessary
                 if (mask == 1) and (not Config.restart):
-                    if np.isnan(DATA.sel(south_north=y, west_east=x).to_array()).any():
-                        print_nan_error()
-                    futures.append(client.submit(cosipy_core, DATA.sel(south_north=y, west_east=x), y, x, stake_names=stake_names, stake_data=df_stakes_data))
+                    check_for_nan(data=DATA.sel(south_north=y, west_east=x))
+                    futures.append(client.submit(cosipy_core, DATA.sel(south_north=y, west_east=x), y, x, stake_names=stake_names, stake_data=df_stakes_data, opt_dict=opt_dict))
                 elif (mask == 1) and (Config.restart):
-                    if np.isnan(DATA.sel(south_north=y, west_east=x).to_array()).any():
-                        print_nan_error()
+                    check_for_nan(data=DATA.sel(south_north=y, west_east=x))
                     futures.append(
                         client.submit(
                             cosipy_core,
@@ -592,12 +392,10 @@ def run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures, opt_dict=None):
                 mask = DATA.MASK.isel(lat=y, lon=x)
                 # Provide restart grid if necessary
                 if (mask == 1) and (not Config.restart):
-                    if np.isnan(DATA.isel(lat=y,lon=x).to_array()).any():
-                        print_nan_error()
+                    check_for_nan(data=DATA.isel(lat=y,lon=x))
                     futures.append(client.submit(cosipy_core, DATA.isel(lat=y, lon=x), y, x, stake_names=stake_names, stake_data=df_stakes_data, opt_dict=opt_dict))
                 elif (mask == 1) and (Config.restart):
-                    if np.isnan(DATA.isel(lat=y,lon=x).to_array()).any():
-                        print_nan_error()
+                    check_for_nan(data=DATA.isel(lat=y,lon=x))
                     futures.append(
                         client.submit(
                             cosipy_core,
@@ -636,7 +434,7 @@ def run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures, opt_dict=None):
             indY, indX, local_restart, RAIN, SNOWFALL, LWin, LWout, H, LE, B, \
                 QRR, MB, surfMB, Q, SNOWHEIGHT, TOTALHEIGHT, TS, ALBEDO, \
                 NLAYERS, ME, intMB, EVAPORATION, SUBLIMATION, CONDENSATION, \
-                DEPOSITION, REFREEZE, subM, Z0, surfM, MOL, LAYER_HEIGHT, \
+                DEPOSITION, REFREEZE, subM, Z0, surfM, new_snow_height, new_snow_timestamp, old_snow_timestamp, MOL, LAYER_HEIGHT, \
                 LAYER_RHO, LAYER_T, LAYER_LWC, LAYER_CC, LAYER_POROSITY, \
                 LAYER_ICE_FRACTION, LAYER_IRREDUCIBLE_WATER, LAYER_REFREEZE, \
                 stake_names, stat, df_eval = future.result()
@@ -828,10 +626,9 @@ def print_notice(msg:str):
     print(f"{'-'*72}\n{msg}\n{'-'*72}\n")
 
 
-def print_nan_error():
-    print('ERROR! There are NaNs in the dataset.')
-    sys.exit()
-
+def check_for_nan(data):
+    if np.isnan(data.to_array()).any():
+        raise SystemExit('ERROR! There are NaNs in the dataset.')
 
 def get_time_required(action:str, times):
     run_time = get_time_elapsed(times)
@@ -846,11 +643,4 @@ def get_time_elapsed(times) -> str:
 
 """ MODEL EXECUTION """
 if __name__ == "__main__":
-    #import pstats
-    #profiler = cProfile.Profile()
-    #profiler.enable()
     main()
-    #profiler.disable()
-    #stats=pstats.Stats(profiler).sort_stats("tottime")
-    #stats.print_stats()
-    
