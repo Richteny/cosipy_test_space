@@ -1,4 +1,4 @@
-.. _Documentation:
+.. _documentation:
 
 ===============
 Getting started
@@ -6,11 +6,27 @@ Getting started
 
 .. _requirements:
 
-
 Requirements
 ============
 
-<<<<<<< HEAD
+COSIPY is compatible with Python 3.9-3.12 on Linux and MacOS.
+If you think your specific Python version or operating system causes an issue with COSIPY, please create a topic in the forum.
+The model is tested and developed on:
+
+ * Python 3.9-3.12 on Ubuntu 22.04 / Debian 12
+ * Anaconda distribution on macOS
+ * Anaconda 3 64-bit (Python 3.9) on CentOS Linux 7.4
+ * High-Performance Cluster Erlangen-Nuremberg University 
+
+.. warning::
+    COSIPY 2.0 is not backwards-compatible with older versions of COSIPY.
+    Please :ref:`read the instructions <upgrading>` on upgrading from an older version, and using the :ref:`new configuration system <configuration>`.
+
+.. _installation:
+
+Installation
+============
+
 For Python 3.11 and above, the recommended environment manangers are conda/mamba.
 
 Pre-requisites
@@ -25,8 +41,6 @@ Install GDAL:
     conda install gdal  # with conda/mamba
 
 If you are installing dependencies with conda/mamba, use ``-c conda-forge`` if it does not already have the highest channel priority.
-
-When you are installing from source, :ref:`the provided makefile<makefile>` will install the ``gdal`` package automatically.
 
 .. note:: If you are installing with **pip** and Python 3.11+, you will need to `compile and install richdem`_.
     This is not necessary when using conda/mamba.
@@ -57,51 +71,29 @@ This is the recommended installation method if you do not plan to modify the sou
 Installation from Source
 ------------------------
 
-Activate your preferred python environment, then install dependencies:
+Activate your preferred python environment, then run:
 
 .. code-block:: bash
 
     git clone https://github.com/cryotools/cosipy.git
-    cd cosipy
-
-    make install-conda-envs                      # install using conda/mamba
-    conda install --file conda_requirements.txt  # install with conda
-
     pip install -r requirements.txt              # install default environment
     pip install -r dev_requirements.txt          # install dev environment
-
+    conda install --file conda_requirements.txt  # install using conda/mamba
     python3 COSIPY.py -h
-    make commands      # if you prefer less typing
-    make setup-cosipy  # generate configuration files
 
 Installation as an Editable
 ---------------------------
 
 Installing COSIPY as an editable allows it to run from any directory.
 
-The :ref:`provided makefile<makefile>` can simplify your workflow.
-View all possible commands using ``make help``.
-
 .. code-block:: bash
 
     git clone https://github.com/cryotools/cosipy.git
     cd cosipy
-
-    make install            # with conda/mamba
-    make install-pip        # with pip
-
-    cosipy-setup            # generate sample configuration files
-    cosipy-help             # view help
-
-That's it!
-Other installation options with pip:
-
-.. code-block:: bash
-
-    pip install -e .        # identical to make install-pip
-    make install-pip-tests  # install with test dependencies using pip
-    make install-pip-dev    # install with development dependencies using pip
-
+    pip install -e .
+    pip install -e .[tests] # install with dependencies for tests
+    pip install -e .[docs]  # install with dependencies for documentation
+    pip install -e .[dev]   # install with dependencies for development
     cosipy-setup            # generate sample configuration files
     cosipy-help             # view help
 
@@ -116,204 +108,237 @@ If you have written your own modules that import from ``constants.py``, ``config
 Navigate to COSIPY's root directory and convert your existing configuration files:
 
 .. code-block:: bash
-=======
-Packages and libraries
-----------------------
->>>>>>> 8ea90ec ((Update): Update to many PRs from COSIPY release 2.0. Bulk-changes)
 
-COSIPY should run with any Python 3 version on any operating system. If you think the
-reason for a problem might be your specific Python 3 version or your operating
-system, please create a topic in the forum. The model is tested and
-developed on:
+    pip install toml
+    git fetch --all
+    git checkout master -- convert_config.py
+    python convert_config.py  # convert .toml files
 
- * Anaconda Distribution on max OS
- * Python 3.6.5 on Ubuntu 18.04
- * Anaconda 3 64-bit (Python 3.6.3) on CentOS Linux 7.4
- * High-Performance Cluster Erlangen-Nuremberg University 
+This works on any branch regardless of local changes.
+Alternatively you can copy and run ``convert_config.py`` into any older COSIPY source tree.
+This will preserve your configuration for ``config.py``, ``constants.py``, ``aws2cosipyConfig.py`` and ``wrf2cosipyConfig.py``.
 
-The model requires the following libraries:
+.. warning::
+    Parameters for ``create_static`` must still be added manually to the generated ``utilities_config.toml``.
+    Custom configuration variables that do not appear in the main branch must also be added manually.
 
- * xarray
- * netcdf4
- * numba
- * dask_jobqueue
- * numpy (included in Anaconda)
- * pandas (included in Anaconda)
- * scipy (included in Anaconda)
- * distributed (included in Anaconda)
+Checkout a new branch with a clean version of COSIPY and merge your modifications.
 
+.. code-block:: bash
 
-Additional packages (optional):
+    git checkout master
+    git pull
+    git checkout -b <new-branch-name>
+    git merge --no-ff <old-branch-name>  # Good luck!
 
- * gdal (e.g. in Debian-based Linux distributions package called gdal-bin)
- * climate date operators (e.g. in Debian-based Linux distributions package called cdo)
- * netCDF Operators (e.g. in Debian-based Linux distritutions package called nco)
+You can also merge the new version of COSIPY into an existing branch, but this creates even more merge conflicts.
+Most conflicts involve importing configuration parameters or constants.
+In most cases you simply need to prepend ``Config.`` or ``Constants.`` to a variable.
+Please read the documentation for the :ref:`new configuration system <configuration>`.
 
+After updating to the latest version of COSIPY, run ``python COSIPY.py --help`` to see how to specify paths to configuration files.
+COSIPY will default to ``./config.toml``, ``./constants.toml``, ``./slurm_config.toml``, ``./utilities_config.toml`` in the current working directory.
+**You no longer need to hardcode different simulation parameters into a single file.**
 
 .. _tutorial:
 
-<<<<<<< HEAD
 Tutorial
 ========
 
 For this tutorial, download or copy the sample ``data`` folder and place it in your COSIPY working directory.
-If you have installed COSIPY as a package, use the entry point ``setup-cosipy`` to generate the sample configuration files.
-Otherwise, run ``make setup-cosipy``.
-=======
-Quick tutorial
-==============
->>>>>>> 8ea90ec ((Update): Update to many PRs from COSIPY release 2.0. Bulk-changes)
+If you have installed COSIPY as a package, you can use the entry point ``setup-cosipy`` to generate the sample configuration files.
+Otherwise, run ``python -m cosipy.utilities.setup_cosipy.setup_cosipy``.
 
-Pre-processing
+Pre-Processing
 --------------
 
-COSIPY requires a file with the corresponding meteorological and static input
-data. Various tools are available to create the file from simple text or
-geotiff files.
-
+COSIPY requires a file with the corresponding meteorological and static input data.
+Various tools are available to create the file from simple text or geotiff files.
 
 .. _static_tutorial:
 
 Create the static file
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-In the first step, topographic parameters are derived from the Digital Terrain
-Model (DEM) and written to a NetCDF file. A shape file is also required to
-delimit the glaciated areas. The DEM and the shapefile should be in lat/lon
-WGS84 (EPSG:4326) projection.
+In the first step, topographic parameters are derived from a Digital Terrain Model (DEM) and written to a netCDF file.
+A shape file is also required to delimit the glaciated areas.
+The DEM and the shapefile should be in lat/lon WGS84 (EPSG:4326) projection.
 
-.. note:: The DEM can be reprojected to EPSG:4326 using gdal::
+.. note:: The DEM can be reprojected to EPSG:4326 using gdal:
 
-           > gdalwarp -t_srs EPSG:4326 dgm_hintereisferner.tif dgm_hintereisferner-lat_lon.tif 
+    .. code-block:: bash
+
+        gdalwarp -t_srs EPSG:4326 dgm_hintereisferner.tif dgm_hintereisferner-lat_lon.tif
 
 
-COSIPY comes with the script create_static_file.py located in the utilities folder.
-This script runs some gdal routines in the command line. That's is the reason that
-we can provide this script only for UNIX and MAC users at the moment.
-The script creates some intermediate NetCDF files (dem.nc, aspect.nc,
-mask.nc and slope.nc) that are automatically deleted after the static file is created. 
+COSIPY comes with the script ``create_static_file.py`` located in the utilities folder.
+This script runs some gdal routines in the command line.
+At the moment this is only compatible with UNIX and MacOS.
+The script creates some intermediate netCDF files (dem.nc, aspect.nc, mask.nc and slope.nc) that are automatically deleted after the static file is created.
 
-Here we use the DEM **n30_e090_3arc_v2.tif** (SRTM) and the shapefile
-**Zhadang_RGI6.shp** provided in the /data/static folder. The static file is
-created using::
+Open ``utilities_config.toml``.
+Under ``create_static.paths``, check the paths point to the DEM **n30_e090_3arc_v2.tif** (SRTM) and the shapefile **Zhadang_RGI6.shp** provided in the ``./data/static/`` folder.
 
-        python create_static_file.py
+The static file is created using either:
 
-The command creates a new file **Zhadang_static.nc** in the /data/static folder.
-The file names and paths can be simply changed in the python script.
+.. code-block:: bash
 
-<<<<<<< HEAD
-    make create-static  # from source
     python -m cosipy.utilities.createStatic.create_static_file  # from source
     cosipy-create-static  # from entry point
 
 The command creates a new file **Zhadang_static.nc** in the ``./data/static/`` folder.
-=======
->>>>>>> 8ea90ec ((Update): Update to many PRs from COSIPY release 2.0. Bulk-changes)
 
 .. _input_tutorial:
 
 Create the COSIPY input file
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The creation of the input file requires the static information (file) from
-:ref:`section <static_tutorial>`. To convert the data from an automatic weather station
-(AWS) we use the conversion script aws2cosipy.py located in the folder
-/utilities/aws2cosipy. The script comes with a configuration file
-aws2cosipyConfig.py which defines the structure of the AWS file and other
-user-defined parameter. Since the input file provides point information, the
-data is interpolated via lapse rates for two-dimensional runs.  The solar
-radiation fields is based on a model suggested by Wohlfahrt et al.  (2016; doi:
-10.1016/j.agrformet.2016.05.012).  Other variables as wind velocity and cloud
-cover fraction are assumed to be constant over the domain.
+Creating the input file requires the static information file from :ref:`the previous section<static_tutorial>`.
+To convert the data from an automatic weather station (AWS) use the conversion script ``aws2cosipy.py``, located in the folder ``./utilities/aws2cosipy/``.
+A sample configuration is available in ``utilities_config.toml`` which defines the structure of the AWS file and other user-defined parameters.
+Since the input file provides point information, the data is interpolated via lapse rates for two-dimensional runs.
+The solar radiation fields are based on a model by `Wohlfahrt et al. (2016)`_.
+Other variables like wind velocity and cloud cover fraction are assumed constant over the domain.
 
-.. note:: The script aws2cosipy.py only serves to illustrate how data can be
-          prepared for COSIPY. For most applications it is recommended to develop your
-          own routine for data interpolation.
+.. _`Wohlfahrt et al. (2016)`: https://doi.org/10.1016/j.agrformet.2016.05.012
 
-The script is executed with
+.. note:: The script ``aws2cosipy.py`` is only an illustration of how data can be prepared for COSIPY.
+    For most applications it is recommended to develop your own data interpolation routines.
 
-::
+The script is executed with:
 
-        > python aws2cosipy.py / 
-          -c ../../data/input/Zhadang/Zhadang_ERA5_2009_2018.csv / 
-          -o ../../data/input/Zhadang/Zhadang_ERA5_2009.nc /
-          -s ../../data/static/Zhadang_static.nc /
-          -b 20090101 -e 20091231
+.. code-block:: bash
 
-+-----------+-------------+
-| Argument  | Description |
-+-----------+-------------+
-| -c        | meteo file  |
-+-----------+-------------+
-| -o        | output file |
-+-----------+-------------+
-| -s        | static file |
-+-----------+-------------+
-| -b        | start date  |
-+-----------+-------------+
-| -e        | end date    |
-+-----------+-------------+
+    # from source
+    python -m cosipy.utilities.aws2cosipy.aws2cosipy \
+        -i ./data/input/Zhadang/Zhadang_ERA5_2009_2018.csv \
+        -o ./data/input/Zhadang/Zhadang_ERA5_2009.nc \
+        -s ./data/static/Zhadang_static.nc \
+        -b 20090101 -e 20091231
 
-<<<<<<< HEAD
-The example should take about a minute on a workstation with 4 cores.
-=======
-If the script was executed successfully, the file
-/data/input/Zhadang/Zhadang_ERA5_2009.nc should have been created.
->>>>>>> 8ea90ec ((Update): Update to many PRs from COSIPY release 2.0. Bulk-changes)
+    # from entry point
+    cosipy-aws2cosipy \
+        -i ./data/input/Zhadang/Zhadang_ERA5_2009_2018.csv \
+        -o ./data/input/Zhadang/Zhadang_ERA5_2009.nc \
+        -s ./data/static/Zhadang_static.nc \
+        -b 20090101 -e 20091231
 
-.. _run:
+If the script executes successfully it will create the file ``./data/input/Zhadang/Zhadang_ERA5_2009.nc``.
 
-Execute the COSIPY model:
-~~~~~~~~~~~~~~~~~~~~~~~~~
+**Usage:**
 
-To run Cosipy, run the following command in the root directory::
+.. code-block:: bash
 
-<<<<<<< HEAD
-.. _makefile:
+    cosipy.utilities.aws2cosipy [-h] [-u <path>] -c <path> -o <path> -s <path> [-b <str>] [-e <str>] [-xl <float>] [-xr <float>] [-yl <float>] [-yu <float>]
 
-Makefile
---------
+Required arguments:
+    -i, --csv_file <path>       Path to .csv file with meteorological data.
+    -o, --cosipy_file <path>    Path to the resulting COSIPY netCDF file.
+    -s, --static_file <path>    Path to static file with DEM, slope etc.
 
-The provided makefile can simplify your workflow.
-View all possible commands using ``make help``.
+Optional arguments:
+    -u, --utilities <path>      Relative path to utilities' configuration file.
+    -b, --start_date <str>      Start date.
+    -e, --end_date <str>        End date.
+    --xl <float>                Left longitude value of the subset.
+    --xr <float>                Right longitude value of the subset.
+    --yl <float>                Lower latitude value of the subset.
+    --yu <float>                Upper latitude value of the subset.
+
+.. _run_model:
+
+Run the COSIPY model
+--------------------
+
+To run COSIPY, run the following command in the root directory:
+
+.. code-block:: bash
+
+    python COSIPY.py  # from source
+    run-cosipy        # from package
+
+The example should take less than a minute on a workstation with 4 cores.
+
+.. _run_usage:
+
+Running COSIPY
+==============
+
+COSIPY accepts arguments specifying paths to configuration files.
+
+**Usage:**
+
+.. code-block:: bash
+
+    python COSIPY.py [-h] [-c <path>] [-x <path>] [-s <path>]  # from source
+    run-cosipy [-h] [-c <path>] [-x <path>] [-s <path>]  # from package
+
+Optional arguments:
+    -c <path>, --config <path>      Relative path to configuration file.
+    -x <path>, --constants <path>   Relative path to constants file.
+    -s <path>, --slurm <path>       Relative path to Slurm configuration file.
+
+.. _entry_points:
+
+Entry Points
+------------
+
+If installed as an editable or package, COSIPY provides several entry points to speed up common operations.
+These entry points accept python arguments (such as ``--help``).
 
 Available shortcuts:
-    :black:                 Format all python files with black.
-    :build:                 Build COSIPY package.
-    :commands:              Display help for COSIPY.
-    :commit:                Test, then commit.
-    :coverage:              Run pytest with coverage.
-    :docs:                  Build documentation.
-    :flake8:                Lint with flake8.
-    :format:                Format all python files.
-    :help:                  Display this help screen.
-    :install-conda-env:     Install conda/mamba dependencies.
-    :install:               Install editable package using conda/mamba.
-    :install-pip-all:       Install editable package with tests & documentation using pip.
-    :install-pip-dev:       Install editable package in development mode using pip.
-    :install-pip-docs:      Install editable package with local documentation using pip.
-    :install-pip:           Install editable package using pip.
-    :install-pip-tests:     Install editable package with tests using pip.
-    :isort:                 Optimise python imports.
-    :pkg:                   Run tests, build documentation, build package.
-    :pylint:                Lint with Pylint.
-    :run:                   Alias for ``make commands``.
-    :setup-cosipy:          Generate COSIPY configuration files.
-    :tests:                 Run tests.
+    :cosipy-help:           Display help for running COSIPY.
+    :cosipy-shortcuts:      Display available entry points.
+    :cosipy-setup:          Setup missing configuration files.
+    :cosipy-run:            Run COSIPY. Accepts python arguments.
+    :cosipy-aws2cosipy:     Convert AWS data to netCDF.
+    :cosipy-create-static:  Create static file.
+    :cosipy-wrf2cosipy:     Convert WRF data to netCDF.
+    :cosipy-plot-field:     Generate field plots.
+    :cosipy-plot-profile:   Generate profile plots.
+    :cosipy-plot-vtk:       Generate 3D plots.
+    :help-cosipy:           Alias for ``cosipy-help``.
+    :run-cosipy:            Alias for ``cosipy-run``.
+    :setup-cosipy:          Alias for ``cosipy-setup``.
 
 .. _configuration:
-=======
-        > python COSIPY.py
->>>>>>> 8ea90ec ((Update): Update to many PRs from COSIPY release 2.0. Bulk-changes)
 
-The example should take about 3-5 minutes on a workstation with 4 cores.
+Configuration
+=============
 
-.. note:: **The configuration and definitions of parameters/constants is done
-          in config.py and constants.py.**
+.. note:: Configure parameters/constants in ``config.toml``, ``constants.toml``, ``slurm_config.toml`` and ``utilities_config.toml``.
 
+All user configuration is done with .toml files.
+If COSIPY is installed as a package, generate sample configuration files using ``setup-cosipy``.
+Configuration is split into four parts: model configuration, constants, utilities, and Slurm configuration.
+You can keep multiple configuration files for different simulations in the same (or indeed any working directory).
 
-Visualization
---------------
+If you are using a cluster, you can also chain multiple simulations with a single batch script:
 
-     
+.. code-block:: bash
+
+    python $WORK/COSIPY.py -c config_01.toml -x constants_01.toml -s slurm_01.toml
+    python $WORK/COSIPY.py -c config_02.toml -x constants_02.toml -s slurm_02.toml
+
+Select which output variables are saved to disk under ``[OUTPUT_VARIABLES]`` in ``config.toml``.
+This can prevent out-of-memory errors when working with very large datasets.
+This replaces the ``cosipy/output`` and ``cosipy/output.full`` files.
+
+Import configuration parameters or constants into a module.
+These are read-only to avoid namespace collisions.
+
+.. code-block:: python
+
+    from cosipy.config import Config
+    from cosipy.constants import Constants
+
+    foo = Config.foo  # declare at module level if used in an njitted function
+
+    @njit
+    def get_foo_njit(...):
+        """Njitted functions cannot reference the imported parameters directly."""
+        return foo
+
+    def get_foo_nopython(...):
+        """Non-compiled functions can reference the parameters directly."""
+        return Config.foo

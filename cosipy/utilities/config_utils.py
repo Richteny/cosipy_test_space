@@ -3,7 +3,6 @@ Hook configuration files for COSIPY utilities.
 """
 
 import argparse
-import pathlib
 import sys
 from collections import namedtuple
 
@@ -74,9 +73,9 @@ class UtilitiesConfig(TomlLoader):
         parser.add_argument(
             "-u",
             "--utilities",
-            default=pathlib.Path("./utilities_config.toml"),
+            default="./utilities_config.toml",
             dest="utilities_path",
-            type=pathlib.Path,
+            type=str,
             metavar="<path>",
             required=False,
             help="relative path to utilities' configuration file",

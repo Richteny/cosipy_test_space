@@ -151,7 +151,7 @@ def tsl_method_conservative(snowheights, hgts, mask, min_snowheight):
         filtered_elev_nosnow = np.nanmax(np.where(snowheights[n,:,:]<min_snowheight, hgts, np.nan))
         #print(filtered_elev_nosnow)
         if np.isnan(filtered_elev_nosnow):
-            print("Glacier seems to be fully snow-covered. Assigning minimum elevation.")
+            #print("Glacier seems to be fully snow-covered. Assigning minimum elevation.")
             filtered_elev_nosnow = np.nanmin(np.where(mask==1, hgts, np.nan))
             #print(filtered_elev_nosnow,"m a.s.l.")
             flag[n] = 1

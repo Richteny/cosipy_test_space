@@ -1,10 +1,10 @@
-from types import SimpleNamespace
-
 import numpy as np
 from numba import njit
 from scipy.optimize import minimize, newton
 
+from cosipy.config import Config
 from cosipy.constants import Constants
+from cosipy.modules.secant import secant
 
 zlt1 = Constants.zlt1
 zlt2 = Constants.zlt2
@@ -19,26 +19,33 @@ spec_heat_water = Constants.spec_heat_water
 sfc_temperature_method = Constants.sfc_temperature_method
 surface_emission_coeff = Constants.surface_emission_coeff
 water_density = Constants.water_density
+WRF_X_CSPY = Config.WRF_X_CSPY
 
 
-
-def update_surface_temperature(GRID, dt, z, z0, T2, rH2, p, SWnet, u2, RAIN, SLOPE, LWin=None, N=None, opt_dict=Dict.empty(key_type=types.unicode_type,value_type=types.float64)):
+def update_surface_temperature(GRID, dt, z, z0, T2, rH2, p, SWnet, u2, RAIN, SLOPE, LWin=None, N=None):
     """Solve the surface temperature and get the surface fluxes.
+
+    Implemented minimisation methods:
+
+        - **Newton**: Recommended, and fastest.
+        - **Secant**: Potentially faster for coupled WRF simulations.
+        - **L-BFGS-B**: Slower, different results since 02/2024.
+        - **SLSQP**: Slower, different results since 02/2024.
 
     Args:
         GRID (Grid): Glacier data structure.
-        dt: Integration time [s] - can vary in WRF_X_CSPY.
-        z: Measurement height [m] - varies in WRF_X_CSPY.
-        z0: Roughness length [m].
-        T2: Air temperature [K].
-        rH2: Relative humidity [%].
-        p: Air pressure [hPa].
-        SWnet: Incoming shortwave radiation [|W m^-2|].
-        u2: Wind velocity [|m s^-1|].
-        RAIN: RAIN [mm].
-        SLOPE: Slope of the surface [degree].
-        LWin: Incoming longwave radiation [|W m^-2|].
-        N: Fractional cloud cover [-].
+        dt (float): Integration time [s] - can vary in WRF_X_CSPY.
+        z (float): Measurement height [m] - varies in WRF_X_CSPY.
+        z0 (float): Roughness length [m].
+        T2 (float): Air temperature [K].
+        rH2 (float): Relative humidity [%].
+        p (float): Air pressure [hPa].
+        SWnet (float): Incoming shortwave radiation [|W m^-2|].
+        u2 (float): Wind velocity [|m s^-1|].
+        RAIN (float): Rain [mm].
+        SLOPE (float): Slope of the surface [degree].
+        LWin (float): Incoming longwave radiation [|W m^-2|].
+        N (float): Fractional cloud cover [-].
 
     Returns:
         tuple:
@@ -57,33 +64,20 @@ def update_surface_temperature(GRID, dt, z, z0, T2, rH2, p, SWnet, u2, RAIN, SLO
         :Cs_q: Dalton number [-].
         :q0: Mixing ratio at the surface [|kg kg^-1|].
         :q2: Mixing ratio at measurement height [|kg kg^-1|].
+
+    Raises:
+        NotImplementedError: Invalid method for minimizing the residual.
     """
     
-    # Read and set options
-    if opt_dict is not None:
-        mult_factor_RRR = opt_dict[0]
-        albedo_ice = opt_dict[1]
-        albedo_fresh_snow = opt_dict[2]
-        albedo_firn = opt_dict[3]
-        albedo_mod_snow_aging = opt_dict[4]
-        albedo_mod_snow_depth = opt_dict[5]
-        center_snow_transfer_function = opt_dict[6]
-        spread_snow_transfer_function = opt_dict[7]
-        roughness_fresh_snow = opt_dict[8]
-        roughness_ice = opt_dict[9]
-        roughness_firn = opt_dict[10]
-        aging_factor_roughness = opt_dict[11]
-    #read_opt(opt_dict, globals())
-
-    #Interpolate subsurface temperatures to selected subsurface depths for GHF computation
+    # Interpolate subsurface temperatures to selected subsurface depths for GHF computation
     B_Ts = interp_subT(GRID)
     
-    #Update surface temperature
+    # Lower bound for surface temperature
     lower_bnd_ts = 220.
     upper_bnd_ts = 330.
     initial_guess = min(GRID.get_node_temperature(0), 270)
-    
-    if sfc_temperature_method == 'L-BFGS-B' or sfc_temperature_method == 'SLSQP':
+
+    if sfc_temperature_method in ['L-BFGS-B', 'SLSQP']:
         # Get surface temperature by minimizing the energy balance function (SWnet+Li+Lo+H+L=0)
         res = minimize(eb_optim, initial_guess, method=sfc_temperature_method,
                        bounds=((lower_bnd_ts, upper_bnd_ts),),tol=1e-2,
@@ -93,32 +87,84 @@ def update_surface_temperature(GRID, dt, z, z0, T2, rH2, p, SWnet, u2, RAIN, SLO
         try:
             res = newton(eb_optim, np.array([initial_guess]), tol=1e-2, maxiter=50,
                         args=(GRID, dt, z, z0, T2, rH2, p, SWnet, u2, RAIN, SLOPE, B_Ts, LWin, N))
-            if res < lower_bnd_ts:
-                raise ValueError("TS Solution is out of bounds")
-            res = SimpleNamespace(**{'x':min(np.array([zero_temperature]),res),'fun':None})
+            check_residual_clip(residual=res, lower_bound=lower_bnd_ts)
 
         except (RuntimeError,ValueError):
-             #Workaround for non-convergence and unboundedness
+             # Workaround for non-convergence and unboundedness
              res = minimize(eb_optim, initial_guess, method='SLSQP',
                        bounds=((lower_bnd_ts, upper_bnd_ts),),tol=1e-2,
                        args=(GRID, dt, z, z0, T2, rH2, p, SWnet, u2, RAIN, SLOPE, B_Ts, LWin, N))
+    elif sfc_temperature_method == 'Secant':
+        try:
+            res = call_secant_jitted(
+                GRID, dt, z, z0, T2, rH2, p, SWnet, u2, RAIN, SLOPE, B_Ts, lower_bnd_ts, LWin, N, 
+            )
+            check_residual_clip(residual=res, lower_bound=lower_bnd_ts)
+
+        except (RuntimeError, ValueError):
+            # Workaround for non-convergence and unboundedness
+            res = minimize(eb_optim, initial_guess, method='SLSQP',
+                           bounds=((lower_bnd_ts, zero_temperature),), tol=1e-2,
+                           args=(GRID, dt, z, z0, T2, rH2, p, SWnet, u2, RAIN, SLOPE, B_Ts, LWin, N))
     else:
-        print('Invalid method for minimizing the residual')
+        raise NotImplementedError('Invalid method for minimizing the residual.')
 
     # Set surface temperature
-    surface_temperature = min(zero_temperature, res.x[0])
+    if isinstance(res, np.ndarray):
+        surface_temperature = min(np.array([zero_temperature]), res)
+        minimisation_function = None
+    else:
+        surface_temperature = min(np.array([zero_temperature]), res.x)
+        minimisation_function = res.fun
     GRID.set_node_temperature(0, surface_temperature)
  
-    (Li, Lo, H, L, B, Qrr, rho, Lv, MOL, Cs_t, Cs_q, q0, q2) = eb_fluxes(GRID, surface_temperature, dt, 
-                                                             z, z0, T2, rH2, p, u2, RAIN, SLOPE, 
-                                                             B_Ts, LWin, N,)
+    (Li, Lo, H, L, B, Qrr, rho, Lv, MOL, Cs_t, Cs_q, q0, q2) = eb_fluxes(GRID, surface_temperature, dt,  z, z0, T2, rH2, p, u2, RAIN, SLOPE, B_Ts, LWin, N)
      
     # Consistency check
     if (surface_temperature > zero_temperature) or (surface_temperature < lower_bnd_ts):
-        print('Surface temperature is outside bounds:',GRID.get_node_temperature(0))
+        print('Surface temperature is outside bounds:', GRID.get_node_temperature(0))
 
     # Return fluxes
-    return res.fun, surface_temperature, Li, Lo, H, L, B, Qrr, rho, Lv, MOL, Cs_t, Cs_q, q0, q2
+    return minimisation_function, surface_temperature, Li, Lo, H, L, B, Qrr, rho, Lv, MOL, Cs_t, Cs_q, q0, q2
+
+
+@njit
+def check_residual_clip(residual, lower_bound: float) -> bool:
+    """Raise error if the surface temperature is out of bounds.
+    
+    Args:
+        residual (float or np.ndarray): Residual from minimisation.
+        lower_bound: Minimum allowable surface temperature.
+
+    Returns:
+        True if surface temperature solution is within bounds.
+
+    Raises:
+        ValueError: Surface temperature solution is out of bounds.
+    """
+    if residual < lower_bound:
+        raise ValueError("TS solution is out of bounds.")
+    return True
+
+
+@njit
+def call_secant_jitted(GRID, dt, z, z0, T2, rH2, p, SWnet, u2, RAIN, SLOPE, B_Ts, lower_bnd_ts, LWin=None, N=None, initial_guess=None):
+    """Jitted call to secant.py.
+
+    Returns:
+        np.ndarray: Updated surface temperature.
+
+    Raises:
+        ValueError: Surface temperature solution is out of bounds.
+    """
+    if initial_guess is None:
+        initial_guess = np.array([min(GRID.get_node_temperature(0), 270)])
+
+    res = secant(eb_optim, initial_guess, tol=1e-2, maxiter=50,
+        args=(GRID, dt, z, z0, T2, rH2, p, SWnet, u2, RAIN, SLOPE, B_Ts, LWin, N))
+    if res.item() < lower_bnd_ts:
+        raise ValueError("TS Solution is out of bounds")
+    return res
 
 
 @njit
@@ -154,7 +200,11 @@ def get_subsurface_temperature(GRID, cumulative_depth: np.ndarray, zlt: float):
 
 @njit
 def interp_subT(GRID) -> np.ndarray:
-    """Interpolate subsurface temperature to depths used for ground heat flux."""
+    """Interpolate subsurface temperature to depths used for ground heat flux.
+
+    Returns:
+        Interpolated subsurface temperatures at requested depths.
+    """
     
     # Cumulative layer depths
     layer_heights_cum = np.cumsum(np.array(GRID.get_height()))
@@ -166,24 +216,52 @@ def interp_subT(GRID) -> np.ndarray:
 
 
 @njit
+def get_saturation_vapor_pressure(T_0: float, T_2: float) -> tuple:
+    """Get saturation vapour pressure.
+
+    Args:
+        T_0: Surface temperature [K].
+        T_2: 2m air temperature [K].
+
+    Returns:
+        tuple[float, float]: Surface and 2m saturation vapour pressure.
+    """
+
+    if saturation_water_vapour_method == "Sonntag90":
+        Ew = method_EW_Sonntag(T_2)
+        Ew0 = method_EW_Sonntag(T_0)
+    else:
+        msg = (
+            f"Method for saturation water vapour",
+            f"{saturation_water_vapour_method}",
+            "not available, using default",
+        )
+        print(" ".join(msg))
+        Ew = method_EW_Sonntag(T_2)
+        Ew0 = method_EW_Sonntag(T_0)
+
+    return Ew, Ew0
+
+
+@njit
 def eb_fluxes(GRID, T0, dt, z, z0, T2, rH2, p, u2, RAIN, SLOPE, B_Ts, LWin=None, N=None):
     """Get the surface fluxes and apply the Monin-Obukhov stability correction.
 
     Args:
         GRID (Grid): Glacier data structure.
-        T0: Surface temperature [K].
-        dt: Integration time [s].
-        z: Measurement height [m].
-        z0: Roughness length [m].
-        T2: Air temperature [K].
-        rH2: Relative humidity [%].
-        p: Air pressure [hPa].
-        u2: Wind velocity [|m s^-1|].
-        RAIN: RAIN [mm].
-        SLOPE: Slope of the surface [degree].
-        B_Ts: Subsurface temperatures at interpolation depths [K].
-        LWin: Incoming longwave radiation [|W m^-2|].
-        N: Fractional cloud cover [-].
+        T0 (float): Surface temperature [K].
+        dt (float): Integration time [s].
+        z (float): Measurement height [m].
+        z0 (float): Roughness length [m].
+        T2 (float): Air temperature [K].
+        rH2 (float): Relative humidity [%].
+        p (float): Air pressure [hPa].
+        u2 (float): Wind velocity [|m s^-1|].
+        RAIN (float): Rain [mm].
+        SLOPE (float): Slope of the surface [degree].
+        B_Ts (np.ndarray): Subsurface temperatures at interpolation depths [K].
+        LWin (float): Incoming longwave radiation [|W m^-2|].
+        N (float): Fractional cloud cover [-].
 
     Returns:
         tuple:
@@ -203,13 +281,7 @@ def eb_fluxes(GRID, T0, dt, z, z0, T2, rH2, p, u2, RAIN, SLOPE, B_Ts, LWin=None,
     """
 
     # Saturation vapour pressure (hPa)
-    if saturation_water_vapour_method == 'Sonntag90':
-        Ew = method_EW_Sonntag(T2)
-        Ew0 = method_EW_Sonntag(T0)
-    else:
-        print('Method for saturation water vapour ', saturation_water_vapour_method, ' not available, using default')
-        Ew = method_EW_Sonntag(T2)
-        Ew0 = method_EW_Sonntag(T0)
+    Ew, Ew0 = get_saturation_vapor_pressure(T_0=T0, T_2=T2)
     
     # latent heat of vaporization
     if T0 >= zero_temperature:
@@ -252,7 +324,7 @@ def eb_fluxes(GRID, T0, dt, z, z0, T2, rH2, p, u2, RAIN, SLOPE, B_Ts, LWin=None,
     # Monin-Obukhov stability correction
     if stability_correction == 'MO':
         L = 0.0
-        H0 = T0*0. + np.inf		#numba: consistent typing of H0
+        H0 = T0*0. + np.inf  # numba: consistent typing of H0
         diff = np.inf
         optim = True
         niter = 0
@@ -267,12 +339,12 @@ def eb_fluxes(GRID, T0, dt, z, z0, T2, rH2, p, u2, RAIN, SLOPE, B_Ts, LWin=None,
             Cd = np.power(0.41,2.0) / np.power(np.log(z/z0) - phi_m(z,L) - phi_m(z0,L),2.0)
             Cs_t = 0.41*np.sqrt(Cd) / (np.log(z/z0t) - delta_phi_tq)
             Cs_q = 0.41*np.sqrt(Cd) / (np.log(z/z0q) - delta_phi_tq)
-        
+
             # Surface heat flux
-            H = rho * spec_heat_air * Cs_t * u2 * (T2-T0) * cos_slope_radians
-        
+            H = get_sensible_heat_flux(rho, Cs_t, u2, (T2 - T0), cos_slope_radians)
+
             # Latent heat flux
-            LE = rho * Lv * Cs_q * u2 * (q2-q0) * cos_slope_radians
+            LE = get_latent_heat_flux(rho, Lv, Cs_q, u2, (q2 - q0), cos_slope_radians)
         
             # Monin-Obukhov length
             L = MO(rho, ust, T2, H)
@@ -291,12 +363,12 @@ def eb_fluxes(GRID, T0, dt, z, z0, T2, rH2, p, u2, RAIN, SLOPE, B_Ts, LWin=None,
     # Richardson-Number stability correction
     elif stability_correction == 'Ri':
         # Bulk transfer coefficient 
-        Cs_t = np.power(0.41,2.0) / ( np.log(z/z0) * np.log(z/z0t) )    # Stanton-Number
-        Cs_q = np.power(0.41,2.0) / ( np.log(z/z0) * np.log(z/z0q) )    # Dalton-Number
+        Cs_t = np.power(0.41,2.0) / ( np.log(z/z0) * np.log(z/z0t) )  # Stanton-Number
+        Cs_q = np.power(0.41,2.0) / ( np.log(z/z0) * np.log(z/z0q) )  # Dalton-Number
         
         # Bulk Richardson number
         Ri = 0
-        if (u2!=0):
+        if u2 != 0:
             Ri = ( (9.81 * (T2 - T0) * z) / (T2 * np.power(u2, 2)) ).item() #numba can't compare literal & array below
 
         # Stability correction
@@ -304,18 +376,18 @@ def eb_fluxes(GRID, T0, dt, z, z0, T2, rH2, p, u2, RAIN, SLOPE, B_Ts, LWin=None,
         if 0.01 < Ri <= 0.2:
             phi = np.power(1-5*Ri,2)
         elif Ri > 0.2:
-            phi = 0
+            phi = 0.0
 
         # Sensible heat flux
-        H = rho * spec_heat_air * Cs_t * u2 * (T2-T0) * phi * cos_slope_radians
+        H = phi * get_sensible_heat_flux(rho, Cs_t, u2, (T2 - T0), cos_slope_radians)
         
         # Latent heat flux
-        LE = rho * Lv * Cs_q * u2 * (q2-q0) * phi * cos_slope_radians
+        LE = phi * get_latent_heat_flux(rho, Lv, Cs_q, u2, (q2 - q0), cos_slope_radians)
 
     else:
         msg = f"Stability correction {stability_correction} is not supported."
         raise ValueError(msg)
-    
+
     # Outgoing longwave radiation
     Lo = -surface_emission_coeff * sigma * np.power(T0, 4.0)
 
@@ -333,7 +405,50 @@ def eb_fluxes(GRID, T0, dt, z, z0, T2, rH2, p, u2, RAIN, SLOPE, B_Ts, LWin=None,
 
     # Return surface fluxes
     # Numba: No implementation of function Function(<class 'float'>) found for signature: >>> float(array(float64, 1d, C))
+    # fmt: off
     return (Li.item(), Lo.item(), H.item(), LE.item(), B.item(), QRR.item(), rho, Lv, L, Cs_t, Cs_q, q0, q2)
+    # fmt: on
+
+
+@njit
+def get_sensible_heat_flux(
+    rho: float, Cs_t: float, u2: float, dT: float, cos_slope: float
+) -> float:
+    """Get sensible heat flux.
+
+    Args:
+        rho: Air density, [|kg m^-3|].
+        Cs_t: Stanton number, [-].
+        u2: Wind velocity, [|m s^-1|].
+        dT: Difference in temperature between the surface and
+            measurement height, [K].
+        cos_slope: Cosine of slope angle, [|rad|].
+
+    Returns:
+        Sensible heat flux, [|W m^-2|].
+    """
+    return rho * spec_heat_air * Cs_t * u2 * dT * cos_slope
+
+
+@njit
+def get_latent_heat_flux(
+    rho: float, Lv: float, Cs_q: float, u2: float, dq: float, cos_slope: float
+) -> float:
+    """Get latent heat flux.
+
+    Args:
+        rho: Air density, [|kg m^-3|].
+        Lv: Latent heat of vapourisation, [|J kg^-1|].
+        Cs_q: Dalton number, [-].
+        u2: Wind velocity, [|m s^-1|].
+        dq: Difference in mixing ratio between the surface and
+            measurement height.
+        cos_slope: Cosine of slope angle, [|rad|].
+
+    Returns:
+        Latent heat flux, [|W m^-2|].
+    """
+    return rho * Lv * Cs_q * u2 * dq * cos_slope
 
 
 @njit
@@ -352,7 +467,10 @@ def phi_m_stable(z: float, L: float) -> float:
     if (zeta > 0.0) & (zeta <= 1.0):  # weak stability
         return -5 * zeta
     elif zeta > 1.0:  # strong stability
-        return (1 - 5) * (1 + np.log(zeta)) - zeta
+        if WRF_X_CSPY:
+            return -5.0  # limit stability parameter (z/L <= 1.) following Noah-MP LSM approach
+        else:
+            return (1 - 5) * (1 + np.log(zeta)) - zeta
     else:
         return 0.0
 
@@ -395,44 +513,62 @@ def phi_tq(z: float, L: float) -> float:
 
 
 @njit
-def ustar(u2,z,z0,L):
+def ustar(u2: float, z: float, z0: float, L: float) -> float:
     """Get the friction velocity."""
-    return (0.41*u2) / (np.log(z/z0)-phi_m(z,L))
+    return (0.41 * u2) / (np.log(z / z0) - phi_m(z, L))
 
 
 @njit
-def MO(rho, ust, T2, H):
+def MO(rho, ust, T2, H) -> float:
     """Get the Monin-Obukhov length."""
     if H!=0:
-        return ((rho*spec_heat_air*np.power(ust,3)*T2)/(0.41*9.81*H)).item()	#numba: expects a float
+        return (
+            (rho * spec_heat_air * np.power(ust, 3) * T2) / (0.41 * 9.81 * H)
+        ).item()  # numba: expects a float
     else:
         return 0.0
 
+
+# fmt: off
 @njit
-def eb_optim(T0, GRID, dt, z, z0, T2, rH2, p, SWnet, u2, RAIN, SLOPE, B_Ts, LWin=None, N=None):
-    """Optimization function to solve for the surface temperature T0."""
+def eb_optim(
+    T0: float, GRID, dt: int, z: float, z0: float, T2: float, rH2: float,
+    p: float, SWnet: float, u2: float, RAIN: float, SLOPE: float, B_Ts: np.ndarray,
+    LWin: float = None, N: float = None,
+) -> float:
+    """Optimization function to solve for surface temperature T0.
+
+    Returns:
+        Minimised residual.
+    """
 
     # Get surface fluxes for surface temperature T0
-    (Li,Lo,H,L,B,Qrr,rho,Lv,MOL,Cs_t,Cs_q,q0,q2) = eb_fluxes(GRID, T0, dt, z, z0, T2, rH2, p, u2, RAIN, SLOPE, B_Ts, LWin, N)
+    (Li, Lo, H, L, B, Qrr, _, _, _, _, _, _, _) = eb_fluxes(
+        GRID, T0, dt, z, z0, T2, rH2, p, u2, RAIN, SLOPE, B_Ts, LWin, N
+    )
 
     # Return the residual (minimized by the optimization function)
-    if sfc_temperature_method == 'Newton':
-        return (SWnet+Li+Lo+H+L+B+Qrr)
+    if sfc_temperature_method in ['Newton', 'Secant']:
+        return SWnet + Li + Lo + H + L + B + Qrr
     else:
-        return np.abs(SWnet+Li+Lo+H+L+B+Qrr)
+        return np.abs(SWnet + Li + Lo + H + L + B + Qrr)
+# fmt: on
 
 
 @njit
-def method_EW_Sonntag(T):
+def method_EW_Sonntag(T: float) -> float:
     """Get the saturation vapor pressure.
-    
+
     Args:
-        T: Temperature [K]
+        T: Temperature [K].
+
+    Returns:
+        Saturation vapor pressure.
     """
     if T >= 273.16:
         # over water
-        Ew = 6.112 * np.exp((17.67*(T-273.16)) / ((T-29.66)))
+        Ew = 6.112 * np.exp((17.67 * (T - 273.16)) / (T - 29.66))
     else:
         # over ice
-        Ew = 6.112 * np.exp((22.46*(T-273.16)) / ((T-0.55)))
+        Ew = 6.112 * np.exp((22.46 * (T - 273.16)) / (T - 0.55))
     return Ew

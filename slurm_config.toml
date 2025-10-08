@@ -8,7 +8,7 @@ queue = "work"  # Name of job queue.
 
 [PARAMETERS]
 # Additional Slurm parameters. These can overwrite other settings. #--nodes=1
-slurm_parameters = ["--qos=short", "--error=Error_nodes.err", "--output=Output_nodes.out", "--time=01:00:00","--reservation=PyMC", "--mem='3G'"]
+slurm_parameters = ["--qos=short", "--error=Error_nodes.err", "--output=Output_nodes.out", "--time=01:00:00", "--mem='3G'"]
 shebang = "#!/bin/bash -l"
 local_directory = "./logs/dask-worker-space"
 
@@ -21,4 +21,3 @@ memory = "3G"  # Total allocated memory per submitted Slurm job.
 
 [OVERRIDES]
 memory_per_process = 3  # Memory per process. This sets `memory` to (cores * memory_per_process.)
-

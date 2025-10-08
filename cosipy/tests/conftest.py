@@ -38,15 +38,6 @@ def conftest_mock_check_file_exists():
 
 
 @pytest.fixture(scope="function", autouse=False)
-def conftest_mock_check_directory_exists():
-    """Override checks when mocking directories."""
-
-    patcher = patch("pathlib.Path.is_dir")
-    mock_exists = patcher.start()
-    mock_exists.return_value = True
-
-
-@pytest.fixture(scope="function", autouse=False)
 def conftest_disable_jit():
     # numba.config.DISABLE_JIT = True
     raise NotImplementedError(
@@ -74,11 +65,11 @@ def conftest_hide_plot():
 
 
 @pytest.fixture(name="conftest_rng_seed", scope="function", autouse=False)
-def fixture_conftest_rng_seed():
+def fixture_conftest_rng_seed() -> np.random.Generator:
     """Set seed for random number generator to 444.
 
     Returns:
-        np.random.Generator: Random number generator with seed=444.
+        Random number generator with seed=444.
     """
 
     random_generator = np.random.default_rng(seed=444)
@@ -177,16 +168,6 @@ def fixture_conftest_mock_xr_dataset_dims():
     Returns:
         Generator[dict]: Spatiotemporal dimensions.
     """
-
-    dimensions = {}
-    reference_time = pd.Timestamp("2009-01-01T12:00:00")
-    dimensions["time"] = pd.date_range(reference_time, periods=4, freq="6h")
-# Mock xarray Dataset
-@pytest.fixture(
-    name="conftest_mock_xr_dataset_dims", scope="function", autouse=False
-)
-def fixture_conftest_mock_xr_dataset_dims() -> dict:
-    """Yields dimensions for constructing an xr.Dataset."""
 
     dimensions = {}
     reference_time = pd.Timestamp("2009-01-01T12:00:00")

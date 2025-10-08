@@ -29,21 +29,21 @@ aggregation_step = 'H'
 delimiter = ','
 
 [aws2cosipy.radiation]
-radiationModule = 'Wohlfahrt2016' # 'Moelg2009', 'Wohlfahrt2016', 'none'
+radiationModule = 'Horayzon2022' # 'Moelg2009', 'Wohlfahrt2016', 'Horayzon2022', 'none'
 LUT = false  # If there is already a Look-up-table for topographic shading and sky-view-factor built for this area, set to True
 LUT_path = "./data/static/LUT_Rad.nc"
 dtstep = 10800  # time step (s)
 tcart = 4.24  # Station time correction in hour angle units (1 is 4 min)
 timezone_lon = 15.0  # Longitude of station
 zeni_thld = 89.0  # If you do not know the exact value for your location, set value to 89.0
-ELEV_model = true
+ELEV_model = true #true
 delimiter = ','
 
 [aws2cosipy.points]
-point_model = false
-plon = 90.64
-plat = 30.47
-hgt = 5665.0
+point_model = false #false
+plon = 46.790453 #90.64
+plat = 10.747121 #30.47
+hgt = 3048.0 #5665.0
 
 [aws2cosipy.station]
 stationName = 'HEF'
@@ -55,25 +55,32 @@ lapse_T = -0.0065  # Temp K per  m
 lapse_RH = 0.000  # RH % per m (0 to 1)
 lapse_RRR = 0.0000  # mm per m
 lapse_SNOWFALL = 0.0000  # Snowfall % per m (0 to 1)
+sf_temp_fix = true #true
+center_snow = 1.5553
+spread_snow = 1.0
+overwrite_sf_tp = true #false 
 
 # CREATE STATIC FILE
 [create_static.paths]
 static_folder = "./data/static/"
-dem_path = "DEM/n30_e090_3arc_v2.tif"
-shape_path = "Shapefiles/Zhadang_RGI6.shp"
-output_file = "Zhadang_static.nc"
+dem_path = "HEF/DEM/NASADEM30_HEF_Box.tif"
+shape_path = "HEF/Shapefiles/HEF_RGI6.shp"
+output_file = "HEF/HEF_static_300m_new.nc"
+output_file_crop = "HEF/HEF_static_30m_crop_new.nc"
 
 [create_static.coords]
 tile = true
 aggregate = true
-aggregate_degree = 0.003
-longitude_upper_left = 90.62
-latitude_upper_left = 30.48
-longitude_lower_right = 90.66
-latitude_lower_right = 30.46
+aggregate_degree = 0.00277778 #dataset is in 1 arcsecond, for desired resolution (target_res_m/30)/3600 
+longitude_upper_left = 10.6
+latitude_upper_left = 46.9
+longitude_lower_right = 10.9
+latitude_lower_right = 46.7
+automatic_domain = true
+crop_file = true
+dist_search = 22.0 ## buffer size or lat lon corners influence how aggregated glacier is represented (changes no. GGPs)
 
 # WRF2COSIPY
 [wrf2cosipy.constants]
 hu = 10  # Height of WRF wind velocity
 lu_class = 24 # land use class for glaciers
-
