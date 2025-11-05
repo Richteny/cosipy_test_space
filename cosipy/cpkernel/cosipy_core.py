@@ -346,7 +346,6 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
         elif SNOWF is not None:
             SNOWFALL = SNOWF[t]
         elif RRR is not None:
-            snowheight = (RRR[t]/1000.0)*(water_density/density_fresh_snow)
             if precippartition_method == "Hantel2000":
                 # Else convert total precipitation [mm] to snowheight [m]; liquid/solid fraction
                 SNOWFALL = (RRR[t]/1000.0)*(water_density/density_fresh_snow)*(0.5*(-np.tanh(((T2[t]-zero_temperature) - center_snow_transfer_function) * spread_snow_transfer_function) + 1.0))
