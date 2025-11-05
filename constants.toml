@@ -12,6 +12,7 @@ roughness_method = 'Moelg12'                    # possibilities: 'Moelg12'
 saturation_water_vapour_method = 'Sonntag90'    # possibilities: 'Sonntag90'
 thermal_conductivity_method = 'bulk'		    # possibilities: 'bulk', 'empirical'
 sfc_temperature_method = 'Secant'               # please use 'Secant' (faster, identical to Newton)
+precip_partitioning_method = 'Ding2014'         # possibilities: 'Hantel2000', 'Ding2014'
 # the other options 'L-BFGS-B' and 'SLSQP'(faster) lead to different results
 # since the update in February 2024 and to a very long runtime;
 # TODO: problem with L-BFGS-B and SLSQP should be solved.
@@ -54,10 +55,10 @@ temperature_threshold_merging = 0.01            # If merging is true threshold f
 [CONSTANTS]
 constant_density = 300.0                         # constant density of freshly fallen snow [kg m-3], if densification_method is set to 'constant'
 
-albedo_fresh_snow = 0.85                        # albedo of fresh snow [-] (Moelg et al. 2012, TC)
-albedo_firn = 0.55                              # albedo of firn [-] (Moelg et al. 2012, TC)
-albedo_ice = 0.3                                # albedo of ice [-] (Moelg et al. 2012, TC)
-albedo_mod_snow_aging = 22                      # effect of ageing on snow albedo [days] (Oerlemans and Knap 1998, J. Glaciol.)
+albedo_fresh_snow = 0.9                        # albedo of fresh snow [-] (Moelg et al. 2012, TC)
+albedo_firn = 0.5                              # albedo of firn [-] (Moelg et al. 2012, TC)
+albedo_ice = 0.2                                # albedo of ice [-] (Moelg et al. 2012, TC)
+albedo_mod_snow_aging = 2                      # effect of ageing on snow albedo [days] (Oerlemans and Knap 1998, J. Glaciol.)
 albedo_mod_snow_depth = 3                       # effect of snow depth on albedo [cm] (Oerlemans and Knap 1998, J. Glaciol.)
 
 ### For tropical glaciers or High Mountain Asia summer-accumulation glaciers (low latitude), the Moelg et al. 2012, TC should be tested for a possible better albedo fit 

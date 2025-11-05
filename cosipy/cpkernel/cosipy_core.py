@@ -14,6 +14,7 @@ from cosipy.modules.percolation import percolation
 from cosipy.modules.refreezing import refreezing
 from cosipy.modules.roughness import updateRoughness
 from cosipy.modules.surfaceTemperature import update_surface_temperature
+from cosipy.modules.surfaceTemperature import method_EW_Sonntag
 
 
 def init_nan_array_1d(nt: int) -> np.ndarray:
@@ -50,6 +51,86 @@ def init_nan_array_2d(nt: int, max_layers: int) -> np.ndarray:
 
     return x
 
+def calc_wetbulb_temperature(TK: float, RH: float, pressure: float) -> float:
+    """Compute wetbulb temperature in °C
+
+    Args:
+        TK: Air temperature in K
+        RH: relative humidity in percent
+        pressure: Air pressure in hPa
+   Returns:
+       Wet-bulb temperature in °C
+    """
+    #values taken from T&C and Ding et al. 2014
+    Ta = TK - 273.16
+    esat = method_EW_Sonntag(TK)
+    ea = (RH / 100.0) * esat
+    
+    lheat = 1000.0 * (2501.3 - 2.361 * Ta)    # J/kg
+    cp = 1005.0 + ((Ta + 23.15)**2) / 3364.0  # J/kg/K
+    Pre_Pa = pressure * 100.0                 # Pa
+    gam = cp * 100.0 * Pre_Pa / (0.622 * lheat)
+
+    esat_Pa = esat * 100.0
+    ea_Pa = ea * 100.0
+    del_ = (4098.0 * esat_Pa) / ((237.3 + Ta)**2)
+
+    Twb = Ta - (esat_Pa - ea_Pa) / (gam + del_)
+    return Twb
+
+def partition_precipitation(TK: float, Twb: float, RH: float, pressure: float, RRR: float) -> tuple:
+    """
+    Compute snow/rain fractions of total precipitation.
+    Args:
+        Ta: Air temperature [°C]
+        Twb: Wet-bulb temperature [°C]
+        RH_percent: Relative humidity [%]
+        PRES_hPa: Pressure [hPa]
+        Pr: Total precipitation [mm w.e.]
+    Returns:
+        Pr_liq, Pr_sno (rain/snow in mm w.e.)
+    """
+    Ta = TK - 273.16
+    # constants
+    g = 9.81
+    P_Ref = 1013.25
+    Rd = 287.05
+
+    # reference elevation in km
+    Zref = -((Ta + 15.0)/2 + 273.15) * (Rd / g) * np.log(pressure / P_Ref)
+    Zref = Zref / 1000.0
+
+    # relative humidity fraction
+    rh_frac = RH / 100.0
+
+    # threshold parameters
+    dT_ = 0.215 - 0.099 * rh_frac + 1.018 * rh_frac**2
+    dS_ = 2.374 - 1.634 * rh_frac
+    T0_ = -5.87 - 0.1042 * Zref + 0.0885 * Zref**2 + 16.06 * rh_frac - 9.614 * rh_frac**2
+
+    Tmin, Tmax = T0_, T0_
+    if dT_ / dS_ > np.log(2):
+        Tmin = T0_ - dS_ * np.log(np.exp(dT_ / dS_) - 2.0 * np.exp(-dT_ / dS_))
+        Tmax = 2.0 * T0_ - Tmin
+
+    solid_fraction = 1.0 / (1.0 + np.exp((Twb - T0_) / dS_))
+
+    # initialize
+    Pr_liq, Pr_sno = 0.0, 0.0
+
+    if Tmin < Twb < Tmax:
+        Pr_sno = RRR * solid_fraction
+        Pr_liq = RRR * (1.0 - solid_fraction)
+    elif Twb <= Tmin:
+        Pr_sno = RRR
+        Pr_liq = 0.0
+    else:
+        Pr_sno = 0.0
+        Pr_liq = RRR
+
+    return Pr_liq, Pr_sno
+
+
 
 def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_data=None, opt_dict=None):
     """Cosipy core function.
@@ -75,6 +156,7 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
     z = Constants.z
     mult_factor_RRR = Constants.mult_factor_RRR
     densification_method = Constants.densification_method
+    precippartition_method = Constants.precip_partitioning_method
     ice_density = Constants.ice_density
     water_density = Constants.water_density
     minimum_snowfall = Constants.minimum_snowfall
@@ -264,9 +346,16 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
         elif SNOWF is not None:
             SNOWFALL = SNOWF[t]
         elif RRR is not None:
-            # Else convert total precipitation [mm] to snowheight [m]; liquid/solid fraction
-            SNOWFALL = (RRR[t]/1000.0)*(water_density/density_fresh_snow)*(0.5*(-np.tanh(((T2[t]-zero_temperature) - center_snow_transfer_function) * spread_snow_transfer_function) + 1.0))
-            RAIN = RRR[t]-SNOWFALL*(density_fresh_snow/water_density) * 1000.0
+            snowheight = (RRR[t]/1000.0)*(water_density/density_fresh_snow)
+            if precippartition_method == "Hantel2000":
+                # Else convert total precipitation [mm] to snowheight [m]; liquid/solid fraction
+                SNOWFALL = (RRR[t]/1000.0)*(water_density/density_fresh_snow)*(0.5*(-np.tanh(((T2[t]-zero_temperature) - center_snow_transfer_function) * spread_snow_transfer_function) + 1.0))
+                RAIN = RRR[t]-SNOWFALL*(density_fresh_snow/water_density) * 1000.0
+            elif precippartition_method == "Ding2014":
+                #Ding, et al. 2014. J. Hydrol http://dx.doi.org/10.1016/j.jhydrol.2014.03.038 also in T&C
+                Twb = calc_wetbulb_temperature(T2[t], RH2[t], PRES[t])
+                RAIN, Pr_sno = partition_precipitation (T2[t], Twb, RH2[t], PRES[t], RRR[t]) 
+                SNOWFALL = (Pr_sno / 1000.0) * (water_density/density_fresh_snow)
         else:
             raise ValueError("No SNOWFALL or RRR data provided.")
 
