@@ -28,6 +28,7 @@ Optional arguments:
     -e, --elevation_prof <str>                  String converted to boolean information on whether to compute 1D elevation bands or not
     -es, --elevation_size <int>                 Elevation bin size, used when -e True
     -d, --elev_data <path>                       Only used when -e True: Path where elevation bands static file should be written to.
+    -eb --elev_bins <path>                      Only used when -e True: Path to elevation bins to use for the processing.
 """
 
 import argparse
@@ -93,39 +94,72 @@ def aspect_means(x):
     mean_angle = np.arctan2(sin_mean, cos_mean)
     return np.degrees(mean_angle) 
 
+def load_elev_bins(elev_bins_file):
+    print(f"Loading reference bins from: {elev_bins_file}")
+    holder = xr.open_dataset(elev_bins_file)
+    mask = holder.MASK.values.flatten()
+    raw_labels = holder['HGT'].values.flatten()
+    raw_labels = raw_labels[mask==1]
+    sort_idx = np.argsort(raw_labels)
+    sorted_labels = raw_labels[sort_idx]
+    elev_band_size = np.mean(np.diff(sorted_labels))
+    bin_starts = sorted_labels - elev_band_size/ 2.0
+    # Add upper edge of last bin
+    bins = np.append(bin_starts, bin_starts[-1] + elev_band_size)
+    ref_lats = holder['lat'].values
+    ref_lons = holder['lon'].values
+    holder.close()
+    return (elev_band_size, bins, raw_labels, sorted_labels, ref_lats, ref_lons)
 
-def calculate_1d_elevationband(xds, elevation_var, mask_var, var_of_interest, elev_bandsize, slice_idx=None):
+
+def calculate_1d_elevationband(xds, elevation_var, mask_var, var_of_interest, elev_bandsize, slice_idx=None, bins=None, sorted_labels=None, raw_labels=None):
     
     ## first mask vals
     xds = xds.where(xds[mask_var] == 1, drop=True)
     
     #test groupby bins
-    full_elev_range = xds[elevation_var].values[xds[mask_var] == 1]
-    bins = np.arange(np.nanmin(full_elev_range), np.nanmax(full_elev_range)+elev_bandsize, elev_bandsize)
-    labels = bins[:-1] + elev_bandsize/2
-    
+    if bins is None or sorted_labels is None:
+        print("Calculating bins by hand.")
+        full_elev_range = xds[elevation_var].values[xds[mask_var] == 1]
+        bins = np.arange(np.nanmin(full_elev_range), np.nanmax(full_elev_range)+elev_bandsize, elev_bandsize)
+        sorted_labels = bins[:-1] + elev_bandsize/2
+        raw_labels = sorted_labels
+
+    bins = np.asarray(bins)
+    sorted_labels = np.asarray(sorted_labels)
+    #print(bins, labels)
+    result_sorted = None
+
     if var_of_interest in ["lat","lon"]:
-        values = []
-        for i in (bins):
-            sub = xds.where((xds[mask_var] == 1) & (xds[elevation_var] >= i) & (xds[elevation_var] < i + elev_bandsize), drop=True)
-            values.append(np.nanmean(sub[var_of_interest].values))
+        temp_values = []
+        for i in range(len(sorted_labels)):
+            lower_edge = bins[i]
+            upper_edge = lower_edge + elev_bandsize
+            sub = xds.where((xds[mask_var] == 1) & (xds[elevation_var] >= lower_edge) & (xds[elevation_var] < upper_edge), drop=True)
+            temp_values.append(np.nanmean(sub[var_of_interest].values))
+        result_sorted = np.array(temp_values)
     elif var_of_interest == "ASPECT":
         elvs = xds[elevation_var].values.flatten()[xds[mask_var].values.flatten() == 1]
         aspects = xds[var_of_interest].values.flatten()[xds[mask_var].values.flatten() == 1]
-        values = []
-        for i in (bins):
-            values.append(aspect_means(aspects[np.logical_and(elvs >= i, elvs < i+elev_bandsize)]))
+        temp_values = []
+
+        for i in range(len(sorted_labels)):
+            lower_edge = bins[i]
+            upper_edge = lower_edge + elev_bandsize
+            temp_values.append(aspect_means(aspects[np.logical_and(elvs >= lower_edge, elvs < upper_edge)]))
+        result_sorted = np.array(temp_values)
     elif var_of_interest == mask_var:
         if slice_idx is None:
-            values = xds[var_of_interest].groupby_bins(xds[elevation_var], bins, labels=labels, include_lowest=True).sum(skipna=True, min_count=1)
+            values = xds[var_of_interest].groupby_bins(xds[elevation_var], bins, labels=sorted_labels, include_lowest=True).sum(skipna=True, min_count=1)
         else:
-            values = xds[var_of_interest][slice_idx].groupby_bins(xds[elevation_var][slice_idx], bins, labels=labels, include_lowest=True).sum(skipna=True, min_count=1)
+            values = xds[var_of_interest][slice_idx].groupby_bins(xds[elevation_var][slice_idx], bins, labels=sorted_labels, include_lowest=True).sum(skipna=True, min_count=1)
+        result_sorted = values.reindex({'HGT_bins': sorted_labels}, fill_value=0).fillna(0).values
     elif var_of_interest == "SLOPE":
         if slice_idx is None:
-            values = xds[var_of_interest].groupby_bins(xds[elevation_var], bins, labels=labels, include_lowest=True).mean(skipna=True)
+            values = xds[var_of_interest].groupby_bins(xds[elevation_var], bins, labels=sorted_labels, include_lowest=True).mean(skipna=True)
         else:
-            values = xds[var_of_interest][slice_idx].groupby_bins(xds[elevation_var][slice_idx], bins, labels=labels, include_lowest=True).mean(skipna=True)
-
+            values = xds[var_of_interest][slice_idx].groupby_bins(xds[elevation_var][slice_idx], bins, labels=sorted_labels, include_lowest=True).mean(skipna=True)
+        result_sorted = values.reindex({'HGT_bins': sorted_labels}).values
         ## below calculation doesnt work
     #elif var_of_interest in ["aspect","ASPECT"]:
     #    if slice_idx is None:          
@@ -134,12 +168,22 @@ def calculate_1d_elevationband(xds, elevation_var, mask_var, var_of_interest, el
     #        values = xds[var_of_interest][slice_idx].groupby_bins(xds[elevation_var][slice_idx], bins, labels=labels, include_lowest=True).map(aspect_means)
     else:
         if slice_idx is None:
-            values = xds[var_of_interest].groupby_bins(xds[elevation_var], bins, labels=labels, include_lowest=True).median(skipna=True)
-            
+            values = xds[var_of_interest].groupby_bins(xds[elevation_var], bins, labels=sorted_labels, include_lowest=True).median(skipna=True)
         else:
-            values = xds[var_of_interest][slice_idx].groupby_bins(xds[elevation_var][slice_idx], bins, labels=labels, include_lowest=True).median(skipna=True)
-    
-    return values    
+            values = xds[var_of_interest][slice_idx].groupby_bins(xds[elevation_var][slice_idx], bins, labels=sorted_labels, include_lowest=True).median(skipna=True)
+        #print("Before:", values)
+        result_sorted = values.reindex({'HGT_bins': sorted_labels}).values
+        print(result_sorted) 
+
+    result_sorted = np.array(result_sorted).flatten()
+    #Re-alignment
+    if len(result_sorted) == len(raw_labels):
+        indices = np.searchsorted(sorted_labels, raw_labels)
+        final_values = result_sorted[indices]
+        return final_values
+    else:
+        print(f"Warning! Length mismatch in re-aligned values for {var_of_interest}.Sorted: {len(result_sorted)}, Raw: {len(raw_labels)}. Returning Sorted.")
+        return result_sorted 
 
 def construct_1d_dataset(df):
     elev_ds = df.to_xarray()
@@ -282,7 +326,7 @@ def merge_timestep_files(datasets, regrid, ds_coarse, static_ds,
 
 def run_horayzon_scheme(static_file, file_sw_dir_cor, coarse_static_file=None,
                         regrid=False, elevation_profile=False,
-                        elev_bandsize=10, elev_stat_file=None):
+                        elev_bandsize=20, elev_stat_file=None, elev_bins_file=None):
     # -----------------------------------------------------------------------------
     # Prepare data and initialise Terrain class
     # -----------------------------------------------------------------------------
@@ -292,7 +336,14 @@ def run_horayzon_scheme(static_file, file_sw_dir_cor, coarse_static_file=None,
         print("Elevation band size is set to: ", elev_bandsize, "m")
         regrid = False
 
+    ref_bins = None
+    ref_labels = None
+    ref_lats = None
+    ref_lons = None
 
+    if elev_bins_file is not None and elevation_profile == True:
+        # Load once
+        elev_bandsize, ref_bins, ref_raw_labels, ref_sorted_labels, ref_lats, ref_lons = load_elev_bins(elev_bins_file)   
 
     # Load high resolution static data
     ds = xr.open_dataset(static_file)
@@ -473,48 +524,95 @@ def run_horayzon_scheme(static_file, file_sw_dir_cor, coarse_static_file=None,
             ## load actual mask
             add_variable_along_latlon(result,mask_holder[slice_buffer], "mask_real", "-", "Actual Glacier Mask" )
             
-            full_elev_range = result["HGT"].values[result["mask_real"] == 1]
-            bins = np.arange(np.nanmin(full_elev_range), np.nanmax(full_elev_range)+elev_bandsize, elev_bandsize)
-            labels = bins[:-1] + elev_bandsize/2
+            if ref_bins is not None:
+                bins = ref_bins
+                raw_labels = ref_raw_labels
+                sorted_labels = ref_sorted_labels
+                print("Taking bins and labels from file.")
+                #print(bins,labels)
+            else:
+                full_elev_range = result["HGT"].values[result["mask_real"] == 1]
+                bins = np.arange(np.nanmin(full_elev_range), np.nanmax(full_elev_range)+elev_bandsize, elev_bandsize)
+                sorted_labels = bins[:-1] + elev_bandsize/2
+                raw_labels = sorted_labels
             
             placeholder = {}
-            for var in ["SLOPE","ASPECT","lat","lon"]:
-                placeholder[var] = calculate_1d_elevationband(ds, "HGT", "MASK", var, elev_bandsize)
+            if ref_lats is not None and ref_lons is not None:
+                final_lats = ref_lats
+                final_lons_val = ref_lons
+                calc_vars = ['SLOPE','ASPECT']
+            else:
+                calc_vars = ['SLOPE', 'ASPECT', 'lat', 'lon']
+                final_lats = None
+
+            for var in calc_vars:
+                placeholder[var] = calculate_1d_elevationband(ds, "HGT", "MASK", var, elev_bandsize, bins=bins, sorted_labels=sorted_labels, raw_labels=raw_labels)
             
             for var in ["sw_dir_cor","mask_real"]:
-                placeholder[var] = calculate_1d_elevationband(result, "HGT", "mask_real", var, elev_bandsize)
-            
+                placeholder[var] = calculate_1d_elevationband(result, "HGT", "mask_real", var, elev_bandsize, bins=bins, sorted_labels=sorted_labels, raw_labels=raw_labels)
+
+            if final_lats is None:
+                final_lats = placeholder['lat']
+                #final_lats = final_lats[:-1]
+                #final_lons_val = np.mean(placeholder['lon'][:-1])
+                final_lons_val = np.mean(placeholder['lon'])
             ## construct the dataframe and xarray dataset
             #This is the crudest and most simplest try and here I want to avoid having a 26x26 grid filled with NaNs due to computational time
-            mask_elev = np.ones_like(placeholder['lat'][:-1])
-            ## Suggest all points on glacier
-            df = pd.DataFrame({'lat':placeholder['lat'][:-1],
-                            'lon': np.mean(placeholder['lon'][:-1]), #just assign the same value for now for simplicity
-                            'time': pd.to_datetime(ta[i]), 
-                            'HGT': labels,
-                            'ASPECT': placeholder['ASPECT'][:-1],        
-                            'SLOPE': placeholder['SLOPE'].data,
-                            'MASK': mask_elev,
-                            'N_Points': placeholder["mask_real"].data,
-                            'sw_dir_cor': placeholder["sw_dir_cor"][0,:].data})
-            
+            mask_elev = np.ones_like(final_lats)
+
+            slope_data = placeholder['SLOPE']
+            aspect_data = placeholder['ASPECT']
+            n_points_data = placeholder["mask_real"]
+            sw_data = placeholder["sw_dir_cor"]
+
+            if hasattr(final_lons_val, 'size') and final_lons_val.size == 1:
+                final_lons_val = final_lons_val.item()
+            elif isinstance(final_lons_val, list) and len(final_lons_val) == 1:
+                final_lons_val = final_lons_val[0]
+
+            # sanity check
+            if len(final_lats) != len(raw_labels):
+                print(f"DEBUG: Length mismatch! Lats: {len(final_lats)}, Labels: {len(raw_labels)}")
+            print(len(final_lats))
+            print(final_lons_val)
+            print(len(raw_labels))
+            print(len(aspect_data))
+            print(len(slope_data))
+            print(len(mask_elev))
+            print(len(n_points_data))
+            print(len(sw_data))
+            df = pd.DataFrame({'lat': final_lats,
+                               'lon': final_lons_val, #just assign the same value for now for simplicity
+                               'time': pd.to_datetime(ta[i]), 
+                               'HGT': raw_labels,
+                               'ASPECT': aspect_data,        
+                               'SLOPE': slope_data,
+                               'MASK': mask_elev,
+                               'N_Points': n_points_data,
+                               'sw_dir_cor': sw_data})
+            #df['N_Points'] = df['N_Points'].fillna(0)
+            #df['ASPECT'] = df['ASPECT'].fillna(0) handle these while merging!
             #drop the timezone argument from pandas datetime object to ensure fluent conversion into xarray
             df['time'] = df['time'].dt.tz_localize(None)
             ##sort values by index vars, just in case
             df.sort_values(by=["time","lat","lon"], inplace=True)
             ## if elevation bins are too small, we will not have a unique index .. manual adjust that
             # the latitude information is not really useful anymore if we use HORAYZON, so adjust it
-            try:
-                df['lat'] = df['lat'] + df['HGT']*1e-9
+            if ref_lats is None:
+                try:
+                    df['lat'] = df['lat'] + df['HGT']*1e-9
+                    df.set_index(['time','lat','lon'], inplace=True)
+                    print(df)
+                    elev_ds = construct_1d_dataset(df)
+                except:
+                    df['lat'] = df['lat'] + df['HGT']*1e-8
+                    df.set_index(['time','lat','lon'], inplace=True)
+                    print(df)
+                    elev_ds = construct_1d_dataset(df)
+            else:
                 df.set_index(['time','lat','lon'], inplace=True)
                 print(df)
                 elev_ds = construct_1d_dataset(df)
-            except:
-                df['lat'] = df['lat'] + df['HGT']*1e-8
-                df.set_index(['time','lat','lon'], inplace=True)
-                print(df)
-                elev_ds = construct_1d_dataset(df)
-        
         if regrid == True:  
             datasets.append(regrid_mask(result))
             #print("regridding took:", time.time()-now)
@@ -649,6 +747,17 @@ def get_user_arguments(parser: argparse.ArgumentParser) -> argparse.Namespace:
         required=False,
         help="File path where to save elevation band static file",
     )
+    parser.add_argument(
+        "-eb",
+        "--elev_bins",
+        dest="elev_bins_file",
+        type=str,
+        #const=None,
+        default=None,
+        metavar="<path>",
+        required=False,
+        help="File path of lookup elevation bins",
+    )
     arguments = parser.parse_args()
 
     return arguments
@@ -710,7 +819,8 @@ def main():
         _args.regrid,
         _args.elevation_profile,
         _args.elev_bandsize,
-        _args.elev_stat_file
+        _args.elev_stat_file,
+        _args.elev_bins_file
     )
 
 

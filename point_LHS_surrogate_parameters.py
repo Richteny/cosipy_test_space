@@ -39,7 +39,7 @@ class spot_setup:
     print("Setting parameters.")
     param = RRR_factor, alb_ice, alb_snow, alb_firn, albedo_aging, albedo_depth, roughness_ice = [ #center_snow_transfer_function = [
             #aging_factor_roughness, roughness_fresh_snow, roughness_ice = [
-        Uniform(low=np.log(0.5), high=np.log(0.95)), #1.235, high=1.265
+        Uniform(low=np.log(0.3), high=np.log(0.95)), #1.235, high=1.265
         Uniform(low=0.115, high=0.263),
         Uniform(low=0.887, high=0.94),
         Uniform(low=0.46, high=0.692),

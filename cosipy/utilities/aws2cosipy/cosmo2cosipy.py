@@ -547,7 +547,9 @@ def create_2D_input(
         dso.coords["lon"] = (("south_north", "west_east"), x)
 
     else:
-        dso = ds
+        dso = ds.copy()
+        if "N_Points" in dso and "time" in dso.N_Points.dims:
+            dso = dso.drop_vars("N_Points")
         dso.coords["time"] = df.index.values
 
     # Order variables
@@ -611,7 +613,15 @@ def create_2D_input(
         #N_interp = set_zero_field(time_index, lat_index, lon_index)
         N_interp = set_zero_field_memmap("memmappedN.dat", time_index, lat_index, lon_index)
 
-    # Interpolate point data to grid
+    if "N_Points" in list(ds.variables) and "time" in ds.N_Points.dims:
+        # try to populate it as a temporal dimension..
+        sparse_times = pd.to_datetime(ds.time.values)
+        sim_times = df.index
+        # where does sim time fit into sparse timeline, side right to ensure switch when we hit next value
+        idx_map = np.searchsorted(sparse_times, sim_times, side='right')-1
+        idx_map = np.clip(idx_map, 0, len(sparse_times) -1) #values before first date will be -1, need to be fixed
+        N_Points_sparse = ds['N_Points'].values
+        N_Points_interp = set_zero_field_memmap("memmappedNPoints.dat", time_index, lat_index, lon_index) 
     print("Interpolate CR file to grid")
 
     # Interpolate data (T, RH, RRR, U) to grid using lapse rates
@@ -629,9 +639,13 @@ def create_2D_input(
 
     if ('lr_tp' in df) and (_cfg.names["RRR_var"] in df):
         lapse_RRR = df['lr_tp']
+    else:
+        lapse_RRR = None
         
     if ('lr_sf' in df) and (_cfg.names["SNOWFALL_var"] in df):
         lapse_SF = df['lr_sf']
+    else:
+        lapse_SF = None
         
     
     altitude = ds.HGT.values - _cfg.station["stationAlt"]
@@ -663,30 +677,33 @@ def create_2D_input(
         )
 
         if _cfg.names["RRR_var"] in df:
-            #RRR_interp[t, :, :] = set_bias(
-            #    data=RRR[t],
-            #    lapse_type="lapse_RRR",
-            #    altitude=altitude,
-            #    limit=True,
-            #)
-            RRR_interp[t, :, :] = set_bias_local(
-                data=RRR[t],
-                lapse_rate=lapse_RRR[t],
-                altitude=altitude,
-                limit=True,
-            )
+            if lapse_RRR == None:
+                RRR_interp[t, :, :] = set_bias(
+                    data=RRR[t],
+                    lapse_type="lapse_RRR",
+                    altitude=altitude,
+                    limit=True,
+                )
+            else:
+                RRR_interp[t, :, :] = set_bias_local(
+                    data=RRR[t],
+                    lapse_rate=lapse_RRR[t],
+                    altitude=altitude,
+                    limit=True,
+                )
 
         if _cfg.names["SNOWFALL_var"] in df:
             #print(SNOWFALL_interp[t, :, :])
-            SNOWFALL_interp[t, :, :] = set_bias_local(
-                data=SNOWFALL[t],
-                #lapse_rate=0.0,
-                lapse_rate=lapse_SF[t],
-                altitude=altitude,
-                limit=True,
-            )
+            if lapse_SF is not None:
+                SNOWFALL_interp[t, :, :] = set_bias_local(
+                    data=SNOWFALL[t],
+                    #lapse_rate=0.0,
+                    lapse_rate=lapse_SF[t],
+                    altitude=altitude,
+                    limit=True,
+                )
             #SNOWFALL_interp[t, :, :] = SNOWFALL[t]
-            print(SNOWFALL_interp[t,:,:])
+            #print(SNOWFALL_interp[t,:,:])
 
         if _cfg.names["LWin_var"] in df:
             #LW_interp[t, :, :] = LW[t]
@@ -696,6 +713,10 @@ def create_2D_input(
 
         if _cfg.names["N_var"] in df:
             N_interp[t, :, :] = N[t]
+
+        if "N_Points" in list(ds.variables) and "time" in ds['N_Points'].dims:
+            pointer = idx_map[t]
+            N_Points_interp[t,:,:] = N_Points_sparse[pointer]
 
         if _cfg.lapse['sf_temp_fix'] is True:
             print("Applying temperature-dependent snowfall adjustment")
@@ -765,20 +786,36 @@ def create_2D_input(
         
         #get correction factor which must be computed beforehand
         try:
-            correction_factor = xr.open_dataset(corr_file)
+            #correction_factor = xr.open_dataset(corr_file)
+            correction_factor_rgi = xr.open_dataset(corr_file[0])
+            correction_factor_2014 = xr.open_dataset(corr_file[1])
+            correction_factor_2018 = xr.open_dataset(corr_file[2])
+            correction_factor_2021 = xr.open_dataset(corr_file[3])
+            corr_factor_dic = {'rgi': correction_factor_rgi,
+                               '2014': correction_factor_2014,
+                               '2018': correction_factor_2018,
+                               '2021': correction_factor_2021}
+
         except:
             print("There is no HORAYZON LUT loaded. Please ensure you parsed the correct path.")
             raise_nan_error()
             
         #impose limits on correction factor to ensure reasonable range
-        corr_vals = correction_factor['sw_dir_cor'].values
-        corr_vals_clip = np.where(corr_vals > 25, 25, corr_vals)
-        correction_factor['sw_dir_cor'] = (('time', 'lat', 'lon'), corr_vals_clip)
-        correction_factor['doy'] = correction_factor.time.dt.dayofyear
-        correction_factor['hour'] = correction_factor.time.dt.hour
+        for key in corr_factor_dic.keys():
+            corr_vals = corr_factor_dic[key]['sw_dir_cor'].values
+        #corr_vals = correction_factor['sw_dir_cor'].values
+            corr_vals_clip = np.where(corr_vals > 25, 25, corr_vals)
+            corr_factor_dic[key]['sw_dir_cor'] = (('time','lat','lon'), corr_vals_clip)
+            corr_factor_dic[key]['doy'] = corr_factor_dic[key].time.dt.dayofyear
+            corr_factor_dic[key]['hour'] = corr_factor_dic[key].time.dt.hour
+            corr_factor_dic[key]['time_id'] = corr_factor_dic[key]['doy'] + corr_factor_dic[key]['hour']/100
+            corr_factor_dic[key] = corr_factor_dic[key].set_index(time="time_id")
+        #correction_factor['sw_dir_cor'] = (('time', 'lat', 'lon'), corr_vals_clip)
+        #correction_factor['doy'] = correction_factor.time.dt.dayofyear
+        #correction_factor['hour'] = correction_factor.time.dt.hour
         #Create unique identifier for doy and hour and set as index
-        correction_factor['time_id'] = correction_factor['doy'] + correction_factor['hour']/100
-        correction_factor = correction_factor.set_index(time="time_id")
+        #correction_factor['time_id'] = correction_factor['doy'] + correction_factor['hour']/100
+        #correction_factor = correction_factor.set_index(time="time_id")
         
         #Start loop over each timestep
         for t in range(time_index):
@@ -791,6 +828,14 @@ def create_2D_input(
                 doy = doy + 1
             
             time_identifier = doy + hour/100
+            if year < 2014:
+                correction_factor = corr_factor_dic["rgi"]
+            elif year < 2018:
+                correction_factor = corr_factor_dic["2014"]
+            elif year < 2021:
+                correction_factor = corr_factor_dic["2018"]
+            elif year < 2023:
+                correction_factor = corr_factor_dic["2021"]
             sw_cor_val = correction_factor.sel(time=time_identifier)['sw_dir_cor']
             #multiply correction factors with forcing
             G_interp[t,:,:] = sw_cor_val * sw[t]
@@ -917,7 +962,11 @@ def create_2D_input(
     del G_interp
 
     if _cfg.radiation["ELEV_model"] is True:
-        add_variable_along_latlon(ds=dso, var=ds.N_Points.values, name='N_Points', units='count', long_name='Number of Points in each bin')
+        if "time" in ds.N_Points.dims:
+            add_variable_along_timelatlon(ds=dso, var=N_Points_interp, name="N_Points", units="count", long_name="Number of Points in each bin")
+            del N_Points_interp
+        else:
+            add_variable_along_latlon(ds=dso, var=ds.N_Points.values, name='N_Points', units='count', long_name='Number of Points in each bin')
     if _cfg.names["RRR_var"] in df:
         add_variable_along_timelatlon(ds=dso, var=RRR_interp, **get_variable_metadata("RRR"))
         del RRR_interp
@@ -1168,6 +1217,7 @@ def get_user_arguments(parser: argparse.ArgumentParser) -> argparse.Namespace:
         "--sw",
         dest="corr_file",
         type=str,
+        nargs='+', #accepts 1 or more arguments into a list
         metavar="<path>",
         const=None,
         help="Path to the HORAYZON LUT table",

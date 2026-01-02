@@ -46,31 +46,31 @@ plat = 10.747121 #30.47
 hgt = 3048.0 #5665.0
 
 [aws2cosipy.station]
-stationName = 'HEF'
-stationAlt = 3030.0283
-stationLat = 46.797478  # Latitude of station
+stationName = 'Halji' #'HEF'
+stationAlt = 4916.0747 #3030.0283
+stationLat = 46.797478  # Latitude of station, unused with HORAYZON
 
 [aws2cosipy.lapse]
 lapse_T = -0.0065  # Temp K per  m
 lapse_RH = 0.000  # RH % per m (0 to 1)
 lapse_RRR = 0.0000  # mm per m
 lapse_SNOWFALL = 0.0000  # Snowfall % per m (0 to 1)
-sf_temp_fix = true #true
+sf_temp_fix = false #true
 center_snow = 1.5553
 spread_snow = 1.0
-overwrite_sf_tp = true #false 
+overwrite_sf_tp = false #false 
 
 # CREATE STATIC FILE
 [create_static.paths]
 static_folder = "./data/static/"
-dem_path = "HEF/DEM/NASADEM30_HEF_Box.tif"
-shape_path = "HEF/Shapefiles/HEF_RGI6.shp"
-output_file = "HEF/HEF_static_300m_new.nc"
-output_file_crop = "HEF/HEF_static_30m_crop_new.nc"
+dem_path = "Halji/DEM/halji_nasadem_30km.tif"
+shape_path = "Halji/Shapefiles/halji_outline_2023-08-31.shp"
+output_file = "Halji/Halji2023_static_30m_new.nc"
+output_file_crop = "Halji/Halji2023_static_30m_crop_new.nc"
 
 [create_static.coords]
 tile = true
-aggregate = true
+aggregate = false
 aggregate_degree = 0.00277778 #dataset is in 1 arcsecond, for desired resolution (target_res_m/30)/3600 
 longitude_upper_left = 10.6
 latitude_upper_left = 46.9
@@ -78,7 +78,7 @@ longitude_lower_right = 10.9
 latitude_lower_right = 46.7
 automatic_domain = true
 crop_file = true
-dist_search = 22.0 ## buffer size or lat lon corners influence how aggregated glacier is represented (changes no. GGPs)
+dist_search = 25.0 ## buffer size or lat lon corners influence how aggregated glacier is represented (changes no. GGPs)
 
 # WRF2COSIPY
 [wrf2cosipy.constants]

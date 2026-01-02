@@ -62,6 +62,7 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
          albedo_depth= Constants.albedo_mod_snow_depth, center_snow_transfer_function= Constants.center_snow_transfer_function,
          spread_snow_transfer_function= Constants.spread_snow_transfer_function, roughness_fresh_snow= Constants.roughness_fresh_snow,
          roughness_ice= Constants.roughness_ice,roughness_firn= Constants.roughness_firn, aging_factor_roughness= Constants.aging_factor_roughness,
+         LWIN_factor = Constants.mult_factor_LWin, WS_factor = Constants.mult_factor_WS,
          count=""):
 
     Config()
@@ -84,7 +85,8 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
     #roughness_firn = float(4.0)
     #aging_factor_roughness = float(0.0026)
     opt_dict = (RRR_factor, alb_ice, alb_snow, alb_firn, albedo_aging, albedo_depth, center_snow_transfer_function,
-                spread_snow_transfer_function, roughness_fresh_snow, roughness_ice, roughness_firn, aging_factor_roughness)
+                spread_snow_transfer_function, roughness_fresh_snow, roughness_ice, roughness_firn, aging_factor_roughness,
+                LWIN_factor, WS_factor)
     #0 to 5 - base, 6 center snow , 7 spreadsnow, 8 to 10 roughness length 
     #opt_dict=None
     lapse_T = float(lr_T)
@@ -178,12 +180,14 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
     try:
         results_output_name = output_netcdf.split('.nc')[0] + f"_RRR-{round(RRR_factor,4)}_{round(alb_snow,4)}_{round(alb_ice,4)}_{round(alb_firn,4)}"\
                                                               f"_{round(albedo_aging,4)}_{round(albedo_depth,4)}_{round(roughness_fresh_snow,4)}"\
-                                                              f"_{round(roughness_ice,4)}_{round(roughness_firn,4)}_{round(aging_factor_roughness,6)}_num{count}.nc"
+                                                              f"_{round(roughness_ice,4)}_{round(roughness_firn,4)}_{round(aging_factor_roughness,6)}"\
+                                                              f"_{round(LWIN_factor,4)}_{round(WS_factor,4)}_num{count}.nc"
     #item below only works when objects are arrays and not given by hand, parameters not taken from pymc or sorts are floats
     except:
         results_output_name = output_netcdf.split('.nc')[0] + f"_RRR-{round(RRR_factor.item(),4)}_{round(alb_snow.item(),4)}_{round(alb_ice.item(),4)}_{round(alb_firn.item(),4)}"\
                                                               f"_{round(albedo_aging.item(),4)}_{round(albedo_depth.item(),4)}_{round(roughness_fresh_snow,4)}"\
-                                                              f"_{round(roughness_ice,4)}_{round(roughness_firn,4)}_{round(aging_factor_roughness,6)}_num{count}.nc"
+                                                              f"_{round(roughness_ice,4)}_{round(roughness_firn,4)}_{round(aging_factor_roughness,6)}"\
+                                                              f"_{round(LWIN_factor,4)}_{round(WS_factor,4)}_num{count}.nc"
 
     IO.get_result().to_netcdf(os.path.join(output_path,results_output_name), encoding=encoding, mode='w')
     
@@ -195,17 +199,25 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
     times = datetime.now()
     if Config.tsl_evaluation is True:
         if 'N_Points' in list(IO.get_result().keys()):
-            print("Compute area weighted MB for 1D case.")
-            dsmb = IO.get_result().sel(time=slice(Config.time_start_cali, Config.time_end_cali))
-            dsmb['weighted_mb'] = dsmb['MB'] * dsmb['N_Points'] / np.sum(dsmb['N_Points'])
-            spatial_mean = dsmb[['weighted_mb']].sum(dim=['lat','lon'])
-            dfmb = spatial_mean['weighted_mb'].to_dataframe()
-            mean_annual_df =  dfmb.resample("1YE").sum() #resample to fixed year to match geodetic
-            geod_mb = np.nanmean(mean_annual_df['weighted_mb'].values)
+            dsmb = IO.get_result().sel(time=slice(Config.time_start_mb, Config.time_end_mb))
+            if 'time' not in IO.get_result()['N_Points'].dims:
+                print("Compute area weighted MB for 1D case.")
+                dsmb['weighted_mb'] = dsmb['MB'] * dsmb['N_Points'] / np.sum(dsmb['N_Points'])
+                spatial_mean = dsmb[['weighted_mb']].sum(dim=['lat','lon'])
+                dfmb = spatial_mean['weighted_mb'].to_dataframe()
+                mean_annual_df =  dfmb.resample("1YE").sum() #resample to fixed year to match geodetic
+                geod_mb = np.nanmean(mean_annual_df['weighted_mb'].values)
+            else:
+                ref_area_total = IO.get_result()['N_Points'].sel(time=Config.time_start_mb, method='nearest').sum()
+                total_mass_change = (dsmb['MB'] * dsmb['N_Points']).sum(dim=['lat','lon'])
+                dsmb['weighted_mb'] = total_mass_change / ref_area_total
+                dfmb = dsmb['weighted_mb'].to_dataframe()
+                mean_annual_df = dfmb.resample("1YE").sum()
+                geod_mb = np.nanmean(mean_annual_df['weighted_mb'].values)
         else:
             print("2D case.")
             spatial_mean = IO.get_result()['MB'].mean(dim=['lat','lon'], keep_attrs=True)
-            geod_df = spatial_mean.sel(time=slice(Config.time_start_cali,Config.time_end_cali)).to_dataframe()
+            geod_df = spatial_mean.sel(time=slice(Config.time_start_mb,Config.time_end_mb)).to_dataframe()
             mean_annual_df = geod_df.resample("1YE").sum()
             geod_mb = np.nanmean(mean_annual_df.MB.values)
         print("Geod. MB test.") 
@@ -233,16 +245,35 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
 
         tsl_csv_name = 'tsla_'+results_output_name.split('.nc')[0].lower()+'.csv'    
         tsla_observations = pd.read_csv(Config.tsl_data_file)
-        dates,clean_day_vals,secs,holder = prereq_res(IO.get_result().sel(time=slice(Config.time_start_cali,Config.time_end_cali)))
-        resampled_array = resample_by_hand(holder, IO.get_result().sel(time=slice(Config.time_start_cali,Config.time_end_cali)).SNOWHEIGHT.values, secs, clean_day_vals)
-        resampled_out = construct_resampled_ds(IO.get_result().sel(time=slice(Config.time_start_cali,Config.time_end_cali)),resampled_array,dates.values)
+        ds_slice = IO.get_result().sel(time=slice(Config.time_start_cali, Config.time_end_cali))
+        dates,clean_day_vals,secs,holder = prereq_res(ds_slice)
+        resampled_snow = resample_by_hand(holder, ds_slice.SNOWHEIGHT.values, secs, clean_day_vals).copy()
+        resampled_out = construct_resampled_ds(ds_slice,resampled_snow,dates.values)
 
+        if 'N_Points' in ds_slice:
+            if 'time' in ds_slice['N_Points'].dims:
+                print("Resampling dynamic N_Points for TSL masking.")
+                holder_npoints = np.zeros_like(holder)
+                resampled_np = resample_by_hand(holder_npoints, ds_slice.N_Points.values, secs, clean_day_vals)
+                resampled_out['N_Points'] = (('time','lat','lon'), resampled_np)
+                # mask snowheight
+                resampled_out['SNOWHEIGHT'] = resampled_out['SNOWHEIGHT'].where(resampled_out['N_Points'] > 0)
+            else:
+                resampled_out['N_Points'] = (('lat','lon'), ds_slice['N_Points'].values)
+                resampled_out['SNOWHEIGHT'] = resampled_out['SNOWHEIGHT'].where(resampled_out['N_Points'] > 0)
         print("Time required for resampling of output: ", datetime.now()-times)
         #Need HGT values as 2D, ensured with following line of code.
         resampled_out['HGT'] = (('lat','lon'), IO.get_result()['HGT'].data)
         resampled_out['MASK'] = (('lat','lon'), IO.get_result()['MASK'].data)
 
-        tsl_out = create_tsl_df(resampled_out, Config.min_snowheight, Config.tsl_method, Config.tsl_normalize)
+        if "N_Points" in resampled_out:
+            if len(resampled_out["N_Points"].shape) == 3:
+                n_points_arg = resampled_out["N_Points"].values
+            else:
+                n_points_arg = None
+        else:
+            n_points_arg = None
+        tsl_out = create_tsl_df(resampled_out, Config.min_snowheight, Config.tsl_method, Config.tsl_normalize, n_points_arg)
         print("Max. TSLA:", np.nanmax(tsl_out['Med_TSL'].values))
         tsl_out.to_csv(os.path.join(output_path, tsl_csv_name))
         tsla_stats = eval_tsl(tsla_observations,tsl_out, Config.time_col_obs, Config.tsla_col_obs)
@@ -260,7 +291,8 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
                                         tsl_out_match.Med_TSL.values)) ).transpose()
                 curr_df.columns = ['rrr_factor', 'alb_ice', 'alb_snow', 'alb_firn', 'albedo_aging',
                                    'albedo_depth', 'center_snow_transfer', 'spread_snow_transfer',
-                                   'roughness_fresh_snow', 'roughness_ice', 'roughness_firn', 'aging_factor_roughness', 'mb'] +\
+                                   'roughness_fresh_snow', 'roughness_ice', 'roughness_firn',
+                                   'aging_factor_roughness', 'lwin_factor', 'ws_factor', 'mb'] +\
                                   [f'sim{i+1}' for i in range(tsl_out_match.shape[0])]
 
                 param_df = pd.concat([param_df, curr_df], ignore_index=True)
@@ -270,7 +302,8 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
                                          tsl_out_match.Med_TSL.values)) ).transpose()
                 param_df.columns =   ['rrr_factor', 'alb_ice', 'alb_snow', 'alb_firn', 'albedo_aging',
                                       'albedo_depth', 'center_snow_transfer', 'spread_snow_transfer',
-                                      'roughness_fresh_snow', 'roughness_ice', 'roughness_firn', 'aging_factor_roughness', 'mb'] +\
+                                      'roughness_fresh_snow', 'roughness_ice', 'roughness_firn',
+                                      'aging_factor_roughness','lwin_factor', 'ws_factor', 'mb'] +\
                                      [f'sim{i+1}' for i in range(tsl_out_match.shape[0])]
             param_df.to_csv(f"./simulations/{Config.csv_filename}")
 

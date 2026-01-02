@@ -131,7 +131,7 @@ def tsl_method_mantra(snowheights, hgts, mask, min_snowheight):
 
 #Needs work? Method is not really reliable for a 2D distributed simulation due to large differences
 @njit 
-def tsl_method_conservative(snowheights, hgts, mask, min_snowheight):
+def tsl_method_conservative(snowheights, hgts, mask, min_snowheight, min_elevs_t):
     amed = np.zeros(snowheights.shape[0])
     amean = np.zeros(snowheights.shape[0])
     astd = np.zeros(snowheights.shape[0])
@@ -152,7 +152,10 @@ def tsl_method_conservative(snowheights, hgts, mask, min_snowheight):
         #print(filtered_elev_nosnow)
         if np.isnan(filtered_elev_nosnow):
             #print("Glacier seems to be fully snow-covered. Assigning minimum elevation.")
-            filtered_elev_nosnow = np.nanmin(np.where(mask==1, hgts, np.nan))
+            if min_elevs_t is None:
+                filtered_elev_nosnow = np.nanmin(np.where(mask==1, hgts, np.nan))
+            else:
+                filtered_elev_nosnow = min_elevs_t[n]
             #print(filtered_elev_nosnow,"m a.s.l.")
             flag[n] = 1
         else:
@@ -250,32 +253,49 @@ def tsl_method_gridsearch(snowheights, hgts, mask, min_snowheight):
     return (amed, amean, astd, amax, amin, flag)
 
 
-def calculate_tsl_byhand(snowheights,hgts,mask, min_snowheight,tsl_method, tsl_normalize):
-    max_elev = np.nanmax(np.where(mask==1, hgts, np.nan))
-    min_elev = np.nanmin(np.where(mask==1, hgts, np.nan))
+def calculate_tsl_byhand(snowheights,hgts,mask, min_snowheight,tsl_method, tsl_normalize, n_points_3d=None):
+    
+    if n_points_3d is not None:
+        timesteps = snowheights.shape[0]
+        min_elevs_t = np.full(timesteps, np.nan)
+        max_elevs_t = np.full(timesteps, np.nan)
+        for t in range(timesteps):
+            current_mask = n_points_3d[t,:,:]
+            valid_hgts = np.where((current_mask > 0) & (~np.isnan(current_mask)), hgts, np.nan)
+            min_elevs_t[t] = np.nanmin(valid_hgts)
+            max_elevs_t[t] = np.nanmax(valid_hgts)
+    else:
+        max_elevs_t = np.nanmax(np.where(mask==1, hgts, np.nan))
+        min_elevs_t = np.nanmin(np.where(mask==1, hgts, np.nan))
     print("Calculating TSLA using {}. Normalization is set to {}.".format(tsl_method, tsl_normalize))
-    print("Max elev.", max_elev,".\n Min elev.", min_elev)
+    print("Max elev.", max_elevs_t,".\n Min elev.", min_elevs_t)
     if tsl_method == 'mantra':
         amed, amean, astd, amax, amin, flag = tsl_method_mantra(snowheights, hgts, mask, min_snowheight)
     elif tsl_method == 'conservative':
-        amed, amean, astd, amax, amin, flag = tsl_method_conservative(snowheights, hgts, mask, min_snowheight)
+        if n_points_3d is not None:
+            amed, amean, astd, amax, amin, flag = tsl_method_conservative(snowheights, hgts, mask, min_snowheight, min_elevs_t)
+        else:
+            amed, amean, astd, amax, amin, flag = tsl_method_conservative(snowheights, hgts, mask, min_snowheight, None)
     else:
         amed, amean, astd, amax, amin, flag = tsl_method_gridsearch(snowheights, hgts, mask, min_snowheight)
     if tsl_normalize:
         #Start normalizing:
-        amed_norm = (amed - min_elev) / (max_elev - min_elev)
-        amean_norm = (amean - min_elev) / (max_elev - min_elev)
-        astd_norm = (astd - min_elev) / (max_elev - min_elev)
-        amax_norm = (amax - min_elev) / (max_elev - min_elev)
-        amin_norm = (amin - min_elev) / (max_elev - min_elev)
+        elev_range = max_elevs_t - min_elevs_t
+        #elev_range[elev_range == 0] = 1.0 #safety
+
+        amed_norm = (amed - min_elevs_t) / elev_range
+        amean_norm = (amean - min_elevs_t) / elev_range
+        astd_norm = (astd - min_elevs_t) / elev_range
+        amax_norm = (amax - min_elevs_t) / elev_range
+        amin_norm = (amin - min_elevs_t) / elev_range
         return (amed_norm, amean_norm, astd_norm, amax_norm, amin_norm, flag)
     else:
         return (amed, amean, astd, amax, amin, flag)
         
 
-def create_tsl_df(cos_output,min_snowheight, tsl_method, tsl_normalize):
+def create_tsl_df(cos_output,min_snowheight, tsl_method, tsl_normalize, n_points_arg):
     times = datetime.now()
-    amed,amean,astd,amax,amin,flag = calculate_tsl_byhand(cos_output.SNOWHEIGHT.values, cos_output.HGT.values, cos_output.MASK.values, min_snowheight, tsl_method, tsl_normalize)
+    amed,amean,astd,amax,amin,flag = calculate_tsl_byhand(cos_output.SNOWHEIGHT.values, cos_output.HGT.values, cos_output.MASK.values, min_snowheight, tsl_method, tsl_normalize, n_points_arg)
     #print(amed)
     tsl_df = pd.DataFrame({'time':pd.to_datetime(cos_output.time.values),
                             'Med_TSL':amed,

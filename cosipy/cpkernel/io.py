@@ -341,7 +341,7 @@ class IOClass:
             "MASK": ("boolean", "Glacier mask"),
             "SLOPE": ("degrees", "Terrain slope"),
             "ASPECT": ("degrees", "Aspect of slope"),
-            "N_Points": ("count", "Number of points in each bin"),
+#            "N_Points": ("count", "Number of points in each bin"),
         }
         metadata_spatiotemporal = {
             "T2": ("K", "Air temperature at 2 m"),
@@ -353,6 +353,7 @@ class IOClass:
             "SNOWFALL": ("m", "Snowfall"),
             "N": ("-", "Cloud fraction"),
             "LWin": ("W m\u207b\xb2", "Incoming longwave radiation"),
+            "N_Points": ("count", "Number of points in each bin"),
         }
 
         return metadata_spatial, metadata_spatiotemporal
@@ -464,6 +465,8 @@ class IOClass:
             roughness_ice = opt_dict[9]
             roughness_firn = opt_dict[10]
             aging_factor_roughness = opt_dict[11]
+            mult_factor_LWIN = opt_dict[12]
+            mult_factor_WS = opt_dict[13]
             #print(aging_factor_roughness)
         else:
             mult_factor_RRR = Constants.mult_factor_RRR
@@ -478,7 +481,8 @@ class IOClass:
             roughness_ice = Constants.roughness_ice
             roughness_firn = Constants.roughness_firn
             aging_factor_roughness = Constants.aging_factor_roughness
-
+            mult_factor_LWIN = Constants.mult_factor_LWin
+            mult_factor_WS = Constants.mult_factor_WS
  
         # Coordinates
         self.RESULT = xr.Dataset()

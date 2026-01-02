@@ -36,12 +36,13 @@ zlt2 = 0.1					                    # Second depth for temperature interpolation 
 [PRECIPITATION]
 center_snow_transfer_function = 1.5552984 #1.0             # center (50/50) when total precipitation is transferred to snow and rain
 spread_snow_transfer_function = 1               # 1: +-2.5
-mult_factor_RRR = 1.0                           # multiplication factor for RRR
+mult_factor_RRR = 0.7                           # multiplication factor for RRR
 
 minimum_snow_layer_height = 0.001               # minimum layer height
 minimum_snowfall = 0.001                        # minimum snowfall per time step in m which is added as new snow
 
-
+mult_factor_LWin = 1.02
+mult_factor_WS = 1.2
 [REMESHING]
 remesh_method = 'log_profile'                   # Remeshing (log_profile or adaptive_profile)
 first_layer_height = 0.01                       # The first layer will always have the defined height (m)

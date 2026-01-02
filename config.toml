@@ -4,15 +4,15 @@
 [SIMULATION_PERIOD]
 #time_start = "1999-01-01T00:00"
 #time_end = "2009-12-31T23:00"
-time_start = "2002-10-01T00:00"
-time_end = "2004-09-30T23:00"
+time_start = "1987-10-01T00:00"
+time_end = "2022-12-31T23:00"
 
 [FILENAMES]
 data_path = "./data/"
 #input_netcdf = "HEF/HEF_COSMO_1D20m_HORAYZON_1999_2010_IntpPRES.nc"
-input_netcdf = "HEF/HEF_AWSU_2002-2004_COSMO-RRR.nc"
+input_netcdf = "Halji/Halji_HARv2_1D20m_HRZ_1988_2022.nc" # 
 #output_prefix = "HEF_COSMO_1D20m_1999_2010_HORAYZON_IntpPRES_localsens" #"HEF_COSMO_1D20m_1999_2010_HORAYZON_IntpPRES"
-output_prefix = "HEF_AWSU_Point_2002-2004_COSMO-RRR_LHS"
+output_prefix = "Halji_HARv2_1988-2022.nc"
 
 [RESTART]
 restart = false # set to true if you want to start from restart file
@@ -25,9 +25,11 @@ eval_method = "rmse" # how to evaluate the simulations ("rmse")
 obs_type = "snowheight" # What kind of stake data is used "mb" or "snowheight"
 
 ["TRANSIENT SNOWLINE DATA"]
-time_start_cali = "2000-01-01T00:00"
-time_end_cali = "2009-12-31T23:00"
-tsl_evaluation = false #true
+time_start_cali = "1990-01-01T00:00"
+time_end_cali = "2022-12-31T23:00"
+time_start_mb = "2000-01-01T00:00"
+time_end_mb = "2020-01-01T00:00"
+tsl_evaluation = true #true
 write_csv_status = false #true
 csv_filename = "localsens_1D20m_1999_2010.csv"
 time_col_obs = "LS_DATE"
@@ -35,8 +37,9 @@ tsla_col_obs = "TSL_normalized"
 min_snowheight = 0.001 #1mm
 tsl_method = "conservative"
 tsl_normalize = true
-tsl_data_file = "./data/input/HEF/snowlines/HEF-snowlines-1999-2010_manual_filtered.csv"
-point_evaluation = true #false
+#tsl_data_file = "./data/input/HEF/snowlines/HEF-snowlines-1999-2010_manual_filtered.csv"
+tsl_data_file = "./data/input/Halji/snowlines/Halji_TSLA_fixed-1990-2025.csv"
+point_evaluation = false #false
 
 ["RUN LAPSE RATES ONLINE"]
 station_altitude = 3030.0283
@@ -79,9 +82,9 @@ yend = 40
 
 [OUTPUT_VARIABLES]
 # Select which output variables are written to disk. Comma-separated. Edit with caution.
-#output_atm=""
-#output_internal="MB,SNOWHEIGHT"
-#output_full="HEIGHT"
-output_atm = "T2,RH2,U2,RAIN,SNOWFALL,RRR,PRES,N,G,LWin,LWout,H,LE,B,QRR,Z0,ALBEDO,TS"
-output_internal = "ME,MB,surfMB,intMB,EVAPORATION,SUBLIMATION,CONDENSATION,DEPOSITION,surfM,subM,Q,REFREEZE,SNOWHEIGHT,TOTALHEIGHT,LAYERS"
-output_full = "HEIGHT,RHO,T,LWC,CC,POROSITY,LW,ICE_FRACTION,IRREDUCIBLE_WATER,REFREEZE"
+output_atm="ALBEDO,SNOWFALL,RRR,U2"
+output_internal="MB,SNOWHEIGHT,ME"
+output_full="HEIGHT"
+#output_atm = "T2,RH2,U2,RAIN,SNOWFALL,RRR,PRES,N,G,LWin,LWout,H,LE,B,QRR,Z0,ALBEDO,TS"
+#output_internal = "ME,MB,surfMB,intMB,EVAPORATION,SUBLIMATION,CONDENSATION,DEPOSITION,surfM,subM,Q,REFREEZE,SNOWHEIGHT,TOTALHEIGHT,LAYERS"
+#output_full = "HEIGHT,RHO,T,LWC,CC,POROSITY,LW,ICE_FRACTION,IRREDUCIBLE_WATER,REFREEZE"

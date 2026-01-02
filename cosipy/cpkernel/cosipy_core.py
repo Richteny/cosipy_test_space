@@ -170,6 +170,8 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
     albedo_fresh_snow = Constants.albedo_fresh_snow
     albedo_firn = Constants.albedo_firn
     WRF_X_CSPY = Config.WRF_X_CSPY
+    mult_factor_LWIN = Constants.mult_factor_LWin
+    mult_factor_WS = Constants.mult_factor_WS
 
     # Replace values from constants.py if coupled
     # TODO: This only affects the current module scope instead of global.
@@ -193,6 +195,8 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
         roughness_ice = opt_dict[9]
         roughness_firn = opt_dict[10]
         aging_factor_roughness = opt_dict[11]
+        mult_factor_LWIN = opt_dict[12]
+        mult_factor_WS = opt_dict[13]
 
     nt = len(DATA.time.values)  # accessing DATA is expensive
     """
@@ -268,8 +272,9 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
     RH2 = DATA.RH2.values
     PRES = DATA.PRES.values
     G = DATA.G.values
-    U2 = DATA.U2.values
+    #U2 = DATA.U2.values
 
+    U2 = DATA.U2.values * mult_factor_WS
     #--------------------------------------------
     # Checks for optional input variables
     #--------------------------------------------
@@ -291,10 +296,10 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
     LWin = np.array(nt * [None])
     N = np.array(nt * [None])
     if ('LWin' in DATA) and ('N' in DATA):
-        LWin = DATA.LWin.values
+        LWin = DATA.LWin.values * mult_factor_LWIN
         N = DATA.N.values
     elif 'LWin' in DATA:
-        LWin = DATA.LWin.values
+        LWin = DATA.LWin.values * mult_factor_LWIN
     else:
         LWin = None
         N = DATA.N.values

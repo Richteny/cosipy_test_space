@@ -23,12 +23,14 @@ Constants()
 
 # Set up MB data
 path_to_geod = "/data/scratch/richteny/Hugonnet_21_MB/"
-rgi_id = "RGI60-11.00897"
+#rgi_id = "RGI60-11.00897"
+rgi_id = "RGI60-15.06065"
 rgi_region = rgi_id.split('-')[-1][:2]
 
 geod_ref = pd.read_csv(path_to_geod+"dh_{}_rgi60_pergla_rates.csv".format(rgi_region))
 geod_ref = geod_ref.loc[geod_ref['rgiid'] == rgi_id]
-geod_ref = geod_ref.loc[geod_ref['period'] == "2000-01-01_2010-01-01"]
+#geod_ref = geod_ref.loc[geod_ref['period'] == "2000-01-01_2010-01-01"]
+geod_ref = geod_ref.loc[geod_ref['period'] == "2000-01-01_2020-01-01"]
 geod_ref = geod_ref[['dmdtda','err_dmdtda']]
 
 # Load TSL Data
@@ -46,7 +48,7 @@ tsla_obs.set_index('LS_DATE', inplace=True)
 if Config.tsl_normalize:
     tsla_obs['SC_stdev'] = (tsla_obs['SC_stdev']) / (tsla_obs['glacier_DEM_max'] - tsla_obs['glacier_DEM_min'])
 
-    thres_unc = (20) / (tsla_obs['glacier_DEM_max'].iloc[0] - tsla_obs['glacier_DEM_min'].iloc[0])
+    thres_unc = (20) / (tsla_obs['glacier_DEM_max'] - tsla_obs['glacier_DEM_min'])
     print(thres_unc)
 
     ## Set observational uncertainty where smaller to atleast model resolution (20m) and where larger keep it
@@ -61,15 +63,26 @@ obs = None
 class spot_setup:
     # defining all parameters and the distribution
     print("Setting parameters.")
-    param = RRR_factor, alb_ice, alb_snow, alb_firn, albedo_aging, albedo_depth, roughness_ice = [
+    param = RRR_factor, alb_ice, alb_snow, alb_firn, albedo_aging, albedo_depth, roughness_ice, LWIN_factor, WS_factor = [
             #aging_factor_roughness, roughness_fresh_snow, roughness_ice = [
-        Uniform(low=np.log(0.57), high=np.log(1.1422)), #1.235, high=1.265
-        Uniform(low=0.115, high=0.233),
-        Uniform(low=0.887, high=0.93),
-        Uniform(low=0.506, high=0.685),
-        Uniform(low=3, high=25),
-        Uniform(low=1, high=13.0),
-        Uniform(low=0.96, high=20)]
+#        Uniform(low=np.log(0.57), high=np.log(1.1422)), #1.235, high=1.265
+#        Uniform(low=0.115, high=0.233),
+#        Uniform(low=0.887, high=0.93),
+#        Uniform(low=0.506, high=0.685),
+#        Uniform(low=3, high=25),
+#        Uniform(low=1, high=13.0),
+#        Uniform(low=0.96, high=20),
+#        Uniform(low=np.log(0.95), high=np.log(1.05)),
+#        Uniform(low=np.log(0.75), high=np.log(2.5))]
+        Uniform(low=np.log(0.57), high=np.log(0.86)), #1.235, high=1.265
+        Uniform(low=0.13, high=0.25),
+        Uniform(low=0.86, high=0.925),
+        Uniform(low=0.51, high=0.67),
+        Uniform(low=3, high=23),
+        Uniform(low=1, high=12.0),
+        Uniform(low=0.7, high=19.5),
+        Uniform(low=np.log(0.95), high=np.log(1.05)),
+        Uniform(low=np.log(0.75), high=np.log(2.5))]
         #Uniform(low=0.005, high=0.0026+0.0026),
         #Uniform(low=0.2, high=3.56),
         #Uniform(low=0.1, high=7.0)]
@@ -84,7 +97,7 @@ class spot_setup:
     def simulation(self, x):
         print("Count", self.count)
         sim_mb, sim_tsla = runcosipy(RRR_factor=np.exp(x.RRR_factor), alb_ice = x.alb_ice, alb_snow = x.alb_snow, alb_firn = x.alb_firn,
-                   albedo_aging = x.albedo_aging, albedo_depth = x.albedo_depth, roughness_ice = x.roughness_ice, #aging_factor_roughness = x.aging_factor_roughness,
+                   albedo_aging = x.albedo_aging, albedo_depth = x.albedo_depth, roughness_ice = x.roughness_ice, LWIN_factor=np.exp(x.LWIN_factor), WS_factor=np.exp(x.WS_factor), #aging_factor_roughness = x.aging_factor_roughness,
                    count=self.count) #roughness_fresh_snow = x.roughness_fresh_snow, roughness_ice = x.roughness_ice, count=self.count)
         sim_tsla = sim_tsla[sim_tsla['time'].isin(tsla_obs.index)]
         return (np.array([sim_mb]), sim_tsla['Med_TSL'].values)
@@ -131,7 +144,7 @@ def psample(obs, count=None):
     
     rep= 2500
     count=count
-    name = "LHS-narrow_parameters_full"
+    name = "Halji-LHS-wide"
     setup = spot_setup(obs, count=count)
     sampler = spotpy.algorithms.lhs(setup, dbname=name, dbformat='csv', db_precision=np.float64, random_state=42, save_sim=True)
     sampler.sample(rep)
