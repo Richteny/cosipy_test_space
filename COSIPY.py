@@ -62,7 +62,7 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
          albedo_depth= Constants.albedo_mod_snow_depth, center_snow_transfer_function= Constants.center_snow_transfer_function,
          spread_snow_transfer_function= Constants.spread_snow_transfer_function, roughness_fresh_snow= Constants.roughness_fresh_snow,
          roughness_ice= Constants.roughness_ice,roughness_firn= Constants.roughness_firn, aging_factor_roughness= Constants.aging_factor_roughness,
-         LWIN_factor = Constants.mult_factor_LWin, WS_factor = Constants.mult_factor_WS,
+         LWIN_factor = Constants.mult_factor_LWin, WS_factor = Constants.mult_factor_WS, T2_factor = Constants.mult_factor_T2,
          count=""):
 
     Config()
@@ -86,7 +86,7 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
     #aging_factor_roughness = float(0.0026)
     opt_dict = (RRR_factor, alb_ice, alb_snow, alb_firn, albedo_aging, albedo_depth, center_snow_transfer_function,
                 spread_snow_transfer_function, roughness_fresh_snow, roughness_ice, roughness_firn, aging_factor_roughness,
-                LWIN_factor, WS_factor)
+                LWIN_factor, WS_factor, T2_factor)
     #0 to 5 - base, 6 center snow , 7 spreadsnow, 8 to 10 roughness length 
     #opt_dict=None
     lapse_T = float(lr_T)
@@ -181,15 +181,15 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
         results_output_name = output_netcdf.split('.nc')[0] + f"_RRR-{round(RRR_factor,4)}_{round(alb_snow,4)}_{round(alb_ice,4)}_{round(alb_firn,4)}"\
                                                               f"_{round(albedo_aging,4)}_{round(albedo_depth,4)}_{round(roughness_fresh_snow,4)}"\
                                                               f"_{round(roughness_ice,4)}_{round(roughness_firn,4)}_{round(aging_factor_roughness,6)}"\
-                                                              f"_{round(LWIN_factor,4)}_{round(WS_factor,4)}_num{count}.nc"
+                                                              f"_{round(LWIN_factor,4)}_{round(WS_factor,4)}_{round(T2_factor,4)}_{round(center_snow_transfer_function,4)}_num{count}.nc"
     #item below only works when objects are arrays and not given by hand, parameters not taken from pymc or sorts are floats
     except:
         results_output_name = output_netcdf.split('.nc')[0] + f"_RRR-{round(RRR_factor.item(),4)}_{round(alb_snow.item(),4)}_{round(alb_ice.item(),4)}_{round(alb_firn.item(),4)}"\
                                                               f"_{round(albedo_aging.item(),4)}_{round(albedo_depth.item(),4)}_{round(roughness_fresh_snow,4)}"\
                                                               f"_{round(roughness_ice,4)}_{round(roughness_firn,4)}_{round(aging_factor_roughness,6)}"\
-                                                              f"_{round(LWIN_factor,4)}_{round(WS_factor,4)}_num{count}.nc"
+                                                              f"_{round(LWIN_factor,4)}_{round(WS_factor,4)}_{round(T2_factor,4)}_{round(center_snow_transfer_function,4)}_num{count}.nc"
 
-    IO.get_result().to_netcdf(os.path.join(output_path,results_output_name), encoding=encoding, mode='w')
+    #IO.get_result().to_netcdf(os.path.join(output_path,results_output_name), encoding=encoding, mode='w')
     
     #print(np.nanmax(IO.get_result().ALBEDO))
     #print(np.nanmin(IO.get_result().ALBEDO))
@@ -208,8 +208,10 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
                 mean_annual_df =  dfmb.resample("1YE").sum() #resample to fixed year to match geodetic
                 geod_mb = np.nanmean(mean_annual_df['weighted_mb'].values)
             else:
-                ref_area_total = IO.get_result()['N_Points'].sel(time=Config.time_start_mb, method='nearest').sum()
-                total_mass_change = (dsmb['MB'] * dsmb['N_Points']).sum(dim=['lat','lon'])
+                n_points_fixed = IO.get_result()['N_Points'].sel(time=Config.time_start_mb, method='nearest')
+                ref_area_total = n_points_fixed.sum()
+                #total_mass_change = (dsmb['MB'] * dsmb['N_Points']).sum(dim=['lat','lon']) time-varying 
+                total_mass_change = (dsmb['MB']  *  n_points_fixed).sum(dim=['lat','lon'])
                 dsmb['weighted_mb'] = total_mass_change / ref_area_total
                 dfmb = dsmb['weighted_mb'].to_dataframe()
                 mean_annual_df = dfmb.resample("1YE").sum()
@@ -246,8 +248,8 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
         tsl_csv_name = 'tsla_'+results_output_name.split('.nc')[0].lower()+'.csv'    
         tsla_observations = pd.read_csv(Config.tsl_data_file)
         ds_slice = IO.get_result().sel(time=slice(Config.time_start_cali, Config.time_end_cali))
-        dates,clean_day_vals,secs,holder = prereq_res(ds_slice)
-        resampled_snow = resample_by_hand(holder, ds_slice.SNOWHEIGHT.values, secs, clean_day_vals).copy()
+        dates,clean_day_vals,secs = prereq_res(ds_slice)
+        resampled_snow = resample_by_hand(ds_slice.SNOWHEIGHT.values, secs, clean_day_vals).copy()
         resampled_out = construct_resampled_ds(ds_slice,resampled_snow,dates.values)
 
         if 'N_Points' in ds_slice:
@@ -275,7 +277,7 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
             n_points_arg = None
         tsl_out = create_tsl_df(resampled_out, Config.min_snowheight, Config.tsl_method, Config.tsl_normalize, n_points_arg)
         print("Max. TSLA:", np.nanmax(tsl_out['Med_TSL'].values))
-        tsl_out.to_csv(os.path.join(output_path, tsl_csv_name))
+        #tsl_out.to_csv(os.path.join(output_path, tsl_csv_name))
         tsla_stats = eval_tsl(tsla_observations,tsl_out, Config.time_col_obs, Config.tsla_col_obs)
         print("TSLA Observed vs. Modelled RMSE: " + str(tsla_stats[0])+ "; R-squared: " + str(tsla_stats[1]))
         ## Match to observation dates for pymc routine
@@ -292,7 +294,7 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
                 curr_df.columns = ['rrr_factor', 'alb_ice', 'alb_snow', 'alb_firn', 'albedo_aging',
                                    'albedo_depth', 'center_snow_transfer', 'spread_snow_transfer',
                                    'roughness_fresh_snow', 'roughness_ice', 'roughness_firn',
-                                   'aging_factor_roughness', 'lwin_factor', 'ws_factor', 'mb'] +\
+                                   'aging_factor_roughness', 'lwin_factor', 'ws_factor','t2_factor', 'mb'] +\
                                   [f'sim{i+1}' for i in range(tsl_out_match.shape[0])]
 
                 param_df = pd.concat([param_df, curr_df], ignore_index=True)
@@ -303,7 +305,7 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
                 param_df.columns =   ['rrr_factor', 'alb_ice', 'alb_snow', 'alb_firn', 'albedo_aging',
                                       'albedo_depth', 'center_snow_transfer', 'spread_snow_transfer',
                                       'roughness_fresh_snow', 'roughness_ice', 'roughness_firn',
-                                      'aging_factor_roughness','lwin_factor', 'ws_factor', 'mb'] +\
+                                      'aging_factor_roughness','lwin_factor', 'ws_factor','t2_factor', 'mb'] +\
                                      [f'sim{i+1}' for i in range(tsl_out_match.shape[0])]
             param_df.to_csv(f"./simulations/{Config.csv_filename}")
 
@@ -641,13 +643,13 @@ def resample_annual_mb(holder,vals,secs,time_vals):
 
 def prereq_res(ds):
     time_vals = pd.to_datetime(ds.time.values)
-    holder = np.zeros((len(np.unique(time_vals.date)), ds.SNOWHEIGHT.values.shape[1], ds.SNOWHEIGHT.values.shape[2]))
+    #holder = np.zeros((len(np.unique(time_vals.date)), ds.SNOWHEIGHT.values.shape[1], ds.SNOWHEIGHT.values.shape[2]))
     # Integer seconds since epoch for numba
     secs = np.array([time_vals.astype('int64')]).ravel()
     dates = pd.to_datetime(np.unique(time_vals.date))
     clean_day_vals = np.array(dates.astype('int64'))
 
-    return (dates,clean_day_vals,secs,holder)
+    return (dates,clean_day_vals,secs) #,holder)
 
 @gen.coroutine
 def close_everything(scheduler):

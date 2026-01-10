@@ -68,7 +68,7 @@ def resample_output(cos_output):
     ds_daily = df_daily.to_xarray()
     print("Required time for resample only: ", datetime.now()-times)
     return ds_daily
-
+""" archived!
 @njit
 def resample_by_hand(holder,vals,secs,time_vals):
     i=0
@@ -84,6 +84,43 @@ def resample_by_hand(holder,vals,secs,time_vals):
         holder[i,:,:] = latlon
         i+=1
     return holder
+"""
+@njit
+def resample_by_hand(vals,secs,time_vals):
+    ntime, nlat, nlon = vals.shape
+    ndays = len(time_vals)
+    
+    day_next = 24*3600*1e9 #nanoseconds
+
+    out = np.zeros((ndays, nlat, nlon))
+    count = np.zeros((ndays, nlat, nlon))
+
+    day_idx = 0
+    day_end = time_vals[0] + day_next
+
+    for t in range(ntime):
+        ts = secs[t]
+
+        while day_idx < ndays -1 and ts >= day_end:
+            day_idx += 1
+            day_end = time_vals[day_idx] + day_next
+
+        for j in range(nlat):
+            for k in range(nlon):
+                v = vals[t, j, k]
+                if not np.isnan(v):
+                    out[day_idx, j, k] += v
+                    count[day_idx, j, k] += 1
+
+    #mean
+    for d in range(ndays):
+        for j in range(nlat):
+            for k in range(nlon):
+                if count[d, j, k] > 0:
+                    out[d, j, k] /= count[d, j, k]
+                else:
+                    out[d, j, k] = np.nan
+    return out
 
 @njit
 def tsl_method_mantra(snowheights, hgts, mask, min_snowheight):
