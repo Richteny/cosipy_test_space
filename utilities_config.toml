@@ -59,6 +59,7 @@ sf_temp_fix = false #true
 center_snow = 1.5553
 spread_snow = 1.0
 overwrite_sf_tp = false #false 
+srf_model = true #false
 
 # CREATE STATIC FILE
 [create_static.paths]

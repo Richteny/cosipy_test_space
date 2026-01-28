@@ -1,6 +1,6 @@
 #!/bin/bash -l
 
-#SBATCH --job-name="HEF-Synth"
+#SBATCH --job-name="HEF-batch0"
 #SBATCH --qos=long
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=20
@@ -9,7 +9,7 @@
 #SBATCH --account=morsanat
 #SBATCH --error=Control_master.err
 ##SBATCH --reservation=PyMC
-#SBATCH --partition=computehm
+#SBATCH --partition=compute
 #SBATCH --output=Control_master.out
 ##SBATCH --mail-type=ALL
 
@@ -24,7 +24,7 @@ conda activate pymc_env
 #module load anaconda/2019.07
 #export DASK_DISTRIBUTED__LOGGING__DISTRIBUTED="WARNING"
 
-#python -u /data/scratch/richteny/thesis/cosipy_test_space/COSIPY.py
+python -u /data/scratch/richteny/thesis/cosipy_test_space/COSIPY.py
 #python -u /data/scratch/richteny/thesis/cosipy_test_space/FAST_spotpy.py
 #python -u /data/scratch/richteny/thesis/cosipy_test_space/pymc_calibration.py
 #python -u /data/scratch/richteny/thesis/cosipy_test_space/synthetic_pymc_calibration.py
@@ -35,3 +35,6 @@ conda activate pymc_env
 
 #python -u /data/scratch/richteny/thesis/cosipy_test_space/point_COSIPY.py
 #python -u /data/scratch/richteny/thesis/cosipy_test_space/point_LHS_surrogate_parameters.py
+
+#python -u /data/scratch/richteny/thesis/cosipy_test_space/cosipy_run_fromlist.py "/data/scratch/richteny/for_emulator/Halji/LHS-narrow/LHS_Posterior_batch_0.csv"
+#python -u /data/scratch/richteny/thesis/cosipy_test_space/cosipy_lhs-wide_fromlist.py 0

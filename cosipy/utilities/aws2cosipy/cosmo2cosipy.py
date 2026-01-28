@@ -961,6 +961,8 @@ def create_2D_input(
     del P_interp
     del G_interp
 
+    if _cfg.lapse["srf_model"] is True:
+        add_variable_along_latlon(ds=dso, var=ds.SRF.values, name="SRF", units="-", long_name="Snow Redistribution Factor (Hanzer 2016)")
     if _cfg.radiation["ELEV_model"] is True:
         if "time" in ds.N_Points.dims:
             add_variable_along_timelatlon(ds=dso, var=N_Points_interp, name="N_Points", units="count", long_name="Number of Points in each bin")

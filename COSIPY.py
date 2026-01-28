@@ -62,7 +62,8 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
          albedo_depth= Constants.albedo_mod_snow_depth, center_snow_transfer_function= Constants.center_snow_transfer_function,
          spread_snow_transfer_function= Constants.spread_snow_transfer_function, roughness_fresh_snow= Constants.roughness_fresh_snow,
          roughness_ice= Constants.roughness_ice,roughness_firn= Constants.roughness_firn, aging_factor_roughness= Constants.aging_factor_roughness,
-         LWIN_factor = Constants.mult_factor_LWin, WS_factor = Constants.mult_factor_WS, T2_factor = Constants.mult_factor_T2,
+         LWIN_factor = Constants.mult_factor_LWin, WS_factor = Constants.mult_factor_WS, summer_bias_t2 = Constants.bias_T2,
+         t_wet = Constants.t_star_wet, t_dry = Constants.t_star_dry, t_K = Constants.t_star_K,
          count=""):
 
     Config()
@@ -86,7 +87,7 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
     #aging_factor_roughness = float(0.0026)
     opt_dict = (RRR_factor, alb_ice, alb_snow, alb_firn, albedo_aging, albedo_depth, center_snow_transfer_function,
                 spread_snow_transfer_function, roughness_fresh_snow, roughness_ice, roughness_firn, aging_factor_roughness,
-                LWIN_factor, WS_factor, T2_factor)
+                LWIN_factor, WS_factor, summer_bias_t2, t_wet, t_dry, t_K)
     #0 to 5 - base, 6 center snow , 7 spreadsnow, 8 to 10 roughness length 
     #opt_dict=None
     lapse_T = float(lr_T)
@@ -177,19 +178,32 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
     output_netcdf = set_output_netcdf_path()
     output_path = create_data_directory(path='output')
     #version for parsed floats by hand here
-    try:
-        results_output_name = output_netcdf.split('.nc')[0] + f"_RRR-{round(RRR_factor,4)}_{round(alb_snow,4)}_{round(alb_ice,4)}_{round(alb_firn,4)}"\
-                                                              f"_{round(albedo_aging,4)}_{round(albedo_depth,4)}_{round(roughness_fresh_snow,4)}"\
-                                                              f"_{round(roughness_ice,4)}_{round(roughness_firn,4)}_{round(aging_factor_roughness,6)}"\
-                                                              f"_{round(LWIN_factor,4)}_{round(WS_factor,4)}_{round(T2_factor,4)}_{round(center_snow_transfer_function,4)}_num{count}.nc"
-    #item below only works when objects are arrays and not given by hand, parameters not taken from pymc or sorts are floats
-    except:
-        results_output_name = output_netcdf.split('.nc')[0] + f"_RRR-{round(RRR_factor.item(),4)}_{round(alb_snow.item(),4)}_{round(alb_ice.item(),4)}_{round(alb_firn.item(),4)}"\
-                                                              f"_{round(albedo_aging.item(),4)}_{round(albedo_depth.item(),4)}_{round(roughness_fresh_snow,4)}"\
-                                                              f"_{round(roughness_ice,4)}_{round(roughness_firn,4)}_{round(aging_factor_roughness,6)}"\
-                                                              f"_{round(LWIN_factor,4)}_{round(WS_factor,4)}_{round(T2_factor,4)}_{round(center_snow_transfer_function,4)}_num{count}.nc"
+    if Constants.albedo_method == "Oerlemans98":
+        try:
+            results_output_name = output_netcdf.split('.nc')[0] + f"_RRR-{round(RRR_factor,4)}_{round(alb_snow,4)}_{round(alb_ice,4)}_{round(alb_firn,4)}"\
+                                                                  f"_{round(albedo_aging,4)}_{round(albedo_depth,4)}_{round(roughness_fresh_snow,4)}"\
+                                                                  f"_{round(roughness_ice,4)}_{round(roughness_firn,4)}_{round(aging_factor_roughness,6)}"\
+                                                                  f"_{round(LWIN_factor,4)}_{round(WS_factor,4)}_{round(summer_bias_t2,4)}_{round(center_snow_transfer_function,4)}_num{count}.nc"
+        #item below only works when objects are arrays and not given by hand, parameters not taken from pymc or sorts are floats
+        except:
+            results_output_name = output_netcdf.split('.nc')[0] + f"_RRR-{round(RRR_factor.item(),4)}_{round(alb_snow.item(),4)}_{round(alb_ice.item(),4)}_{round(alb_firn.item(),4)}"\
+                                                                  f"_{round(albedo_aging.item(),4)}_{round(albedo_depth.item(),4)}_{round(roughness_fresh_snow,4)}"\
+                                                                  f"_{round(roughness_ice,4)}_{round(roughness_firn,4)}_{round(aging_factor_roughness,6)}"\
+                                                                  f"_{round(LWIN_factor,4)}_{round(WS_factor,4)}_{round(summer_bias_t2,4)}_{round(center_snow_transfer_function,4)}_num{count}.nc"
+    else:
+        try:
+            results_output_name = output_netcdf.split('.nc')[0] + f"_RRR-{round(RRR_factor,4)}_{round(alb_snow,4)}_{round(alb_ice,4)}_{round(alb_firn,4)}"\
+                                                                  f"_{round(t_wet,4)}_{round(t_dry,4)}_{round(t_K,4)}_{round(albedo_depth,4)}_{round(roughness_fresh_snow,4)}"\
+                                                                  f"_{round(roughness_ice,4)}_{round(roughness_firn,4)}_{round(aging_factor_roughness,6)}"\
+                                                                  f"_{round(LWIN_factor,4)}_{round(WS_factor,4)}_{round(summer_bias_t2,4)}_{round(center_snow_transfer_function,4)}_num{count}.nc"
+        #item below only works when objects are arrays and not given by hand, parameters not taken from pymc or sorts are floats
+        except:
+            results_output_name = output_netcdf.split('.nc')[0] + f"_RRR-{round(RRR_factor.item(),4)}_{round(alb_snow.item(),4)}_{round(alb_ice.item(),4)}_{round(alb_firn.item(),4)}"\
+                                                                  f"_{round(t_wet.item(),4)}_{round(t_dry.item(),4)}_{round(t_K.item(),4)}_{round(albedo_depth.item(),4)}_{round(roughness_fresh_snow,4)}"\
+                                                                  f"_{round(roughness_ice,4)}_{round(roughness_firn,4)}_{round(aging_factor_roughness,6)}"\
+                                                                  f"_{round(LWIN_factor,4)}_{round(WS_factor,4)}_{round(summer_bias_t2,4)}_{round(center_snow_transfer_function,4)}_num{count}.nc"
 
-    #IO.get_result().to_netcdf(os.path.join(output_path,results_output_name), encoding=encoding, mode='w')
+    IO.get_result().to_netcdf(os.path.join(output_path,results_output_name), encoding=encoding, mode='w')
     
     #print(np.nanmax(IO.get_result().ALBEDO))
     #print(np.nanmin(IO.get_result().ALBEDO))
@@ -255,8 +269,7 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
         if 'N_Points' in ds_slice:
             if 'time' in ds_slice['N_Points'].dims:
                 print("Resampling dynamic N_Points for TSL masking.")
-                holder_npoints = np.zeros_like(holder)
-                resampled_np = resample_by_hand(holder_npoints, ds_slice.N_Points.values, secs, clean_day_vals)
+                resampled_np = resample_by_hand(ds_slice.N_Points.values, secs, clean_day_vals)
                 resampled_out['N_Points'] = (('time','lat','lon'), resampled_np)
                 # mask snowheight
                 resampled_out['SNOWHEIGHT'] = resampled_out['SNOWHEIGHT'].where(resampled_out['N_Points'] > 0)
@@ -277,7 +290,7 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
             n_points_arg = None
         tsl_out = create_tsl_df(resampled_out, Config.min_snowheight, Config.tsl_method, Config.tsl_normalize, n_points_arg)
         print("Max. TSLA:", np.nanmax(tsl_out['Med_TSL'].values))
-        #tsl_out.to_csv(os.path.join(output_path, tsl_csv_name))
+        tsl_out.to_csv(os.path.join(output_path, tsl_csv_name))
         tsla_stats = eval_tsl(tsla_observations,tsl_out, Config.time_col_obs, Config.tsla_col_obs)
         print("TSLA Observed vs. Modelled RMSE: " + str(tsla_stats[0])+ "; R-squared: " + str(tsla_stats[1]))
         ## Match to observation dates for pymc routine

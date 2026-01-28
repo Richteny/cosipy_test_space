@@ -78,7 +78,7 @@ def calc_wetbulb_temperature(TK: float, RH: float, pressure: float) -> float:
     Twb = Ta - (esat_Pa - ea_Pa) / (gam + del_)
     return Twb
 
-def partition_precipitation(TK: float, Twb: float, RH: float, pressure: float, RRR: float) -> tuple:
+def partition_precipitation(TK: float, Twb: float, RH: float, pressure: float, RRR: float, Zref: float, phase_offset: float) -> tuple:
     """
     Compute snow/rain fractions of total precipitation.
     Args:
@@ -97,7 +97,8 @@ def partition_precipitation(TK: float, Twb: float, RH: float, pressure: float, R
     Rd = 287.05
 
     # reference elevation in km
-    Zref = -((Ta + 15.0)/2 + 273.15) * (Rd / g) * np.log(pressure / P_Ref)
+    #Zref = -((Ta + 15.0)/2 + 273.15) * (Rd / g) * np.log(pressure / P_Ref)
+    #calc above from T&C, but not in original paper
     Zref = Zref / 1000.0
 
     # relative humidity fraction
@@ -107,6 +108,9 @@ def partition_precipitation(TK: float, Twb: float, RH: float, pressure: float, R
     dT_ = 0.215 - 0.099 * rh_frac + 1.018 * rh_frac**2
     dS_ = 2.374 - 1.634 * rh_frac
     T0_ = -5.87 - 0.1042 * Zref + 0.0885 * Zref**2 + 16.06 * rh_frac - 9.614 * rh_frac**2
+
+    #tuning param
+    T0_ = T0_ + phase_offset
 
     Tmin, Tmax = T0_, T0_
     if dT_ / dS_ > np.log(2):
@@ -172,7 +176,7 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
     WRF_X_CSPY = Config.WRF_X_CSPY
     mult_factor_LWIN = Constants.mult_factor_LWin
     mult_factor_WS = Constants.mult_factor_WS
-
+    summer_bias_t2 = Constants.bias_T2
     # Replace values from constants.py if coupled
     # TODO: This only affects the current module scope instead of global.
     if WRF_X_CSPY:
@@ -197,6 +201,10 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
         aging_factor_roughness = opt_dict[11]
         mult_factor_LWIN = opt_dict[12]
         mult_factor_WS = opt_dict[13]
+        summer_bias_t2 = opt_dict[14]
+        t_wet = opt_dict[15]
+        t_dry = opt_dict[16]
+        t_K = opt_dict[17]
 
     nt = len(DATA.time.values)  # accessing DATA is expensive
     """
@@ -268,7 +276,17 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
     #--------------------------------------------
     # Get data from file
     #--------------------------------------------
-    T2 = DATA.T2.values
+    T2 = DATA.T2.values.copy()
+    if summer_bias_t2 != 0:
+        months = DATA.time.dt.month.values
+        is_summer = np.isin(months, [5,6,7,8,9]) # Northern hemisphere
+        is_warm = T2 > 0.0
+
+        if (T2.ndim == 3) and (is_summer.ndim == 1):
+            #safety check for broadcasting
+            is_summer = is_summer[:, np.newaxis, np.newaxis]
+        T2[is_summer & is_warm] -= summer_bias_t2
+
     RH2 = DATA.RH2.values
     PRES = DATA.PRES.values
     G = DATA.G.values
@@ -278,6 +296,15 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
     #--------------------------------------------
     # Checks for optional input variables
     #--------------------------------------------
+    
+    # create combined pr_factor with srf
+    local_srf = 1.0
+    if ("SRF" in DATA) and (Config.use_srf is True):
+        print("Using SRF field.")
+        srf_val = float(DATA["SRF"].values)
+        if not np.isnan(srf_val):
+            local_srf = srf_val
+    
     if ('SNOWFALL' in DATA) and ('RRR' in DATA):
         SNOWF = DATA.SNOWFALL.values * mult_factor_RRR
         RRR = DATA.RRR.values * mult_factor_RRR
@@ -358,10 +385,15 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
             elif precippartition_method == "Ding2014":
                 #Ding, et al. 2014. J. Hydrol http://dx.doi.org/10.1016/j.jhydrol.2014.03.038 also in T&C
                 Twb = calc_wetbulb_temperature(T2[t], RH2[t], PRES[t])
-                RAIN, Pr_sno = partition_precipitation (T2[t], Twb, RH2[t], PRES[t], RRR[t]) 
+                elev = float(DATA["HGT"].values)
+                offset_T = center_snow_transfer_function
+                RAIN, Pr_sno = partition_precipitation (T2[t], Twb, RH2[t], PRES[t], RRR[t], elev, offset_T) 
                 SNOWFALL = (Pr_sno / 1000.0) * (water_density/density_fresh_snow)
         else:
             raise ValueError("No SNOWFALL or RRR data provided.")
+        
+        # Apply SRF if present (otherwise multiplied by 1.0)
+        SNOWFALL = SNOWFALL * local_srf
 
         # if snowfall is smaller than the threshold
         if SNOWFALL<minimum_snowfall:

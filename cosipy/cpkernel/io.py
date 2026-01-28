@@ -341,6 +341,7 @@ class IOClass:
             "MASK": ("boolean", "Glacier mask"),
             "SLOPE": ("degrees", "Terrain slope"),
             "ASPECT": ("degrees", "Aspect of slope"),
+            "SRF": ("-", "Snow Redistribution Factor")
 #            "N_Points": ("count", "Number of points in each bin"),
         }
         metadata_spatiotemporal = {
@@ -467,6 +468,10 @@ class IOClass:
             aging_factor_roughness = opt_dict[11]
             mult_factor_LWIN = opt_dict[12]
             mult_factor_WS = opt_dict[13]
+            summer_bias_t2 = opt_dict[14]
+            t_wet = opt_dict[15]
+            t_dry = opt_dict[16]
+            t_K = opt_dict[17]
             #print(aging_factor_roughness)
         else:
             mult_factor_RRR = Constants.mult_factor_RRR
@@ -483,6 +488,10 @@ class IOClass:
             aging_factor_roughness = Constants.aging_factor_roughness
             mult_factor_LWIN = Constants.mult_factor_LWin
             mult_factor_WS = Constants.mult_factor_WS
+            summer_bias_t2 = Constants.bias_T2
+            t_wet = Constants.t_star_wet
+            t_dry = Constants.t_star_dry
+            t_K = Constants.t_star_K
  
         # Coordinates
         self.RESULT = xr.Dataset()
@@ -524,6 +533,9 @@ class IOClass:
         self.RESULT.attrs["Center_snow_transfer_function"] = center_snow_transfer_function
         self.RESULT.attrs["Spread_snow_transfer_function"] = spread_snow_transfer_function
         self.RESULT.attrs["Multiplication_factor_for_RRR_or_SNOWFALL"] = mult_factor_RRR
+        self.RESULT.attrs["Multiplication_factor_for_LWin"] = mult_factor_LWIN
+        self.RESULT.attrs["Multiplication_factor_for_WS"] = mult_factor_WS
+        self.RESULT.attrs["Summer_bias_for_T2"] = summer_bias_t2
         self.RESULT.attrs["Minimum_snow_layer_height"] = Constants.minimum_snow_layer_height
         self.RESULT.attrs["Minimum_snowfall"] = Constants.minimum_snowfall
 
@@ -547,6 +559,9 @@ class IOClass:
         self.RESULT.attrs["Roughness_firn"] = roughness_firn
         self.RESULT.attrs["Aging_factor_roughness"] = aging_factor_roughness
         self.RESULT.attrs["Snow_ice_threshold"] = Constants.snow_ice_threshold
+        self.RESULT.attrs["Albedo_snow_aging_wet"] = t_wet
+        self.RESULT.attrs["Albedo_snow_aging_dry"] = t_dry
+        self.RESULT.attrs["Temp_thres_aging_dry_increase"] = t_K
 
         self.RESULT.attrs["lat_heat_melting"] = Constants.lat_heat_melting
         self.RESULT.attrs["lat_heat_vaporize"] = Constants.lat_heat_vaporize

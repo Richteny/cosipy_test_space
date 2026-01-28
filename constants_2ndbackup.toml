@@ -35,16 +35,16 @@ zlt1 = 0.06					                    # First depth for temperature interpolation 
 zlt2 = 0.1					                    # Second depth for temperature interpolation which is used for calculation of ground heat flux
 
 [PRECIPITATION]
-center_snow_transfer_function = -0.273532 #1.5552984 #1.0  # When Ding: T2 offset, else center (50/50) when total precipitation is transferred to snow and rain
+center_snow_transfer_function = 0 #1.5552984 #1.0  # When Ding: T2 offset, else center (50/50) when total precipitation is transferred to snow and rain
 spread_snow_transfer_function = 1               # 1: +-2.5
-mult_factor_RRR = 0.672335                           # multiplication factor for RRR
+mult_factor_RRR = 1.0                           # multiplication factor for RRR
 
 minimum_snow_layer_height = 0.001               # minimum layer height
 minimum_snowfall = 0.001                        # minimum snowfall per time step in m which is added as new snow
 
-mult_factor_LWin = 1.068926
-mult_factor_WS = 1.457617
-bias_T2 = 0.499112                            # temperature bias (+)
+mult_factor_LWin = 1.0
+mult_factor_WS = 1.0
+bias_T2 = 0.0                            # temperature bias (+)
 [REMESHING]
 remesh_method = 'log_profile'                   # Remeshing (log_profile or adaptive_profile)
 first_layer_height = 0.01                       # The first layer will always have the defined height (m)
@@ -58,23 +58,23 @@ temperature_threshold_merging = 0.01            # If merging is true threshold f
 [CONSTANTS]
 constant_density = 300.0                         # constant density of freshly fallen snow [kg m-3], if densification_method is set to 'constant'
 
-albedo_fresh_snow = 0.857462                        # albedo of fresh snow [-] (Moelg et al. 2012, TC)
-albedo_firn = 0.529957                              # albedo of firn [-] (Moelg et al. 2012, TC)
-albedo_ice = 0.155771                                # albedo of ice [-] (Moelg et al. 2012, TC)
+albedo_fresh_snow = 0.8838007800515993                        # albedo of fresh snow [-] (Moelg et al. 2012, TC)
+albedo_firn = 0.5434308362681763                              # albedo of firn [-] (Moelg et al. 2012, TC)
+albedo_ice = 0.1978761137036783                                # albedo of ice [-] (Moelg et al. 2012, TC)
 #albedo_mod_snow_aging = 2                      # effect of ageing on snow albedo [days] (Oerlemans and Knap 1998, J. Glaciol.)
 #albedo_mod_snow_depth = 3                       # effect of snow depth on albedo [cm] (Oerlemans and Knap 1998, J. Glaciol.)
 
 ### For tropical glaciers or High Mountain Asia summer-accumulation glaciers (low latitude), the Moelg et al. 2012, TC should be tested for a possible better albedo fit 
 albedo_mod_snow_aging = 18.038579229329066                      # effect of ageing on snow albedo [days] (Moelg et al. 2012, TC)
-albedo_mod_snow_depth = 2.303873                      # effect of snow depth on albedo [cm] (Moelg et al. 2012, TC)
+albedo_mod_snow_depth = 10.787769612077174                      # effect of snow depth on albedo [cm] (Moelg et al. 2012, TC)
 
-t_star_wet = 11.281172                                 # albedo decay timescale (melting surface) [days]
+t_star_wet = 10                                 # albedo decay timescale (melting surface) [days]
 t_star_dry = 30.0                                 # albedo decay timescale (dry snow surface) [days]
-t_star_K = 9.092198                                   # increase in t_star_dry at negative temperatures [day K-1]
+t_star_K = 14                                   # increase in t_star_dry at negative temperatures [day K-1]
 t_star_cutoff = 263.17                          # temperature threshold for t_star_dry increase [K]
 
 roughness_fresh_snow = 0.24                     # surface roughness length for fresh snow [mm] (Moelg et al. 2012, TC)
-roughness_ice = 9.276168                             # surface roughness length for ice [mm] (Moelg et al. 2012, TC)
+roughness_ice = 12.426141568883848                             # surface roughness length for ice [mm] (Moelg et al. 2012, TC)
 roughness_firn = 4.0                            # surface roughness length for aged snow [mm] (Moelg et al. 2012, TC)
 aging_factor_roughness = 0.0026                 # effect of ageing on roughness lenght (hours) 60 days from 0.24 to 4.0 => 0.0026
 

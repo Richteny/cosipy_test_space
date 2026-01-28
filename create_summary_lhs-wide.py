@@ -3,7 +3,6 @@ import pathlib
 import numpy as np
 import xarray as xr
 from numba import njit
-import sys
 
 path = "/data/scratch/richteny/thesis/cosipy_test_space/data/output/"
 
@@ -15,9 +14,9 @@ tsla_obs = tsla_obs.loc["1990-01-01":"2022-12-31"]
 
 df = pd.read_csv("/data/scratch/richteny/for_emulator/Halji/LHS-narrow/LHS_Posterior_Design_Buffered.csv")
 #df = pd.read_csv("/data/scratch/richteny/thesis/cosipy_test_space/LHS-wide-master.csv", index_col=0)
-#df['rrr_factor'] = np.exp(df['rrr_factor'])
-#df['lwin_factor'] = np.exp(df['lwin_factor'])
-#df['ws_factor'] = np.exp(df['ws_factor'])
+df['rrr_factor'] = np.exp(df['rrr_factor'])
+df['lwin_factor'] = np.exp(df['lwin_factor'])
+df['ws_factor'] = np.exp(df['ws_factor'])
 
 param_cols = df.columns
 param_cols = [x for x in param_cols if 'global_id' not in x]
@@ -40,7 +39,7 @@ df_params = pd.concat([df_params, tsla_cols, alb_cols], axis=1)
 df_params["mb"] = np.nan
 
 df_params["filename_tolerance_match"] = np.nan
-#df_params["param_key"] = list(map(tuple, df_params[param_cols].values))
+df_params["param_key"] = list(map(tuple, df_params[param_cols].values))
 #order must match order below
 
 def find_row(df, cols, values, atol=5e-5):
@@ -72,16 +71,15 @@ def parse_param_key_from_filename(fname):
         round(vals[1], 4), #alb_snow
         round(vals[3], 4), #alb_firn
         round(vals[7], 4), #alb_depth
-        #round(vals[15], 4), #center snow
+        round(vals[15], 4), #center snow
         round(vals[9], 4), #roughness ice
         round(vals[12], 4), #LWin factor
         round(vals[13], 4), #WS factor
-        round(vals[15], 4), #center snow
         round(vals[14], 4), #bias t2
         round(vals[4], 4), #t_star_wet
         round(vals[6], 4), #t_star_K
     ])
-""" ORDER MUST MATCH DATAFRAME COLUMN ORDER.
+"""
     return tuple([
         round(vals[0], 4), #rrr_factor
         round(vals[2], 4), #alb_ice
@@ -163,14 +161,8 @@ for fp in pathlib.Path(path).glob('*.nc'):
     except Exception:
         print("EXCEPTION FOUND.")
         continue
-    #print("Param vals:")
-    #print(param_vals)
-    #print(param_cols)
-    #print(df_params)
+
     idx, method = find_row(df_params, param_cols, param_vals)
-    #print("IDX and METHOD:")
-    #print(idx)
-    #print(method)
     if idx is None:
         print("NO MATCH:", fp.name)
         continue
@@ -191,4 +183,4 @@ for fp in pathlib.Path(path).glob('*.nc'):
     df_params.loc[idx, [f"alb{i}" for i in range(1, n_alb+1)]] = albsim.data[:n_alb]
     i +=1
 
-df_params.to_csv("/data/scratch/richteny/thesis/cosipy_test_space/LHS-narrow_filled_params.csv") 
+df_params.to_csv("/data/scratch/richteny/thesis/cosipy_test_space/LHS-wide_filled_params.csv") 

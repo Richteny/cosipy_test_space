@@ -7,7 +7,7 @@ import xarray as xr
 path = "/data/scratch/richteny/thesis/cosipy_test_space/data/output/Halji/LHS-narrow/"
 #path = "/data/scratch/richteny/thesis/io/data/output/bestfiles/"
 albpath = "/data/scratch/richteny/Ren_21_Albedo/"
-outpath = "/data/scratch/richteny/thesis/io/data/output/albedo_files/LHS/Halji/"
+outpath = "/data/scratch/richteny/thesis/io/data/output/albedo_files/LHS-narrow/Halji/"
 outpath_me = "/data/scratch/richteny/thesis/io/data/output/sens_me/"
 
 #Load albedo observations
@@ -76,28 +76,28 @@ for fp in pathlib.Path(path).glob('*.nc'):
     area_static_total = ds['N_Points'].isel(time=0).sum(dim=['lat','lon'])
     #create weighted mean 
     alb_total = (ds['ALBEDO'] * ds['N_Points']).sum(dim=['lat','lon'])
-    me_total = (ds['ME'] * ds['N_Points']).sum(dim=['lat','lon'])
+    #me_total = (ds['ME'] * ds['N_Points']).sum(dim=['lat','lon'])
 
     weighted_alb = alb_total / area_dynamic_total
     if calc_albedo_only == False:
-        weighted_melt = me_total / area_dynamic_total
+        #weighted_melt = me_total / area_dynamic_total
 
-        mb_total_vol = (ds['MB'] * ds['N_Points']).sum(dim=['lat','lon'])
+        mb_total_vol = (ds['MB'] * ds['N_Points'].isel(time=0)).sum(dim=['lat','lon'])
         weighted_mb = mb_total_vol / area_static_total #calc on RGI area
 
         #melt per season
-        time_da = weighted_melt['time']
-        hydroyear = time_da.dt.year.where(time_da.dt.month < 10, time_da.dt.year +1)
-        ds_w = weighted_melt.assign_coords(hydroyear=hydroyear)
+        #time_da = weighted_melt['time']
+        #hydroyear = time_da.dt.year.where(time_da.dt.month < 10, time_da.dt.year +1)
+        #ds_w = weighted_melt.assign_coords(hydroyear=hydroyear)
 
-        mask_ablation = time_da.dt.month.isin([5,6,7,8,9])
+        #mask_ablation = time_da.dt.month.isin([5,6,7,8,9])
 
-        ds_abl = (ds_w.where(mask_ablation).groupby('hydroyear').mean(dim='time'))
-        ds_annual = ds_w.groupby('hydroyear').mean(dim='time')
+        #ds_abl = (ds_w.where(mask_ablation).groupby('hydroyear').mean(dim='time'))
+        #ds_annual = ds_w.groupby('hydroyear').mean(dim='time')
         #rename so merge is possible
-        ds_abl_rename = ds_abl.to_dataset(name="ME_abl")
-        ds_annual_rename = ds_annual.to_dataset(name="ME_ann")
-        ds_merge = xr.merge([ds_abl_rename, ds_annual_rename])
+        #ds_abl_rename = ds_abl.to_dataset(name="ME_abl")
+        #ds_annual_rename = ds_annual.to_dataset(name="ME_ann")
+        #ds_merge = xr.merge([ds_abl_rename, ds_annual_rename])
 
         # Combine into a new Dataset
         result = xr.Dataset({

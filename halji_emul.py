@@ -220,6 +220,7 @@ if __name__ == "__main__":
     
     # Note: Ensure initvals includes the 2 new parameters (9 total)
     initval = initvals[chain_id]
+    print(initval)
 
     with pm.Model() as model:
         # --- Priors (9 Parameters) ---
@@ -266,8 +267,8 @@ if __name__ == "__main__":
         sigma_alb_total = pm.math.sqrt(alb_obs_unc**2 + pt.where(is_winter, 0, sigma_alb_summer)**2)
         
         # --- Likelihoods (Student-T) ---
-        # 1. Mass Balance 
-        obs_mb = pm.StudentT("mb_obs", nu=4, mu=mu_mb, sigma=mb_sigma, observed=mb_obs_val)
+        # 1. Mass Balance #mb_sigma
+        obs_mb = pm.StudentT("mb_obs", nu=4, mu=mu_mb, sigma=0.05, observed=mb_obs_val)
         # 2. Snowlines
         obs_tsl = pm.StudentT("tsl_obs", nu=4, mu=mu_tsl, sigma=sigma_tsl_total, observed=tsl_obs_val)
         # 3. Albedo
@@ -300,11 +301,11 @@ if __name__ == "__main__":
 
         # --- Sampling ---
         #step = pm.DEMetropolisZ()
-        step = pm.Slice()
-        #step = pm.Metropolis()
+        #step = pm.Slice()
+        step = pm.Metropolis()
         trace = pm.sample(
-            draws=20000, 
-            tune=2000, 
+            draws=30000, 
+            tune=10000, 
             chains=1, 
             cores=1, 
             initvals=[initval], 

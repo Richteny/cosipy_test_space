@@ -46,12 +46,18 @@ def updateAlbedo(
         albedo_firn = opt_dict[3]
         albedo_mod_snow_aging = opt_dict[4]
         albedo_mod_snow_depth = opt_dict[5]
+        t_star_wet = opt_dict[15]
+        t_star_dry = opt_dict[16]
+        t_star_K = opt_dict[17]
     else:
         albedo_ice = Constants.albedo_ice
         albedo_fresh_snow = Constants.albedo_fresh_snow
         albedo_firn = Constants.albedo_firn
         albedo_mod_snow_aging = Constants.albedo_mod_snow_aging
         albedo_mod_snow_depth = Constants.albedo_mod_snow_depth
+        t_star_dry = Constants.t_star_dry
+        t_star_wet = Constants.t_star_wet
+        t_star_K = Constants.t_star_K
 
     albedo_allowed = ["Oerlemans98", "Bougamont05"]
     if albedo_method == "Oerlemans98":
@@ -59,7 +65,7 @@ def updateAlbedo(
                                     albedo_mod_snow_aging, albedo_mod_snow_depth)
     elif albedo_method == "Bougamont05":
         alphaMod, albedo_snow = method_Bougamont(GRID, surface_temperature, albedo_snow, albedo_ice, albedo_fresh_snow,
-                                                 albedo_firn, albedo_mod_snow_aging, albedo_mod_snow_depth)
+                                                 albedo_firn, albedo_mod_snow_depth, t_star_wet, t_star_dry, t_star_K)
     else:
         error_message = (
             f'Albedo method = "{albedo_method}"',
@@ -225,7 +231,7 @@ def method_Oerlemans(GRID, albedo_ice: float, albedo_fresh_snow: float, albedo_f
 
 
 def method_Bougamont(GRID, surface_temperature, albedo_snow, albedo_ice: float, albedo_fresh_snow: float, 
-                     albedo_firn: float, albedo_mod_snow_depth: float):
+                     albedo_firn: float, albedo_mod_snow_depth: float, t_star_wet: float, t_star_dry: float, t_star_K: float):
     """Get surface and snow albedos using method from Bougamont (2005).
 
     Args:
@@ -276,16 +282,14 @@ def method_Bougamont(GRID, surface_temperature, albedo_snow, albedo_ice: float, 
         temperature-dependant decay timescales."""
 
         # slightly faster than one-liner
-        t_star_days = float(t_star) * float(dt_days)
         delta_albedo = albedo_snow - albedo_firn
-        albedo_snow -= delta_albedo / t_star_days
-
+        albedo_snow -= delta_albedo * float(dt_days) / float(t_star)
         # Reset if snowfall in current timestep
         if hours_since_snowfall == 0:
             albedo_snow = albedo_fresh_snow
 
         # Effect of surface albedo decay due to the snow depth (Oerlemans & Knap 1998):
-        alphaMod = get_albedo_with_decay(albedo_snow, h)
+        alphaMod = get_albedo_with_decay(snow_albedo=albedo_snow,snow_height=h,albedo_mod_snow_depth=albedo_mod_snow_depth)
 
     else:
         # If no snow cover than set albedo to ice albedo
