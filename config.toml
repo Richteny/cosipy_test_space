@@ -10,9 +10,10 @@ time_end = "2022-12-31T23:00"
 [FILENAMES]
 data_path = "./data/"
 #input_netcdf = "HEF/HEF_COSMO_1D20m_HORAYZON_1999_2010_IntpPRES.nc"
-input_netcdf = "Halji/Halji_HARv2_1D20m_HRZ_1988_2022.nc" # 
+#input_netcdf = "Halji/Halji_HARv2_1D20m_HRZ_1988_2022.nc" # 
+input_netcdf = "Abramov/Abramov_HARv2_1D20m_HORAYZON_1988_2022.nc"
 #output_prefix = "HEF_COSMO_1D20m_1999_2010_HORAYZON_IntpPRES_localsens" #"HEF_COSMO_1D20m_1999_2010_HORAYZON_IntpPRES"
-output_prefix = "Posterior-Mean-Halji_HARv2_1988-2022.nc"
+output_prefix = "LHS-wide_Abramov_HARv2_1988-2022.nc" #"Posterior-Mean-Halji_HARv2_1988-2022.nc"
 
 [RESTART]
 restart = false # set to true if you want to start from restart file
@@ -34,11 +35,13 @@ write_csv_status = false #true
 csv_filename = "localsens_1D20m_1999_2010.csv"
 time_col_obs = "LS_DATE"
 tsla_col_obs = "TSL_normalized"
-min_snowheight = 0.001 #1mm
+min_snowheight = 0.001 # 1mm old functionality
+min_albedo_method = true #false
 tsl_method = "conservative"
 tsl_normalize = true
 #tsl_data_file = "./data/input/HEF/snowlines/HEF-snowlines-1999-2010_manual_filtered.csv"
-tsl_data_file = "./data/input/Halji/snowlines/Halji_TSLA_fixed-1990-2025.csv"
+#tsl_data_file = "./data/input/Halji/snowlines/Halji_TSLA_fixed-1990-2025.csv"
+tsl_data_file = "./data/input/Abramov/snowlines/Abramov_TSLA_fixed-1990-2024.csv"
 point_evaluation = false #false
 
 ["RUN LAPSE RATES ONLINE"]
