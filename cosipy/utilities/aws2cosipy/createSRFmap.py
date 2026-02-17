@@ -161,18 +161,36 @@ def process(static_2d_path, target_1d_path, output_path, output_2d_path, band_wi
     
     print("  > Computing Negative Openness (L=5000m)...")
     neg_5000 = openness(dem_arr, res_meters, L=5000.0, negative=True)
-    
+    #Derived over the Alps, no other reference thoguh so we keep it
     psi_eff_50 = 3.0 * (neg_50 - 1.2)
     psi_eff_5000 = 3.0 * (neg_5000 - 1.0)
-    srf_50 = np.clip(psi_eff_50, 0.1, 1.6)
-    srf_5000 = np.clip(psi_eff_5000, 0.1, 1.6)
+    #Maybe set min. to 0.2 instead of 0.1?
+    srf_50 = np.clip(psi_eff_50, 0.2, 1.6)
+    srf_5000 = np.clip(psi_eff_5000, 0.2, 1.6)
     
     srf_2d = 0.5 * (srf_50 + srf_5000)
+
+    if "MASK" in ds_2d:
+        mask_2d = ds_2d["MASK"].values
+        glacier_vals = srf_2d[mask_2d == 1]
+        if len(glacier_vals) > 0:
+            glacier_mean = np.mean(glacier_vals)
+            print(f"Mean SRF on glacier: {glacier_mean:.2f}")
+            print("Normalising by glacier mean to conserve mass.")
+            srf_norm = srf_2d/glacier_mean
+            #safety dampening to enforce a minimum
+            damping_factor = 0.9
+            srf_normalized = (damping_factor * srf_norm) + (1.0 - damping_factor)
+        else:
+            srf_normalized = srf_2d
+    else:
+        print("No mask found. Skipping normalization.")
+        srf_normalized = srf_2d
 
     # 4. Save 2D Map (Cropped)
     if output_2d_path:
         # Pass explicit dimension names to ensure correct slicing
-        crop_and_save_2d(ds_2d, srf_2d, output_2d_path, y_dim, x_dim)
+        crop_and_save_2d(ds_2d, srf_normalized, output_2d_path, y_dim, x_dim)
     
     # 5. Aggregate to 1D
     print("Aggregating to 1D Bands...")
@@ -182,7 +200,7 @@ def process(static_2d_path, target_1d_path, output_path, output_2d_path, band_wi
     half_width = band_width / 2.0
     
     # Mask SRF for stats
-    srf_glacier = srf_2d.copy()
+    srf_glacier = srf_normalized.copy()
     srf_glacier[mask_2d != 1] = np.nan
     
     for i, center_elev in enumerate(flat_levels):
@@ -203,7 +221,7 @@ def process(static_2d_path, target_1d_path, output_path, output_2d_path, band_wi
     # 6. Save 1D Output
     ds_out = ds_1d.copy(deep=True)
     ds_out['SRF'] = (ds_1d['HGT'].dims, srf_final)
-    ds_out['SRF'].attrs = {'long_name': 'Snow Redistribution Factor (Hanzer 2016)', 'units': '-'}
+    ds_out['SRF'].attrs = {'long_name': 'Norm. Snow Redistribution Factor (Hanzer 2016)', 'units': '-'}
     
     print(f"Saving 1D profile to {output_path}")
     ds_out.to_netcdf(output_path)

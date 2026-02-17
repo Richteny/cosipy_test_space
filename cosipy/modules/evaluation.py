@@ -123,89 +123,209 @@ def resample_by_hand(vals,secs,time_vals):
     return out
 
 @njit
-def tsl_method_mantra(snowheights, hgts, mask, min_snowheight):
-    amed = np.zeros(snowheights.shape[0])
-    amean = np.zeros(snowheights.shape[0])
-    astd = np.zeros(snowheights.shape[0])
-    amax = np.zeros(snowheights.shape[0])
-    amin = np.zeros(snowheights.shape[0])
-    flag = np.zeros(snowheights.shape[0])
+def tsl_method_mantra(albedos, hgts, mask, min_albedo, min_elevs_t, max_elevs_t):
+    """
+    Use pre-calculated dynamic min/max elevations and finds 2th percentile of snow-covered pixels.
+    We follow a bottom-up logic to handle snow-scoured areas.
+
+    Args:
+        albedos (3d): time lat lon
+        hgts (2d) static elevations
+        mask (2d) static mask
+        min_albedo (float): threshold
+        min_elevs_t (1D): dynamic min elev
+        max_elevs_t (1D): dynamic max elev
+    """
+    ntime = albedos.shape[0]
+    rows, cols = hgts.shape
+
+    amed = np.full(ntime, np.nan)
+    amean = np.full(ntime, np.nan)
+    astd = np.full(ntime, np.nan)
+    amax = np.full(ntime, np.nan)
+    amin = np.full(ntime, np.nan)
+    flag = np.zeros(ntime)
     #print("Starting loop.")
-    for n in np.arange(0, snowheights.shape[0]):
-        filtered_elev_vals = np.where(snowheights[n,:,:]>min_snowheight, hgts, np.nan).ravel()
-        filtered_elev_vals = filtered_elev_vals[~np.isnan(filtered_elev_vals)]
-        # had to change to <= instead of < -> implications?
-        snowline_range = filtered_elev_vals[filtered_elev_vals <= np.nanpercentile(filtered_elev_vals, 2)]
-        #print("Calculated percentiles.")
-        #check if all array values are True / 1
-        flat = snowheights[n,:,:].ravel()
-        flat = flat[~np.isnan(flat)]
-        #Convert to boolean mask and check if all true
-        test = flat > min_snowheight
-        if snowline_range.size == 0:
-            print("Snowline range is empty. Glacier is most likely snow-free. Marking timestep as flagged.")
-            print("\n Assigning maximum elevation of glacier.")
-            snowline_range = np.array([np.nanmax(np.where(mask==1, hgts, np.nan))])
-            print(snowline_range)
-            flag[n] = 1
-        elif np.nanmin(snowline_range) == np.nanmin(np.where(mask==1, hgts, np.nan)):
-            #print("Glacier is most likely fully snow-covered. Marking timestep", n, "out of ", snowheights.shape[0])
-            #print("Checking if all grid cells snow-covered.", test.all())
-            if test.all() == True:
-                snowline_range = np.array([np.nanmin(snowline_range)])
-            #assign minimum value if all values are snow-covered
-            flag[n] = 1
-            
 
-        amed[n] = np.nanmedian(snowline_range)
-        amean[n] = np.nanmean(snowline_range)
-        astd[n] = np.nanstd(snowline_range)
-        amax[n] = np.nanmax(snowline_range)
-        amin[n] = np.nanmin(snowline_range)
+    for n in range(ntime):
 
+        # Get dynamic geometry
+        current_min = min_elevs_t[n]
+        current_max = max_elevs_t[n]
+
+        # if glacier gone skip
+        if np.isnan(current_min):
+            flag[n] = 3
+            continue
+
+        snow_elevs = np.zeros(rows * cols)
+        snow_count = 0
+        total_valid_pixels = 0
+
+        for r in range(rows):
+            for c in range(cols):
+                #check static mask
+                if mask[r,c] == 1:
+                    h = hgts[r,c]
+
+                    #is pixel within current elevation range
+                    if h >= current_min and h <= current_max:
+                        total_valid_pixels += 1
+
+                        alb = albedos[n,r,c]
+                        if not np.isnan(alb) and alb >= min_albedo:
+                            snow_elevs[snow_count] = h
+                            snow_count += 1
+        # Handle no snow and all snow
+        if snow_count == 0:
+            #bare ice
+            #tsla technically above glacier, we set to max elev.
+            res_val = current_max
+            flag[n] = 2
+            amed[n] = res_val; amean[n] = res_val
+            amin[n] = res_val; amax[n] = res_val
+            continue
+
+        elif snow_count == total_valid_pixels:
+            #full snow cover, tsla at bottom
+            res_val = current_min
+            flag[n] = 1
+            amed[n] = res_val; amean[n] = res_val
+            amin[n] = res_val; amax[n] = res_val
+            continue
+    
+        #Calculate TSLA
+        valid_snow = snow_elevs[:snow_count]
+        valid_snow.sort()
+
+        #percentiles
+        p_idx = int(snow_count * 0.02)
+        if p_idx < 0:
+            p_idx = 0
+        if p_idx >= snow_count:
+            p_idx = snow_count -1
+
+        tsla_final = valid_snow[p_idx]
+    
+        transition_zone = valid_snow[:p_idx+1]
+        amed[n] = tsla_final
+        amean[n] = np.mean(transition_zone)
+        amin[n] = np.min(transition_zone)
+        amax[n] = np.max(transition_zone)
+        astd[n] = np.std(transition_zone)
 
     return (amed, amean, astd, amax, amin, flag)
 
 #Needs work? Method is not really reliable for a 2D distributed simulation due to large differences
 @njit 
-def tsl_method_conservative(snowheights, hgts, mask, min_snowheight, min_elevs_t):
-    amed = np.zeros(snowheights.shape[0])
-    amean = np.zeros(snowheights.shape[0])
-    astd = np.zeros(snowheights.shape[0])
-    amax = np.zeros(snowheights.shape[0])
-    amin = np.zeros(snowheights.shape[0])
-    flag = np.zeros(snowheights.shape[0])
+def tsl_method_conservative(albedos, hgts, mask, min_albedo, min_elevs_t, max_elevs_t):
+    """
+    Finds the absolute lowest snow pixel. Finds the absolute highest ice pixel that is BELOW snow.
+    Calculates the average of the two as TSLA.
+    Args:
+        albedos(3D): time lat lon
+        hgts (2D): elevations
+        mask (2D): static_mask
+        min_albedo (float): threshold
+        min_elevs_t (1D): dynamic min elev
+        max_elevs_t (1D): dynamic max elev
+    """
+    ntime = albedos.shape[0]
+    rows, cols = hgts.shape
 
-    for n in np.arange(0, snowheights.shape[0]):
-        #min altitude of snow
-        #print("Processing ", n, "out of ", snowheights.shape[0])
-        filtered_elev_snow = np.nanmin(np.where(snowheights[n,:,:]>=min_snowheight, hgts, np.nan).ravel())
-        #print(filtered_elev_snow)
-        #this line is basically redudant, and creates a bug when glacier is snow-free
-        #filtered_elev_snow = np.nanmax(np.append(filtered_elev_snow, np.nanmin(np.where(mask==1, hgts, np.nan)))) #numba does not support np.maximum
-        #print(filtered_elev_snow)
-        #now for snow-free surfaces
-        filtered_elev_nosnow = np.nanmax(np.where(snowheights[n,:,:]<min_snowheight, hgts, np.nan))
-        #print(filtered_elev_nosnow)
-        if np.isnan(filtered_elev_nosnow):
-            #print("Glacier seems to be fully snow-covered. Assigning minimum elevation.")
-            if min_elevs_t is None:
-                filtered_elev_nosnow = np.nanmin(np.where(mask==1, hgts, np.nan))
-            else:
-                filtered_elev_nosnow = min_elevs_t[n]
-            #print(filtered_elev_nosnow,"m a.s.l.")
+    amed = np.full(ntime, np.nan)
+    amean = np.full(ntime, np.nan)
+    astd = np.full(ntime, np.nan)
+    amax = np.full(ntime, np.nan)
+    amin = np.full(ntime, np.nan)
+    flag = np.full(ntime)
+
+    for n in range(ntime):
+        current_min = min_elevs_t[n]
+        current_max = max_elevs_t[n]
+        if np.isnan(current_min):
+            flag[n] = 3
+            continue
+        # collect valid pxiels, flatten for speed
+        # collect ice to filter later
+        snow_elevs = np.zeros(rows*cols)
+        ice_elevs = np.zeros(rows*cols)
+        ice_count = 0
+        snow_count = 0
+
+        for r in range(rows):
+            for c in range(cols):
+                if mask[r,c] == 1:
+                    h = hgts[r,c]
+                    if h>= current_min and h <= current_max:
+                        alb = albedos[n,r,c]
+
+                        if not np.isnan(alb):
+                            if alb >= min_albedo:
+                                #track minimum snow
+                                snow_elevs[snow_count] = h
+                                snow_count +=1
+                            else:
+                                #store ice
+                                ice_elevs[ice_count] = h
+                                ice_count += 1
+
+        #handle extremes
+        if snow_count == 0:
+            #bare ice - tsla is top
+            res_val = current_max
+            flag[n] = 2
+            amed[n] = res_val; amean[n] = res_val
+            amin[n] = res_val; amax[n] = res_val
+            continue
+
+        if ice_count == 0:
+            #full snow - tsla is bottom
+            res_val = current_min
             flag[n] = 1
+            amed[n] = res_val; amean[n] = res_val
+            amin[n] = res_val; amax[n] = res_val
+            continue
+
+        #filter ice (wind scour)
+        valid_snow = snow_elevs[:snow_count]
+        valid_snow.sort()
+
+        snow_min = valid_snow[0]
+        snow_median = valid_snow[int(snow_count*0.5)]
+        
+        valid_ice = ice_elevs[:ice_count]
+        ice_top_filtered = -999999.0
+        found_valid_ice = False
+
+        for i in range(ice_count):
+            val = valid_ice[i]
+            if val < snow_median:
+                if val > ice_top_filtered:
+                    ice_top_filtered = val
+                found_valid_ice = True
+
+        if found_valid_ice:
+            tsla_final = (ice_top_filtered + snow_min) / 2.0
         else:
-            #technically also redudant, ascertain that max. elevation of glacier is not exceeded
-            filtered_elev_nosnow = np.nanmin(np.append(filtered_elev_nosnow, np.nanmax(np.where(mask==1, hgts, np.nan)))) #numba does not support minimum/maximum of numpy
-        amed[n] = np.nanmedian(np.append(filtered_elev_snow, filtered_elev_nosnow))
-        amean[n] = np.nanmean(np.append(filtered_elev_snow, filtered_elev_nosnow))
-        astd[n] = np.nanstd(np.append(filtered_elev_snow, filtered_elev_nosnow)) #might be a bit large.. std of all values essentially function of resolution  
-        amax[n] = np.nanmax(np.append(filtered_elev_snow, filtered_elev_nosnow))
-        amin[n] = np.nanmin(np.append(filtered_elev_snow, filtered_elev_nosnow))
+            tsla_final = snow_min
+            if np.abs(tsla_final - current_min) < 1:
+                flag[n] = 1
+
+        if tsla_final < current_min:
+            tsla_final = current_min
+        if tsla_final > current_max:
+            tsla_final = current_max
+
+        amed[n] = tsla_final
+        amean[n] = tsla_final
+        amin[n] = tsla_final
+        amax[n] = tsla_final
+        astd[n] = 0.0
 
     return (amed, amean, astd, amax, amin, flag)
 
+""" ARCHIVED and not functional!
 @njit
 def tsl_method_gridsearch(snowheights, hgts, mask, min_snowheight):
     amed = np.zeros(snowheights.shape[0])
@@ -288,33 +408,35 @@ def tsl_method_gridsearch(snowheights, hgts, mask, min_snowheight):
             amax[n] = np.nanmax(np.append(elev_list, elev_list_snow))
             amin[n] = np.nanmin(np.append(elev_list, elev_list_snow))
     return (amed, amean, astd, amax, amin, flag)
+"""
 
-
-def calculate_tsl_byhand(snowheights,hgts,mask, min_snowheight,tsl_method, tsl_normalize, n_points_3d=None):
+def calculate_tsl_byhand(albedos, hgts, mask, min_albedo, tsl_method, tsl_normalize, n_points_3d=None):
     
+    timesteps = albedos.shape[0]
+    min_elevs_t = np.full(timesteps, np.nan)
+    max_elevs_t = np.full(timesteps, np.nan)
+
     if n_points_3d is not None:
-        timesteps = snowheights.shape[0]
-        min_elevs_t = np.full(timesteps, np.nan)
-        max_elevs_t = np.full(timesteps, np.nan)
         for t in range(timesteps):
             current_mask = n_points_3d[t,:,:]
-            valid_hgts = np.where((current_mask > 0) & (~np.isnan(current_mask)), hgts, np.nan)
-            min_elevs_t[t] = np.nanmin(valid_hgts)
-            max_elevs_t[t] = np.nanmax(valid_hgts)
+            valid_mask = (mask == 1) & (current_mask > 0) & (~np.isnan(current_mask))
+            if np.any(valid_mask):
+                valid_hgts = hgts[valid_mask]
+                min_elevs_t[t] = np.nanmin(valid_hgts)
+                max_elevs_t[t] = np.nanmax(valid_hgts)
     else:
-        max_elevs_t = np.nanmax(np.where(mask==1, hgts, np.nan))
-        min_elevs_t = np.nanmin(np.where(mask==1, hgts, np.nan))
+        static_min = np.nanmin(np.where(mask==1, hgts, np.nan))
+        static_max = np.nanmax(np.where(mask==1, hgts, np.nan))
+
+        max_elevs_t[:] = static_max
+        min_elevs_t[:] = static_min
     print("Calculating TSLA using {}. Normalization is set to {}.".format(tsl_method, tsl_normalize))
-    print("Max elev.", max_elevs_t,".\n Min elev.", min_elevs_t)
     if tsl_method == 'mantra':
-        amed, amean, astd, amax, amin, flag = tsl_method_mantra(snowheights, hgts, mask, min_snowheight)
+        amed, amean, astd, amax, amin, flag = tsl_method_mantra(albedos, hgts, mask, min_albedo, min_elevs_t, max_elevs_t)
     elif tsl_method == 'conservative':
-        if n_points_3d is not None:
-            amed, amean, astd, amax, amin, flag = tsl_method_conservative(snowheights, hgts, mask, min_snowheight, min_elevs_t)
-        else:
-            amed, amean, astd, amax, amin, flag = tsl_method_conservative(snowheights, hgts, mask, min_snowheight, None)
+        amed, amean, astd, amax, amin, flag = tsl_method_conservative(albedos, hgts, mask, min_albedo, min_elevs_t, max_elevs_t)
     else:
-        amed, amean, astd, amax, amin, flag = tsl_method_gridsearch(snowheights, hgts, mask, min_snowheight)
+        print("Warning. No method passed. Script will terminate with error.")
     if tsl_normalize:
         #Start normalizing:
         elev_range = max_elevs_t - min_elevs_t
@@ -330,9 +452,26 @@ def calculate_tsl_byhand(snowheights,hgts,mask, min_snowheight,tsl_method, tsl_n
         return (amed, amean, astd, amax, amin, flag)
         
 
-def create_tsl_df(cos_output,min_snowheight, tsl_method, tsl_normalize, n_points_arg):
+def create_tsl_df(var_to_check, cos_output, min_albedo, tsl_method, tsl_normalize, n_points_arg):
     times = datetime.now()
-    amed,amean,astd,amax,amin,flag = calculate_tsl_byhand(cos_output.SNOWHEIGHT.values, cos_output.HGT.values, cos_output.MASK.values, min_snowheight, tsl_method, tsl_normalize, n_points_arg)
+    if var_to_check == "ALBEDO":
+        amed,amean,astd,amax,amin,flag = calculate_tsl_byhand(
+            cos_output.ALBEDO.values,
+            cos_output.HGT.values,
+            cos_output.MASK.values,
+            min_albedo,
+            tsl_method,
+            tsl_normalize,
+            n_points_arg)
+    elif var_to_check == "SNOWHEIGHT":
+        amed,amean,astd,amax,amin,flag = calculate_tsl_byhand(
+            cos_output.SNOWHEIGHT.values,
+            cos_output.HGT.values,
+            cos_output.MASK.values,
+            min_albedo,
+            tsl_method,
+            tsl_normalize,
+            n_points_arg)
     #print(amed)
     tsl_df = pd.DataFrame({'time':pd.to_datetime(cos_output.time.values),
                             'Med_TSL':amed,

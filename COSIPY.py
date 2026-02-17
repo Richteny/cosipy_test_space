@@ -263,8 +263,14 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
         tsla_observations = pd.read_csv(Config.tsl_data_file)
         ds_slice = IO.get_result().sel(time=slice(Config.time_start_cali, Config.time_end_cali))
         dates,clean_day_vals,secs = prereq_res(ds_slice)
-        resampled_snow = resample_by_hand(ds_slice.SNOWHEIGHT.values, secs, clean_day_vals).copy()
-        resampled_out = construct_resampled_ds(ds_slice,resampled_snow,dates.values)
+        if Config.min_albedo_method:
+            var_to_parse = "ALBEDO"
+            thres_to_check = alb_firn - 0.01 #basically firn?
+        else:
+            var_to_parse = "SNOWHEIGHT"
+            thres_to_check = Config.min_snowheight
+        resampled_snow = resample_by_hand(ds_slice[var_to_parse].values, secs, clean_day_vals).copy()
+        resampled_out = construct_resampled_ds(ds_slice,resampled_snow,dates.values,var_to_parse)
 
         if 'N_Points' in ds_slice:
             if 'time' in ds_slice['N_Points'].dims:
@@ -272,10 +278,9 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
                 resampled_np = resample_by_hand(ds_slice.N_Points.values, secs, clean_day_vals)
                 resampled_out['N_Points'] = (('time','lat','lon'), resampled_np)
                 # mask snowheight
-                resampled_out['SNOWHEIGHT'] = resampled_out['SNOWHEIGHT'].where(resampled_out['N_Points'] > 0)
             else:
                 resampled_out['N_Points'] = (('lat','lon'), ds_slice['N_Points'].values)
-                resampled_out['SNOWHEIGHT'] = resampled_out['SNOWHEIGHT'].where(resampled_out['N_Points'] > 0)
+        resampled_out[var_to_parse] = resampled_out[var_to_parse].where(resampled_out['N_Points'] > 0)
         print("Time required for resampling of output: ", datetime.now()-times)
         #Need HGT values as 2D, ensured with following line of code.
         resampled_out['HGT'] = (('lat','lon'), IO.get_result()['HGT'].data)
@@ -288,7 +293,7 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
                 n_points_arg = None
         else:
             n_points_arg = None
-        tsl_out = create_tsl_df(resampled_out, Config.min_snowheight, Config.tsl_method, Config.tsl_normalize, n_points_arg)
+        tsl_out = create_tsl_df(var_to_parse,resampled_out, thres_to_check, Config.tsl_method, Config.tsl_normalize, n_points_arg)
         print("Max. TSLA:", np.nanmax(tsl_out['Med_TSL'].values))
         tsl_out.to_csv(os.path.join(output_path, tsl_csv_name))
         tsla_stats = eval_tsl(tsla_observations,tsl_out, Config.time_col_obs, Config.tsla_col_obs)
@@ -624,11 +629,15 @@ def online_lapse_rate(t2,rh2,rrr,hgt,station_altitude,lapse_T,lapse_RH,lapse_RRR
         rrr[t,:,:] = np.maximum(rrr[t,:,:]+ (hgt - station_altitude)*lapse_RRR, 0.0)
     return t2,rh2,rrr
 
-def construct_resampled_ds(input_ds,vals,time_vals):
-    data_vars = {'SNOWHEIGHT':(['time','lat','lon'], vals,
-                               {'units': "m",
-                                'long_name': "snowheight"})}
-     
+def construct_resampled_ds(input_ds,vals,time_vals,var_to_check):
+    if var_to_check == "SNOWHEIGHT":
+        data_vars = {'SNOWHEIGHT':(['time','lat','lon'], vals,
+                                   {'units': "m",
+                                    'long_name': "snowheight"})}
+    else:
+        data_vars = {'ALBEDO': (['time','lat','lon'], vals,
+                                {'units': "-",
+                                 'long_name': 'albedo'})}
 
     # define coordinates
     coords = {'time': (['time'], time_vals),
