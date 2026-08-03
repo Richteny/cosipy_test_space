@@ -136,8 +136,8 @@ class IOClass:
             # Load the restart file
             time_start = Config.time_start
             time_end = Config.time_end
-            start_timestamp = self.get_datetime(time_start)
-            end_timestamp = self.get_datetime(time_end)
+            start_timestamp = self.get_datetime(time_start, use_np=False)
+            end_timestamp = self.get_datetime(time_end, use_np=False)
             timestamp = start_timestamp.strftime("%Y-%m-%dT%H-%M")
             restart_path = os.path.join(
                 Config.data_path, "restart", f"restart_{timestamp}.nc"
@@ -335,14 +335,15 @@ class IOClass:
         Returns:
             tuple[dict, dict]: Metadata for spatial and spatiotemporal
             variables, including netCDF keyname, unit, and long name.
+            Need to keep track of shape of N_Points.
         """
         metadata_spatial = {
             "HGT": ("m", "Elevation"),
             "MASK": ("boolean", "Glacier mask"),
             "SLOPE": ("degrees", "Terrain slope"),
             "ASPECT": ("degrees", "Aspect of slope"),
-            "SRF": ("-", "Snow Redistribution Factor")
-#            "N_Points": ("count", "Number of points in each bin"),
+            "SRF": ("-", "Snow Redistribution Factor"),
+            "N_Points": ("count", "Number of points in each bin"),
         }
         metadata_spatiotemporal = {
             "T2": ("K", "Air temperature at 2 m"),
@@ -354,7 +355,7 @@ class IOClass:
             "SNOWFALL": ("m", "Snowfall"),
             "N": ("-", "Cloud fraction"),
             "LWin": ("W m\u207b\xb2", "Incoming longwave radiation"),
-            "N_Points": ("count", "Number of points in each bin"),
+        #    "N_Points": ("count", "Number of points in each bin"),
         }
 
         return metadata_spatial, metadata_spatiotemporal
@@ -466,9 +467,9 @@ class IOClass:
             roughness_ice = opt_dict[9]
             roughness_firn = opt_dict[10]
             aging_factor_roughness = opt_dict[11]
-            mult_factor_LWIN = opt_dict[12]
+            bias_LWIN = opt_dict[12]
             mult_factor_WS = opt_dict[13]
-            summer_bias_t2 = opt_dict[14]
+            bias_T2 = opt_dict[14]
             t_wet = opt_dict[15]
             t_dry = opt_dict[16]
             t_K = opt_dict[17]
@@ -486,9 +487,9 @@ class IOClass:
             roughness_ice = Constants.roughness_ice
             roughness_firn = Constants.roughness_firn
             aging_factor_roughness = Constants.aging_factor_roughness
-            mult_factor_LWIN = Constants.mult_factor_LWin
+            bias_LWIN = Constants.bias_LWin
             mult_factor_WS = Constants.mult_factor_WS
-            summer_bias_t2 = Constants.bias_T2
+            bias_T2 = Constants.bias_T2
             t_wet = Constants.t_star_wet
             t_dry = Constants.t_star_dry
             t_K = Constants.t_star_K
@@ -533,9 +534,9 @@ class IOClass:
         self.RESULT.attrs["Center_snow_transfer_function"] = center_snow_transfer_function
         self.RESULT.attrs["Spread_snow_transfer_function"] = spread_snow_transfer_function
         self.RESULT.attrs["Multiplication_factor_for_RRR_or_SNOWFALL"] = mult_factor_RRR
-        self.RESULT.attrs["Multiplication_factor_for_LWin"] = mult_factor_LWIN
+        self.RESULT.attrs["Multiplication_factor_for_LWin"] = bias_LWIN
         self.RESULT.attrs["Multiplication_factor_for_WS"] = mult_factor_WS
-        self.RESULT.attrs["Summer_bias_for_T2"] = summer_bias_t2
+        self.RESULT.attrs["Summer_bias_for_T2"] = bias_T2
         self.RESULT.attrs["Minimum_snow_layer_height"] = Constants.minimum_snow_layer_height
         self.RESULT.attrs["Minimum_snowfall"] = Constants.minimum_snowfall
 

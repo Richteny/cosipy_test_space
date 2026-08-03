@@ -6,14 +6,16 @@ from numba import njit
 
 path = "/data/scratch/richteny/thesis/cosipy_test_space/data/output/"
 
-alb_obs_data = xr.open_dataset("/data/scratch/richteny/Ren_21_Albedo/Halji_hrz-merged_mean-albedos.nc")
+#alb_obs_data = xr.open_dataset("/data/scratch/richteny/Ren_21_Albedo/Halji_hrz-merged_mean-albedos.nc")
+alb_obs_data = xr.open_dataset("/data/scratch/richteny/Ren_21_Albedo/Abramov_hrz-merged_mean-albedos.nc")
 alb_obs_data = alb_obs_data.sortby("time")
 
-tsla_obs = pd.read_csv("/data/scratch/richteny/thesis/cosipy_test_space/data/input/Halji/snowlines/Halji_TSLA_fixed-1990-2025.csv", parse_dates=True, index_col="LS_DATE")
+#tsla_obs = pd.read_csv("/data/scratch/richteny/thesis/cosipy_test_space/data/input/Halji/snowlines/Halji_TSLA_fixed-1990-2025.csv", parse_dates=True, index_col="LS_DATE")
+tsla_obs = pd.read_csv("/data/scratch/richteny/thesis/cosipy_test_space/data/input/Abramov/snowlines/Abramov_TSLA_fixed-1990-2024.csv", parse_dates=True, index_col="LS_DATE")
 tsla_obs = tsla_obs.loc["1990-01-01":"2022-12-31"]
 
-df = pd.read_csv("/data/scratch/richteny/for_emulator/Halji/LHS-narrow/LHS_Posterior_Design_Buffered.csv")
-#df = pd.read_csv("/data/scratch/richteny/thesis/cosipy_test_space/LHS-wide-master.csv", index_col=0)
+#df = pd.read_csv("/data/scratch/richteny/for_emulator/Halji/LHS-narrow/LHS_Posterior_Design_Buffered.csv")
+df = pd.read_csv("/data/scratch/richteny/thesis/cosipy_test_space/Abramov_LHS-wide-master.csv", index_col=0)
 df['rrr_factor'] = np.exp(df['rrr_factor'])
 df['lwin_factor'] = np.exp(df['lwin_factor'])
 df['ws_factor'] = np.exp(df['ws_factor'])
@@ -130,7 +132,10 @@ def resample_by_hand(holder,vals,secs,day_starts):
 
 def compute_glacier_mean(ncfile, target_var, time_start_mb, albobs):
     if target_var == "MB":
-        ref_weights = ncfile["N_Points"].sel(time=time_start_mb, method="nearest")
+        try:
+            ref_weights = ncfile["N_Points"].sel(time=time_start_mb, method="nearest")
+        except:
+            ref_weights = ncfile["N_Points"]
         ref_area_total = ref_weights.sum()
         total_mass_change = (ncfile["MB"] * ref_weights).sum(dim=["lat","lon"])
         weighted_mb = total_mass_change / ref_area_total
@@ -183,4 +188,4 @@ for fp in pathlib.Path(path).glob('*.nc'):
     df_params.loc[idx, [f"alb{i}" for i in range(1, n_alb+1)]] = albsim.data[:n_alb]
     i +=1
 
-df_params.to_csv("/data/scratch/richteny/thesis/cosipy_test_space/LHS-wide_filled_params.csv") 
+df_params.to_csv("/data/scratch/richteny/thesis/cosipy_test_space/Abramov_LHS-wide_filled_params.csv") 

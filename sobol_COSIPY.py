@@ -57,14 +57,7 @@ from cosipy.modules.evaluation import evaluate, resample_output, create_tsl_df, 
 from numba import njit
 import xarray as xr
 
-def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, alb_ice=Constants.albedo_ice,
-         alb_snow= Constants.albedo_fresh_snow, alb_firn=Constants.albedo_firn, albedo_aging= Constants.albedo_mod_snow_aging,
-         albedo_depth= Constants.albedo_mod_snow_depth, center_snow_transfer_function= Constants.center_snow_transfer_function,
-         spread_snow_transfer_function= Constants.spread_snow_transfer_function, roughness_fresh_snow= Constants.roughness_fresh_snow,
-         roughness_ice= Constants.roughness_ice,roughness_firn= Constants.roughness_firn, aging_factor_roughness= Constants.aging_factor_roughness,
-         LWIN_bias = Constants.bias_LWin, WS_factor = Constants.mult_factor_WS, bias_T2 = Constants.bias_T2,
-         t_wet = Constants.t_star_wet, t_dry = Constants.t_star_dry, t_K = Constants.t_star_K,
-         count=""):
+def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, count=""):
 
     Config()
     Constants()
@@ -74,6 +67,25 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
     if isinstance(count, int):
         count = count + 1
 
+
+    RRR_factor = Constants.mult_factor_RRR
+    alb_ice = Constants.albedo_ice
+    alb_snow = Constants.albedo_fresh_snow
+    alb_firn = Constants.albedo_firn
+    albedo_aging = Constants.albedo_mod_snow_aging
+    albedo_depth = Constants.albedo_mod_snow_depth
+    center_snow_transfer_function = Constants.center_snow_transfer_function
+    spread_snow_transfer_function = Constants.spread_snow_transfer_function
+    roughness_fresh_snow = Constants.roughness_fresh_snow
+    roughness_ice = Constants.roughness_ice
+    roughness_firn = Constants.roughness_firn
+    aging_factor_roughness = Constants.aging_factor_roughness
+    bias_LWIN = Constants.bias_LWin
+    WS_factor = Constants.mult_factor_WS
+    bias_T2 = Constants.bias_T2
+    t_wet = Constants.t_star_wet
+    t_dry = Constants.t_star_dry
+    t_K = Constants.t_star_K
     # target geodetic 2000-2010 = -1.0425, unc= 0.26 == roughly -1.3 to -0.7825
     #RRR_factor = float(0.741) #0.97 
     #alb_ice = float(0.2153) #range LHS after satellite 0.115  to 0.233
@@ -203,7 +215,7 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
                                                                   f"_{round(roughness_ice,4)}_{round(roughness_firn,4)}_{round(aging_factor_roughness,6)}"\
                                                                   f"_{round(bias_LWIN,4)}_{round(WS_factor,4)}_{round(bias_T2,4)}_{round(center_snow_transfer_function,4)}_num{count}.nc"
 
-    IO.get_result().to_netcdf(os.path.join(output_path,results_output_name), encoding=encoding, mode='w')
+    #IO.get_result().to_netcdf(os.path.join(output_path,results_output_name), encoding=encoding, mode='w')
     
     #print(np.nanmax(IO.get_result().ALBEDO))
     #print(np.nanmin(IO.get_result().ALBEDO))
@@ -213,23 +225,48 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
     times = datetime.now()
     if Config.tsl_evaluation is True:
         if 'N_Points' in list(IO.get_result().keys()):
+            print("reached here")
             dsmb = IO.get_result().sel(time=slice(Config.time_start_mb, Config.time_end_mb))
+            print("reached here 2")
             if 'time' not in IO.get_result()['N_Points'].dims:
+                total_points = dsmb['N_Points'].sum()
                 print("Compute area weighted MB for 1D case.")
-                dsmb['weighted_mb'] = dsmb['MB'] * dsmb['N_Points'] / np.sum(dsmb['N_Points'])
-                spatial_mean = dsmb[['weighted_mb']].sum(dim=['lat','lon'])
-                dfmb = spatial_mean['weighted_mb'].to_dataframe()
-                mean_annual_df =  dfmb.resample("1YE").sum() #resample to fixed year to match geodetic
-                geod_mb = np.nanmean(mean_annual_df['weighted_mb'].values)
+                weighted_mb = dsmb['MB'] * dsmb['N_Points'] / total_points
+                weighted_alb = dsmb['ALBEDO'] * dsmb['N_Points'] / total_points
+                weighted_me = dsmb['ME'] * dsmb['N_Points'] / total_points
+                spatial_mean_mb = weighted_mb.sum(dim=['lat','lon'])
+                spatial_mean_alb = weighted_alb.sum(dim=['lat','lon'])
+                spatial_mean_me = weighted_me.sum(dim=['lat','lon'])
+
+                #daily_mb = spatial_mean['weighted_mb'].resample(time="1D").sum()
+                #daily_alb = spatial_mean['weighted_alb'].resample(time="1D").mean()
+                #daily_me = spatial_mean['weighted_me'].resample(time="1D").mean()
+
+                #dfmb = spatial_mean['weighted_mb'].to_dataframe()
+                #mean_annual_df =  dfmb.resample("1YE").sum() #resample to fixed year to match geodetic
+                #geod_mb = np.nanmean(mean_annual_df['weighted_mb'].values)
             else:
                 n_points_fixed = IO.get_result()['N_Points'].sel(time=Config.time_start_mb, method='nearest')
                 ref_area_total = n_points_fixed.sum()
                 #total_mass_change = (dsmb['MB'] * dsmb['N_Points']).sum(dim=['lat','lon']) time-varying 
-                total_mass_change = (dsmb['MB']  *  n_points_fixed).sum(dim=['lat','lon'])
-                dsmb['weighted_mb'] = total_mass_change / ref_area_total
-                dfmb = dsmb['weighted_mb'].to_dataframe()
-                mean_annual_df = dfmb.resample("1YE").sum()
-                geod_mb = np.nanmean(mean_annual_df['weighted_mb'].values)
+                spatial_mean_mb = (dsmb['MB']  *  n_points_fixed).sum(dim=['lat','lon']) / ref_area_total
+                dynamic_area_total = dsmb['N_Points'].sum(dim=["lat","lon"])
+                spatial_mean_alb = (dsmb['ALBEDO'] * dsmb['N_Points']).sum(dim=['lat','lon'])/dynamic_area_total
+                spatial_mean_me = (dsmb['ME'] * dsmb['N_Points']).sum(dim=['lat','lon'])/dynamic_area_total
+
+                #dsmb['weighted_mb'] = total_mass_change / ref_area_total
+                #dfmb = dsmb['weighted_mb'].to_dataframe()
+                #mean_annual_df = dfmb.resample("1YE").sum()
+                #geod_mb = np.nanmean(mean_annual_df['weighted_mb'].values)
+                ##add this inside loop!!
+            df_hourly = pd.DataFrame({'mb': spatial_mean_mb.values,
+                                      'albedo': spatial_mean_alb.values,
+                                      'me': spatial_mean_me.values}, index=spatial_mean_mb.time.values)
+            
+            df_daily = pd.DataFrame()
+            df_daily['mean_mb'] = df_hourly['mb'].resample("1D").sum()
+            df_daily['mean_albedo'] = df_hourly['albedo'].resample("1D").mean()
+            df_daily['mean_me'] = df_hourly['me'].resample("1D").mean()
         else:
             print("2D case.")
             spatial_mean = IO.get_result()['MB'].mean(dim=['lat','lon'], keep_attrs=True)
@@ -237,7 +274,7 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
             mean_annual_df = geod_df.resample("1YE").sum()
             geod_mb = np.nanmean(mean_annual_df.MB.values)
         print("Geod. MB test.") 
-        print(geod_mb)
+        #print(geod_mb)
         print("Time it took to calculate geod. MB ", datetime.now()-times) 
 
     encoding = dict()
@@ -280,7 +317,7 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
                 # mask snowheight
             else:
                 resampled_out['N_Points'] = (('lat','lon'), ds_slice['N_Points'].values)
-            resampled_out[var_to_parse] = resampled_out[var_to_parse].where(resampled_out['N_Points'] > 0)
+        resampled_out[var_to_parse] = resampled_out[var_to_parse].where(resampled_out['N_Points'] > 0)
         print("Time required for resampling of output: ", datetime.now()-times)
         #Need HGT values as 2D, ensured with following line of code.
         resampled_out['HGT'] = (('lat','lon'), IO.get_result()['HGT'].data)
@@ -295,11 +332,17 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
             n_points_arg = None
         tsl_out = create_tsl_df(var_to_parse,resampled_out, thres_to_check, Config.tsl_method, Config.tsl_normalize, n_points_arg)
         print("Max. TSLA:", np.nanmax(tsl_out['Med_TSL'].values))
-        tsl_out.to_csv(os.path.join(output_path, tsl_csv_name))
-        tsla_stats = eval_tsl(tsla_observations,tsl_out, Config.time_col_obs, Config.tsla_col_obs)
-        print("TSLA Observed vs. Modelled RMSE: " + str(tsla_stats[0])+ "; R-squared: " + str(tsla_stats[1]))
+        tsl_out['time'] = pd.to_datetime(tsl_out['time'])
+        tsl_out.set_index('time', inplace=True)
+        df_daily.index = pd.to_datetime(df_daily.index)
+        df_final = df_daily.join(tsl_out, how='left')
+        output_filename = f"gsa_result_sim_{count}.csv"
+        df_final.to_csv(os.path.join(output_path, output_filename))
+        #tsl_out.to_csv(os.path.join(output_path, tsl_csv_name))
+        #tsla_stats = eval_tsl(tsla_observations,tsl_out, Config.time_col_obs, Config.tsla_col_obs)
+        #print("TSLA Observed vs. Modelled RMSE: " + str(tsla_stats[0])+ "; R-squared: " + str(tsla_stats[1]))
         ## Match to observation dates for pymc routine
-        tsl_out_match = tsl_out.loc[tsl_out['time'].isin(tsla_observations['LS_DATE'])]
+        #tsl_out_match = tsl_out.loc[tsl_out['time'].isin(tsla_observations['LS_DATE'])]
     
         print("Time required for full TSL EVAL: ", datetime.now()-times)
 
@@ -312,7 +355,7 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
                 curr_df.columns = ['rrr_factor', 'alb_ice', 'alb_snow', 'alb_firn', 'albedo_aging',
                                    'albedo_depth', 'center_snow_transfer', 'spread_snow_transfer',
                                    'roughness_fresh_snow', 'roughness_ice', 'roughness_firn',
-                                   'aging_factor_roughness', 'lwin_factor', 'ws_factor','t2_factor', 'mb'] +\
+                                   'aging_factor_roughness', 'bias_lwin', 'ws_factor','bias_t2', 'mb'] +\
                                   [f'sim{i+1}' for i in range(tsl_out_match.shape[0])]
 
                 param_df = pd.concat([param_df, curr_df], ignore_index=True)
@@ -323,7 +366,7 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
                 param_df.columns =   ['rrr_factor', 'alb_ice', 'alb_snow', 'alb_firn', 'albedo_aging',
                                       'albedo_depth', 'center_snow_transfer', 'spread_snow_transfer',
                                       'roughness_fresh_snow', 'roughness_ice', 'roughness_firn',
-                                      'aging_factor_roughness','lwin_factor', 'ws_factor','t2_factor', 'mb'] +\
+                                      'aging_factor_roughness','bias_lwin', 'ws_factor','bias_t2', 'mb'] +\
                                      [f'sim{i+1}' for i in range(tsl_out_match.shape[0])]
             param_df.to_csv(f"./simulations/{Config.csv_filename}")
 
@@ -343,7 +386,7 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
     print(f"\tTotal run duration: {run_time // 60.0:4g} minutes {run_time % 60.0:2g} seconds\n")
     print_notice(msg="\tSIMULATION WAS SUCCESSFUL")
 
-    #return (geod_mb,tsl_out_match)
+    return #(geod_mb,tsl_out_match)
 
 def run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures, opt_dict=None):
     Config()

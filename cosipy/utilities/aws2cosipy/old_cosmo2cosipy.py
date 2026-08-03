@@ -1,132 +1,50 @@
 """
-Reads forcing data (climate model or AWS output) and writes a COSIPY-ready
-netCDF input file.  Supports point models (``create_1D_input``) and
-distributed simulations (``create_2D_input``).
+Reads the input data (model forcing) and writes the output to a netCDF
+file. It supports point models with ``create_1D_input`` and distributed
+simulations with ``create_2D_input``.
 
-Notable features
-----------------
-- Memory-mapped numpy arrays to keep RAM usage manageable for long runs.
-- Spatially varying lapse rates read directly from the forcing file.
-- HORAYZON-based shortwave radiation correction with physically correct
-  separation of direct and diffuse components (Mölg 2009 physics):
+Script is adjusted to use memmapped numpy arrays, replacing memmory usage with storage usage
+and to use lapse rates that are provided in the model forcing file.
+Additional features include the application of the HORAYZON scheme.
 
-    Horayzon2022    Uses SWin from the climate-model / AWS forcing.
-                    Mölg (2009) / Iqbal (1983) / Hastenrath (1984) physics
-                    derives the direct/diffuse fraction; HORAYZON sw_dir_cor
-                    corrects the direct beam and the sky view factor (SVF)
-                    corrects the diffuse component.
-
-    Horayzon_theory Full theoretical radiation following Mölg (2009).
-                    HORAYZON sw_dir_cor replaces the analytical slope/aspect/
-                    shading; HORAYZON SVF replaces the gridded SVF.
-                    Forcing SWin is ignored.
-
-Configure the run via a ``utilities_config.toml`` file.  See that file for
-available lapse rates, variable name mappings, and radiation settings
-(radiationModule, tcart, forcing_utc_offset).
-
-Usage
------
-From source::
-
-    python -m cosipy.utilities.aws2cosipy.cosmo2cosipy \\
-        -i <input> -o <output> -s <static> [options]
-
-Entry point::
-
-    cosipy-cosmo2cosipy -i <input> -o <output> -s <static> [options]
+The 1D input function works without a static file, in which the static
+variables are created.
 
 
-Required arguments
-------------------
--i, --input <path>
-    Path to .csv file with meteorological forcing data.
+Edit the configuration by supplying a valid .toml file - this includes
+lapse rates for both cases. See the sample ``utilities_config.toml`` for
+more information.
 
--o, --output <path>
-    Path to the resulting COSIPY netCDF file.
+Usage:
 
--s, --static_file <path>
-    Path to static netCDF file containing DEM, slope, aspect, glacier mask
-    and (for HORAYZON) the SVF field.
+From source:
+``python -m cosipy.utilities.aws2cosipy.cosmo2cosipy -i <input> -o <output> -s <static> [-u <path>] [-b <date>] [-e <date>]``
 
+Entry point:
+``cosipy-cosmo2cosipy -i <input> -o <output> -s <static> [-u <path>] [-b <date>] [-e <date>]``
 
-Optional arguments
-------------------
--u, --u <path>
-    Relative path to the utilities configuration file
-    (default: ``utilities_config.toml`` in the current directory).
+Options and arguments:
 
--b, --start_date <yyyy-mm-dd>
-    Start date for the output (inclusive).  Default: start of input.
+Required arguments:
+    -i, --input <path>          Path to .csv file with meteorological data.
+    -o, --output <path>         Path to the resulting COSIPY netCDF file.
+    -s, --static_file <path>    Path to static file with DEM, slope etc.
 
--e, --end_date <yyyy-mm-dd>
-    End date for the output (inclusive).  Default: end of input.
+Optional arguments:
+    -u, --u <path>          Relative path to utilities' configuration
+                                file.
+    -b, --start_date <int>  Start date.
+    -e, --end_date <int>    End date.
+    --xl <float>            Left longitude value of the subset.
+    --xr <float>            Right longitude value of the subset.
+    --yl <float>            Lower latitude value of the subset.
+    --yu <float>            Upper latitude value of the subset.
 
---xl <float>
-    Left (west) longitude bound of the spatial subset [degrees].
-
---xr <float>
-    Right (east) longitude bound of the spatial subset [degrees].
-
---yl <float>
-    Lower (south) latitude bound of the spatial subset [degrees].
-
---yu <float>
-    Upper (north) latitude bound of the spatial subset [degrees].
-
-
-HORAYZON radiation arguments (required when radiationModule is
-Horayzon2022 or Horayzon_theory)
------------------------------------------------------------------
---sw <path> [<path> ...]
-    Path(s) to HORAYZON LUT netCDF file(s).  Each file must contain
-    ``sw_dir_cor`` (time × lat × lon).  At least one file containing
-    ``svf`` (lat × lon) must be present for diffuse correction.
-
-    Provide one file to cover the full simulation period, or multiple
-    files with --sw-starts to switch between glacier geometries at
-    specified years.
-
-    The LUT is assumed to be in UTC (as produced by
-    ``createHORAYZONfields.py``).
-
---sw-starts <year> [<year> ...]
-    First calendar year (inclusive) for each LUT file after the first.
-    Supply exactly N-1 values for N files.  The boundary year belongs
-    to the NEW file.
-
-    Example::
-
-        --sw rgi6.nc 2013.nc 2017.nc --sw-starts 2013 2017
-
-    Result:
-        - rgi6.nc  : years < 2013
-        - 2013.nc  : 2013 ≤ year < 2017
-        - 2017.nc  : year ≥ 2017
-
-    Four-file HEF default (when --sw-starts is omitted):
-    start years [2014, 2018, 2021].
-
---forcing-utc-offset <int>
-    UTC offset (integer hours) of the forcing timestamps.
-    Used ONLY to convert forcing time → UTC for HORAYZON LUT lookup.
-    Default: 0 (forcing already in UTC).
-
-    Does NOT affect the Mölg solar geometry.  That is controlled by
-    ``tcart`` in ``utilities_config.toml``::
-
-        tcart = forcing_utc_offset × 15 − glacier_longitude_degrees
-
-    Examples:
-        - HEF (10.76°E), forcing in UTC   → --forcing-utc-offset 0, tcart = −10.76
-        - HEF,           forcing in CET   → --forcing-utc-offset 1, tcart =   4.24
-        - Himalaya (86°E), forcing in UTC → --forcing-utc-offset 0, tcart = −86.0
 """
 
 import argparse
 from itertools import product
 
-import math
 import os
 import dateutil
 import netCDF4 as nc
@@ -136,9 +54,6 @@ import xarray as xr
 import sys
 
 sys.path.append("/data/scratch/richteny/thesis/cosipy_test_space/")
-
-import metpy.calc as metpy_calc
-from metpy.units import units as metpy_units
 
 import cosipy.modules.radCor as mod_radCor
 from cosipy.utilities.config_utils import UtilitiesConfig
@@ -635,8 +550,6 @@ def create_2D_input(
         dso = ds.copy()
         if "N_Points" in dso and "time" in dso.N_Points.dims:
             dso = dso.drop_vars("N_Points")
-        if "SRF" in dso and "time" in dso.SRF.dims:
-            dso = dso.drop_vars("SRF")
         dso.coords["time"] = df.index.values
 
     # Order variables
@@ -700,23 +613,15 @@ def create_2D_input(
         #N_interp = set_zero_field(time_index, lat_index, lon_index)
         N_interp = set_zero_field_memmap("memmappedN.dat", time_index, lat_index, lon_index)
 
-    npoints_has_time = ("N_Points" in list(ds.variables)) and ("time" in ds.N_Points.dims)
-    srf_has_time = ("SRF" in list(ds.variables)) and ("time" in ds.SRF.dims)
-
-    if npoints_has_time or srf_has_time:
-        sparse_times = pd.to_datetime(ds.time.values)
+    if "N_Points" in list(ds.variables) and "time" in ds.N_Points.dims:
         # try to populate it as a temporal dimension..
-        # forward-fill: each sim step takes most recent outline <= its date, steps before held at first outline
-        idx_map = np.searchsorted(sparse_times, df.index, side="right") - 1
+        sparse_times = pd.to_datetime(ds.time.values)
+        sim_times = df.index
         # where does sim time fit into sparse timeline, side right to ensure switch when we hit next value
+        idx_map = np.searchsorted(sparse_times, sim_times, side='right')-1
         idx_map = np.clip(idx_map, 0, len(sparse_times) -1) #values before first date will be -1, need to be fixed
-
-    if npoints_has_time:
         N_Points_sparse = ds['N_Points'].values
         N_Points_interp = set_zero_field_memmap("memmappedNPoints.dat", time_index, lat_index, lon_index) 
-    if srf_has_time:
-        SRF_sparse = ds['SRF'].values
-        SRF_interp = set_zero_field_memmap("memmappedSRF.dat", time_index, lat_index, lon_index)
     print("Interpolate CR file to grid")
 
     # Interpolate data (T, RH, RRR, U) to grid using lapse rates
@@ -809,15 +714,12 @@ def create_2D_input(
         if _cfg.names["N_var"] in df:
             N_interp[t, :, :] = N[t]
 
-        if npoints_has_time:
+        if "N_Points" in list(ds.variables) and "time" in ds['N_Points'].dims:
             pointer = idx_map[t]
             N_Points_interp[t,:,:] = N_Points_sparse[pointer]
-        if srf_has_time:
-            pointer = idx_map[t]
-            SRF_interp[t,:,:] = SRF_sparse[pointer]
 
         if _cfg.lapse['sf_temp_fix'] is True:
-            #print("Applying temperature-dependent snowfall adjustment")
+            print("Applying temperature-dependent snowfall adjustment")
             f_snow[t,:,:] = 0.5 * (-np.tanh((T_interp[t,:,:] - zero_temperature - center_snow_transfer) * spread_snow) + 1.0)
             ## correct snowfall
             SNOWFALL_interp[t,:,:] = SNOWFALL_interp[t,:,:] * f_snow[t,:,:]
@@ -843,12 +745,6 @@ def create_2D_input(
     lats = ds.lat.values
     lons = ds.lon.values
     sw = G.values
-
-    # SVF output flags (set inside the HORAYZON branch; defaults keep the
-    # writer inert for every other radiation module).
-    write_svf = False
-    svf_timevar = False
-    first_svf = None
 
     # Run radiation module
     if (
@@ -885,351 +781,75 @@ def create_2D_input(
                         else:
                             G_interp[t, i, j] = sw[t]
 
-    elif _cfg.radiation["radiationModule"] in ("Horayzon2022", "Horayzon_theory"):
-        # ══════════════════════════════════════════════════════════════════════
-        # HORAYZON-based radiation correction
-        #
-        # Two modes:
-        #   Horayzon2022    — uses SWin from the forcing (measured / climate-
-        #                     model output).  Mölg (2009) physics derives the
-        #                     direct / diffuse fraction; HORAYZON sw_dir_cor and
-        #                     SVF correct each component for terrain geometry.
-        #                     Equation:
-        #                       G = sw_dir_cor × (1-f_dif) × G_meas
-        #                           + SVF × f_dif × G_meas
-        #
-        #   Horayzon_theory — purely theoretical radiation following Mölg (2009)
-        #                     / Iqbal (1983) / Hastenrath (1984).  HORAYZON
-        #                     sw_dir_cor replaces Mölg's analytical slope/aspect/
-        #                     shading; HORAYZON SVF replaces the gridded SVF.
-        #                     Does NOT use G_meas (forcing SW is ignored).
-        #                     Equation:
-        #                       G = sw_dir_cor × G_dir_theory
-        #                           + SVF × G_dif_theory
-        #
-        # References:
-        #   Mölg et al. (2009), J. Climate 22, 3820–3840
-        #   Iqbal (1983), An Introduction to Solar Radiation, Academic Press
-        #   Hastenrath (1984), The Glaciers of Equatorial East Africa, Reidel
-        # ══════════════════════════════════════════════════════════════════════
-
-        mode = _cfg.radiation["radiationModule"]
-        print(f"Run the radiation module {mode}")
-
-        # ── Validate and load HORAYZON LUT files ──────────────────────────
-        if corr_file is None or len(corr_file) == 0:
-            print(f"No HORAYZON LUT provided via --sw. Cannot run {mode}.")
-            raise_nan_error()
-
+    elif _cfg.radiation["radiationModule"] == "Horayzon2022":
+        print("Run the radiation moduel HORAYZON")
+        
+        #get correction factor which must be computed beforehand
         try:
-            lut_datasets = [xr.open_dataset(f) for f in corr_file]
-        except Exception as exc:
-            print(f"Failed to load HORAYZON LUT: {exc}")
+            if len(corr_file) > 1:
+                #correction_factor = xr.open_dataset(corr_file)
+                correction_factor_rgi = xr.open_dataset(corr_file[0])
+                correction_factor_2014 = xr.open_dataset(corr_file[1])
+                #correction_factor_2018 = xr.open_dataset(corr_file[2])
+                #correction_factor_2021 = xr.open_dataset(corr_file[3])
+                corr_factor_dic = {'rgi': correction_factor_rgi,
+                                   '2013': correction_factor_2014}
+                                   #'2018': correction_factor_2018,
+                                   #'2021': correction_factor_2021}
+            else:
+                correction_factor_rgi = xr.open_dataset(corr_file[0])
+                corr_factor_dic = {'rgi': correction_factor_rgi}
+        except:
+            print("There is no HORAYZON LUT loaded. Please ensure you parsed the correct path.")
             raise_nan_error()
+            
+        #impose limits on correction factor to ensure reasonable range
+        for key in corr_factor_dic.keys():
+            corr_vals = corr_factor_dic[key]['sw_dir_cor'].values
+            #replace nans with 0 
+            corr_vals = np.nan_to_num(corr_vals, nan=0.0)
 
-        n_luts = len(lut_datasets)
-
-        # ── Year-to-LUT mapping (--sw-starts) ────────────────────────────
-        # sw_starts[i] = first year that uses lut_datasets[i+1].
-        # Years < sw_starts[0] use lut_datasets[0].
-        # The boundary year itself goes to the NEW file (exclusive end).
-        # Example: 3 files, sw_starts=[2013, 2017]
-        #   year < 2013  → file 0
-        #   2013 ≤ year < 2017 → file 1
-        #   year ≥ 2017  → file 2
-        sw_starts_arg = getattr(_args, "sw_starts", None)
-
-        if n_luts == 1:
-            sw_starts_sorted = []
-        else:
-            if sw_starts_arg is None or len(sw_starts_arg) == 0:
-                if n_luts == 4:
-                    sw_starts_sorted = [2014, 2018, 2021]
-                    print("Using default HEF year mapping for 4 LUT files: "
-                          "[2014, 2018, 2021]  "
-                          "(file1 <2014, file2 2014-2017, "
-                          "file3 2018-2020, file4 ≥2021)")
-                else:
-                    raise ValueError(
-                        f"{n_luts} HORAYZON LUT files provided but no "
-                        "--sw-starts given.  Supply N-1 start-years, e.g. "
-                        "--sw rgi6.nc 2013.nc 2017.nc --sw-starts 2013 2017"
-                    )
-            else:
-                sw_starts_sorted = sorted(int(y) for y in sw_starts_arg)
-                if len(sw_starts_sorted) != n_luts - 1:
-                    raise ValueError(
-                        f"--sw-starts has {len(sw_starts_sorted)} values but "
-                        f"{n_luts} LUT files were given; need exactly "
-                        f"{n_luts - 1}."
-                    )
-
-        # ── Load SVF per LUT (one per geometry epoch, like sw_dir_cor) ────
-        # SVF is selected with the SAME year->file index (idx) as sw_dir_cor
-        # in the time loop, so the diffuse correction tracks the glacier
-        # geometry instead of being frozen at the first outline.
-        svf_per_lut = []
-        for k, ds_lut in enumerate(lut_datasets):
-            if "svf" in ds_lut:
-                s = ds_lut["svf"].values.astype(np.float64)
-                svf_per_lut.append(s)
-                print(f"  LUT {k}: SVF glacier mean = {np.nanmean(s):.3f}")
-            else:
-                svf_per_lut.append(None)
-
-        # Graceful fallback: any epoch missing SVF reuses the first available.
-        first_svf = next((s for s in svf_per_lut if s is not None), None)
-        if first_svf is None:
-            print("WARNING: No SVF field found in HORAYZON LUT files. "
-                  "Diffuse radiation will NOT be terrain-corrected. "
-                  "Regenerate the LUT with createHORAYZONfields.py to add SVF.")
-        else:
-            svf_per_lut = [s if s is not None else first_svf
-                           for s in svf_per_lut]
-
-        # Diagnostic: did SVF actually differ between epochs?  If not, the
-        # per-epoch masked aggregation likely was not applied upstream.
-        if first_svf is not None and n_luts > 1:
-            epoch_means = [float(np.nanmean(s)) for s in svf_per_lut]
-            if np.allclose(epoch_means, epoch_means[0], atol=1e-4):
-                print("Note: SVF is identical across LUT epochs — check that "
-                      "createHORAYZONfields aggregated SVF over each epoch's "
-                      "mask (otherwise SVF cannot track glacier retreat).")
-
-        # ── Decide how SVF is recorded in the output file ─────────────────
-        # Written for every HORAYZON run.  Time-varying only if it actually
-        # changes across geometry epochs (mirrors N_Points/SRF); otherwise a
-        # single static (lat, lon) field to avoid needless file bloat.
-        write_svf = first_svf is not None
-        if write_svf and n_luts > 1:
-            svf_timevar = not all(
-                np.array_equal(np.nan_to_num(s), np.nan_to_num(svf_per_lut[0]))
-                for s in svf_per_lut
-            )
-        if write_svf and svf_timevar:
-            SVF_interp = set_zero_field_memmap(
-                "memmappedSVF.dat", time_index, lat_index, lon_index
-            )
-            print("Recording SVF as time-varying (changes across epochs).")
-        elif write_svf:
-            print("Recording SVF as a static field.")
-
-        # ── Build time_id index on each LUT ───────────────────────────────
-        # time_id = doy_UTC + hour_UTC / 100
-        # LUT was generated for leap year 2020 (UTC).  Non-leap shift applied
-        # per timestep in the loop below.
-        SW_DIR_COR_MAX = 25.0
-        processed_luts = []
-        for ds_lut in lut_datasets:
-            clip = np.where(ds_lut["sw_dir_cor"].values > SW_DIR_COR_MAX,
-                            SW_DIR_COR_MAX,
-                            ds_lut["sw_dir_cor"].values)
-            ds_lut    = ds_lut.assign(sw_dir_cor=(("time", "lat", "lon"), clip))
-            time_id   = (ds_lut.time.dt.dayofyear.values
-                         + ds_lut.time.dt.hour.values / 100.0)
-            ds_lut    = ds_lut.assign_coords(time_id=("time", time_id))
-            ds_lut    = ds_lut.swap_dims({"time": "time_id"})
-            processed_luts.append(ds_lut)
-
-        # ── Mölg (2009) physical constants ────────────────────────────────
-        # Identical to calcRad in radCor.py — do not change these values.
-        Sol0   = 1367.0      # Solar constant [W m-2]
-        aesc1  = 0.87764     # Aerosol transmissivity at sea level
-        aesc2  = 2.4845e-5   # Aerosol transmissivity lapse rate [m-1]
-        alphss = 0.9         # Aerosol single-scattering albedo
-        dirovc = 0.00        # Direct radiation fraction at full overcast
-        dif1   = 4.6         # Min diffuse [%] of clear-sky global at cld=0
-        difra  = 0.66        # Diffuse radiation constant
-        Cf     = 0.65        # Cloud impact constant
-
-        # Solar parameter tables — identical call to the Mölg block below
-        solPars, timeCorr = mod_radCor.solpars(_cfg.station["stationLat"])
-
-        # TCART: local-time offset used in solar-time formula (degrees).
-        # Identical to the Mölg block in this script.
-        tcart = float(_cfg.radiation.get("tcart", 0.0))
-
-        # UTC offset of the forcing timestamps (integer hours).
-        # Used ONLY for HORAYZON LUT lookup (the LUT is always UTC).
-        # Mölg solar geometry uses the raw forcing hour + tcart (unchanged).
-        # Default 0: forcing is already in UTC.
-        forcing_utc_offset = int(
-            getattr(_args, "forcing_utc_offset", None)
-            or _cfg.radiation.get("forcing_utc_offset", 0)
-        )
-        if forcing_utc_offset != 0:
-            print(f"Forcing UTC offset: {forcing_utc_offset:+d} h  "
-                  f"(LUT lookup uses UTC = forcing time − {forcing_utc_offset} h)")
-
-        # Cloud fraction check — warn once, not per timestep
-        has_cloud = _cfg.names["N_var"] in df.columns
-        if not has_cloud:
-            print(
-                "WARNING: Cloud fraction (N) not found in forcing data. "
-                "The Mölg diffuse formula will use clear-sky only "
-                "(f_dif = Dcs / grcs), which underestimates diffuse "
-                "radiation under overcast conditions. "
-                "Provide N via the N_var config key for full cloudy-sky "
-                "diffuse correction."
-            )
-
-        # ── Time loop ──────────────────────────────────────────────────────
+        #corr_vals = correction_factor['sw_dir_cor'].values
+            corr_vals_clip = np.where(corr_vals > 25, 25, corr_vals)
+            corr_factor_dic[key]['sw_dir_cor'] = (('time','lat','lon'), corr_vals_clip)
+            corr_factor_dic[key]['doy'] = corr_factor_dic[key].time.dt.dayofyear
+            corr_factor_dic[key]['hour'] = corr_factor_dic[key].time.dt.hour
+            corr_factor_dic[key]['time_id'] = corr_factor_dic[key]['doy'] + corr_factor_dic[key]['hour']/100
+            corr_factor_dic[key] = corr_factor_dic[key].set_index(time="time_id")
+        #correction_factor['sw_dir_cor'] = (('time', 'lat', 'lon'), corr_vals_clip)
+        #correction_factor['doy'] = correction_factor.time.dt.dayofyear
+        #correction_factor['hour'] = correction_factor.time.dt.hour
+        #Create unique identifier for doy and hour and set as index
+        #correction_factor['time_id'] = correction_factor['doy'] + correction_factor['hour']/100
+        #correction_factor = correction_factor.set_index(time="time_id")
+        
+        #Start loop over each timestep
         for t in range(time_index):
-            year  = df.index[t].year
-            doy   = df.index[t].dayofyear
-            hour  = df.index[t].hour          # forcing timezone
-
-            # ── LUT lookup in UTC ────────────────────────────────────────
-            t_utc     = df.index[t] - pd.Timedelta(hours=forcing_utc_offset)
-            doy_lut   = t_utc.dayofyear
-            hour_lut  = t_utc.hour
-            # LUT was built for leap year 2020; shift non-leap doy past Feb 28
-            if t_utc.year % 4 != 0 and doy_lut > 59:
-                doy_lut += 1
-            time_id_val = doy_lut + hour_lut / 100.0
-
-            # ── Select LUT for this year ─────────────────────────────────
-            # searchsorted(..., side='right'): boundary year → NEW file.
-            # E.g. sw_starts=[2013,2017], year=2013 → idx=1 → file 1  ✓
-            if not sw_starts_sorted:
-                idx = 0
+            #get doy and timestep from df and check with doy and hour from static file
+            year = df.index[t].year
+            doy = df.index[t].dayofyear
+            hour = df.index[t].hour
+            #we rely on the fact that HORAYZON LUT was created for a leap year and factors dont change with time
+            if (year % 4 != 0 and doy > 59): #59th DOY = February 28th, leap year continues with 29th
+                doy = doy + 1
+            
+            time_identifier = doy + hour/100
+            if len(corr_file) == 1:
+                correction_factor = corr_factor_dic["rgi"]
             else:
-                idx = int(np.searchsorted(sw_starts_sorted, year,
-                                          side="right"))
-                idx = min(idx, n_luts - 1)
-            sw_cor_val = (processed_luts[idx]
-                          .sel(time_id=time_id_val)["sw_dir_cor"]
-                          .values)
-            # Per-epoch SVF: same year->file index as sw_dir_cor, so the
-            # diffuse correction switches with the glacier geometry.
-            svf_val = svf_per_lut[idx] if first_svf is not None else None
-            if write_svf and svf_timevar:
-                SVF_interp[t, :, :] = svf_val
-
-            # ── Mölg solar geometry (exact match to calcRad) ─────────────
-            soldec = solPars[doy - 1, 3]     # solar declination [rad]
-            eccorr = solPars[doy - 1, 2]     # eccentricity correction [-]
-            tcorr  = timeCorr[doy - 1, 3]    # equation-of-time correction [°]
-
-            # Solar hour angle — identical formula to calcRad
-            stime = (180.0
-                     + (3600.0 / 3600.0 * 15.0 / 2.0)   # half-step centering
-                     - hour * 15.0
-                     - tcorr
-                     + tcart)
-            sin_h = (
-                math.sin(soldec)
-                * math.sin(math.radians(_cfg.station["stationLat"]))
-                + math.cos(soldec)
-                * math.cos(math.radians(_cfg.station["stationLat"]))
-                * math.cos(math.radians(stime))
-            )
-
-            if sin_h <= 0.01:
-                # Sun below effective horizon — no radiation from either scheme
-                G_interp[t, :, :] = 0.0
-                continue
-
-            if mode == "Horayzon2022" and sw[t] <= 0.0:
-                G_interp[t, :, :] = 0.0
-                continue
-
-            # ── Atmospheric transmissivities (Mölg-exact) ────────────────
-            mopt  = 35.0 * (1224.0 * sin_h**2 + 1.0)**(-0.5)
-            p_rel = P_interp[t] / 1013.25           # pressure ratio (2D)
-
-            RH_safe = np.clip(RH_interp[t], 0.0, 100.0)
-
-            # Vapour pressure — same metpy call as in calcRad
-            _mix = metpy_calc.mixing_ratio_from_relative_humidity(
-                RH_safe      * metpy_units.percent,
-                T_interp[t]  * metpy_units.kelvin,
-                P_interp[t]  * metpy_units.hPa,
-            )
-            vp = np.array(
-                metpy_calc.vapor_pressure(P_interp[t] * metpy_units.hPa,
-                                          _mix))
-
-            TAUr  = np.exp(
-                        (-0.09030 * (p_rel * mopt)**0.84)
-                        * (1.0 + p_rel * mopt - (p_rel * mopt)**1.01)
-                    )
-            TAUg  = math.exp(-0.0127 * mopt**0.26)           # scalar
-            k_aes = np.clip(aesc2 * heights + aesc1, None, 1.0)
-            TAUa  = k_aes**mopt
-            TAUaa = (1.0
-                     - (1.0 - alphss)
-                     * (1.0 - p_rel * mopt + (p_rel * mopt)**1.06)
-                     * (1.0 - TAUa))
-            _w    = 46.5 * vp / T_interp[t]
-            # Add these prints inside the time loop, just after computing _w
-            print(f"t={t}: vp min={np.nanmin(vp):.3f} max={np.nanmax(vp):.3f}")
-            print(f"       _w min={np.nanmin(_w):.4f} max={np.nanmax(_w):.4f}")
-            print(f"       T  min={np.nanmin(T_interp[t]):.1f} max={np.nanmax(T_interp[t]):.1f}")
-            base = 1.0 + 79.034 * mopt * _w
-            print(f"       TAUw base min={np.nanmin(base):.4f}")
-
-            TAUw  = 1.0 - (2.4959 * mopt * _w
-                           / ((1.0 + 79.034 * mopt * _w)**0.6828
-                              + 6.385 * mopt * _w))
-
-            taucs = TAUr * TAUg * TAUa * TAUw
-
-            # Clear-sky direct on horizontal surface [W m-2]
-            sdir = Sol0 * eccorr * sin_h * taucs
-
-            # Clear-sky diffuse [W m-2] — Iqbal (1983) / Hastenrath (1984)
-            Dcs = (difra * Sol0 * eccorr * sin_h
-                   * TAUg * TAUw * TAUaa
-                   * (1.0 - TAUr * TAUa / TAUaa)
-                   / (1.0 - p_rel * mopt + (p_rel * mopt)**1.02))
-
-            grcs = sdir + Dcs    # clear-sky global [W m-2]
-
-            # ── Cloud-adjusted theoretical direct and diffuse ─────────────
-            if has_cloud:
-                cld = N_interp[t]                    # cloud fraction (2D)
-                G_dir_theory = np.where(
-                    cld > 0,
-                    sdir * (1.0 - (1.0 - dirovc) * cld),
-                    sdir,
-                )
-                G_dif_theory = np.where(
-                    cld > 0,
-                    grcs * ((100.0 - Cf * 100.0 - dif1) / 100.0 * cld
-                            + dif1 / 100.0),
-                    Dcs,
-                )
-            else:
-                G_dir_theory = sdir
-                G_dif_theory = Dcs
-
-            # ── Mode-specific output ──────────────────────────────────────
-            if mode == "Horayzon2022":
-                # Scale Mölg's theoretical partition to the measured total SW.
-                # Direct and diffuse components sum to G_meas by construction.
-                G_theory  = np.maximum(G_dir_theory + G_dif_theory, 1e-10)
-                f_dif     = np.clip(G_dif_theory / G_theory, 0.0, 1.0)
-                G_dir_meas = sw[t] * (1.0 - f_dif)
-                G_dif_meas = sw[t] * f_dif
-
-                if svf_val is not None:
-                    G_interp[t, :, :] = (sw_cor_val * G_dir_meas
-                                         + svf_val   * G_dif_meas)
+                if year < 2013:
+                    correction_factor = corr_factor_dic["rgi"]
                 else:
-                    # Fallback: old behaviour (sw_dir_cor on total SW)
-                    G_interp[t, :, :] = sw_cor_val * sw[t]
-
-            else:  # Horayzon_theory
-                # Purely theoretical radiation following Mölg (2009).
-                # HORAYZON sw_dir_cor replaces Mölg's analytical
-                # slope/aspect/shading; HORAYZON SVF replaces gridded SVF.
-                # Forcing SW (G_meas) is NOT used.
-                if svf_val is not None:
-                    G_interp[t, :, :] = (sw_cor_val * G_dir_theory
-                                         + svf_val   * G_dif_theory)
-                else:
-                    G_interp[t, :, :] = sw_cor_val * G_dir_theory
+                    correction_factor = corr_factor_dic["2013"]
+                #elif year < 2018:
+                #    correction_factor = corr_factor_dic["2014"]
+                #elif year < 2021:
+                #    correction_factor = corr_factor_dic["2018"]
+                #elif year < 2023:
+                #    correction_factor = corr_factor_dic["2021"]
+            sw_cor_val = correction_factor.sel(time=time_identifier)['sw_dir_cor']
+            #multiply correction factors with forcing
+            G_interp[t,:,:] = sw_cor_val * sw[t]
             
     elif _cfg.radiation["radiationModule"] == "Moelg2009":
         print("Run the radiation module Moelg2009")
@@ -1331,9 +951,7 @@ def create_2D_input(
 
     else:
         raise ValueError(
-            f'Radiation module {_cfg.radiation["radiationModule"]} not available.\n'
-            'Available options are: Wohlfahrt2016, Moelg2009, '
-            'Horayzon2022, Horayzon_theory, none.'
+            f'Radiation module {_cfg.radiation["radiationModule"]} not available.\nAvailable options are: Wohlfahrt2016, Moelg2009, none.'
         )
 
     # Limit bounds for relative humidity
@@ -1355,32 +973,18 @@ def create_2D_input(
     del G_interp
 
     if _cfg.lapse["srf_model"] is True:
-        if srf_has_time:
-            add_variable_along_timelatlon(ds=dso, var=SRF_interp, name="SRF",
-                                          units="-", long_name="Snow Redistribution Factor (Hanzer 2016)")
-            del SRF_interp
-        else:
-            add_variable_along_latlon(ds=dso, var=ds.SRF.values, name="SRF", units="-", long_name="Snow Redistribution Factor (Hanzer 2016)")
+        add_variable_along_latlon(ds=dso, var=ds.SRF.values, name="SRF", units="-", long_name="Snow Redistribution Factor (Hanzer 2016)")
     if _cfg.radiation["ELEV_model"] is True:
         if "time" in ds.N_Points.dims:
             add_variable_along_timelatlon(ds=dso, var=N_Points_interp, name="N_Points", units="count", long_name="Number of Points in each bin")
             del N_Points_interp
         else:
             add_variable_along_latlon(ds=dso, var=ds.N_Points.values, name='N_Points', units='count', long_name='Number of Points in each bin')
-    # Record SVF for HORAYZON runs (time-varying only if it changes per epoch).
-    if write_svf:
-        if svf_timevar:
-            add_variable_along_timelatlon(ds=dso, var=SVF_interp, name="SVF",
-                                          units="-", long_name="Sky View Factor (HORAYZON)")
-            del SVF_interp
-        else:
-            add_variable_along_latlon(ds=dso, var=first_svf, name="SVF",
-                                      units="-", long_name="Sky View Factor (HORAYZON)")
     if _cfg.names["RRR_var"] in df:
         add_variable_along_timelatlon(ds=dso, var=RRR_interp, **get_variable_metadata("RRR"))
         del RRR_interp
     if _cfg.names["SNOWFALL_var"] in df:
-        #print(SNOWFALL_interp)
+        print(SNOWFALL_interp)
         add_variable_along_timelatlon(ds=dso, var=SNOWFALL_interp, **get_variable_metadata("SNOWFALL"))
         del SNOWFALL_interp
     if _cfg.names["LWin_var"] in df:
@@ -1626,45 +1230,10 @@ def get_user_arguments(parser: argparse.ArgumentParser) -> argparse.Namespace:
         "--sw",
         dest="corr_file",
         type=str,
-        nargs="+",
+        nargs='+', #accepts 1 or more arguments into a list
         metavar="<path>",
-        default=None,
-        help=(
-            "Path(s) to HORAYZON LUT NetCDF file(s) for the Horayzon2022 "
-            "radiation module.  Provide one file to cover the full period, "
-            "or multiple files together with --sw-ends."
-        ),
-    )
-    parser.add_argument(
-        "--sw-starts",
-        dest="sw_starts",
-        type=int,
-        nargs="+",
-        metavar="<year>",
-        default=None,
-        help=(
-            "First calendar year for each HORAYZON LUT file after the first. "
-            "Supply N-1 values for N files. The boundary year belongs to the "
-            "NEW file (exclusive end for the previous file). "
-            "Example: --sw rgi6.nc 2013.nc 2017.nc --sw-starts 2013 2017 "
-            "→ rgi6.nc for years < 2013, 2013.nc for 2013-2016, "
-            "2017.nc from 2017 onwards."
-        ),
-    )
-    parser.add_argument(
-        "--forcing-utc-offset",
-        dest="forcing_utc_offset",
-        type=int,
-        metavar="<hours>",
-        default=0,
-        help=(
-            "UTC offset (integer hours) of the forcing timestamps. "
-            "Used to convert forcing time to UTC before HORAYZON LUT lookup "
-            "(the LUT is always in UTC).  Default 0 (forcing already in UTC). "
-            "Set to 1 for UTC+1, -5 for UTC-5, etc.  "
-            "Does not affect the Mölg solar geometry — that is controlled "
-            "by 'tcart' in the utilities config."
-        ),
+        const=None,
+        help="Path to the HORAYZON LUT table",
     )
     arguments = parser.parse_args()
 

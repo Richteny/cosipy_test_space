@@ -238,7 +238,7 @@ def tsl_method_conservative(albedos, hgts, mask, min_albedo, min_elevs_t, max_el
     astd = np.full(ntime, np.nan)
     amax = np.full(ntime, np.nan)
     amin = np.full(ntime, np.nan)
-    flag = np.full(ntime)
+    flag = np.zeros(ntime)
 
     for n in range(ntime):
         current_min = min_elevs_t[n]

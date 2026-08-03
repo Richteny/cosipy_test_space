@@ -8,23 +8,23 @@ from cosipy.constants import Constants
 from COSIPY import main as runcosipy
 
 # --- 1. CONFIGURATION ---
-TOTAL_SIMULATIONS = 1800
-NUM_CHUNKS = 6
+TOTAL_SIMULATIONS = 1600
+NUM_CHUNKS = 4
 SEED = 42  # CRITICAL: Ensures all 4 processes see the exact same 1000 params
 
 # Define Parameter Ranges (Min, Max)
 # Adjust these bounds to match your prior ranges
 param_bounds = {
-    'rrr_factor':      (np.log(0.28), np.log(0.8)),
-    'alb_ice':         (0.1, 0.21),
-    'alb_snow':        (0.82, 0.93),
-    'alb_firn':        (0.4, 0.7),
+    'rrr_factor':      (np.log(0.3), np.log(1.2)),
+    'alb_ice':         (0.11, 0.39),
+    'alb_snow':        (0.82, 0.9),
+    'alb_firn':        (0.4, 0.65),
     #'albedo_aging':    (1.0, 25.0), not needed with bougamont scheme  
     'albedo_depth':    (1.0, 14.0), 
-    'center_snow':     (-1.0, 1.0), 
+    'center_snow':     (-1.5, 1.5), 
     'roughness_ice':   (0.7, 20.0),
-    'lwin_factor':     (np.log(0.9), np.log(1.1)),
-    'ws_factor':       (np.log(0.8), np.log(2)),
+    'lwin_factor':     (np.log(0.85), np.log(1.15)),
+    'ws_factor':       (np.log(0.75), np.log(2)),
     'bias_T2':         (0.0, 1.5),
     't_wet':           (1.0, 23.0),
     #'t_dry':           (25.0, 35.0), keep constant at 30 in accordance with other studies and exp. nature  
@@ -76,7 +76,7 @@ if __name__ == "__main__":
     print("Generating Master LHS Parameter Set...")
     df_master = generate_lhs_params(TOTAL_SIMULATIONS, SEED)
     
-    df_master.to_csv("./LHS-wide-master.csv")    
+    df_master.to_csv("./Kolahoi_LHS-wide-master.csv")    
     # C. Slice the DataFrame for this Chunk
     chunk_size = TOTAL_SIMULATIONS // NUM_CHUNKS
     start_idx = chunk_id * chunk_size

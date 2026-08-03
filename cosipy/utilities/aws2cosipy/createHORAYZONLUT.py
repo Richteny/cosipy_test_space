@@ -12,7 +12,7 @@ instead of calculation correction factors on low resolution static files directl
 Usage:
 
 python -m cosipy.utilities.aws2cosipy.createHORAYZONLUT -s <input static data> -o <output name> [-c <coarse static data>]\
-    [-r <regrid>] [-e <elevation profile>] [-es <elevation bin size>] [-d <elevation band static output] 
+    [-r <regrid>] [-e <elevation profile>] [-es <elevation bin size>] [-d <elevation band static output] [-eb <elev_bins_to_use>] 
     
 Options and arguments:
 

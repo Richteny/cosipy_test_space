@@ -13,6 +13,8 @@ def solveHeatEquation(GRID, dt):
 
     # Define index arrays
     nl = GRID.get_number_layers()  # number of layers
+    if nl < 3:
+        return #0 or 1 interior node -> nothign to diffuse
     nl_1 = nl - 1
     nl_2 = nl - 2
     k = np.arange(1, nl_1)  # center points

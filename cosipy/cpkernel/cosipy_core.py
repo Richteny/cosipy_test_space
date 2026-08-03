@@ -174,9 +174,9 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
     albedo_fresh_snow = Constants.albedo_fresh_snow
     albedo_firn = Constants.albedo_firn
     WRF_X_CSPY = Config.WRF_X_CSPY
-    mult_factor_LWIN = Constants.mult_factor_LWin
+    bias_LWIN = Constants.bias_LWin
     mult_factor_WS = Constants.mult_factor_WS
-    summer_bias_t2 = Constants.bias_T2
+    bias_T2 = Constants.bias_T2
     # Replace values from constants.py if coupled
     # TODO: This only affects the current module scope instead of global.
     if WRF_X_CSPY:
@@ -199,9 +199,9 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
         roughness_ice = opt_dict[9]
         roughness_firn = opt_dict[10]
         aging_factor_roughness = opt_dict[11]
-        mult_factor_LWIN = opt_dict[12]
+        bias_LWIN = opt_dict[12]
         mult_factor_WS = opt_dict[13]
-        summer_bias_t2 = opt_dict[14]
+        bias_T2 = opt_dict[14]
         t_wet = opt_dict[15]
         t_dry = opt_dict[16]
         t_K = opt_dict[17]
@@ -276,16 +276,8 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
     #--------------------------------------------
     # Get data from file
     #--------------------------------------------
+    DATA['T2'] = DATA['T2'] + bias_T2
     T2 = DATA.T2.values.copy()
-    if summer_bias_t2 != 0:
-        months = DATA.time.dt.month.values
-        is_summer = np.isin(months, [5,6,7,8,9]) # Northern hemisphere
-        is_warm = T2 > 0.0
-
-        if (T2.ndim == 3) and (is_summer.ndim == 1):
-            #safety check for broadcasting
-            is_summer = is_summer[:, np.newaxis, np.newaxis]
-        T2[is_summer & is_warm] -= summer_bias_t2
 
     RH2 = DATA.RH2.values
     PRES = DATA.PRES.values
@@ -298,12 +290,10 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
     #--------------------------------------------
     
     # create combined pr_factor with srf
-    local_srf = 1.0
-    if ("SRF" in DATA) and (Config.use_srf is True):
-        print("Using SRF field.")
-        srf_val = float(DATA["SRF"].values)
-        if not np.isnan(srf_val):
-            local_srf = srf_val
+    use_srf = ("SRF" in DATA) and (Config.use_srf is True)
+    if use_srf:
+        _srf = np.atleast_1d(DATA["SRF"].values)
+        srf_timevar = _srf.size > 1
     
     if ('SNOWFALL' in DATA) and ('RRR' in DATA):
         SNOWF = DATA.SNOWFALL.values * mult_factor_RRR
@@ -323,10 +313,12 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
     LWin = np.array(nt * [None])
     N = np.array(nt * [None])
     if ('LWin' in DATA) and ('N' in DATA):
-        LWin = DATA.LWin.values * mult_factor_LWIN
+        DATA['LWin'] = np.clip(DATA['LWin'] + bias_LWIN, a_min=0.0, a_max=None)
+        LWin = DATA.LWin.values
         N = DATA.N.values
     elif 'LWin' in DATA:
-        LWin = DATA.LWin.values * mult_factor_LWIN
+        DATA['LWin'] = np.clip(DATA['LWin'] + bias_LWIN, a_min=0.0, a_max=None)
+        LWin = DATA.LWin.values
     else:
         LWin = None
         N = DATA.N.values
@@ -370,6 +362,13 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
             density_fresh_snow = np.maximum(109.0+6.0*(T2[t]-273.16)+26.0*np.sqrt(U2[t]), 50.0)
         else:
             density_fresh_snow = constant_density 
+
+        #SRF check
+        local_srf = 1.0
+        if use_srf:
+            srf_val = float(_srf[t]) if srf_timevar else float(_srf[0])
+            if not np.isnan(srf_val):
+                local_srf = srf_val
 
         # Derive snowfall [m] and rain rates [m w.e.]
         if (SNOWF is not None) and (RRR is not None):
@@ -499,6 +498,14 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
         #--------------------------------------------
         # Percolation
         #--------------------------------------------
+        nn = GRID.number_nodes
+        h = GRID.get_height()
+        if nn < 2 or len(h) != nn:
+            raise RuntimeError(
+                f"degenerate grid: number_nodes={nn}, len(heights)={len(h)}, "
+                f"total_h={np.sum(h):.2f}, t={t}"
+            )
+
         Q  = percolation(GRID, melt + condensation + RAIN/1000.0 + lwc_from_melted_layers, dt)
 
         #--------------------------------------------
@@ -509,6 +516,7 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
         #--------------------------------------------
         # Solve the heat equation
         #--------------------------------------------
+        # in cosipy_core.py, just before line 506
         solveHeatEquation(GRID, dt)
 
         #--------------------------------------------
