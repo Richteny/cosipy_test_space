@@ -2,7 +2,7 @@ import numpy as np
 import arviz as az
 import os
 
-outpath = "/data/scratch/richteny/thesis/cosipy_test_space/simulations/emulator/"
+outpath = "/path/to/COSIPY/MCMC/"
 
 idata = az.concat(
     [az.from_netcdf(f"{outpath}/point_chain_{i}.nc") for i in range(20) if i !=24 and i !=217 and i !=219 and i!=30 and i!=214 and i!=38 and i!=411 and i!=418 and i!=419],

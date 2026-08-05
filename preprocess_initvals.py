@@ -2,10 +2,9 @@ import numpy as np
 import pickle
 from scipy.stats import qmc
 
-path = "/data/scratch/richteny/for_emulator/"
+path = "/path/to/for_emulator/"
 
 #Leave a lil space to ensure that chains start in range
-# ============ Init Value Generation =============
 def generate_initvals(N):
     priors = {
 	#'rrrfactor': (0.649, 0.946),

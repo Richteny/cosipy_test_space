@@ -21,7 +21,7 @@ Config()
 Constants()
 
 # Set up MB data
-path_to_geod = "/data/scratch/richteny/Hugonnet_21_MB/"
+path_to_geod = "/path/to/geod_data/Hugonnet_21_MB/"
 rgi_id = "RGI60-11.00897"
 rgi_region = rgi_id.split('-')[-1][:2]
 
@@ -50,7 +50,7 @@ tsla_obs['SC_stdev'] = sc_norm
 obs = None
 
 ## Load parameter list ##
-param_list = pd.read_csv('/data/scratch/richteny/thesis/cosipy_test_space/manual_sens_params_fullprior.csv')
+param_list = pd.read_csv('/path/to/folder/manual_sens_params_fullprior.csv')
 print(param_list.head(5))
 
 fromlist=True

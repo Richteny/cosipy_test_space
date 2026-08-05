@@ -22,7 +22,7 @@ Config()
 Constants()
 
 # Set up MB data
-path_to_geod = "/data/scratch/richteny/Hugonnet_21_MB/"
+path_to_geod = "/path/to/geod_data/Hugonnet_21_MB/"
 rgi_id = "RGI60-11.00897"
 rgi_region = rgi_id.split('-')[-1][:2]
 

@@ -24,7 +24,7 @@ Config()
 Constants()
 
 # Set up data
-observed = pd.read_csv("/data/scratch/richteny/thesis/cosipy_test_space/data/input/HEF/cosipy_validation_upper_station.csv",
+observed = pd.read_csv("/path/to/awsdata/cosipy_validation_upper_station.csv",
                        parse_dates=True, index_col="time")
 unc_lwo = 15 #Wm-2
 unc_alb = 0.05 

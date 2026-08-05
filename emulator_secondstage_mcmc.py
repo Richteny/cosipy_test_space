@@ -14,14 +14,14 @@ from pytensor.compile.ops import as_op
 
 # =================== Config =====================
 # Paths (set these accordingly)
-path = "/data/scratch/richteny/for_emulator/"
-outpath = "/data/scratch/richteny/thesis/cosipy_test_space/simulations/emulator/"
+path = "/path/to/for_emulator/"
+outpath = "/path/to/COSIPY/MCMC/"
 
 # Input
-params = pd.read_csv("/data/scratch/richteny/thesis/cosipy_test_space/simulations/LHS-narrow_1D20m_1999_2010_fullprior.csv", index_col=0)
-path_snowlines = "/data/scratch/richteny/thesis/cosipy_test_space/data/input/HEF/snowlines/HEF-snowlines-1999-2010_manual_filtered.csv"
-path_to_geodetic = "/data/scratch/richteny/Hugonnet_21_MB/dh_11_rgi60_pergla_rates.csv"
-alb_obs_data = xr.open_dataset("/data/scratch/richteny/Ren_21_Albedo/HEF_processed_HRZ-30CC-filter_albedos.nc")
+params = pd.read_csv("/path/to/COSIPY/LHS/LHS-narrow_1D20m_1999_2010_fullprior.csv", index_col=0)
+path_snowlines = "/path/to/snowlines/HEF-snowlines-1999-2010_manual_filtered.csv"
+path_to_geodetic = "/path/to/geod_data/Hugonnet_21_MB/dh_11_rgi60_pergla_rates.csv"
+alb_obs_data = xr.open_dataset("/path/to/albedo/HEF_processed_HRZ-30CC-filter_albedos.nc")
 alb_obs_data = alb_obs_data.sortby("time") #ensure correct order - prob. not necessary
 
 #Season lookup (only JJAS, rest winter)
