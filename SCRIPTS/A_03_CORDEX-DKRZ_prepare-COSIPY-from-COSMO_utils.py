@@ -267,7 +267,7 @@ def fix_lapse_rates(df, field_var, r2_thres):
 #### ------------------ ####
 #### Load all the paths ####
 #### ------------------ ####
-path = "/mnt/C4AEBBABAEBB9500/OneDrive/PhD/PhD/Data/Hintereisferner/Climate/CORDEX-DKRZ/"
+path = "/path/to/climatedata/"
 ps_path = path+"cosmo_1998-2010_6h_ps.nc" #pressure
 pr_path = path+"cosmo_1998-2010_1h_pr.nc" #tota precipitaiton flux
 tas_path = path+"cosmo_1998-2010_1h_tas.nc" #temperature
@@ -283,7 +283,7 @@ prsn_path = path+"cosmo_1998-2010_1d_prsn.nc" #snowfall flux
 
 
 #load your shp file path
-shp_path = "/mnt/C4AEBBABAEBB9500/OneDrive/PhD/PhD/Data/Hintereisferner/Static/RGI6/HEF_RGI6.shp"
+shp_path = "/path/to/shapefiles/HEF_RGI6.shp"
 # Create output path where the .csv should be stored in
 outpath = "./your_csv_name.csv"
 

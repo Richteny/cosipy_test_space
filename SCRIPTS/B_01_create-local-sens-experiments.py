@@ -74,8 +74,8 @@ combinations_df = combinations_df[list(column_mapping.values())]
 combinations_df = combinations_df.drop_duplicates(keep="first")
 
 if 'win' in sys.platform:
-    combinations_df.to_csv("E:/OneDrive/PhD/PhD/Data/Hintereisferner/COSIPY/MiscTests/manual_sens_params_fullprior.csv", index=False)
+    combinations_df.to_csv("/path/to/folder/manual_sens_params_fullprior.csv", index=False)
 else:
-    combinations_df.to_csv("/mnt/C4AEBBABAEBB9500/OneDrive/PhD/PhD/Data/Hintereisferner/COSIPY/MiscTests/manual_sens_params_fullprior.csv", index=False)
+    combinations_df.to_csv("/path/to/folder/manual_sens_params_fullprior.csv", index=False)
 
 print("Sensitivity analysis complete. Results saved to 'sensitivity_results.csv' and 'parameter_combinations.csv'")
