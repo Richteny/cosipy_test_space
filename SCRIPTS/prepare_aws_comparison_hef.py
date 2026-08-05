@@ -15,10 +15,10 @@ import matplotlib.pyplot as plt
 #setting
 value_choice = 'elevation' #nearest
 
-path = "/data/scratch/richteny/thesis/io/data/output/bestfiles/"
-outpath = "/data/scratch/richteny/thesis/io/data/output/aws_comp/bestfiles/"
+path = "/path/to/COSIPY/LHS/bestfiles/"
+outpath = "/path/to/COSIPY/LHS/aws_comp/bestfiles/"
 
-aws_path = "/data/scratch/richteny/thesis/Hintereisferner/Climate/AWS_Obleitner/"
+aws_path = "/path/to/aws_data/"
 aws_lower = pd.read_csv(aws_path+"Fix_HEFlower_01102003_24102004.csv", parse_dates=True, index_col="time")
 aws_upper = pd.read_csv(aws_path+"Fix_HEFupper_01102003_24102004.csv", parse_dates=True, index_col="time")
 

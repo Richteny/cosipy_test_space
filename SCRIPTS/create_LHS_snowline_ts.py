@@ -9,8 +9,8 @@ import numpy as np
 import pathlib
 from datetime import datetime
 
-path_to_data = "/data/scratch/richteny/thesis/cosipy_test_space/data/output/LHS/"
-outpath = "/data/scratch/richteny/thesis/io/data/output/nn_data/full_snowlines/"
+path_to_data = "/path/to/COSIPY/LHS/"
+outpath = "/path/to/COSIPY/LHS/full_snowlines/"
 
 for fp in pathlib.Path(path_to_data).glob('*.nc'):
     print(fp)

@@ -16,8 +16,8 @@ def prepare_ds(ds):
     print("Finished preparing dataset.")
     return ds
 
-path = "/data/scratch/richteny/thesis/io/data/output/bestfiles/"
-outpath= "/data/scratch/richteny/thesis/io/data/output/hypso/bestfiles/"
+path = "/path/to/COSIPY/LHS/bestfiles/"
+outpath= "/path/to/COSIPY/LHS/hypso/bestfiles/"
 
 def get_area_weighted_elevation_stats(ds, time_slices_wy, year_vals):
     """
@@ -227,8 +227,6 @@ with plt.xkcd():
     axes[2].set_xticks(np.arange(0, 1750 + 250, 250))
     axes[2].set_yticks(np.arange(3650, 4850 + 50, 100))
     axes[2].set_xlabel("Precipitation (mm a$^{-1}$)")
-    plt.savefig("E:/OneDrive - uibk.ac.at/PhD/PhD/Data/Slides_Preparation/output/" + 'glacier_elevation_plots4.png',
-                bbox_inches="tight")
     plt.show()
 
 ### What else do we need for the story line? ###
@@ -239,7 +237,6 @@ with plt.xkcd():
 
 #Plot MB over time, how to implement the geod. MB
 #
-geod = pd.read_csv("E:/OneDrive - uibk.ac.at/PhD/PhD/Data/Hugonnet_21_MB/time_series_13/dh_abramov_pergla_rates.csv")
 geod = geod.loc[geod['period']=='2010-01-01_2020-01-01']
 mb_geod = np.array([geod['dmdtda']]*11).ravel()
 err_geod = np.array([geod['err_dmdtda']]*11).ravel()
@@ -311,7 +308,6 @@ with plt.xkcd():
     axes[1].set_ylabel("Elevation (m a.s.l.)")
     axes[1].set_xlabel("Year")
     axes[1].legend()
-    plt.savefig("E:/OneDrive - uibk.ac.at/PhD/PhD/Data/Slides_Preparation/output/"+'MB_TSLA_eval4.png', bbox_inches="tight")
     plt.show()
 
 #geod mb comparison, once without lapse rate, then with lapse rate temp. then with lapse rate prec.

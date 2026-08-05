@@ -2,8 +2,8 @@ import xarray as xr
 import numpy as np
 import pathlib
 
-path = "/data/scratch/richteny/thesis/io/data/output/bestfiles/"
-outpath = "/data/scratch/richteny/thesis/io/data/output/aws_eb/"
+path = "/path/to/COSIPY/LHS/bestfiles/"
+outpath = "/path/to/COSIPY/LHS/aws_eb/"
 
 def get_closest_elevgridcell(ds, elevation_target=3048.0):
     abs_diff = abs(ds['HGT'] - elevation_target)

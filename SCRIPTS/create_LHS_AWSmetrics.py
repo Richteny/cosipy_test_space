@@ -3,8 +3,8 @@ import numpy as np
 import pathlib
 import xarray as xr
 
-path = "/data/scratch/richteny/thesis/cosipy_test_space/data/output/LHS/"
-awspath = "/data/scratch/richteny/thesis/Hintereisferner/Climate/AWS_Obleitner/"
+path = "/path/to/COSIPY/LHS/"
+awspath = "/path/to/aws_data/"
 
 aws = pd.read_csv(awspath+"Fix_HEFupper_01102003_24102004.csv", index_col="time", parse_dates=True)
 print(aws.isnull().sum())
@@ -73,7 +73,7 @@ for fp in pathlib.Path(path).glob('*.nc'):
     holder['cspy_sfc'] = norm_totalheight.data
     holder['cspy_lwout'] = sub.LWout.values
     filename = str(fp.stem) + "AWSmetrics.csv"
-    holder.to_csv("/data/scratch/richteny/thesis/cosipy_test_space/data/output/LHS/AWScomp/"+filename)
+    holder.to_csv("/path/to/COSIPY/LHS/AWScomp/"+filename)
     del holder 
 
     #get params from filename
@@ -103,4 +103,4 @@ for fp in pathlib.Path(path).glob('*.nc'):
     results_list.append(result)
 
 results_df = pd.DataFrame(results_list)
-results_df.to_csv("/data/scratch/richteny/thesis/cosipy_test_space/LHS_1D20m_1999_2010_AWSmetrics.csv")
+results_df.to_csv("/path/to/COSIPY/LHS/AWScomp/LHS_1D20m_1999_2010_AWSmetrics.csv")

@@ -3,11 +3,10 @@ import numpy as np
 import pathlib
 import xarray as xr
 
-path = "/data/scratch/richteny/thesis/cosipy_test_space/data/output/manual_sensitivity_test/"
-#path = "/data/scratch/richteny/thesis/io/data/output/bestfiles/"
-albpath = "/data/scratch/richteny/Ren_21_Albedo/"
-outpath = "/data/scratch/richteny/thesis/io/data/output/albedo_files/sens_test/"
-outpath_me = "/data/scratch/richteny/thesis/io/data/output/sens_me/"
+path = "/path/to/COSIPY/manual_sensitivity_test/"
+albpath = "/path/to/albedo/"
+outpath = "/path/to/COSIPY/albedo_files/sens_test/"
+outpath_me = "/path/to/COSIPY/sens_me/"
 
 #Load albedo observations
 albobs = xr.open_dataset(albpath+"HEF_processed_HRZ-30CC-filter_albedos.nc")

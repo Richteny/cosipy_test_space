@@ -3,7 +3,7 @@ import numpy as np
 import pathlib
 import xarray as xr
 
-path = "/data/scratch/richteny/thesis/cosipy_test_space/data/output/"
+path = "/path/to/COSIPY/"
 path += "LHS/"
 
 def get_season(month):
@@ -84,4 +84,4 @@ for fp in pathlib.Path(path).glob('*.nc'):
     results_list.append(result)
 
 results_df = pd.DataFrame(results_list)
-results_df.to_csv("/data/scratch/richteny/thesis/cosipy_test_space/LHS_1D20m_1999_2010_EBfromLHS.csv")
+results_df.to_csv("/path/to/COSIPY/LHS/LHS_1D20m_1999_2010_EBfromLHS.csv")

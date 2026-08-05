@@ -4,8 +4,8 @@ import pathlib
 import datetime
 import pandas as pd
 
-datapath="/data/scratch/richteny/thesis/cosipy_test_space/data/output/LHS/"
-outpath="/data/scratch/richteny/thesis/io/data/output/reduced_bestfiles/"
+datapath="/path/to/COSIPY/LHS/"
+outpath="/path/to/COSIPY/LHS/reduced_bestfiles/"
 
 def spatial_mean(ds):
     weights = ds['N_Points'] / np.sum(ds['N_Points'])
