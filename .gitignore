@@ -26,6 +26,7 @@ cosipy/utilities/aws2cosipy/slurm_run.out
 cosipy/utilities/aws2cosipy/slurm_run.err
 de421.bsp
 *.csv
+!cali_data/*.csv
 Control_master.err
 Control_master.out
 Control_master2.err
