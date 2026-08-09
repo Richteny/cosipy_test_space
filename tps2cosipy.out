@@ -1,0 +1,196 @@
+=== Abramov  Sun Aug  9 10:22:18 CEST 2026 ===
+    Baseline: Abramov_RGI6_HORAYZON-LUT_1D20m.nc
+    Umrisse:  2016 2020
+    lat=39.6097  tcart=-71.56986
+abramov: 65 Baender
+  Zeit: 1987-10-01 00:00:00 .. 2024-12-31 23:00:00  (326568 Schritte)
+Wertebereiche (n = Anzahl Werte ausserhalb der COSIPY-Grenzen):
+  T2    min=  238.02 max=  290.54  [ok]
+  RH2   min=    1.08 max=  100.00  [ok]
+  U2    min=    0.00 max=   31.93  [ok]
+  PRES  min=  531.77 max=  662.69  [ok]
+  RRR   min=    0.00 max=    4.13  [ok]
+  LWin  min=   46.80 max=  329.98  [ok]
+  SW    min=    0.00 max= 2368.10  AUSSERHALB: 243 (0.001%)  [<0: 0, >1600: 243]  <-- PRUEFEN
+  LUT 0: SVF-Mittel = 0.910
+  LUT 1: SVF-Mittel = 0.910
+  LUT 2: SVF-Mittel = 0.910
+Hinweis: keine Wolkenfraktion N im Forcing -> f_dif aus Klarhimmel (Dcs/grcs). Fuer bewoelkten Himmel leicht unterschaetzt.
+Nach SW-Block:
+  G     min=    0.00 max= 1600.00  [ok]
+  SRF: Forward-Fill ueber 3 Umrisse ['2000-01-01', '2016-01-01', '2020-01-01']
+  N_Points: Forward-Fill ueber 3 Umrisse ['2000-01-01', '2016-01-01', '2020-01-01']
+  SVF: zeitabhaengig (variiert ueber Umrisse)
+Schreibe /data/scratch/richteny/thesis/cosipy_test_space/data/input/Abramov/Abramov_ERA5_1D20m_HORAYZON_1987_2024.nc
+Fertig.
+=== Abramov fertig Sun Aug  9 10:25:15 CEST 2026 ===
+
+=== ParlungNo4  Sun Aug  9 10:25:15 CEST 2026 ===
+    Baseline: ParlungNo4_RGI7_HORAYZON-LUT_1D20m.nc
+    Umrisse:  2013 2018 2021
+    lat=29.2324  tcart=-96.9237
+parlung: 65 Baender
+  Zeit: 1987-10-01 00:00:00 .. 2024-12-31 23:00:00  (326568 Schritte)
+Wertebereiche (n = Anzahl Werte ausserhalb der COSIPY-Grenzen):
+  T2    min=  244.91 max=  285.58  [ok]
+  RH2   min=    0.41 max=  100.00  [ok]
+  U2    min=    0.00 max=   30.67  [ok]
+  PRES  min=  473.21 max=  585.57  [ok]
+  RRR   min=    0.00 max=    5.89  [ok]
+  LWin  min=   55.66 max=  311.89  [ok]
+  SW    min=    0.00 max= 3493.00  AUSSERHALB: 614 (0.003%)  [<0: 0, >1600: 614]  <-- PRUEFEN
+  LUT 0: SVF-Mittel = 0.914
+  LUT 1: SVF-Mittel = 0.914
+  LUT 2: SVF-Mittel = 0.914
+  LUT 3: SVF-Mittel = 0.915
+  LUT 2: 1 NaN-SVF-Band(er) mit N_Points=0 (leer) -> auf 0 gesetzt: [np.int64(64)]
+  LUT 3: 2 NaN-SVF-Band(er) mit N_Points=0 (leer) -> auf 0 gesetzt: [np.int64(63), np.int64(64)]
+Hinweis: keine Wolkenfraktion N im Forcing -> f_dif aus Klarhimmel (Dcs/grcs). Fuer bewoelkten Himmel leicht unterschaetzt.
+Nach SW-Block:
+  G     min=    0.00 max= 1306.53  [ok]
+  SRF: Forward-Fill ueber 4 Umrisse ['2000-01-01', '2013-01-01', '2018-01-01', '2021-01-01']
+  N_Points: Forward-Fill ueber 4 Umrisse ['2000-01-01', '2013-01-01', '2018-01-01', '2021-01-01']
+  SVF: zeitabhaengig (variiert ueber Umrisse)
+Schreibe /data/scratch/richteny/thesis/cosipy_test_space/data/input/ParlungNo4/ParlungNo4_ERA5_1D20m_HORAYZON_1987_2024.nc
+Fertig.
+=== ParlungNo4 fertig Sun Aug  9 10:28:12 CEST 2026 ===
+
+=== Dongkemadi  Sun Aug  9 10:28:12 CEST 2026 ===
+    Baseline: Dongkemadi_RGI6_HORAYZON-LUT_1D20m.nc
+    Umrisse:  2015
+    lat=33.0820  tcart=-92.0630
+dongkemadi: 41 Baender
+  Zeit: 1987-10-01 00:00:00 .. 2024-12-31 23:00:00  (326568 Schritte)
+Wertebereiche (n = Anzahl Werte ausserhalb der COSIPY-Grenzen):
+  T2    min=  238.99 max=  285.36  [ok]
+  RH2   min=    0.90 max=  100.00  [ok]
+  U2    min=    0.00 max=   31.91  [ok]
+  PRES  min=  459.30 max=  541.65  [ok]
+  RRR   min=    0.00 max=    7.33  [ok]
+  LWin  min=   54.35 max=  319.20  [ok]
+  SW    min=    0.00 max= 2740.04  AUSSERHALB: 566 (0.004%)  [<0: 0, >1600: 566]  <-- PRUEFEN
+  LUT 0: SVF-Mittel = 0.965
+  LUT 1: SVF-Mittel = 0.965
+Hinweis: keine Wolkenfraktion N im Forcing -> f_dif aus Klarhimmel (Dcs/grcs). Fuer bewoelkten Himmel leicht unterschaetzt.
+Nach SW-Block:
+  G     min=    0.00 max= 1600.00  [ok]
+  SRF: Forward-Fill ueber 2 Umrisse ['2000-01-01', '2015-01-01']
+  N_Points: Forward-Fill ueber 2 Umrisse ['2000-01-01', '2015-01-01']
+  SVF: zeitabhaengig (variiert ueber Umrisse)
+Schreibe /data/scratch/richteny/thesis/cosipy_test_space/data/input/Dongkemadi/Dongkemadi_ERA5_1D20m_HORAYZON_1987_2024.nc
+Fertig.
+=== Dongkemadi fertig Sun Aug  9 10:30:47 CEST 2026 ===
+
+=== Urumqi  Sun Aug  9 10:30:47 CEST 2026 ===
+    Baseline: Urumqi_RGI6_HORAYZON-LUT_1D20m.nc
+    Umrisse:  2016
+    lat=43.1170  tcart=-86.8010
+urumqi: 35 Baender
+  Zeit: 1987-10-01 00:00:00 .. 2024-12-31 23:00:00  (326568 Schritte)
+Wertebereiche (n = Anzahl Werte ausserhalb der COSIPY-Grenzen):
+  T2    min=  235.73 max=  286.57  [ok]
+  RH2   min=    0.35 max=  100.00  [ok]
+  U2    min=    0.00 max=   30.22  [ok]
+  PRES  min=  564.64 max=  652.56  [ok]
+  RRR   min=    0.00 max=    3.88  [ok]
+  LWin  min=   61.01 max=  322.03  [ok]
+  SW    min=    0.00 max= 1086.19  [ok]
+  LUT 0: SVF-Mittel = 0.905
+  LUT 1: SVF-Mittel = 0.905
+Hinweis: keine Wolkenfraktion N im Forcing -> f_dif aus Klarhimmel (Dcs/grcs). Fuer bewoelkten Himmel leicht unterschaetzt.
+Nach SW-Block:
+  G     min=    0.00 max= 1021.85  [ok]
+  SRF: Forward-Fill ueber 2 Umrisse ['2000-01-01', '2016-01-01']
+  N_Points: Forward-Fill ueber 2 Umrisse ['2000-01-01', '2016-01-01']
+  SVF: zeitabhaengig (variiert ueber Umrisse)
+Schreibe /data/scratch/richteny/thesis/cosipy_test_space/data/input/Urumqi/Urumqi_ERA5_1D20m_HORAYZON_1987_2024.nc
+Fertig.
+=== Urumqi fertig Sun Aug  9 10:33:12 CEST 2026 ===
+
+=== InteriorGlacier  Sun Aug  9 10:33:12 CEST 2026 ===
+    Baseline: InteriorGlacier_RGI6_HORAYZON-LUT_1D20m.nc
+    Umrisse:  2010 2016
+    lat=32.2510  tcart=-87.5050
+interiorglacier: 36 Baender
+  Zeit: 1987-10-01 00:00:00 .. 2024-12-31 23:00:00  (326568 Schritte)
+Wertebereiche (n = Anzahl Werte ausserhalb der COSIPY-Grenzen):
+  T2    min=  238.93 max=  286.39  [ok]
+  RH2   min=    1.39 max=  100.00  [ok]
+  U2    min=    0.00 max=   31.69  [ok]
+  PRES  min=  451.27 max=  526.48  [ok]
+  RRR   min=    0.00 max=    9.64  [ok]
+  LWin  min=   66.10 max=  307.42  [ok]
+  SW    min=    0.00 max= 2264.45  AUSSERHALB: 216 (0.002%)  [<0: 0, >1600: 216]  <-- PRUEFEN
+  LUT 0: SVF-Mittel = 0.951
+  LUT 1: SVF-Mittel = 0.951
+  LUT 2: SVF-Mittel = 0.953
+  LUT 2: 1 NaN-SVF-Band(er) mit N_Points=0 (leer) -> auf 0 gesetzt: [np.int64(0)]
+Hinweis: keine Wolkenfraktion N im Forcing -> f_dif aus Klarhimmel (Dcs/grcs). Fuer bewoelkten Himmel leicht unterschaetzt.
+Nach SW-Block:
+  G     min=    0.00 max= 1600.00  [ok]
+  SRF: Forward-Fill ueber 3 Umrisse ['2000-01-01', '2010-01-01', '2016-01-01']
+  N_Points: Forward-Fill ueber 3 Umrisse ['2000-01-01', '2010-01-01', '2016-01-01']
+  SVF: zeitabhaengig (variiert ueber Umrisse)
+Schreibe /data/scratch/richteny/thesis/cosipy_test_space/data/input/InteriorGlacier/InteriorGlacier_ERA5_1D20m_HORAYZON_1987_2024.nc
+Fertig.
+=== InteriorGlacier fertig Sun Aug  9 10:35:41 CEST 2026 ===
+
+=== Bordu  Sun Aug  9 10:35:41 CEST 2026 ===
+    Baseline: Bordu_RGI6_HORAYZON-LUT_1D20m.nc
+    Umrisse:  2011 2014 2017 2020
+    lat=41.81287  tcart=-78.17541
+bordu: 45 Baender
+  Zeit: 1987-10-01 00:00:00 .. 2024-12-31 23:00:00  (326568 Schritte)
+Wertebereiche (n = Anzahl Werte ausserhalb der COSIPY-Grenzen):
+  T2    min=  236.54 max=  289.01  [ok]
+  RH2   min=    0.55 max=  100.00  [ok]
+  U2    min=    0.00 max=   28.47  [ok]
+  PRES  min=  547.07 max=  648.44  [ok]
+  RRR   min=    0.00 max=    3.82  [ok]
+  LWin  min=   67.82 max=  333.11  [ok]
+  SW    min=    0.00 max= 2861.55  AUSSERHALB: 725 (0.005%)  [<0: 0, >1600: 725]  <-- PRUEFEN
+  LUT 0: SVF-Mittel = 0.930
+  LUT 1: SVF-Mittel = 0.931
+  LUT 2: SVF-Mittel = 0.931
+  LUT 3: SVF-Mittel = 0.930
+  LUT 4: SVF-Mittel = 0.930
+  LUT 2: 4 NaN-SVF-Band(er) mit N_Points=0 (leer) -> auf 0 gesetzt: [np.int64(41), np.int64(42), np.int64(43), np.int64(44)]
+  LUT 3: 4 NaN-SVF-Band(er) mit N_Points=0 (leer) -> auf 0 gesetzt: [np.int64(41), np.int64(42), np.int64(43), np.int64(44)]
+  LUT 4: 4 NaN-SVF-Band(er) mit N_Points=0 (leer) -> auf 0 gesetzt: [np.int64(41), np.int64(42), np.int64(43), np.int64(44)]
+Hinweis: keine Wolkenfraktion N im Forcing -> f_dif aus Klarhimmel (Dcs/grcs). Fuer bewoelkten Himmel leicht unterschaetzt.
+Nach SW-Block:
+  G     min=    0.00 max= 1600.00  [ok]
+  SRF: Forward-Fill ueber 5 Umrisse ['2000-01-01', '2011-01-01', '2014-01-01', '2017-01-01', '2020-01-01']
+  N_Points: Forward-Fill ueber 5 Umrisse ['2000-01-01', '2011-01-01', '2014-01-01', '2017-01-01', '2020-01-01']
+  SVF: zeitabhaengig (variiert ueber Umrisse)
+Schreibe /data/scratch/richteny/thesis/cosipy_test_space/data/input/Bordu/Bordu_ERA5_1D20m_HORAYZON_1987_2024.nc
+Fertig.
+=== Bordu fertig Sun Aug  9 10:38:35 CEST 2026 ===
+
+=== Guliya  Sun Aug  9 10:38:35 CEST 2026 ===
+    Baseline: Guliya_RGI6_HORAYZON-LUT_1D20m.nc
+    Umrisse:  (nur Baseline)
+    lat=35.2610  tcart=-81.4620
+guliya: 59 Baender
+  Zeit: 1987-10-01 00:00:00 .. 2024-12-31 23:00:00  (326568 Schritte)
+Wertebereiche (n = Anzahl Werte ausserhalb der COSIPY-Grenzen):
+  T2    min=  233.05 max=  283.09  [ok]
+  RH2   min=    0.72 max=  100.00  [ok]
+  U2    min=    0.00 max=   33.63  [ok]
+  PRES  min=  423.16 max=  529.50  [ok]
+  RRR   min=    0.00 max=    3.07  [ok]
+  LWin  min=   41.58 max=  317.09  [ok]
+  SW    min=    0.00 max= 1234.25  [ok]
+  LUT 0: SVF-Mittel = 0.991
+Hinweis: keine Wolkenfraktion N im Forcing -> f_dif aus Klarhimmel (Dcs/grcs). Fuer bewoelkten Himmel leicht unterschaetzt.
+Nach SW-Block:
+  G     min=    0.00 max= 1600.00  [ok]
+  SVF: statisch
+Schreibe /data/scratch/richteny/thesis/cosipy_test_space/data/input/Guliya/Guliya_ERA5_1D20m_HORAYZON_1987_2024.nc
+Fertig.
+=== Guliya fertig Sun Aug  9 10:41:20 CEST 2026 ===
+
+=== Kolahoi  Sun Aug  9 10:41:20 CEST 2026 ===
+    Baseline: Kolahoi_RGI6_HORAYZON-LUT_1D20m.nc
+    Umrisse:  2014
+    lat=34.16268  tcart=-75.3151

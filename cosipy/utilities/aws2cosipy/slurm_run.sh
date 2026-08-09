@@ -45,7 +45,21 @@ cd /data/scratch/richteny/thesis/cosipy_test_space/
 #python ./cosipy/utilities/aws2cosipy/cosmo2cosipy.py -i "./data/input/HEF/COSMO_forcing_1999-2010_PRESintp.csv" -o ./data/input/HEF/HEF_COSMO_1D100m_HORAYZON_1999_2001_IntpPRES_nosfcor.nc -s ./data/static/HEF/HEF_static_1D100m_new.nc -b 19990101 -e 20010101 --sw ./data/static/HEF/HEF_HORAYZON-LUT_1D100m.nc
 
 #python ./cosipy/utilities/aws2cosipy/cosmo2cosipy.py -i "./data/input/Halji/COSIPY_HARv2_1980_2022_RGI60-15.06065.csv" -o ./data/input/Halji/Halji_HARv2_1D20m_HORAYZON_1988_2022.nc -s ./data/static/Halji/Halji_combined_1D20m_SRF.nc -b 1987-10-01 -e  2022-12-31 --sw ./data/static/Halji/Halji_HORAYZON-LUT_1D20m.nc ./data/static/Halji/Halji2014_HORAYZON-LUT_1D20m.nc ./data/static/Halji/Halji2018_HORAYZON-LUT_1D20m.nc ./data/static/Halji/Halji2021_HORAYZON-LUT_1D20m.nc
-python ./cosipy/utilities/aws2cosipy/cosmo2cosipy.py -i "./data/input/Abramov/COSIPY_HARv2_1980_2022_RGI60-13.18096.csv" -o ./data/input/Abramov/Abramov_HARv2_1D20m_HORAYZON_1988_2022.nc -s ./data/static/Abramov/Abramov_RGI6_SRF_1D20m.nc  -b 1987-10-01 -e 2022-12-31 --sw ./data/static/Abramov/Abramov_RGI6_HORAYZON-LUT_1D20m.nc
+#python ./cosipy/utilities/aws2cosipy/cosmo2cosipy.py -i "./data/input/Mera/COSIPY_HARv2_1980_2022_RGI60-15.03581.csv" -o ./data/input/Mera/Mera_HARv2_1D20m_HORAYZON_1988_2022.nc -s ./data/static/Mera/Mera_combined_SRF_1D20m.nc  -b 1987-10-01 -e 2022-12-31 --sw ./data/static/Mera/Mera_RGI6_HORAYZON-LUT_1D20m.nc ./data/static/Mera/Mera_2012_HORAYZON-LUT_1D20m.nc ./data/static/Mera/Mera_2018_HORAYZON-LUT_1D20m.nc --sw-starts 2012 2018
+python ./cosipy/utilities/aws2cosipy/cosmo2cosipy.py -i "./data/input/ParlungNo4/COSIPY_HARv2_1980_2022_RGI60-15.11973.csv" -o ./data/input/ParlungNo4/ParlungNo4_HARv2_1D20m_HORAYZON_1988_2022.nc -s ./data/static/ParlungNo4/ParlungNo4_combined_SRF_1D20m.nc --sw ./data/static/ParlungNo4/ParlungNo4_RGI7_HORAYZON-LUT_1D20m.nc ./data/static/ParlungNo4/ParlungNo4_2013_HORAYZON-LUT_1D20m.nc ./data/static/ParlungNo4/ParlungNo4_2018_HORAYZON-LUT_1D20m.nc ./data/static/ParlungNo4/ParlungNo4_2021_HORAYZON-LUT_1D20m.nc --sw-starts 2013 2018 2021 -b 1987-10-01 -e 2022-12-31
+#python ./cosipy/utilities/aws2cosipy/cosmo2cosipy.py \
+#    -i ./data/input/Halji/COSIPY_HARv2_1980_2022_RGI60-15.06065.csv \
+#    -o ./data/input/Halji/Halji_HARv2_1D20m_HORAYZON_1987_2024.nc \
+#    -s ./data/static/Halji/Halji_combined_SRF_1D20m.nc \
+#    --sw ./data/static/Halji/Halji_RGI6_HORAYZON-LUT_1D20m.nc \
+#         ./data/static/Halji/Halji_2014_HORAYZON-LUT_1D20m.nc \
+#         ./data/static/Halji/Halji_2018_HORAYZON-LUT_1D20m.nc \
+#         ./data/static/Halji/Halji_2021_HORAYZON-LUT_1D20m.nc \
+#         ./data/static/Halji/Halji_2023_HORAYZON-LUT_1D20m.nc \
+#    --sw-starts 2014 2018 2021 2023 \
+#    -b 1987-10-01 -e 2024-12-31
+
+
 #python ./cosipy/utilities/aws2cosipy/cosmo2cosipy.py -i "./data/input/Kolahoi/COSIPY_HARv2_1980_2022_RGI60-14.19607.csv" -o ./data/input/Kolahoi/Kolahoi_HARv2_1D20m_HORAYZON_1988_2022.nc -s ./data/static/Kolahoi/Kolahoi_SRF_1D20m.nc -b 1987-10-01 -e 2022-12-31 --sw ./data/static/Kolahoi/Kolahoi_RGI6_HORAYZON-LUT_1D20m.nc ./data/static/Kolahoi/Kolahoi_2014_HORAYZON-LUT_1D20m.nc
 # Point scale
 #python ./cosipy/utilities/aws2cosipy/aws2cosipy.py -i "./data/input/HEF/cosipy_forcing_upper_station.csv" -o ./data/input/HEF/HEF_AWSU_2002-2004_RFpr.nc -s ./data/static/HEF/HEF_static_30m_AWSpoint.nc -b 20020901 -e 20040930

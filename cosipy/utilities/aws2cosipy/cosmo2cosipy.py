@@ -996,6 +996,42 @@ def create_2D_input(
                       "createHORAYZONfields aggregated SVF over each epoch's "
                       "mask (otherwise SVF cannot track glacier retreat).")
 
+        # ── NaN-SVF in leeren Baendern (N_Points=0) verifiziert bereinigen ──
+        # NaN entsteht, wenn ein Band nach Gletscherrueckzug keine Zellen mehr
+        # hat und die HORAYZON-Aggregation ueber eine leere Maske NaN gibt.
+        # Solche Baender tragen nichts zur Massenbilanz bei -> SVF=0 dort
+        # korrekt. Ein NaN bei N_Points>0 waere dagegen ein ECHTER Datenfehler
+        # (Eis vorhanden, SVF kaputt) und darf NICHT still auf 0 gesetzt werden
+        # -> Abbruch. Verifikation nur moeglich wenn N_Points pro Umriss vorliegt
+        # (npoints_has_time); die LUT-Reihenfolge entspricht der SRF-time-Achse.
+        if first_svf is not None:
+            if npoints_has_time and N_Points_sparse.shape[0] == n_luts:
+                for k in range(n_luts):
+                    svf_k = np.asarray(svf_per_lut[k]).reshape(-1)
+                    nan_mask = np.isnan(svf_k)
+                    if not nan_mask.any():
+                        continue
+                    npt_k = np.asarray(N_Points_sparse[k]).reshape(-1)
+                    bad = nan_mask & (npt_k > 0)
+                    if bad.any():
+                        raise ValueError(
+                            f"NaN-SVF in LUT {k} bands {list(np.where(bad)[0])} "
+                            f"WITH N_Points>0 — real data error, not just an empty "
+                            f"band. Aborting instead of silently zeroing.")
+                    empty = nan_mask & (npt_k == 0)
+                    print(f"  LUT {k}: {int(empty.sum())} empty band(s) "
+                          f"{list(np.where(empty)[0])} with NaN-SVF -> set to 0")
+                svf_per_lut = [np.nan_to_num(s, nan=0.0) for s in svf_per_lut]
+            else:
+                # Kein zeitaufgeloestes N_Points -> keine leeren Baender durch
+                # Rueckzug zu erwarten. NaN-SVF waere hier unerwartet: warnen
+                # und trotzdem bereinigen, damit check_for_nan nicht wirft.
+                any_nan = any(np.isnan(np.asarray(s)).any() for s in svf_per_lut)
+                if any_nan:
+                    print("  WARNING: NaN-SVF present but no per-epoch N_Points "
+                          "to verify against — setting NaN->0 unverified.")
+                    svf_per_lut = [np.nan_to_num(s, nan=0.0) for s in svf_per_lut]
+
         # ── Decide how SVF is recorded in the output file ─────────────────
         # Written for every HORAYZON run.  Time-varying only if it actually
         # changes across geometry epochs (mirrors N_Points/SRF); otherwise a
@@ -1100,6 +1136,10 @@ def create_2D_input(
             sw_cor_val = (processed_luts[idx]
                           .sel(time_id=time_id_val)["sw_dir_cor"]
                           .values)
+            # Leere Baender (N_Points=0 nach Rueckzug) haben auch in sw_dir_cor
+            # NaN -> auf 0 (svf_per_lut ist durch die Verifikation oben schon
+            # bereinigt). G dort = 0 ist korrekt, Band traegt nichts zur MB bei.
+            sw_cor_val = np.nan_to_num(sw_cor_val, nan=0.0)
             # Per-epoch SVF: same year->file index as sw_dir_cor, so the
             # diffuse correction switches with the glacier geometry.
             svf_val = svf_per_lut[idx] if first_svf is not None else None
@@ -1162,12 +1202,6 @@ def create_2D_input(
                      * (1.0 - p_rel * mopt + (p_rel * mopt)**1.06)
                      * (1.0 - TAUa))
             _w    = 46.5 * vp / T_interp[t]
-            # Add these prints inside the time loop, just after computing _w
-            print(f"t={t}: vp min={np.nanmin(vp):.3f} max={np.nanmax(vp):.3f}")
-            print(f"       _w min={np.nanmin(_w):.4f} max={np.nanmax(_w):.4f}")
-            print(f"       T  min={np.nanmin(T_interp[t]):.1f} max={np.nanmax(T_interp[t]):.1f}")
-            base = 1.0 + 79.034 * mopt * _w
-            print(f"       TAUw base min={np.nanmin(base):.4f}")
 
             TAUw  = 1.0 - (2.4959 * mopt * _w
                            / ((1.0 + 79.034 * mopt * _w)**0.6828
@@ -1374,8 +1408,9 @@ def create_2D_input(
                                           units="-", long_name="Sky View Factor (HORAYZON)")
             del SVF_interp
         else:
-            add_variable_along_latlon(ds=dso, var=first_svf, name="SVF",
-                                      units="-", long_name="Sky View Factor (HORAYZON)")
+            add_variable_along_latlon(ds=dso, var=np.nan_to_num(first_svf, nan=0.0),
+                                      name="SVF", units="-",
+                                      long_name="Sky View Factor (HORAYZON)")
     if _cfg.names["RRR_var"] in df:
         add_variable_along_timelatlon(ds=dso, var=RRR_interp, **get_variable_metadata("RRR"))
         del RRR_interp

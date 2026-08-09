@@ -1,0 +1,40 @@
+# Konfiguration fuer toposcale2cosipy -- eine Zeile pro Gletscher.
+# Spalten durch LEERZEICHEN getrennt (beliebig viele). Zeilen mit # ignoriert.
+#
+# Spalten (in dieser Reihenfolge):
+#   glacier    Projektordner (klein), fuer --glacier und /projects/<glacier>/
+#   staticdir  static-Ordner (Gross), unter data/static/<staticdir>/
+#   lat        Gletscherbreite [deg]   -> --stationLat
+#   lon        Gletscherlaenge [deg]   -> --tcart = -lon
+#   baseline   RGI6 oder RGI7
+#   outlines   datierte Umriss-Jahre, KOMMA-getrennt (KEINE Leerzeichen darin),
+#              aufsteigend. Fuer "nur Baseline" einen Bindestrich - schreiben.
+#
+# Daraus gebaut:
+#   Baseline-LUT: <staticdir>_<baseline>_HORAYZON-LUT_1D20m.nc
+#   Umriss-LUT:   <staticdir>_<jahr>_HORAYZON-LUT_1D20m.nc
+#   SRF:          <staticdir>_combined_SRF_1D20m.nc
+#   --sw-starts = outlines
+#
+# glacier         staticdir        lat     lon     baseline  outlines
+# ------------------------------------------------------------------------
+abramov           Abramov          39.6097  71.56986  RGI6      2016,2020
+parlung           ParlungNo4       29.2324  96.9237   RGI7      2013,2018,2021
+dongkemadi        Dongkemadi       33.0820  92.0630   RGI6      2015
+urumqi            Urumqi           43.1170  86.8010   RGI6      2016
+interiorglacier   InteriorGlacier  32.2510  87.5050   RGI6      2010,2016
+bordu             Bordu            41.81287 78.17541  RGI6      2011,2014,2017,2020
+guliya            Guliya           35.2610  81.4620   RGI6      -
+kolahoi           Kolahoi          34.16268 75.3151   RGI6      2014
+mera              Mera             27.72478 86.8920   RGI6      2012,2018
+halji             Halji            30.26456 81.47013  RGI6      2014,2018,2021,2023
+#
+# --- BITTE NACHTRAGEN: Werte pruefen, dann das # am Zeilenanfang entfernen ---
+#bordu            Bordu            41.813  78.175  RGI6      2011,2014,2017,2020
+#dongkemadi       Dongkemadi       33.082  92.063  RGI6      2015
+#guliya           Guliya           35.261  81.462  RGI6      -
+#halji            Halji            30.265  81.470  RGI6      2014,2018,2021,2023
+#interiorglacier  InteriorGlacier  32.251  87.505  RGI6      2010,2016
+#kolahoi          Kolahoi          34.163  75.315  RGI6      2014
+#mera             Mera             27.725  86.892  RGI6      2012,2018
+#urumqi           Urumqi           43.117  86.801  RGI6      2016
