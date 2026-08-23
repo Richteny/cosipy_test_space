@@ -67,6 +67,7 @@ ALPHSS = 0.9         # Aerosol single-scattering albedo
 DIROVC = 0.00        # Direktstrahlungsanteil bei Vollbedeckung
 DIF1   = 4.6         # Min. Diffus [%] des Klarhimmel-Global bei cld=0
 DIFRA  = 0.66        # Diffusstrahlungskonstante
+CF_MOELG = 0.65      # Moelg-Wolkeneinflusskonstante (Cf in cosmo2cosipy)
 CF     = 0.65        # Wolkeneinfluss-Konstante
 SW_DIR_COR_MAX = 25.0
 G_CAP = 1600.0        # Sicherheits-Cap fuer G [W m-2] = COSIPYs check-Grenze
@@ -118,7 +119,29 @@ def load_bands(glacier, start_date, end_date):
         sys.exit(f"FEHLER: keine down_pt-Dateien in {ddir}")
     print(f"{glacier}: {len(files)} Baender")
 
-    varmap = ["t", "q", "p", "ws", "tp", "LW", "SW"]
+    # HGT je Band aus pts_list.csv lesen — die Reihenfolge der down_pt-Baender
+    # (nach Bandindex) entspricht der pts_list-Reihenfolge (nach Hoehe), NICHT
+    # der SRF-Datei (nach lat/lon). Wir brauchen die Hoehe, um die Baender
+    # spaeter korrekt an die SRF-Reihenfolge zu matchen.
+    pts_path = PROJ / glacier / "pts_list.csv"
+    if not pts_path.exists():
+        sys.exit(f"FEHLER: pts_list.csv fehlt ({pts_path}) — noetig fuer "
+                 f"Hoehen-Zuordnung der Baender.")
+    pts = pd.read_csv(pts_path)
+    # Reihenfolge nach Bandindex (band_000, band_001, ...) sicherstellen
+    pts = pts.sort_values("name").reset_index(drop=True)
+    if len(pts) != len(files):
+        sys.exit(f"FEHLER: pts_list hat {len(pts)} Eintraege, aber {len(files)} "
+                 f"down_pt-Dateien.")
+    band_hgt = pts["elevation"].values.astype(float)   # (n_band,) in down_pt-Reihenfolge
+
+    varmap = ["t", "q", "p", "ws", "tp", "LW", "SW", "vp"]
+    # Optionale Felder aus dem gepatchten TopoPyScale: SW/LW VOR der
+    # Gelaendekorrektur. Sind sie da, rechnet der SW-Block direkt damit und
+    # HORAYZON korrigiert genau EINMAL. Fehlen sie, greift der alte Pfad
+    # (Moelg-Verhaeltnis auf das bereits korrigierte SW) -- der doppelt
+    # korrigiert und nur zur Reproduktion alter Laeufe taugt.
+    varmap_opt = ["SW_direct_flat", "SW_diffuse_flat", "LW_flat"]
     cols, time_ref = {}, None
     for k, f in enumerate(files):
         d = xr.open_dataset(f)
@@ -126,15 +149,119 @@ def load_bands(glacier, start_date, end_date):
             d = d.sel(time=slice(start_date, end_date))
         if time_ref is None:
             time_ref = pd.to_datetime(d.time.values)
-            for v in varmap:
+            have_opt = [v for v in varmap_opt if v in d]
+            for v in varmap + have_opt:
                 cols[v] = np.full((len(time_ref), len(files)), np.nan)
         for v in varmap:
             if v not in d:
                 sys.exit(f"FEHLER: '{v}' fehlt in {Path(f).name}")
             cols[v][:, k] = d[v].values
+        for v in have_opt:
+            if v not in d:
+                sys.exit(f"FEHLER: '{v}' fehlt in {Path(f).name}, war aber in "
+                         f"{Path(files[0]).name} vorhanden -- gemischter "
+                         f"Downscaling-Stand. Alle down_pt-Dateien neu bauen.")
+            cols[v][:, k] = d[v].values
         d.close()
     print(f"  Zeit: {time_ref[0]} .. {time_ref[-1]}  ({len(time_ref)} Schritte)")
-    return cols, time_ref, len(files)
+    if have_opt:
+        print(f"  unkorrigierte Felder gefunden: {', '.join(have_opt)}")
+    return cols, time_ref, len(files), band_hgt
+
+
+# ---------------------------------------------------------------------------
+#  Wolkenfelder (TCC, CBH) fuer die Liu-2020-LWin-Parametrisierung laden
+# ---------------------------------------------------------------------------
+def load_cloud(glacier, glat, glon, time_ref):
+    """Laedt TCC (und CBH) aus den CLOUD_YYYY_MM.nc-Dateien am naechsten
+    Gitterpunkt zum Gletscher und richtet sie auf die down_pt-Zeitachse aus.
+    Rueckgabe: tcc (n_time,), cbh (n_time,) in Metern (NaN bei Klarhimmel).
+    Wolken sind Gitterzellen-Werte -> hoehenkonstant, werden spaeter ueber
+    alle Baender gebroadcastet."""
+    cdir = PROJ / glacier / "inputs" / "climate" / "yearly"
+    files = sorted(glob.glob(str(cdir / "CLOUD_*.nc")))
+    if not files:
+        sys.exit(f"FEHLER: keine CLOUD_*.nc in {cdir} — fuer --lw-method liu* "
+                 f"noetig. Erst download_era5_arco_cloud.py laufen lassen.")
+    ds = xr.open_mfdataset(files, combine="by_coords")
+    di = ds.sel(latitude=glat, longitude=glon, method="nearest")
+    di = di.sel(time=slice(time_ref[0], time_ref[-1]))
+    # auf die exakte down_pt-Zeitachse reindexen (identische stuendliche Achse
+    # erwartet; fehlende Stunden -> NaN, wird unten abgefangen)
+    di = di.reindex(time=time_ref)
+    tcc = di["tcc"].values.astype(float)
+    cbh = di["cbh"].values.astype(float) if "cbh" in di else np.full(len(time_ref), np.nan)
+    # TCC-Luecken (falls Reindex NaN erzeugt) auf 0 (klar) setzen — konservativ
+    n_gap = int(np.isnan(tcc).sum())
+    if n_gap:
+        print(f"  WARNUNG: {n_gap} TCC-Zeitschritte ohne Wert -> 0 (klar) gesetzt")
+        tcc = np.nan_to_num(tcc, nan=0.0)
+    tcc = np.clip(tcc, 0.0, 1.0)
+    print(f"  Wolken geladen: TCC mean={np.nanmean(tcc):.3f}, "
+          f"CBH gueltig {100*np.mean(~np.isnan(cbh)):.0f}%")
+    return tcc, cbh
+
+
+def lwin_liu(t_band, vp_band, tcc):
+    """Liu et al. (2020) LWin, lokal fuer das Tibetische Plateau kalibriert.
+    Gl.5 (CF-basiert); Gl.6 (CBH-korrigiert) wurde verworfen, weil ERA5-CBH
+    eine andere Groesse als Lius Lidar-CBH ist und die Koeffizienten sich nicht
+    uebertragen (LWin wurde unphysikalisch, >600 W/m2 selbst im Kalibrierbereich).
+
+    t_band  : (n_time, n_band) Band-Lufttemperatur [K]
+    vp_band : (n_time, n_band) Band-Dampfdruck [Pa]  -> intern /100 = hPa
+    tcc     : (n_time,)        cloud fraction 0..1   (hoehenkonstant)
+
+    Klarhimmel (Gl.3): DLR_clr = -2.53 + 158.10*(T/273.16)^6
+                                 + 106.40*sqrt(46.50*(e/T)/2.50)   [e in hPa]
+    Bewoelkt  (Gl.5):  DLR_cld = (1 + 0.23*CF) * DLR_clr
+    Bei CF=0 -> DLR_clr, bei CF=1 -> 1.23*DLR_clr. Tag und Nacht definiert
+    (nutzt nur CF, kein tau_atm).
+    """
+    e_hPa = vp_band / 100.0                                  # Pa -> hPa
+    w = np.sqrt(46.50 * e_hPa / t_band / 2.50)               # Prata precipitable water
+    dlr_clr = -2.53 + 158.10 * (t_band / 273.16)**6 + 106.40 * w
+    cf = tcc[:, None]                                        # (n_time,1) broadcast
+    return (1.0 + 0.23 * cf) * dlr_clr                       # Gl.5
+
+
+SIGMA_SB = 5.670374419e-8   # Stefan-Boltzmann [W m-2 K-4]
+
+def apply_terrain(lw_sky, svf, t_band, G=None, method="off",
+                  eps_terrain=0.98, solar_coeff=0.01):
+    """Terrain-Emissionsterm auf das Sky-LWin addieren (Sicart 2006 Gl.6 /
+    Prinz 2016 Gl.6):
+
+        LWin = SVF * L_sky  +  (1 - SVF) * eps * sigma * T_terrain^4
+
+    Der (1-SVF)-Anteil der Hemisphaere wird von den umgebenden Haengen
+    gefuellt, die naeherungsweise mit Lufttemperatur (oder solar leicht
+    aufgeheizt) emittieren. Physik ist rein geometrisch, nicht regionsspezifisch.
+
+    lw_sky : (n_time, n_band) Sky-LWin (topopyscale oder liu-cf)
+    svf    : (n_time, n_band) oder (n_band,) Sky-View-Factor 0..1
+    t_band : (n_time, n_band) Band-Lufttemperatur [K]
+    G      : (n_time, n_band) Globalstrahlung [W m-2], nur fuer method='prinz'
+    method : 'off'    -> kein Terrain, LWin = lw_sky (unveraendert)
+             'airT'   -> T_terrain = Band-Lufttemperatur
+             'prinz'  -> T_terrain = Band-Lufttemperatur + solar_coeff*G
+                         (Sicart/Prinz: solare Hangaufheizung, +0.01 K/(W/m2))
+    eps_terrain : Terrain-Emissivitaet (0.97 Schnee/Fels, 0.99 quasi-Schwarzk.)
+    """
+    if method == "off":
+        return lw_sky
+    svf = np.asarray(svf, dtype=float)
+    if svf.ndim == 1:
+        svf = svf[None, :]                                   # (1,n_band) broadcast
+    t_terr = t_band.copy()
+    if method == "prinz":
+        if G is None:
+            sys.exit("FEHLER: method='prinz' braucht G (Globalstrahlung).")
+        t_terr = t_band + solar_coeff * G                    # solare Hangaufheizung
+    elif method != "airT":
+        sys.exit(f"FEHLER: unbekannte Terrain-Methode '{method}'")
+    lw_terrain = (1.0 - svf) * eps_terrain * SIGMA_SB * t_terr**4
+    return svf * lw_sky + lw_terrain
 
 
 # ══════════════════════════════════════════════════════════════════════════
@@ -143,10 +270,20 @@ def load_bands(glacier, start_date, end_date):
 # ══════════════════════════════════════════════════════════════════════════
 def compute_shortwave(sw, T_interp, RH_interp, P_interp, heights,
                       time_index_vals, corr_file, station_lat, tcart,
-                      forcing_utc_offset, sw_starts, npoints_per_lut=None):
+                      forcing_utc_offset, sw_starts, npoints_per_lut=None,
+                      tcc=None, sw_dir_flat=None, sw_dif_flat=None):
     """
     sw, T_interp, RH_interp, P_interp: (time, band, 1)
     heights: (band, 1)  -- aus static HGT
+    tcc: (time,) Wolkenfraktion 0..1 oder None
+
+    Zur Aufteilung direkt/diffus wird das Moelg-2009-Verhaeltnis gebildet und
+    auf das gemessene ERA5-SW angewandt. OHNE tcc ist dieses Verhaeltnis das
+    KLARHIMMEL-Verhaeltnis (Dcs/grcs ~ 0.13) -- unter Bewoelkung wird der
+    Diffusanteil dann massiv unterschaetzt und faelschlich durch sw_dir_cor
+    (Abschattung) statt durch SVF geleitet. cosmo2cosipy warnt an dieser
+    Stelle ebenfalls, wenn N fehlt.
+
     Rueckgabe: G_interp (time, band, 1)
     """
     df_index = pd.to_datetime(time_index_vals)
@@ -240,10 +377,37 @@ def compute_shortwave(sw, T_interp, RH_interp, P_interp, heights,
 
     solPars, timeCorr = mod_radCor.solpars(station_lat)
 
-    # kein N (Bewoelkung) im Forcing -> Klarhimmel-Diffus-Verhaeltnis
-    has_cloud = False
-    print("Hinweis: keine Wolkenfraktion N im Forcing -> f_dif aus Klarhimmel "
-          "(Dcs/grcs). Fuer bewoelkten Himmel leicht unterschaetzt.")
+    if sw_dir_flat is not None:
+        print("SW: direkter Weg -- SW_direct_flat/SW_diffuse_flat aus "
+              "TopoPyScale (Erbs-Split), HORAYZON korrigiert genau einmal.")
+    else:
+        print("=" * 72)
+        print("WARNUNG: keine SW_direct_flat/SW_diffuse_flat in den down_pt-")
+        print("         Dateien -> Altpfad. Das eingelesene SW ist von "
+              "TopoPyScale")
+        print("         bereits projiziert UND abgeschattet, sw_dir_cor "
+              "korrigiert")
+        print("         ein zweites Mal. Nur zur Reproduktion alter Laeufe.")
+        print("=" * 72)
+
+    if sw_dir_flat is not None:
+        # Direkter Weg: f_dif wird gar nicht gebildet, die Wolkenfraktion
+        # spielt im SW-Block keine Rolle mehr (TopoPyScale hat den Erbs-Split
+        # schon gemacht). Also KEINE Wolkenwarnung -- die waere irrefuehrend.
+        has_cloud = False
+        cld_arr = None
+    elif tcc is not None:
+        has_cloud = True
+        cld_arr = np.clip(np.asarray(tcc, dtype=float), 0.0, 1.0)
+        print(f"SW: wolkenabhaengige Diffusaufteilung aktiv "
+              f"(Moelg 2009, CF-Mittel {np.nanmean(cld_arr):.3f})")
+    else:
+        has_cloud = False
+        cld_arr = None
+        print("SW: WARNUNG -- keine Wolkenfraktion -> f_dif aus Klarhimmel "
+              "(Dcs/grcs ~ 0.13). Unter Bewoelkung wird der Diffusanteil stark "
+              "unterschaetzt und durch sw_dir_cor abgeschattet statt durch SVF "
+              "geleitet. Mit --sw-cloud on aktivieren.")
 
     for t in range(time_index):
         year = df_index[t].year
@@ -327,15 +491,53 @@ def compute_shortwave(sw, T_interp, RH_interp, P_interp, heights,
                / (1.0 - p_rel * mopt + (p_rel * mopt)**1.02))     # Klarhimmel diffus
         grcs = sdir + Dcs
 
-        # ohne Wolken: theoretische = Klarhimmel
-        G_dir_theory = sdir
-        G_dif_theory = Dcs
+        # Wolkenkorrigierte theoretische Direkt-/Diffusanteile.
+        # Identisch zum Horayzon2022-Zweig in cosmo2cosipy.py:
+        #   direkt : sdir * (1 - (1-DIROVC)*cld)     -> bei cld=1 und DIROVC=0: 0
+        #   diffus : grcs * ((100-CF_M*100-DIF1)/100*cld + DIF1/100)
+        # Bei cld=0 wird auf Dcs zurueckgefallen (np.where), damit der
+        # Klarhimmelfall exakt der Iqbal/Hastenrath-Formel folgt.
+        #
+        # BEKANNTE UNSTETIGKEIT (aus cosmo2cosipy uebernommen, bewusst nicht
+        # geglaettet, damit beide Skripte bit-identisch rechnen):
+        # bei cld -> 0+ liefert die Wolkenformel nur DIF1/100 = 4.6 % Diffus,
+        # waehrend Dcs/grcs ~ 13 % ergibt. f_dif springt also von 0.134 (cld=0)
+        # auf ~0.05 (cld=0.001) und steigt erst ab cld ~ 0.2 wieder darueber.
+        # Bei geringer Bewoelkung ist der Diffusanteil damit KLEINER als im
+        # Klarhimmelfall. Wer das glaetten will: G_dif_theory =
+        # np.maximum(<Wolkenformel>, Dcs) -- dann weicht das Ergebnis aber von
+        # cosmo2cosipy ab.
+        if has_cloud:
+            cld = cld_arr[t]
+            G_dir_theory = np.where(cld > 0, sdir * (1.0 - (1.0 - DIROVC) * cld),
+                                    sdir)
+            G_dif_theory = np.where(
+                cld > 0,
+                grcs * ((100.0 - CF_MOELG * 100.0 - DIF1) / 100.0 * cld
+                        + DIF1 / 100.0),
+                Dcs)
+        else:
+            G_dir_theory = sdir
+            G_dif_theory = Dcs
 
-        # Horayzon2022: Moelg-Verhaeltnis auf ERA5-SW anwenden
-        G_theory = np.maximum(G_dir_theory + G_dif_theory, 1e-10)
-        f_dif = np.clip(G_dif_theory / G_theory, 0.0, 1.0)
-        G_dir_meas = sw_t * (1.0 - f_dif)
-        G_dif_meas = sw_t * f_dif
+        if sw_dir_flat is not None:
+            # DIREKTER WEG. TopoPyScale liefert Direkt und Diffus getrennt und
+            # UNKORRIGIERT (Erbs-Split, wolkenabhaengig). Keine Moelg-Schaetzung
+            # noetig -- und vor allem keine Doppelkorrektur, weil beide Felder
+            # das Gelaende noch nicht gesehen haben.
+            # sw_t ist (band,1); die flat-Arrays sind (time,band) -> [t] gibt
+            # (band,). Auf (band,1) bringen, sonst broadcastet (band,1)*(band,)
+            # zu (band,band).
+            G_dir_meas = sw_dir_flat[t][:, None]
+            G_dif_meas = sw_dif_flat[t][:, None]
+        else:
+            # ALTPFAD: das Moelg-Verhaeltnis auf ein SW anwenden, das
+            # TopoPyScale bereits projiziert und abgeschattet hat -> doppelte
+            # Gelaendekorrektur. Nur zur Reproduktion alter Laeufe.
+            G_theory = np.maximum(G_dir_theory + G_dif_theory, 1e-10)
+            f_dif = np.clip(G_dif_theory / G_theory, 0.0, 1.0)
+            G_dir_meas = sw_t * (1.0 - f_dif)
+            G_dif_meas = sw_t * f_dif
 
         if svf_val is not None:
             g = sw_cor_val * G_dir_meas + svf_val * G_dif_meas
@@ -360,20 +562,106 @@ def compute_shortwave(sw, T_interp, RH_interp, P_interp, heights,
 
 # ══════════════════════════════════════════════════════════════════════════
 def build(a):
-    cols, tvals, n_band = load_bands(a.glacier, a.start_date, a.end_date)
+    # Sicherung gegen versehentliches Ueberschreiben: wird ein Terrain-Term
+    # angefordert, der Ausgabename traegt aber kein '-terr...', dann landet das
+    # Terrain-Forcing auf dem Namen der Sky-Datei und ueberschreibt sie. Das
+    # ist fast immer ein nicht durchgereichtes LW_TERRAIN.
+    if a.lw_terrain != "off" and "-terr" not in Path(a.output).name:
+        print("=" * 72)
+        print(f"WARNUNG: --lw-terrain {a.lw_terrain}, aber der Ausgabename")
+        print(f"         '{Path(a.output).name}' enthaelt kein '-terr'.")
+        print("         Das Terrain-Forcing ueberschreibt so die Sky-Datei!")
+        print("         Im Slurm-Aufruf LW_TERRAIN pruefen (kam es durch?).")
+        print("=" * 72)
+    print(f"  Ausgabe: {a.output}  (LW={a.lw_method}, Terrain={a.lw_terrain})")
+
+    cols, tvals, n_band, band_hgt = load_bands(a.glacier, a.start_date, a.end_date)
     n_time = len(tvals)
 
     ds_static = xr.open_dataset(a.static_file)
     if ds_static.sizes["lat"] != n_band:
         sys.exit(f"FEHLER: static-Baender {ds_static.sizes['lat']} != down_pt {n_band}")
 
+    # ── Band-Reihenfolge angleichen ────────────────────────────────────────
+    # Die down_pt-Baender (cols) stehen in pts_list-Reihenfolge (nach Hoehe),
+    # die SRF-Statikfelder (HGT/MASK/N_Points/SRF/SVF) in lat/lon-Reihenfolge.
+    # Ohne Angleich wird das Forcing von Band k neben die HGT einer ANDEREN
+    # Hoehe geklebt -> Druck/Temperatur der falschen Hoehe zugeordnet (Druck
+    # stieg faelschlich mit der Hoehe). Fix: jede SRF-Position bekommt das
+    # down_pt-Band mit passender Hoehe. SRF-Reihenfolge bleibt Referenz (COSIPY
+    # erwartet sie so); nur die Forcing-Spalten werden umsortiert.
+    hgt_srf = ds_static["HGT"].values.flatten().astype(float)   # (n_band,) SRF-Reihenfolge
+    # Fuer jede SRF-Position die passende down_pt-Bandposition finden (per Hoehe)
+    order = np.full(n_band, -1, dtype=int)
+    used = np.zeros(n_band, dtype=bool)
+    for i in range(n_band):
+        # naechstes noch unbenutztes down_pt-Band zur SRF-Hoehe hgt_srf[i]
+        d = np.abs(band_hgt - hgt_srf[i])
+        d[used] = np.inf
+        j = int(np.argmin(d))
+        if not np.isfinite(d[j]) or d[j] > 1.0:      # Toleranz 1 m (Baender sind 20 m)
+            sys.exit(f"FEHLER: keine Hoehen-Zuordnung fuer SRF-Band {i} "
+                     f"(HGT={hgt_srf[i]:.0f} m). Naechste down_pt-Hoehe "
+                     f"{band_hgt[j]:.0f} m, Abstand {d[j]:.0f} m > 1 m.")
+        order[i] = j
+        used[j] = True
+    # order[i] = down_pt-Bandindex, der zu SRF-Position i gehoert.
+    # Alle Forcing-Spalten in SRF-Reihenfolge umsortieren:
+    for v in cols:
+        cols[v] = cols[v][:, order]
+    band_hgt = band_hgt[order]   # jetzt konsistent mit hgt_srf
+    # Verifikation: Hoehen muessen jetzt uebereinstimmen
+    if not np.allclose(band_hgt, hgt_srf, atol=1.0):
+        sys.exit("FEHLER: Band-Hoehen nach Umsortierung != SRF-HGT — "
+                 "Zuordnung fehlgeschlagen.")
+    print(f"  Baender an SRF-Reihenfolge angeglichen (Hoehen-Lookup, "
+          f"max Abweichung {np.abs(band_hgt-hgt_srf).max():.1f} m)")
+
     T2   = cols["t"]
     U2   = cols["ws"]
     PRES = cols["p"] / 100.0
     RRR  = cols["tp"]
-    LWin = cols["LW"]
     SW   = cols["SW"]
     RH2  = rh_from_q(cols["q"], cols["t"], cols["p"])
+
+    # Gletscher-Koordinaten: lat = stationLat, lon = -tcart (tcart = -lon).
+    # Zentral gesetzt, weil sowohl der LW- als auch der SW-Block sie brauchen —
+    # frueher standen sie nur im liu-cf-Zweig, was --lw-method topopyscale
+    # zusammen mit --sw-cloud on mit UnboundLocalError abbrechen liess.
+    glat, glon = a.stationLat, -a.tcart
+
+    # ── LWin nach gewaehlter Methode ───────────────────────────────────────
+    tcc_lw = None
+    if a.lw_method == "topopyscale":
+        # TopoPyScale-downscaled Sky-LW. LW_flat ist die Himmelsemission OHNE
+        # SVF-Skalierung und damit die einzige Variante, die als Sky-Methode
+        # taugt: cols["LW"] ist bereits mit svf multipliziert, ohne dass je ein
+        # Terrain-Term addiert wurde, und wuerde von apply_lw_terrain ein
+        # zweites Mal skaliert (svf^2 * L).
+        if "LW_flat" in cols:
+            LWin = cols["LW_flat"]
+            print("  LWin-Methode: topopyscale (LW_flat, ohne SVF-Skalierung)")
+        else:
+            LWin = cols["LW"]
+            print("  WARNUNG: kein LW_flat -> nutze cols['LW'], das bereits "
+                  "SVF-skaliert ist.\n"
+                  "           Struktureller Minderbetrag ~(1-svf)*eps*sigma*T^4 "
+                  "(~20 W/m2),\n"
+                  "           und --lw-terrain wuerde svf ein zweites Mal "
+                  "anwenden.")
+            if a.lw_terrain != "off":
+                sys.exit("FEHLER: --lw-method topopyscale ohne LW_flat "
+                         "zusammen mit --lw-terrain ergibt svf^2 * L_sky. "
+                         "Entweder --lw-terrain off, oder TopoPyScale mit "
+                         "LW_flat neu laufen lassen.")
+    elif a.lw_method == "liu-cf":
+        # Liu et al. (2020) Gl.5, TP-kalibriert. Wolken am naechsten Gitterpunkt.
+        tcc, _cbh = load_cloud(a.glacier, glat, glon, tvals)
+        tcc_lw = tcc
+        LWin = lwin_liu(cols["t"], cols["vp"], tcc)
+        print(f"  LWin-Methode: {a.lw_method}  (mean {np.nanmean(LWin):.1f} W/m2)")
+    else:
+        sys.exit(f"FEHLER: unbekannte --lw-method '{a.lw_method}'")
 
     # Physikalische Untergrenzen erzwingen (Interpolations-/Rundungsartefakte
     # koennen z.B. RRR = -0.00 erzeugen; COSIPY erwartet >= 0).
@@ -406,6 +694,34 @@ def build(a):
 
     # SHORTWAVE
     heights = ds_static["HGT"].values                # (band,1)
+    # Wolkenfraktion fuer den SW-Block. Wird ggf. schon fuer liu-cf geladen --
+    # dann wiederverwenden statt erneut oeffnen.
+    tcc_sw = None
+    if a.sw_cloud == "on":
+        try:
+            tcc_sw = tcc_lw if tcc_lw is not None else load_cloud(
+                a.glacier, glat, glon, tvals)[0]
+        except SystemExit:
+            sys.exit(
+                "FEHLER: --sw-cloud on braucht die Wolkenfraktion, aber es "
+                "wurden keine CLOUD_*.nc gefunden.\n"
+                "  Die HORAYZON/Moelg-Kopplung ist ohne N nicht gueltig: f_dif "
+                "faellt auf das Klarhimmel-Verhaeltnis (~0.13) zurueck und die "
+                "Terrainabschattung trifft dann die Diffusstrahlung.\n"
+                "  Entweder CLOUD_*.nc bereitstellen, oder bewusst "
+                "--sw-cloud off setzen (nur zur Reproduktion alter Laeufe).")
+    else:
+        print("=" * 72)
+        print("WARNUNG: --sw-cloud off -- f_dif ist auf das Klarhimmel-"
+              "Verhaeltnis (~0.13)")
+        print("         eingefroren. Unter Bewoelkung laufen ~85 % des "
+              "gemessenen SW durch")
+        print("         sw_dir_cor statt durch SVF -> systematisch zu "
+              "niedriges SWin.")
+        print("         Dieses Forcing dient NUR dem Vergleich, nicht der "
+              "Produktion.")
+        print("=" * 72)
+
     G_interp, first_svf, svf_time, svf_varies = compute_shortwave(
         sw=SW.reshape(n_time, n_band, 1),
         T_interp=T2.reshape(n_time, n_band, 1),
@@ -416,12 +732,31 @@ def build(a):
         corr_file=a.corr_file,
         station_lat=a.stationLat,
         tcart=a.tcart,
+        tcc=tcc_sw,
+        sw_dir_flat=cols.get("SW_direct_flat"),
+        sw_dif_flat=cols.get("SW_diffuse_flat"),
         forcing_utc_offset=a.forcing_utc_offset,
         sw_starts=a.sw_starts,
         npoints_per_lut=npoints_per_lut,
     )
     print("Nach SW-Block:")
     check_var("G", G_interp, 0.0, 1600.0)
+
+    # ── LWin-Terrain-Term (nach SW-Block, weil svf_time hier vorliegt) ──────
+    # LWin = SVF*L_sky + (1-SVF)*eps*sigma*T_terrain^4. svf_time ist (t,band,1),
+    # LWin/T2 sind (t,band). svf_time[...,0] auf (t,band) bringen.
+    if a.lw_terrain != "off":
+        svf_tb = svf_time[:, :, 0]                           # (n_time, n_band)
+        LWin = apply_terrain(
+            lw_sky=LWin, svf=svf_tb, t_band=T2,
+            G=G_interp[:, :, 0] if a.lw_terrain == "prinz" else None,
+            method=a.lw_terrain,
+            eps_terrain=a.lw_eps, solar_coeff=0.01,
+        )
+        LWin = np.clip(LWin, 0.0, None)
+        print(f"  LWin-Terrain: {a.lw_terrain} (eps={a.lw_eps}) "
+              f"-> mean {np.nanmean(LWin):.1f} W/m2")
+        check_var("LWin (mit Terrain)", LWin, 0.0, 500.0)
 
     # ── Ausgabedatensatz aufbauen ──────────────────────────────────────────
     # Statische (lat,lon)-Geometrie uebernehmen. SRF/N_Points koennen eine
@@ -504,6 +839,29 @@ def main():
                    help="= -glacier_lon [deg] (Solarzeit-Offset)")
     p.add_argument("--forcing-utc-offset", dest="forcing_utc_offset",
                    type=int, default=0, help="ERA5 ist UTC -> 0")
+    p.add_argument("--lw-method", dest="lw_method", default="topopyscale",
+                   choices=["topopyscale", "liu-cf"],
+                   help="LWin-Sky-Quelle: topopyscale (down_pt LW, default) oder "
+                        "liu-cf (Liu 2020 Gl.5, CF aus TCC).")
+    p.add_argument("--lw-terrain", dest="lw_terrain", default="off",
+                   choices=["off", "airT", "prinz"],
+                   help="LWin-Terrain-Term: off (nur Sky, default), "
+                        "airT (T_terrain=Band-Lufttemp), "
+                        "prinz (T_terrain=Band-Lufttemp+0.01*G, solare Hangaufheizung).")
+    p.add_argument("--sw-cloud", dest="sw_cloud", default="on",
+                   choices=["on", "off"],
+                   help="Diffusaufteilung im SW-Block. 'on' (DEFAULT) nutzt die "
+                        "Moelg-Wolkenkorrektur mit CF aus TCC -- das ist die "
+                        "einzige physikalisch korrekte Variante und entspricht "
+                        "dem Original-Moelg2009, das N zwingend verlangt. "
+                        "'off' friert f_dif auf das KLARHIMMEL-Verhaeltnis (~0.13) "
+                        "ein; Terrainabschattung wird dann auf Diffusstrahlung "
+                        "angewandt und SWin systematisch unterschaetzt. 'off' "
+                        "existiert nur, um aeltere Laeufe fuer den Vergleich zu "
+                        "reproduzieren -- NICHT fuer Produktionslaeufe.")
+    p.add_argument("--lw-eps", dest="lw_eps", type=float, default=0.98,
+                   help="Terrain-Emissivitaet (0.98 = Prinz 2016 / natuerliche "
+                        "Oberflaechen; 0.97 Schnee/Fels, 0.99 quasi-Schwarzkoerper).")
     a = p.parse_args()
     build(a)
 

@@ -19,34 +19,32 @@ chunk_id = int(sys.argv[1])
 NUM_CHUNKS = 6
 
 # define global sensitivity parameters and bounds
-""" FOR WIDE GSA
+#FOR WIDE GSA
 problem = {
-    'num_vars': 16,
+    'num_vars': 13,
     'names': [
         'rrr_factor', 'alb_ice', 'alb_snow', 'alb_firn',
-        'albedo_depth', 'rough_ice', 'rough_snow', 'rough_firn',
+        'albedo_depth', 'rough_ice', 'rough_snow',
         't_star_wet', 't_star_dry', 't_star_K',
-        'bias_T2', 'ws_factor', 'bias_LWIN',
-        'ice_thickness', 'bottom_temp'
+        'bias_T2', 'ws_factor', 'bias_LWIN'
     ],
     'bounds': [
-        [np.log(0.33), np.log(3.0)], #rrr factor
+        [np.log(0.5), np.log(2.0)], #rrr factor
         [0.10, 0.46], #alb ice
         [0.75, 0.98], #alb snow
         [0.46, 0.75], #alb firn
         [1.0, 15.0], #alb depth
         [0.7, 20.0], #roughness ice
         [0.02, 1.6], #roughness snow
-        [1.6, 6.5],  #roughness firn
         [2.0, 20],   # t star wet
         [15, 40],    # t star dry
         [2,17],      # t star K
-        [-4.0, 4.0], #bias_t2
-        [np.log(0.33), np.log(3)], #ws factor
+        [-2.0, 2.0], #bias_t2
+        [np.log(0.5), np.log(2)], #ws factor
         [-50, 50], #bias lwin
         #[-2.0, 2.0], #prec frac dropped and not to be used
-        [350, 650], #ice thickness
-        [263.15, 273.15] #bottom temperature
+        #[350, 650], #ice thickness
+        #[263.15, 273.15] #bottom temperature
     ]
 }
 """
@@ -78,10 +76,10 @@ problem = {
     ],
     'dists': ['truncnorm', 'unif', 'truncnorm', 'unif', 'unif', 'unif', 'unif', 'unif', 'unif', 'unif', 'unif', 'truncnorm', 'unif', 'unif', 'unif', 'truncnorm'],
 }
-
+"""
 print(f"Worker {chunk_id}: generate matrix.")
 np.random.seed(42)
-param_values = saltelli.sample(problem, 128)
+param_values = saltelli.sample(problem, 256)
 df = pd.DataFrame(param_values, columns=problem['names'])
 
 df['rrr_factor'] = np.exp(df['rrr_factor'])
@@ -110,8 +108,8 @@ for index, row in df_chunk.iterrows():
     with open('constants.toml', 'r') as f:
         constants_data = toml.load(f)
     #
-    constants_data['INITIAL_CONDITIONS']['initial_glacier_height'] = float(row['ice_thickness'])
-    constants_data['INITIAL_CONDITIONS']['temperature_bottom'] = float(row['bottom_temp']) 
+    #constants_data['INITIAL_CONDITIONS']['initial_glacier_height'] = float(row['ice_thickness'])
+    #constants_data['INITIAL_CONDITIONS']['temperature_bottom'] = float(row['bottom_temp']) 
     #
     constants_data['PRECIPITATION']['mult_factor_RRR'] = float(row['rrr_factor']) 
     constants_data['PRECIPITATION']['mult_factor_WS'] = float(row['ws_factor']) 
@@ -125,7 +123,7 @@ for index, row in df_chunk.iterrows():
     constants_data['CONSTANTS']['albedo_mod_snow_depth'] = float(row['albedo_depth']) 
     constants_data['CONSTANTS']['roughness_ice'] = float(row['rough_ice']) 
     constants_data['CONSTANTS']['roughness_fresh_snow'] = float(row['rough_snow'])
-    constants_data['CONSTANTS']['roughness_firn'] = float(row['rough_firn']) 
+    #constants_data['CONSTANTS']['roughness_firn'] = float(row['rough_firn']) 
     constants_data['CONSTANTS']['t_star_wet'] = float(row['t_star_wet']) 
     constants_data['CONSTANTS']['t_star_dry'] = float(row['t_star_dry']) 
     constants_data['CONSTANTS']['t_star_K'] = float(row['t_star_K'])

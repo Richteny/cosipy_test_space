@@ -41,7 +41,7 @@ conda activate pymc_env
 #python -u /data/scratch/richteny/thesis/cosipy_test_space/cosipy_run_fromlist.py "/data/scratch/richteny/for_emulator/Abramov/LHS-narrow/Abramov_LHS_Posterior_batch_0.csv"
 #python -u /data/scratch/richteny/thesis/cosipy_test_space/cosipy_run_fromlist.py "/data/scratch/richteny/for_emulator/Abramov/LHS-narrow/Abramov_lhs_redo_and_new_part_1.csv"
 #python -u /data/scratch/richteny/thesis/cosipy_test_space/cosipy_lhs-wide_fromlist.py 2
-#python -u /data/scratch/richteny/thesis/cosipy_test_space/run_gsa.py 0
-python -u /data/scratch/richteny/thesis/cosipy_test_space/run_gsa_forcing.py 0
-python -u /data/scratch/richteny/thesis/cosipy_test_space/run_gsa_forcing.py 3 
+python -u /data/scratch/richteny/thesis/cosipy_test_space/run_gsa.py 2
+#python -u /data/scratch/richteny/thesis/cosipy_test_space/run_gsa_forcing.py 0
+#python -u /data/scratch/richteny/thesis/cosipy_test_space/run_gsa_forcing.py 3 
 #python -u /data/scratch/richteny/thesis/cosipy_test_space/sobol_COSIPY.py

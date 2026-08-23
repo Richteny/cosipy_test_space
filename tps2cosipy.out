@@ -1,154 +1,214 @@
-=== Abramov  Sun Aug  9 10:22:18 CEST 2026 ===
+############################################################
+  LW_METHOD = topopyscale
+  LW_TERRAIN= airT   (eps=0.98)
+  SW_CLOUD  = on
+  ACHTUNG: bestehende Forcings werden ueberschrieben
+  nur: halji mera parlung bordu dongkemadi guliya interiorglacier kolahoi urumqi abramov
+############################################################
+
+=== Abramov  Mon Aug 17 14:27:58 CEST 2026 ===
     Baseline: Abramov_RGI6_HORAYZON-LUT_1D20m.nc
     Umrisse:  2016 2020
-    lat=39.6097  tcart=-71.56986
+    Wolken:   456 CLOUD-Dateien in /data/scratch/richteny/projects/abramov/inputs/climate/yearly
+    lat=39.6097  tcart=-71.56986  LW=topopyscale  Terrain=airT (eps=0.98)  SW-Wolken=on
+    -> /data/scratch/richteny/thesis/cosipy_test_space/data/input/Abramov/Abramov_ERA5_1D20m_HORAYZON_1987_2024-terrairT.nc
+  Ausgabe: /data/scratch/richteny/thesis/cosipy_test_space/data/input/Abramov/Abramov_ERA5_1D20m_HORAYZON_1987_2024-terrairT.nc  (LW=topopyscale, Terrain=airT)
 abramov: 65 Baender
   Zeit: 1987-10-01 00:00:00 .. 2024-12-31 23:00:00  (326568 Schritte)
+  unkorrigierte Felder gefunden: SW_direct_flat, SW_diffuse_flat, LW_flat
+  Baender an SRF-Reihenfolge angeglichen (Hoehen-Lookup, max Abweichung 0.0 m)
+  LWin-Methode: topopyscale (LW_flat, ohne SVF-Skalierung)
 Wertebereiche (n = Anzahl Werte ausserhalb der COSIPY-Grenzen):
   T2    min=  238.02 max=  290.54  [ok]
   RH2   min=    1.08 max=  100.00  [ok]
   U2    min=    0.00 max=   31.93  [ok]
   PRES  min=  531.77 max=  662.69  [ok]
   RRR   min=    0.00 max=    4.13  [ok]
-  LWin  min=   46.80 max=  329.98  [ok]
+  LWin  min=   55.74 max=  358.89  [ok]
   SW    min=    0.00 max= 2368.10  AUSSERHALB: 243 (0.001%)  [<0: 0, >1600: 243]  <-- PRUEFEN
+  Wolken geladen: TCC mean=0.567, CBH gueltig 81%
   LUT 0: SVF-Mittel = 0.910
   LUT 1: SVF-Mittel = 0.910
   LUT 2: SVF-Mittel = 0.910
-Hinweis: keine Wolkenfraktion N im Forcing -> f_dif aus Klarhimmel (Dcs/grcs). Fuer bewoelkten Himmel leicht unterschaetzt.
+SW: direkter Weg -- SW_direct_flat/SW_diffuse_flat aus TopoPyScale (Erbs-Split), HORAYZON korrigiert genau einmal.
 Nach SW-Block:
-  G     min=    0.00 max= 1600.00  [ok]
+  G     min=    0.00 max= 1362.17  [ok]
+  LWin-Terrain: airT (eps=0.98) -> mean 210.9 W/m2
+  LWin (mit Terrain) min=   68.60 max=  358.68  [ok]
   SRF: Forward-Fill ueber 3 Umrisse ['2000-01-01', '2016-01-01', '2020-01-01']
   N_Points: Forward-Fill ueber 3 Umrisse ['2000-01-01', '2016-01-01', '2020-01-01']
   SVF: zeitabhaengig (variiert ueber Umrisse)
-Schreibe /data/scratch/richteny/thesis/cosipy_test_space/data/input/Abramov/Abramov_ERA5_1D20m_HORAYZON_1987_2024.nc
+Schreibe /data/scratch/richteny/thesis/cosipy_test_space/data/input/Abramov/Abramov_ERA5_1D20m_HORAYZON_1987_2024-terrairT.nc
 Fertig.
-=== Abramov fertig Sun Aug  9 10:25:15 CEST 2026 ===
+=== Abramov fertig Mon Aug 17 14:32:53 CEST 2026 ===
 
-=== ParlungNo4  Sun Aug  9 10:25:15 CEST 2026 ===
+=== ParlungNo4  Mon Aug 17 14:32:53 CEST 2026 ===
     Baseline: ParlungNo4_RGI7_HORAYZON-LUT_1D20m.nc
     Umrisse:  2013 2018 2021
-    lat=29.2324  tcart=-96.9237
+    Wolken:   456 CLOUD-Dateien in /data/scratch/richteny/projects/parlung/inputs/climate/yearly
+    lat=29.2324  tcart=-96.9237  LW=topopyscale  Terrain=airT (eps=0.98)  SW-Wolken=on
+    -> /data/scratch/richteny/thesis/cosipy_test_space/data/input/ParlungNo4/ParlungNo4_ERA5_1D20m_HORAYZON_1987_2024-terrairT.nc
+  Ausgabe: /data/scratch/richteny/thesis/cosipy_test_space/data/input/ParlungNo4/ParlungNo4_ERA5_1D20m_HORAYZON_1987_2024-terrairT.nc  (LW=topopyscale, Terrain=airT)
 parlung: 65 Baender
   Zeit: 1987-10-01 00:00:00 .. 2024-12-31 23:00:00  (326568 Schritte)
+  unkorrigierte Felder gefunden: SW_direct_flat, SW_diffuse_flat, LW_flat
+  Baender an SRF-Reihenfolge angeglichen (Hoehen-Lookup, max Abweichung 0.0 m)
+  LWin-Methode: topopyscale (LW_flat, ohne SVF-Skalierung)
 Wertebereiche (n = Anzahl Werte ausserhalb der COSIPY-Grenzen):
   T2    min=  244.91 max=  285.58  [ok]
   RH2   min=    0.41 max=  100.00  [ok]
   U2    min=    0.00 max=   30.67  [ok]
   PRES  min=  473.21 max=  585.57  [ok]
   RRR   min=    0.00 max=    5.89  [ok]
-  LWin  min=   55.66 max=  311.89  [ok]
+  LWin  min=   64.60 max=  341.60  [ok]
   SW    min=    0.00 max= 3493.00  AUSSERHALB: 614 (0.003%)  [<0: 0, >1600: 614]  <-- PRUEFEN
+  Wolken geladen: TCC mean=0.770, CBH gueltig 90%
   LUT 0: SVF-Mittel = 0.914
   LUT 1: SVF-Mittel = 0.914
   LUT 2: SVF-Mittel = 0.914
   LUT 3: SVF-Mittel = 0.915
   LUT 2: 1 NaN-SVF-Band(er) mit N_Points=0 (leer) -> auf 0 gesetzt: [np.int64(64)]
   LUT 3: 2 NaN-SVF-Band(er) mit N_Points=0 (leer) -> auf 0 gesetzt: [np.int64(63), np.int64(64)]
-Hinweis: keine Wolkenfraktion N im Forcing -> f_dif aus Klarhimmel (Dcs/grcs). Fuer bewoelkten Himmel leicht unterschaetzt.
+SW: direkter Weg -- SW_direct_flat/SW_diffuse_flat aus TopoPyScale (Erbs-Split), HORAYZON korrigiert genau einmal.
 Nach SW-Block:
-  G     min=    0.00 max= 1306.53  [ok]
+  G     min=    0.00 max= 1402.42  [ok]
+  LWin-Terrain: airT (eps=0.98) -> mean 232.7 W/m2
+  LWin (mit Terrain) min=   72.15 max=  369.62  [ok]
   SRF: Forward-Fill ueber 4 Umrisse ['2000-01-01', '2013-01-01', '2018-01-01', '2021-01-01']
   N_Points: Forward-Fill ueber 4 Umrisse ['2000-01-01', '2013-01-01', '2018-01-01', '2021-01-01']
   SVF: zeitabhaengig (variiert ueber Umrisse)
-Schreibe /data/scratch/richteny/thesis/cosipy_test_space/data/input/ParlungNo4/ParlungNo4_ERA5_1D20m_HORAYZON_1987_2024.nc
+Schreibe /data/scratch/richteny/thesis/cosipy_test_space/data/input/ParlungNo4/ParlungNo4_ERA5_1D20m_HORAYZON_1987_2024-terrairT.nc
 Fertig.
-=== ParlungNo4 fertig Sun Aug  9 10:28:12 CEST 2026 ===
+=== ParlungNo4 fertig Mon Aug 17 14:35:55 CEST 2026 ===
 
-=== Dongkemadi  Sun Aug  9 10:28:12 CEST 2026 ===
+=== Dongkemadi  Mon Aug 17 14:35:55 CEST 2026 ===
     Baseline: Dongkemadi_RGI6_HORAYZON-LUT_1D20m.nc
     Umrisse:  2015
-    lat=33.0820  tcart=-92.0630
+    Wolken:   456 CLOUD-Dateien in /data/scratch/richteny/projects/dongkemadi/inputs/climate/yearly
+    lat=33.0820  tcart=-92.0630  LW=topopyscale  Terrain=airT (eps=0.98)  SW-Wolken=on
+    -> /data/scratch/richteny/thesis/cosipy_test_space/data/input/Dongkemadi/Dongkemadi_ERA5_1D20m_HORAYZON_1987_2024-terrairT.nc
+  Ausgabe: /data/scratch/richteny/thesis/cosipy_test_space/data/input/Dongkemadi/Dongkemadi_ERA5_1D20m_HORAYZON_1987_2024-terrairT.nc  (LW=topopyscale, Terrain=airT)
 dongkemadi: 41 Baender
   Zeit: 1987-10-01 00:00:00 .. 2024-12-31 23:00:00  (326568 Schritte)
+  unkorrigierte Felder gefunden: SW_direct_flat, SW_diffuse_flat, LW_flat
+  Baender an SRF-Reihenfolge angeglichen (Hoehen-Lookup, max Abweichung 0.0 m)
+  LWin-Methode: topopyscale (LW_flat, ohne SVF-Skalierung)
 Wertebereiche (n = Anzahl Werte ausserhalb der COSIPY-Grenzen):
   T2    min=  238.99 max=  285.36  [ok]
   RH2   min=    0.90 max=  100.00  [ok]
   U2    min=    0.00 max=   31.91  [ok]
   PRES  min=  459.30 max=  541.65  [ok]
   RRR   min=    0.00 max=    7.33  [ok]
-  LWin  min=   54.35 max=  319.20  [ok]
+  LWin  min=   57.03 max=  332.42  [ok]
   SW    min=    0.00 max= 2740.04  AUSSERHALB: 566 (0.004%)  [<0: 0, >1600: 566]  <-- PRUEFEN
+  Wolken geladen: TCC mean=0.606, CBH gueltig 77%
   LUT 0: SVF-Mittel = 0.965
   LUT 1: SVF-Mittel = 0.965
-Hinweis: keine Wolkenfraktion N im Forcing -> f_dif aus Klarhimmel (Dcs/grcs). Fuer bewoelkten Himmel leicht unterschaetzt.
+SW: direkter Weg -- SW_direct_flat/SW_diffuse_flat aus TopoPyScale (Erbs-Split), HORAYZON korrigiert genau einmal.
 Nach SW-Block:
   G     min=    0.00 max= 1600.00  [ok]
+  LWin-Terrain: airT (eps=0.98) -> mean 189.6 W/m2
+  LWin (mit Terrain) min=   60.23 max=  332.37  [ok]
   SRF: Forward-Fill ueber 2 Umrisse ['2000-01-01', '2015-01-01']
   N_Points: Forward-Fill ueber 2 Umrisse ['2000-01-01', '2015-01-01']
   SVF: zeitabhaengig (variiert ueber Umrisse)
-Schreibe /data/scratch/richteny/thesis/cosipy_test_space/data/input/Dongkemadi/Dongkemadi_ERA5_1D20m_HORAYZON_1987_2024.nc
+Schreibe /data/scratch/richteny/thesis/cosipy_test_space/data/input/Dongkemadi/Dongkemadi_ERA5_1D20m_HORAYZON_1987_2024-terrairT.nc
 Fertig.
-=== Dongkemadi fertig Sun Aug  9 10:30:47 CEST 2026 ===
+=== Dongkemadi fertig Mon Aug 17 14:39:47 CEST 2026 ===
 
-=== Urumqi  Sun Aug  9 10:30:47 CEST 2026 ===
+=== Urumqi  Mon Aug 17 14:39:47 CEST 2026 ===
     Baseline: Urumqi_RGI6_HORAYZON-LUT_1D20m.nc
     Umrisse:  2016
-    lat=43.1170  tcart=-86.8010
+    Wolken:   456 CLOUD-Dateien in /data/scratch/richteny/projects/urumqi/inputs/climate/yearly
+    lat=43.1170  tcart=-86.8010  LW=topopyscale  Terrain=airT (eps=0.98)  SW-Wolken=on
+    -> /data/scratch/richteny/thesis/cosipy_test_space/data/input/Urumqi/Urumqi_ERA5_1D20m_HORAYZON_1987_2024-terrairT.nc
+  Ausgabe: /data/scratch/richteny/thesis/cosipy_test_space/data/input/Urumqi/Urumqi_ERA5_1D20m_HORAYZON_1987_2024-terrairT.nc  (LW=topopyscale, Terrain=airT)
 urumqi: 35 Baender
   Zeit: 1987-10-01 00:00:00 .. 2024-12-31 23:00:00  (326568 Schritte)
+  unkorrigierte Felder gefunden: SW_direct_flat, SW_diffuse_flat, LW_flat
+  Baender an SRF-Reihenfolge angeglichen (Hoehen-Lookup, max Abweichung 0.0 m)
+  LWin-Methode: topopyscale (LW_flat, ohne SVF-Skalierung)
 Wertebereiche (n = Anzahl Werte ausserhalb der COSIPY-Grenzen):
   T2    min=  235.73 max=  286.57  [ok]
   RH2   min=    0.35 max=  100.00  [ok]
   U2    min=    0.00 max=   30.22  [ok]
   PRES  min=  564.64 max=  652.56  [ok]
   RRR   min=    0.00 max=    3.88  [ok]
-  LWin  min=   61.01 max=  322.03  [ok]
+  LWin  min=   68.09 max=  342.82  [ok]
   SW    min=    0.00 max= 1086.19  [ok]
+  Wolken geladen: TCC mean=0.557, CBH gueltig 71%
   LUT 0: SVF-Mittel = 0.905
   LUT 1: SVF-Mittel = 0.905
-Hinweis: keine Wolkenfraktion N im Forcing -> f_dif aus Klarhimmel (Dcs/grcs). Fuer bewoelkten Himmel leicht unterschaetzt.
+SW: direkter Weg -- SW_direct_flat/SW_diffuse_flat aus TopoPyScale (Erbs-Split), HORAYZON korrigiert genau einmal.
 Nach SW-Block:
-  G     min=    0.00 max= 1021.85  [ok]
+  G     min=    0.00 max= 1080.23  [ok]
+  LWin-Terrain: airT (eps=0.98) -> mean 206.3 W/m2
+  LWin (mit Terrain) min=   68.14 max=  344.98  [ok]
   SRF: Forward-Fill ueber 2 Umrisse ['2000-01-01', '2016-01-01']
   N_Points: Forward-Fill ueber 2 Umrisse ['2000-01-01', '2016-01-01']
   SVF: zeitabhaengig (variiert ueber Umrisse)
-Schreibe /data/scratch/richteny/thesis/cosipy_test_space/data/input/Urumqi/Urumqi_ERA5_1D20m_HORAYZON_1987_2024.nc
+Schreibe /data/scratch/richteny/thesis/cosipy_test_space/data/input/Urumqi/Urumqi_ERA5_1D20m_HORAYZON_1987_2024-terrairT.nc
 Fertig.
-=== Urumqi fertig Sun Aug  9 10:33:12 CEST 2026 ===
+=== Urumqi fertig Mon Aug 17 14:44:01 CEST 2026 ===
 
-=== InteriorGlacier  Sun Aug  9 10:33:12 CEST 2026 ===
+=== InteriorGlacier  Mon Aug 17 14:44:02 CEST 2026 ===
     Baseline: InteriorGlacier_RGI6_HORAYZON-LUT_1D20m.nc
     Umrisse:  2010 2016
-    lat=32.2510  tcart=-87.5050
+    Wolken:   456 CLOUD-Dateien in /data/scratch/richteny/projects/interiorglacier/inputs/climate/yearly
+    lat=32.2510  tcart=-87.5050  LW=topopyscale  Terrain=airT (eps=0.98)  SW-Wolken=on
+    -> /data/scratch/richteny/thesis/cosipy_test_space/data/input/InteriorGlacier/InteriorGlacier_ERA5_1D20m_HORAYZON_1987_2024-terrairT.nc
+  Ausgabe: /data/scratch/richteny/thesis/cosipy_test_space/data/input/InteriorGlacier/InteriorGlacier_ERA5_1D20m_HORAYZON_1987_2024-terrairT.nc  (LW=topopyscale, Terrain=airT)
 interiorglacier: 36 Baender
   Zeit: 1987-10-01 00:00:00 .. 2024-12-31 23:00:00  (326568 Schritte)
+  unkorrigierte Felder gefunden: SW_direct_flat, SW_diffuse_flat, LW_flat
+  Baender an SRF-Reihenfolge angeglichen (Hoehen-Lookup, max Abweichung 0.0 m)
+  LWin-Methode: topopyscale (LW_flat, ohne SVF-Skalierung)
 Wertebereiche (n = Anzahl Werte ausserhalb der COSIPY-Grenzen):
   T2    min=  238.93 max=  286.39  [ok]
   RH2   min=    1.39 max=  100.00  [ok]
   U2    min=    0.00 max=   31.69  [ok]
   PRES  min=  451.27 max=  526.48  [ok]
   RRR   min=    0.00 max=    9.64  [ok]
-  LWin  min=   66.10 max=  307.42  [ok]
+  LWin  min=   66.14 max=  320.45  [ok]
   SW    min=    0.00 max= 2264.45  AUSSERHALB: 216 (0.002%)  [<0: 0, >1600: 216]  <-- PRUEFEN
+  Wolken geladen: TCC mean=0.521, CBH gueltig 69%
   LUT 0: SVF-Mittel = 0.951
   LUT 1: SVF-Mittel = 0.951
   LUT 2: SVF-Mittel = 0.953
   LUT 2: 1 NaN-SVF-Band(er) mit N_Points=0 (leer) -> auf 0 gesetzt: [np.int64(0)]
-Hinweis: keine Wolkenfraktion N im Forcing -> f_dif aus Klarhimmel (Dcs/grcs). Fuer bewoelkten Himmel leicht unterschaetzt.
+SW: direkter Weg -- SW_direct_flat/SW_diffuse_flat aus TopoPyScale (Erbs-Split), HORAYZON korrigiert genau einmal.
 Nach SW-Block:
-  G     min=    0.00 max= 1600.00  [ok]
+  G     min=    0.00 max= 1279.07  [ok]
+  LWin-Terrain: airT (eps=0.98) -> mean 182.0 W/m2
+  LWin (mit Terrain) min=   66.22 max=  373.45  [ok]
   SRF: Forward-Fill ueber 3 Umrisse ['2000-01-01', '2010-01-01', '2016-01-01']
   N_Points: Forward-Fill ueber 3 Umrisse ['2000-01-01', '2010-01-01', '2016-01-01']
   SVF: zeitabhaengig (variiert ueber Umrisse)
-Schreibe /data/scratch/richteny/thesis/cosipy_test_space/data/input/InteriorGlacier/InteriorGlacier_ERA5_1D20m_HORAYZON_1987_2024.nc
+Schreibe /data/scratch/richteny/thesis/cosipy_test_space/data/input/InteriorGlacier/InteriorGlacier_ERA5_1D20m_HORAYZON_1987_2024-terrairT.nc
 Fertig.
-=== InteriorGlacier fertig Sun Aug  9 10:35:41 CEST 2026 ===
+=== InteriorGlacier fertig Mon Aug 17 14:47:21 CEST 2026 ===
 
-=== Bordu  Sun Aug  9 10:35:41 CEST 2026 ===
+=== Bordu  Mon Aug 17 14:47:22 CEST 2026 ===
     Baseline: Bordu_RGI6_HORAYZON-LUT_1D20m.nc
     Umrisse:  2011 2014 2017 2020
-    lat=41.81287  tcart=-78.17541
+    Wolken:   456 CLOUD-Dateien in /data/scratch/richteny/projects/bordu/inputs/climate/yearly
+    lat=41.81287  tcart=-78.17541  LW=topopyscale  Terrain=airT (eps=0.98)  SW-Wolken=on
+    -> /data/scratch/richteny/thesis/cosipy_test_space/data/input/Bordu/Bordu_ERA5_1D20m_HORAYZON_1987_2024-terrairT.nc
+  Ausgabe: /data/scratch/richteny/thesis/cosipy_test_space/data/input/Bordu/Bordu_ERA5_1D20m_HORAYZON_1987_2024-terrairT.nc  (LW=topopyscale, Terrain=airT)
 bordu: 45 Baender
   Zeit: 1987-10-01 00:00:00 .. 2024-12-31 23:00:00  (326568 Schritte)
+  unkorrigierte Felder gefunden: SW_direct_flat, SW_diffuse_flat, LW_flat
+  Baender an SRF-Reihenfolge angeglichen (Hoehen-Lookup, max Abweichung 0.0 m)
+  LWin-Methode: topopyscale (LW_flat, ohne SVF-Skalierung)
 Wertebereiche (n = Anzahl Werte ausserhalb der COSIPY-Grenzen):
   T2    min=  236.54 max=  289.01  [ok]
   RH2   min=    0.55 max=  100.00  [ok]
   U2    min=    0.00 max=   28.47  [ok]
   PRES  min=  547.07 max=  648.44  [ok]
   RRR   min=    0.00 max=    3.82  [ok]
-  LWin  min=   67.82 max=  333.11  [ok]
+  LWin  min=   73.34 max=  357.56  [ok]
   SW    min=    0.00 max= 2861.55  AUSSERHALB: 725 (0.005%)  [<0: 0, >1600: 725]  <-- PRUEFEN
+  Wolken geladen: TCC mean=0.610, CBH gueltig 83%
   LUT 0: SVF-Mittel = 0.930
   LUT 1: SVF-Mittel = 0.931
   LUT 2: SVF-Mittel = 0.931
@@ -157,40 +217,164 @@ Wertebereiche (n = Anzahl Werte ausserhalb der COSIPY-Grenzen):
   LUT 2: 4 NaN-SVF-Band(er) mit N_Points=0 (leer) -> auf 0 gesetzt: [np.int64(41), np.int64(42), np.int64(43), np.int64(44)]
   LUT 3: 4 NaN-SVF-Band(er) mit N_Points=0 (leer) -> auf 0 gesetzt: [np.int64(41), np.int64(42), np.int64(43), np.int64(44)]
   LUT 4: 4 NaN-SVF-Band(er) mit N_Points=0 (leer) -> auf 0 gesetzt: [np.int64(41), np.int64(42), np.int64(43), np.int64(44)]
-Hinweis: keine Wolkenfraktion N im Forcing -> f_dif aus Klarhimmel (Dcs/grcs). Fuer bewoelkten Himmel leicht unterschaetzt.
+SW: direkter Weg -- SW_direct_flat/SW_diffuse_flat aus TopoPyScale (Erbs-Split), HORAYZON korrigiert genau einmal.
 Nach SW-Block:
   G     min=    0.00 max= 1600.00  [ok]
+  LWin-Terrain: airT (eps=0.98) -> mean 208.8 W/m2
+  LWin (mit Terrain) min=   75.96 max=  380.26  [ok]
   SRF: Forward-Fill ueber 5 Umrisse ['2000-01-01', '2011-01-01', '2014-01-01', '2017-01-01', '2020-01-01']
   N_Points: Forward-Fill ueber 5 Umrisse ['2000-01-01', '2011-01-01', '2014-01-01', '2017-01-01', '2020-01-01']
   SVF: zeitabhaengig (variiert ueber Umrisse)
-Schreibe /data/scratch/richteny/thesis/cosipy_test_space/data/input/Bordu/Bordu_ERA5_1D20m_HORAYZON_1987_2024.nc
+Schreibe /data/scratch/richteny/thesis/cosipy_test_space/data/input/Bordu/Bordu_ERA5_1D20m_HORAYZON_1987_2024-terrairT.nc
 Fertig.
-=== Bordu fertig Sun Aug  9 10:38:35 CEST 2026 ===
+=== Bordu fertig Mon Aug 17 14:51:46 CEST 2026 ===
 
-=== Guliya  Sun Aug  9 10:38:35 CEST 2026 ===
+=== Guliya  Mon Aug 17 14:51:52 CEST 2026 ===
     Baseline: Guliya_RGI6_HORAYZON-LUT_1D20m.nc
     Umrisse:  (nur Baseline)
-    lat=35.2610  tcart=-81.4620
+    Wolken:   456 CLOUD-Dateien in /data/scratch/richteny/projects/guliya/inputs/climate/yearly
+    lat=35.2610  tcart=-81.4620  LW=topopyscale  Terrain=airT (eps=0.98)  SW-Wolken=on
+    -> /data/scratch/richteny/thesis/cosipy_test_space/data/input/Guliya/Guliya_ERA5_1D20m_HORAYZON_1987_2024-terrairT.nc
+  Ausgabe: /data/scratch/richteny/thesis/cosipy_test_space/data/input/Guliya/Guliya_ERA5_1D20m_HORAYZON_1987_2024-terrairT.nc  (LW=topopyscale, Terrain=airT)
 guliya: 59 Baender
   Zeit: 1987-10-01 00:00:00 .. 2024-12-31 23:00:00  (326568 Schritte)
+  unkorrigierte Felder gefunden: SW_direct_flat, SW_diffuse_flat, LW_flat
+  Baender an SRF-Reihenfolge angeglichen (Hoehen-Lookup, max Abweichung 0.0 m)
+  LWin-Methode: topopyscale (LW_flat, ohne SVF-Skalierung)
 Wertebereiche (n = Anzahl Werte ausserhalb der COSIPY-Grenzen):
   T2    min=  233.05 max=  283.09  [ok]
   RH2   min=    0.72 max=  100.00  [ok]
   U2    min=    0.00 max=   33.63  [ok]
   PRES  min=  423.16 max=  529.50  [ok]
   RRR   min=    0.00 max=    3.07  [ok]
-  LWin  min=   41.58 max=  317.09  [ok]
+  LWin  min=   41.66 max=  322.64  [ok]
   SW    min=    0.00 max= 1234.25  [ok]
+  Wolken geladen: TCC mean=0.531, CBH gueltig 70%
   LUT 0: SVF-Mittel = 0.991
-Hinweis: keine Wolkenfraktion N im Forcing -> f_dif aus Klarhimmel (Dcs/grcs). Fuer bewoelkten Himmel leicht unterschaetzt.
+SW: direkter Weg -- SW_direct_flat/SW_diffuse_flat aus TopoPyScale (Erbs-Split), HORAYZON korrigiert genau einmal.
 Nach SW-Block:
-  G     min=    0.00 max= 1600.00  [ok]
+  G     min=    0.00 max= 1254.96  [ok]
+  LWin-Terrain: airT (eps=0.98) -> mean 165.2 W/m2
+  LWin (mit Terrain) min=   41.83 max=  322.96  [ok]
   SVF: statisch
-Schreibe /data/scratch/richteny/thesis/cosipy_test_space/data/input/Guliya/Guliya_ERA5_1D20m_HORAYZON_1987_2024.nc
+Schreibe /data/scratch/richteny/thesis/cosipy_test_space/data/input/Guliya/Guliya_ERA5_1D20m_HORAYZON_1987_2024-terrairT.nc
 Fertig.
-=== Guliya fertig Sun Aug  9 10:41:20 CEST 2026 ===
+=== Guliya fertig Mon Aug 17 14:57:05 CEST 2026 ===
 
-=== Kolahoi  Sun Aug  9 10:41:20 CEST 2026 ===
+=== Kolahoi  Mon Aug 17 14:57:05 CEST 2026 ===
     Baseline: Kolahoi_RGI6_HORAYZON-LUT_1D20m.nc
     Umrisse:  2014
-    lat=34.16268  tcart=-75.3151
+    Wolken:   456 CLOUD-Dateien in /data/scratch/richteny/projects/kolahoi/inputs/climate/yearly
+    lat=34.16268  tcart=-75.3151  LW=topopyscale  Terrain=airT (eps=0.98)  SW-Wolken=on
+    -> /data/scratch/richteny/thesis/cosipy_test_space/data/input/Kolahoi/Kolahoi_ERA5_1D20m_HORAYZON_1987_2024-terrairT.nc
+  Ausgabe: /data/scratch/richteny/thesis/cosipy_test_space/data/input/Kolahoi/Kolahoi_ERA5_1D20m_HORAYZON_1987_2024-terrairT.nc  (LW=topopyscale, Terrain=airT)
+kolahoi: 77 Baender
+  Zeit: 1987-10-01 00:00:00 .. 2024-12-31 23:00:00  (326568 Schritte)
+  unkorrigierte Felder gefunden: SW_direct_flat, SW_diffuse_flat, LW_flat
+  Baender an SRF-Reihenfolge angeglichen (Hoehen-Lookup, max Abweichung 0.0 m)
+  LWin-Methode: topopyscale (LW_flat, ohne SVF-Skalierung)
+Wertebereiche (n = Anzahl Werte ausserhalb der COSIPY-Grenzen):
+  T2    min=  245.17 max=  291.49  [ok]
+  RH2   min=    1.80 max=  100.00  [ok]
+  U2    min=    0.00 max=   30.09  [ok]
+  PRES  min=  532.67 max=  676.38  [ok]
+  RRR   min=    0.00 max=    9.74  [ok]
+  LWin  min=   86.87 max=  379.99  [ok]
+  SW    min=    0.00 max= 2321.14  AUSSERHALB: 332 (0.001%)  [<0: 0, >1600: 332]  <-- PRUEFEN
+  Wolken geladen: TCC mean=0.531, CBH gueltig 77%
+  LUT 0: SVF-Mittel = 0.882
+  LUT 1: SVF-Mittel = 0.896
+  LUT 1: 10 NaN-SVF-Band(er) mit N_Points=0 (leer) -> auf 0 gesetzt: [np.int64(67), np.int64(68), np.int64(69), np.int64(70), np.int64(71), np.int64(72), np.int64(73), np.int64(74), np.int64(75), np.int64(76)]
+SW: direkter Weg -- SW_direct_flat/SW_diffuse_flat aus TopoPyScale (Erbs-Split), HORAYZON korrigiert genau einmal.
+Nach SW-Block:
+  G     min=    0.00 max= 1483.78  [ok]
+  LWin-Terrain: airT (eps=0.98) -> mean 236.8 W/m2
+  LWin (mit Terrain) min=   93.48 max=  390.95  [ok]
+  SRF: Forward-Fill ueber 2 Umrisse ['2000-01-01', '2014-01-01']
+  N_Points: Forward-Fill ueber 2 Umrisse ['2000-01-01', '2014-01-01']
+  SVF: zeitabhaengig (variiert ueber Umrisse)
+Schreibe /data/scratch/richteny/thesis/cosipy_test_space/data/input/Kolahoi/Kolahoi_ERA5_1D20m_HORAYZON_1987_2024-terrairT.nc
+Fertig.
+=== Kolahoi fertig Mon Aug 17 15:01:15 CEST 2026 ===
+
+=== Mera  Mon Aug 17 15:01:15 CEST 2026 ===
+    Baseline: Mera_RGI6_HORAYZON-LUT_1D20m.nc
+    Umrisse:  2012 2018
+    Wolken:   456 CLOUD-Dateien in /data/scratch/richteny/projects/mera/inputs/climate/yearly
+    lat=27.72478  tcart=-86.8920  LW=topopyscale  Terrain=airT (eps=0.98)  SW-Wolken=on
+    -> /data/scratch/richteny/thesis/cosipy_test_space/data/input/Mera/Mera_ERA5_1D20m_HORAYZON_1987_2024-terrairT.nc
+  Ausgabe: /data/scratch/richteny/thesis/cosipy_test_space/data/input/Mera/Mera_ERA5_1D20m_HORAYZON_1987_2024-terrairT.nc  (LW=topopyscale, Terrain=airT)
+mera: 74 Baender
+  Zeit: 1987-10-01 00:00:00 .. 2024-12-31 23:00:00  (326568 Schritte)
+  unkorrigierte Felder gefunden: SW_direct_flat, SW_diffuse_flat, LW_flat
+  Baender an SRF-Reihenfolge angeglichen (Hoehen-Lookup, max Abweichung 0.0 m)
+  LWin-Methode: topopyscale (LW_flat, ohne SVF-Skalierung)
+Wertebereiche (n = Anzahl Werte ausserhalb der COSIPY-Grenzen):
+  T2    min=  241.49 max=  279.88  [ok]
+  RH2   min=    1.04 max=  100.00  [ok]
+  U2    min=    0.00 max=   43.07  [ok]
+  PRES  min=  444.45 max=  566.77  [ok]
+  RRR   min=    0.00 max=   10.91  [ok]
+  LWin  min=   47.02 max=  338.03  [ok]
+  SW    min=    0.00 max= 1638.66  AUSSERHALB: 1 (0.000%)  [<0: 0, >1600: 1]  <-- PRUEFEN
+  Wolken geladen: TCC mean=0.503, CBH gueltig 74%
+  LUT 0: SVF-Mittel = 0.914
+  LUT 1: SVF-Mittel = 0.918
+  LUT 2: SVF-Mittel = 0.918
+  LUT 1: 1 NaN-SVF-Band(er) mit N_Points=0 (leer) -> auf 0 gesetzt: [np.int64(59)]
+  LUT 2: 2 NaN-SVF-Band(er) mit N_Points=0 (leer) -> auf 0 gesetzt: [np.int64(58), np.int64(59)]
+SW: direkter Weg -- SW_direct_flat/SW_diffuse_flat aus TopoPyScale (Erbs-Split), HORAYZON korrigiert genau einmal.
+Nach SW-Block:
+  G     min=    0.00 max= 1598.13  [ok]
+  LWin-Terrain: airT (eps=0.98) -> mean 204.7 W/m2
+  LWin (mit Terrain) min=   50.63 max=  340.96  [ok]
+  SRF: Forward-Fill ueber 3 Umrisse ['2000-01-01', '2012-01-01', '2018-01-01']
+  N_Points: Forward-Fill ueber 3 Umrisse ['2000-01-01', '2012-01-01', '2018-01-01']
+  SVF: zeitabhaengig (variiert ueber Umrisse)
+Schreibe /data/scratch/richteny/thesis/cosipy_test_space/data/input/Mera/Mera_ERA5_1D20m_HORAYZON_1987_2024-terrairT.nc
+Fertig.
+=== Mera fertig Mon Aug 17 15:05:34 CEST 2026 ===
+
+=== Halji  Mon Aug 17 15:05:34 CEST 2026 ===
+    Baseline: Halji_RGI6_HORAYZON-LUT_1D20m.nc
+    Umrisse:  2014 2018 2021 2023
+    Wolken:   456 CLOUD-Dateien in /data/scratch/richteny/projects/halji/inputs/climate/yearly
+    lat=30.26456  tcart=-81.47013  LW=topopyscale  Terrain=airT (eps=0.98)  SW-Wolken=on
+    -> /data/scratch/richteny/thesis/cosipy_test_space/data/input/Halji/Halji_ERA5_1D20m_HORAYZON_1987_2024-terrairT.nc
+  Ausgabe: /data/scratch/richteny/thesis/cosipy_test_space/data/input/Halji/Halji_ERA5_1D20m_HORAYZON_1987_2024-terrairT.nc  (LW=topopyscale, Terrain=airT)
+halji: 21 Baender
+  Zeit: 1987-10-01 00:00:00 .. 2024-12-31 23:00:00  (326568 Schritte)
+  unkorrigierte Felder gefunden: SW_direct_flat, SW_diffuse_flat, LW_flat
+  Baender an SRF-Reihenfolge angeglichen (Hoehen-Lookup, max Abweichung 0.0 m)
+  LWin-Methode: topopyscale (LW_flat, ohne SVF-Skalierung)
+Wertebereiche (n = Anzahl Werte ausserhalb der COSIPY-Grenzen):
+  T2    min=  244.31 max=  283.02  [ok]
+  RH2   min=    2.44 max=  100.00  [ok]
+  U2    min=    0.00 max=   25.46  [ok]
+  PRES  min=  488.47 max=  543.34  [ok]
+  RRR   min=    0.00 max=   11.08  [ok]
+  LWin  min=   68.88 max=  339.79  [ok]
+  SW    min=    0.00 max= 1173.73  [ok]
+  Wolken geladen: TCC mean=0.658, CBH gueltig 82%
+  LUT 0: SVF-Mittel = 0.952
+  LUT 1: SVF-Mittel = 0.952
+  LUT 2: SVF-Mittel = 0.955
+  LUT 3: SVF-Mittel = 0.955
+  LUT 4: SVF-Mittel = 0.956
+  LUT 1: 1 NaN-SVF-Band(er) mit N_Points=0 (leer) -> auf 0 gesetzt: [np.int64(15)]
+  LUT 2: 1 NaN-SVF-Band(er) mit N_Points=0 (leer) -> auf 0 gesetzt: [np.int64(15)]
+  LUT 3: 2 NaN-SVF-Band(er) mit N_Points=0 (leer) -> auf 0 gesetzt: [np.int64(15), np.int64(18)]
+  LUT 4: 2 NaN-SVF-Band(er) mit N_Points=0 (leer) -> auf 0 gesetzt: [np.int64(15), np.int64(18)]
+SW: direkter Weg -- SW_direct_flat/SW_diffuse_flat aus TopoPyScale (Erbs-Split), HORAYZON korrigiert genau einmal.
+Nach SW-Block:
+  G     min=    0.00 max= 1299.93  [ok]
+  LWin-Terrain: airT (eps=0.98) -> mean 213.2 W/m2
+  LWin (mit Terrain) min=   84.46 max=  355.88  [ok]
+  SRF: Forward-Fill ueber 5 Umrisse ['2000-01-01', '2014-01-01', '2018-01-01', '2021-01-01', '2023-01-01']
+  N_Points: Forward-Fill ueber 5 Umrisse ['2000-01-01', '2014-01-01', '2018-01-01', '2021-01-01', '2023-01-01']
+  SVF: zeitabhaengig (variiert ueber Umrisse)
+Schreibe /data/scratch/richteny/thesis/cosipy_test_space/data/input/Halji/Halji_ERA5_1D20m_HORAYZON_1987_2024-terrairT.nc
+Fertig.
+=== Halji fertig Mon Aug 17 15:08:13 CEST 2026 ===
+
+ALLE FERTIG Mon Aug 17 15:08:13 CEST 2026:  10 gebaut, 0 uebersprungen/fehlerhaft

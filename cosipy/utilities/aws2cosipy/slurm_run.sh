@@ -57,7 +57,7 @@ python ./cosipy/utilities/aws2cosipy/cosmo2cosipy.py -i "./data/input/ParlungNo4
 #         ./data/static/Halji/Halji_2021_HORAYZON-LUT_1D20m.nc \
 #         ./data/static/Halji/Halji_2023_HORAYZON-LUT_1D20m.nc \
 #    --sw-starts 2014 2018 2021 2023 \
-#    -b 1987-10-01 -e 2024-12-31
+#    -b 1987-10-01 -e 2022-12-31
 
 
 #python ./cosipy/utilities/aws2cosipy/cosmo2cosipy.py -i "./data/input/Kolahoi/COSIPY_HARv2_1980_2022_RGI60-14.19607.csv" -o ./data/input/Kolahoi/Kolahoi_HARv2_1D20m_HORAYZON_1988_2022.nc -s ./data/static/Kolahoi/Kolahoi_SRF_1D20m.nc -b 1987-10-01 -e 2022-12-31 --sw ./data/static/Kolahoi/Kolahoi_RGI6_HORAYZON-LUT_1D20m.nc ./data/static/Kolahoi/Kolahoi_2014_HORAYZON-LUT_1D20m.nc

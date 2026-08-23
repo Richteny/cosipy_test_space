@@ -1097,17 +1097,42 @@ def create_2D_input(
             print(f"Forcing UTC offset: {forcing_utc_offset:+d} h  "
                   f"(LUT lookup uses UTC = forcing time − {forcing_utc_offset} h)")
 
-        # Cloud fraction check — warn once, not per timestep
+        # ── Cloud fraction is REQUIRED for the HORAYZON/Mölg coupling ──────
+        # The original Moelg2009 module (radCor.calcRad via aws2cosipy) has no
+        # clear-sky fallback at all — it passes N_interp unconditionally and
+        # raises NameError without N. The fallback below was introduced here,
+        # and it is NOT a benign approximation:
+        #
+        #   Horayzon2022  — f_dif collapses to the clear-sky ratio Dcs/grcs
+        #                   (~0.13) at every timestep. Under overcast skies the
+        #                   real diffuse fraction approaches 1.0, so ~85 % of the
+        #                   measured SW is routed through sw_dir_cor (terrain
+        #                   shading, often 0) instead of SVF (~0.95). This
+        #                   removes energy systematically.
+        #   Horayzon_theory — without N the radiation is purely clear-sky:
+        #                   no clouds at all. Unusable as forcing.
+        #
+        # Therefore: hard error by default. --allow-clearsky-fdif exists only to
+        # REPRODUCE older runs for controlled comparison, never for production.
         has_cloud = _cfg.names["N_var"] in df.columns
         if not has_cloud:
-            print(
-                "WARNING: Cloud fraction (N) not found in forcing data. "
-                "The Mölg diffuse formula will use clear-sky only "
-                "(f_dif = Dcs / grcs), which underestimates diffuse "
-                "radiation under overcast conditions. "
-                "Provide N via the N_var config key for full cloudy-sky "
-                "diffuse correction."
+            msg = (
+                "Cloud fraction (N) not found in forcing data, but "
+                f"radiationModule='{_cfg.radiation['radiationModule']}' couples "
+                "HORAYZON with the Mölg diffuse scheme, which requires it.\n"
+                "  Without N the diffuse fraction is fixed at the clear-sky "
+                "ratio (~0.13) and terrain shading is applied to diffuse "
+                "radiation -> systematic negative SWin bias.\n"
+                "  Fix: provide N via the N_var config key.\n"
+                "  To reproduce an older (biased) run, pass "
+                "--allow-clearsky-fdif."
             )
+            if not getattr(_args, "allow_clearsky_fdif", False):
+                raise ValueError("ERROR: " + msg)
+            print("WARNING: " + msg)
+            print("WARNING: --allow-clearsky-fdif is set -> writing forcing "
+                  "with the KNOWN clear-sky f_dif bias. Do not use for "
+                  "production runs.")
 
         # ── Time loop ──────────────────────────────────────────────────────
         for t in range(time_index):
@@ -1684,6 +1709,18 @@ def get_user_arguments(parser: argparse.ArgumentParser) -> argparse.Namespace:
             "Example: --sw rgi6.nc 2013.nc 2017.nc --sw-starts 2013 2017 "
             "→ rgi6.nc for years < 2013, 2013.nc for 2013-2016, "
             "2017.nc from 2017 onwards."
+        ),
+    )
+    parser.add_argument(
+        "--allow-clearsky-fdif",
+        dest="allow_clearsky_fdif",
+        action="store_true",
+        help=(
+            "Allow the HORAYZON/Mölg radiation coupling to run WITHOUT cloud "
+            "fraction N. Off by default: without N the diffuse fraction is "
+            "fixed at the clear-sky ratio (~0.13), so terrain shading is "
+            "applied to diffuse radiation and SWin is systematically "
+            "underestimated. Use only to reproduce older runs for comparison."
         ),
     )
     parser.add_argument(

@@ -342,8 +342,8 @@ class IOClass:
             "MASK": ("boolean", "Glacier mask"),
             "SLOPE": ("degrees", "Terrain slope"),
             "ASPECT": ("degrees", "Aspect of slope"),
-            "SRF": ("-", "Snow Redistribution Factor"),
-            "N_Points": ("count", "Number of points in each bin"),
+            #"SRF": ("-", "Snow Redistribution Factor"),
+            #"N_Points": ("count", "Number of points in each bin"),
         }
         metadata_spatiotemporal = {
             "T2": ("K", "Air temperature at 2 m"),
@@ -355,7 +355,8 @@ class IOClass:
             "SNOWFALL": ("m", "Snowfall"),
             "N": ("-", "Cloud fraction"),
             "LWin": ("W m\u207b\xb2", "Incoming longwave radiation"),
-        #    "N_Points": ("count", "Number of points in each bin"),
+            "N_Points": ("count", "Number of points in each bin"),
+            "SRF": ("-", "Snow Redistribution Factor"),
         }
 
         return metadata_spatial, metadata_spatiotemporal
