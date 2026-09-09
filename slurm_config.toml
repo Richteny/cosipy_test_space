@@ -8,7 +8,9 @@ queue = "work"  # Name of job queue.
 
 [PARAMETERS]
 # Additional Slurm parameters. These can overwrite other settings. #--nodes=1
-slurm_parameters = ["--qos=short", "--error=Error_nodes.err", "--output=Output_nodes.out", "--time=01:00:00", "--mem='3G'"]
+slurm_parameters = ["--qos=short", "--error=Error_nodes.err",
+                    "--output=Output_nodes.out", "--time=01:00:00", "--mem='3G'",
+                    "--exclude=node01,node02"]
 shebang = "#!/bin/bash -l"
 local_directory = "./logs/dask-worker-space"
 

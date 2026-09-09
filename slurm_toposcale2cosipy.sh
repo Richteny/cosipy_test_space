@@ -34,6 +34,7 @@ SW_CLOUD="${SW_CLOUD:-on}"
 # Dateisuffix -terrairT bzw. -terrprinz, wie bei den bisherigen Terrain-Laeufen.
 LW_TERRAIN="${LW_TERRAIN:-off}"
 LW_EPS="${LW_EPS:-0.98}"
+WIND_PROFILE="${WIND_PROFILE:-hypsometric}"
 
 # Nur die Testgletscher bauen: GLACIERS="mera parlung"
 GLACIERS="${GLACIERS:-}"
@@ -50,6 +51,7 @@ echo "############################################################"
 echo "  LW_METHOD = $LW_METHOD"
 echo "  LW_TERRAIN= $LW_TERRAIN   (eps=$LW_EPS)"
 echo "  SW_CLOUD  = $SW_CLOUD"
+echo "  WIND_PROF = $WIND_PROFILE"
 echo "  ACHTUNG: bestehende Forcings werden ueberschrieben"
 [ -n "$GLACIERS" ] && echo "  nur: $GLACIERS"
 echo "############################################################"
@@ -129,7 +131,8 @@ while read -r g cap lat lon baseline outlines rest; do
         --lw-method "$LW_METHOD" \
         --lw-terrain "$LW_TERRAIN" \
         --lw-eps "$LW_EPS" \
-        --sw-cloud "$SW_CLOUD"
+        --sw-cloud "$SW_CLOUD" \
+        --wind-profile "$WIND_PROFILE"
     rc=$?
     if [ $rc -ne 0 ]; then
         echo "!!! $cap: Skript endete mit Code $rc"

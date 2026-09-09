@@ -86,6 +86,7 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, count=""):
     t_wet = Constants.t_star_wet
     t_dry = Constants.t_star_dry
     t_K = Constants.t_star_K
+    minimum_snowfall = Constants.minimum_snowfall
     # target geodetic 2000-2010 = -1.0425, unc= 0.26 == roughly -1.3 to -0.7825
     #RRR_factor = float(0.741) #0.97 
     #alb_ice = float(0.2153) #range LHS after satellite 0.115  to 0.233
@@ -99,7 +100,7 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, count=""):
     #aging_factor_roughness = float(0.0026)
     opt_dict = (RRR_factor, alb_ice, alb_snow, alb_firn, albedo_aging, albedo_depth, center_snow_transfer_function,
                 spread_snow_transfer_function, roughness_fresh_snow, roughness_ice, roughness_firn, aging_factor_roughness,
-                bias_LWIN, WS_factor, bias_T2, t_wet, t_dry, t_K)
+                bias_LWIN, WS_factor, bias_T2, t_wet, t_dry, t_K, minimum_snowfall)
     #0 to 5 - base, 6 center snow , 7 spreadsnow, 8 to 10 roughness length 
     #opt_dict=None
     lapse_T = float(lr_T)
@@ -195,25 +196,30 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, count=""):
             results_output_name = output_netcdf.split('.nc')[0] + f"_RRR-{round(RRR_factor,4)}_{round(alb_snow,4)}_{round(alb_ice,4)}_{round(alb_firn,4)}"\
                                                                   f"_{round(albedo_aging,4)}_{round(albedo_depth,4)}_{round(roughness_fresh_snow,4)}"\
                                                                   f"_{round(roughness_ice,4)}_{round(roughness_firn,4)}_{round(aging_factor_roughness,6)}"\
-                                                                  f"_{round(bias_LWIN,4)}_{round(WS_factor,4)}_{round(bias_T2,4)}_{round(center_snow_transfer_function,4)}_num{count}.nc"
+                                                                  f"_{round(bias_LWIN,4)}_{round(WS_factor,4)}_{round(bias_T2,4)}_{round(center_snow_transfer_function,4)}"\
+                                                                  f"_{round(minimum_snowfall,6)}_num{count}.nc"
         #item below only works when objects are arrays and not given by hand, parameters not taken from pymc or sorts are floats
         except:
             results_output_name = output_netcdf.split('.nc')[0] + f"_RRR-{round(RRR_factor.item(),4)}_{round(alb_snow.item(),4)}_{round(alb_ice.item(),4)}_{round(alb_firn.item(),4)}"\
-                                                                  f"_{round(albedo_aging.item(),4)}_{round(albedo_depth.item(),4)}_{round(roughness_fresh_snow,4)}"\
-                                                                  f"_{round(roughness_ice,4)}_{round(roughness_firn,4)}_{round(aging_factor_roughness,6)}"\
-                                                                  f"_{round(bias_LWIN,4)}_{round(WS_factor,4)}_{round(bias_T2,4)}_{round(center_snow_transfer_function,4)}_num{count}.nc"
+                                                                  f"_{round(albedo_aging.item(),4)}_{round(albedo_depth.item(),4)}_{round(roughness_fresh_snow.item(),4)}"\
+                                                                  f"_{round(roughness_ice.item(),4)}_{round(roughness_firn.item(),4)}_{round(aging_factor_roughness.item(),6)}"\
+                                                                  f"_{round(bias_LWIN.item(),4)}_{round(WS_factor.item(),4)}_{round(bias_T2.item(),4)}_{round(center_snow_transfer_function.item(),4)}"\
+                                                                  f"_{round(minimum_snowfall.item(),6)}_num{count}.nc"
     else:
         try:
             results_output_name = output_netcdf.split('.nc')[0] + f"_RRR-{round(RRR_factor,4)}_{round(alb_snow,4)}_{round(alb_ice,4)}_{round(alb_firn,4)}"\
                                                                   f"_{round(t_wet,4)}_{round(t_dry,4)}_{round(t_K,4)}_{round(albedo_depth,4)}_{round(roughness_fresh_snow,4)}"\
                                                                   f"_{round(roughness_ice,4)}_{round(roughness_firn,4)}_{round(aging_factor_roughness,6)}"\
-                                                                  f"_{round(bias_LWIN,4)}_{round(WS_factor,4)}_{round(bias_T2,4)}_{round(center_snow_transfer_function,4)}_num{count}.nc"
+                                                                  f"_{round(bias_LWIN,4)}_{round(WS_factor,4)}_{round(bias_T2,4)}_{round(center_snow_transfer_function,4)}"\
+                                                                  f"_{round(minimum_snowfall,6)}_num{count}.nc"
+
         #item below only works when objects are arrays and not given by hand, parameters not taken from pymc or sorts are floats
         except:
             results_output_name = output_netcdf.split('.nc')[0] + f"_RRR-{round(RRR_factor.item(),4)}_{round(alb_snow.item(),4)}_{round(alb_ice.item(),4)}_{round(alb_firn.item(),4)}"\
                                                                   f"_{round(t_wet.item(),4)}_{round(t_dry.item(),4)}_{round(t_K.item(),4)}_{round(albedo_depth.item(),4)}_{round(roughness_fresh_snow,4)}"\
-                                                                  f"_{round(roughness_ice,4)}_{round(roughness_firn,4)}_{round(aging_factor_roughness,6)}"\
-                                                                  f"_{round(bias_LWIN,4)}_{round(WS_factor,4)}_{round(bias_T2,4)}_{round(center_snow_transfer_function,4)}_num{count}.nc"
+                                                                  f"_{round(roughness_ice.item(),4)}_{round(roughness_firn.item(),4)}_{round(aging_factor_roughness.item(),6)}"\
+                                                                  f"_{round(bias_LWIN.item(),4)}_{round(WS_factor.item(),4)}_{round(bias_T2.item(),4)}_{round(center_snow_transfer_function.item(),4)}"\
+                                                                  f"_{round(minimum_snowfall.item(),6)}_num{count}.nc"
 
     #IO.get_result().to_netcdf(os.path.join(output_path,results_output_name), encoding=encoding, mode='w')
     
@@ -226,7 +232,7 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, count=""):
     if Config.tsl_evaluation is True:
         if 'N_Points' in list(IO.get_result().keys()):
             print("reached here")
-            dsmb = IO.get_result().sel(time=slice(Config.time_start_mb, Config.time_end_mb))
+            dsmb = IO.get_result() #.sel(time=slice(Config.time_start_mb, Config.time_end_mb))
             print("reached here 2")
             if 'time' not in IO.get_result()['N_Points'].dims:
                 total_points = dsmb['N_Points'].sum()
@@ -345,30 +351,6 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, count=""):
         #tsl_out_match = tsl_out.loc[tsl_out['time'].isin(tsla_observations['LS_DATE'])]
     
         print("Time required for full TSL EVAL: ", datetime.now()-times)
-
-        ## Create DF that holds params to save ##
-        if Config.write_csv_status:
-            try:
-                param_df = pd.read_csv(f"./simulations/{Config.csv_filename}", index_col=0)
-                curr_df = pd.DataFrame( np.concatenate((np.array(opt_dict, dtype=float),np.array([geod_mb]),
-                                        tsl_out_match.Med_TSL.values)) ).transpose()
-                curr_df.columns = ['rrr_factor', 'alb_ice', 'alb_snow', 'alb_firn', 'albedo_aging',
-                                   'albedo_depth', 'center_snow_transfer', 'spread_snow_transfer',
-                                   'roughness_fresh_snow', 'roughness_ice', 'roughness_firn',
-                                   'aging_factor_roughness', 'bias_lwin', 'ws_factor','bias_t2', 'mb'] +\
-                                  [f'sim{i+1}' for i in range(tsl_out_match.shape[0])]
-
-                param_df = pd.concat([param_df, curr_df], ignore_index=True)
-            except:
-                #print(opt_dict)
-                param_df = pd.DataFrame( np.concatenate((np.array(opt_dict, dtype=float), np.array([geod_mb]),
-                                         tsl_out_match.Med_TSL.values)) ).transpose()
-                param_df.columns =   ['rrr_factor', 'alb_ice', 'alb_snow', 'alb_firn', 'albedo_aging',
-                                      'albedo_depth', 'center_snow_transfer', 'spread_snow_transfer',
-                                      'roughness_fresh_snow', 'roughness_ice', 'roughness_firn',
-                                      'aging_factor_roughness','bias_lwin', 'ws_factor','bias_t2', 'mb'] +\
-                                     [f'sim{i+1}' for i in range(tsl_out_match.shape[0])]
-            param_df.to_csv(f"./simulations/{Config.csv_filename}")
 
     #-----------------------------------------------
     # Stop time measurement

@@ -129,7 +129,7 @@ class Grid:
             )
 
     def add_fresh_snow(
-        self, height, density, temperature, liquid_water_content, dt
+        self, height, density, temperature, liquid_water_content, dt,
     ):
         """Add a fresh snow layer (node).
 

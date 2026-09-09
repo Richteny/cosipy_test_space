@@ -9,15 +9,15 @@ path = "/data/scratch/richteny/thesis/cosipy_test_space/data/output/"
 #alb_obs_data = xr.open_dataset("/data/scratch/richteny/Ren_21_Albedo/Halji_hrz-merged_mean-albedos.nc")
 alb_obs_data = xr.open_dataset("/data/scratch/richteny/Ren_21_Albedo/Abramov_hrz-merged_mean-albedos.nc")
 alb_obs_data = alb_obs_data.sortby("time")
+alb_obs_data = alb_obs_data.sel(time=slice("1990-01-01","2023-12-31"))
 
 #tsla_obs = pd.read_csv("/data/scratch/richteny/thesis/cosipy_test_space/data/input/Halji/snowlines/Halji_TSLA_fixed-1990-2025.csv", parse_dates=True, index_col="LS_DATE")
 tsla_obs = pd.read_csv("/data/scratch/richteny/thesis/cosipy_test_space/data/input/Abramov/snowlines/Abramov_TSLA_fixed-1990-2024.csv", parse_dates=True, index_col="LS_DATE")
-tsla_obs = tsla_obs.loc["1990-01-01":"2022-12-31"]
+tsla_obs = tsla_obs.loc["1990-01-01":"2023-12-31"]
 
 #df = pd.read_csv("/data/scratch/richteny/for_emulator/Halji/LHS-narrow/LHS_Posterior_Design_Buffered.csv")
 df = pd.read_csv("/data/scratch/richteny/thesis/cosipy_test_space/Abramov_LHS-wide-master.csv", index_col=0)
 df['rrr_factor'] = np.exp(df['rrr_factor'])
-df['lwin_factor'] = np.exp(df['lwin_factor'])
 df['ws_factor'] = np.exp(df['ws_factor'])
 
 param_cols = df.columns
@@ -67,19 +67,26 @@ def parse_param_key_from_filename(fname):
     tail = tail.split("_num")[0]
     vals = [float(v) for v in tail.split("_")]
 
+    """
+    Filename if Bougamont: 
+    0 RRR_factor, 1 alb_snow, 2 alb_ice, 3 alb_firn, 4 t wet
+    5 t dry, 6 t K, 7 alb depth, 8 roughness fresh snow, 9 roughness ice, 10 roughness firn, 11 aging factor roughness
+    12 bias LWin, 13 WS_factor, 14 bias T2, 15 center_snow_transfer, 16 min snowfall
+
+    # Order in CSV: rrr-factor, alb-snow, alb-firn, alb-depth, bias-LWin, ws-factor, bias-t2, t-wet, min-snowfall, global-id
+    """
+
     return tuple([
         round(vals[0], 4), #rrr_factor
-        round(vals[2], 4), #alb_ice
+        #round(vals[2], 4), #alb_ice now fixed
         round(vals[1], 4), #alb_snow
         round(vals[3], 4), #alb_firn
         round(vals[7], 4), #alb_depth
-        round(vals[15], 4), #center snow
-        round(vals[9], 4), #roughness ice
-        round(vals[12], 4), #LWin factor
-        round(vals[13], 4), #WS factor
+        round(vals[12], 4), #bias lwin
+        round(vals[13], 4), #ws factor
         round(vals[14], 4), #bias t2
-        round(vals[4], 4), #t_star_wet
-        round(vals[6], 4), #t_star_K
+        round(vals[4], 4), #t wet
+        round(vals[16], 4), #min-snowfall
     ])
 """
     return tuple([

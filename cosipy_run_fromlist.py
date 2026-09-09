@@ -29,18 +29,19 @@ for i, row in df_batch.iterrows():
     try:
         runcosipy(
             RRR_factor      = float(row['rrr_factor']),
-            alb_ice         = float(row['alb_ice']),
+            #alb_ice         = float(row['alb_ice']), fixed
             alb_snow        = float(row['alb_snow']),  # Fixed typo here
             alb_firn        = float(row['alb_firn']),
             #albedo_aging    = float(row['paralbedo_aging']),
             albedo_depth    = float(row['albedo_depth']),
-            center_snow_transfer_function = float(row['center_snow']),
-            roughness_ice   = float(row['roughness_ice']),
-            LWIN_factor     = float(row['lwin_factor']),
-            WS_factor       = float(row['ws_factor']),
-            summer_bias_t2  = float(row['summer_bias_t2']),
+            #center_snow_transfer_function = float(row['center_snow']),
+            #roughness_ice   = float(row['roughness_ice']),
+            bias_LWIN       = float(row['lwin_factor']),
+            ws_factor       = float(row['ws_factor']),
+            bias_T2  = float(row['summer_bias_t2']),
             t_wet           = float(row['t_wet']),
-            t_K             = float(row['t_K']),
+            #t_K             = float(row['t_K']),
+            min_snowfall    = float(row['min_snowfall']),
             count           = i
             #RRR_factor      = float(row['parRRR_factor']),
             #alb_ice         = float(row['paralb_ice']),

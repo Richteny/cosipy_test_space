@@ -624,6 +624,43 @@ def build(a):
     SW   = cols["SW"]
     RH2  = rh_from_q(cols["q"], cols["t"], cols["p"])
 
+    # wind speed rises with elevation in topopyscale
+    if a.wind_profile != "keep":
+        if a.wind_profile == "hypsometric" and "N_Points" in ds_static:
+            npv = ds_static["N_Points"].values
+            if "time" in ds_static["N_Points"].dims:
+                npv = np.nanmean(npv, axis=0)
+            w_ref = npv.flatten().astype(float)
+        else:
+            w_ref = np.ones(n_band, dtype=float)
+
+        ok = np.isfinite(w_ref) & (w_ref > 0) & np.isfinite(hgt_srf)
+        if not ok.any():
+            sys.exit("Error. No valid bands for wind reference")
+        h_ref = float(np.sum(hgt_srf[ok] * w_ref[ok]) / np.sum(w_ref[ok]))
+
+        d = np.abs(hgt_srf - h_ref)
+        d[~ok] = np.inf
+        i_ref = int(np.argmin(d))
+
+        #gradient check
+        u_mean_band = np.nanmean(U2, axis=0)
+        slope = (np.polyfit(hgt_srf[ok], u_mean_band[ok], 1)[0] * 100.0
+                 if ok.sum() >= 2 else np.nan)
+
+        u_ref = U2[:, i_ref].copy() #n_time, 
+        U2 = np.repeat(u_ref[:, None], n_band, axis=1) #ntime, band
+
+        print(f"Wind profile: '{a.wind_profile}' - gradient deleted")
+        print(f"Reference height {h_ref:.0f}m -> Band {i_ref} (HGT {hgt_srf[i_ref]:.0f} m,"
+              f"{int(w_ref[i_ref])} points)")
+        print(f"before dU2/dz {slope:+.3f} m/s per 100m,"
+              f"band mean {u_mean_band[ok].min():.2f}-{u_mean_band[ok].max():.2f} m/s")
+        print(f"after average {u_ref.mean():.2f} m/s"
+              f"Span {u_ref.min():.2f}-{u_ref.max():.2f} m/s over time)")
+    else:
+        print("Wind profile 'keep' - gradient unchanged")
+
     # Gletscher-Koordinaten: lat = stationLat, lon = -tcart (tcart = -lon).
     # Zentral gesetzt, weil sowohl der LW- als auch der SW-Block sie brauchen —
     # frueher standen sie nur im liu-cf-Zweig, was --lw-method topopyscale
@@ -862,6 +899,11 @@ def main():
     p.add_argument("--lw-eps", dest="lw_eps", type=float, default=0.98,
                    help="Terrain-Emissivitaet (0.98 = Prinz 2016 / natuerliche "
                         "Oberflaechen; 0.97 Schnee/Fels, 0.99 quasi-Schwarzkoerper).")
+    p.add_argument("--wind-profile", dest="wind_profile", default="hypsometric",
+                   choices=["hypsometric", "mean", "keep"],
+                   help="U2-gradient: 'hypsometric' = Value at N_Points weighted mean of all bands"
+                        "'mean' = unweighted mean,"
+                        "'keep' = topoypscale profile unchanged.")
     a = p.parse_args()
     build(a)
 

@@ -205,6 +205,7 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
         t_wet = opt_dict[15]
         t_dry = opt_dict[16]
         t_K = opt_dict[17]
+        minimum_snowfall = opt_dict[18]
 
     nt = len(DATA.time.values)  # accessing DATA is expensive
     """
@@ -396,6 +397,7 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
 
         # if snowfall is smaller than the threshold
         if SNOWFALL<minimum_snowfall:
+            print(f"Filter due to min snowfall: {minimum_snowfall}")
             SNOWFALL = 0.0
 
         # if rainfall is smaller than the threshold

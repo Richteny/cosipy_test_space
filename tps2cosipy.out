@@ -2,11 +2,11 @@
   LW_METHOD = topopyscale
   LW_TERRAIN= airT   (eps=0.98)
   SW_CLOUD  = on
+  WIND_PROF = hypsometric
   ACHTUNG: bestehende Forcings werden ueberschrieben
-  nur: halji mera parlung bordu dongkemadi guliya interiorglacier kolahoi urumqi abramov
 ############################################################
 
-=== Abramov  Mon Aug 17 14:27:58 CEST 2026 ===
+=== Abramov  Wed Sep  9 18:27:51 CEST 2026 ===
     Baseline: Abramov_RGI6_HORAYZON-LUT_1D20m.nc
     Umrisse:  2016 2020
     Wolken:   456 CLOUD-Dateien in /data/scratch/richteny/projects/abramov/inputs/climate/yearly
@@ -17,11 +17,15 @@ abramov: 65 Baender
   Zeit: 1987-10-01 00:00:00 .. 2024-12-31 23:00:00  (326568 Schritte)
   unkorrigierte Felder gefunden: SW_direct_flat, SW_diffuse_flat, LW_flat
   Baender an SRF-Reihenfolge angeglichen (Hoehen-Lookup, max Abweichung 0.0 m)
+Wind profile: 'hypsometric' - gradient deleted
+Reference height 4188m -> Band 28 (HGT 4195 m,1328 points)
+before dU2/dz +0.570 m/s per 100m,band mean 2.22-9.45 m/s
+after average 5.30 m/sSpan 0.01-17.99 m/s over time)
   LWin-Methode: topopyscale (LW_flat, ohne SVF-Skalierung)
 Wertebereiche (n = Anzahl Werte ausserhalb der COSIPY-Grenzen):
   T2    min=  238.02 max=  290.54  [ok]
   RH2   min=    1.08 max=  100.00  [ok]
-  U2    min=    0.00 max=   31.93  [ok]
+  U2    min=    0.01 max=   17.99  [ok]
   PRES  min=  531.77 max=  662.69  [ok]
   RRR   min=    0.00 max=    4.13  [ok]
   LWin  min=   55.74 max=  358.89  [ok]
@@ -40,9 +44,9 @@ Nach SW-Block:
   SVF: zeitabhaengig (variiert ueber Umrisse)
 Schreibe /data/scratch/richteny/thesis/cosipy_test_space/data/input/Abramov/Abramov_ERA5_1D20m_HORAYZON_1987_2024-terrairT.nc
 Fertig.
-=== Abramov fertig Mon Aug 17 14:32:53 CEST 2026 ===
+=== Abramov fertig Wed Sep  9 18:32:04 CEST 2026 ===
 
-=== ParlungNo4  Mon Aug 17 14:32:53 CEST 2026 ===
+=== ParlungNo4  Wed Sep  9 18:32:05 CEST 2026 ===
     Baseline: ParlungNo4_RGI7_HORAYZON-LUT_1D20m.nc
     Umrisse:  2013 2018 2021
     Wolken:   456 CLOUD-Dateien in /data/scratch/richteny/projects/parlung/inputs/climate/yearly
@@ -53,11 +57,15 @@ parlung: 65 Baender
   Zeit: 1987-10-01 00:00:00 .. 2024-12-31 23:00:00  (326568 Schritte)
   unkorrigierte Felder gefunden: SW_direct_flat, SW_diffuse_flat, LW_flat
   Baender an SRF-Reihenfolge angeglichen (Hoehen-Lookup, max Abweichung 0.0 m)
+Wind profile: 'hypsometric' - gradient deleted
+Reference height 5307m -> Band 32 (HGT 5301 m,206 points)
+before dU2/dz +0.521 m/s per 100m,band mean 1.53-8.03 m/s
+after average 3.89 m/sSpan 0.01-18.15 m/s over time)
   LWin-Methode: topopyscale (LW_flat, ohne SVF-Skalierung)
 Wertebereiche (n = Anzahl Werte ausserhalb der COSIPY-Grenzen):
   T2    min=  244.91 max=  285.58  [ok]
   RH2   min=    0.41 max=  100.00  [ok]
-  U2    min=    0.00 max=   30.67  [ok]
+  U2    min=    0.01 max=   18.15  [ok]
   PRES  min=  473.21 max=  585.57  [ok]
   RRR   min=    0.00 max=    5.89  [ok]
   LWin  min=   64.60 max=  341.60  [ok]
@@ -79,9 +87,9 @@ Nach SW-Block:
   SVF: zeitabhaengig (variiert ueber Umrisse)
 Schreibe /data/scratch/richteny/thesis/cosipy_test_space/data/input/ParlungNo4/ParlungNo4_ERA5_1D20m_HORAYZON_1987_2024-terrairT.nc
 Fertig.
-=== ParlungNo4 fertig Mon Aug 17 14:35:55 CEST 2026 ===
+=== ParlungNo4 fertig Wed Sep  9 18:35:24 CEST 2026 ===
 
-=== Dongkemadi  Mon Aug 17 14:35:55 CEST 2026 ===
+=== Dongkemadi  Wed Sep  9 18:35:25 CEST 2026 ===
     Baseline: Dongkemadi_RGI6_HORAYZON-LUT_1D20m.nc
     Umrisse:  2015
     Wolken:   456 CLOUD-Dateien in /data/scratch/richteny/projects/dongkemadi/inputs/climate/yearly
@@ -92,11 +100,15 @@ dongkemadi: 41 Baender
   Zeit: 1987-10-01 00:00:00 .. 2024-12-31 23:00:00  (326568 Schritte)
   unkorrigierte Felder gefunden: SW_direct_flat, SW_diffuse_flat, LW_flat
   Baender an SRF-Reihenfolge angeglichen (Hoehen-Lookup, max Abweichung 0.0 m)
+Wind profile: 'hypsometric' - gradient deleted
+Reference height 5657m -> Band 18 (HGT 5652 m,1263 points)
+before dU2/dz +0.644 m/s per 100m,band mean 5.08-10.09 m/s
+after average 8.32 m/sSpan 0.02-27.23 m/s over time)
   LWin-Methode: topopyscale (LW_flat, ohne SVF-Skalierung)
 Wertebereiche (n = Anzahl Werte ausserhalb der COSIPY-Grenzen):
   T2    min=  238.99 max=  285.36  [ok]
   RH2   min=    0.90 max=  100.00  [ok]
-  U2    min=    0.00 max=   31.91  [ok]
+  U2    min=    0.02 max=   27.23  [ok]
   PRES  min=  459.30 max=  541.65  [ok]
   RRR   min=    0.00 max=    7.33  [ok]
   LWin  min=   57.03 max=  332.42  [ok]
@@ -114,9 +126,9 @@ Nach SW-Block:
   SVF: zeitabhaengig (variiert ueber Umrisse)
 Schreibe /data/scratch/richteny/thesis/cosipy_test_space/data/input/Dongkemadi/Dongkemadi_ERA5_1D20m_HORAYZON_1987_2024-terrairT.nc
 Fertig.
-=== Dongkemadi fertig Mon Aug 17 14:39:47 CEST 2026 ===
+=== Dongkemadi fertig Wed Sep  9 18:38:15 CEST 2026 ===
 
-=== Urumqi  Mon Aug 17 14:39:47 CEST 2026 ===
+=== Urumqi  Wed Sep  9 18:38:15 CEST 2026 ===
     Baseline: Urumqi_RGI6_HORAYZON-LUT_1D20m.nc
     Umrisse:  2016
     Wolken:   456 CLOUD-Dateien in /data/scratch/richteny/projects/urumqi/inputs/climate/yearly
@@ -127,11 +139,15 @@ urumqi: 35 Baender
   Zeit: 1987-10-01 00:00:00 .. 2024-12-31 23:00:00  (326568 Schritte)
   unkorrigierte Felder gefunden: SW_direct_flat, SW_diffuse_flat, LW_flat
   Baender an SRF-Reihenfolge angeglichen (Hoehen-Lookup, max Abweichung 0.0 m)
+Wind profile: 'hypsometric' - gradient deleted
+Reference height 4037m -> Band 10 (HGT 4043 m,144 points)
+before dU2/dz +0.493 m/s per 100m,band mean 3.69-6.93 m/s
+after average 4.94 m/sSpan 0.00-22.92 m/s over time)
   LWin-Methode: topopyscale (LW_flat, ohne SVF-Skalierung)
 Wertebereiche (n = Anzahl Werte ausserhalb der COSIPY-Grenzen):
   T2    min=  235.73 max=  286.57  [ok]
   RH2   min=    0.35 max=  100.00  [ok]
-  U2    min=    0.00 max=   30.22  [ok]
+  U2    min=    0.00 max=   22.92  [ok]
   PRES  min=  564.64 max=  652.56  [ok]
   RRR   min=    0.00 max=    3.88  [ok]
   LWin  min=   68.09 max=  342.82  [ok]
@@ -149,9 +165,9 @@ Nach SW-Block:
   SVF: zeitabhaengig (variiert ueber Umrisse)
 Schreibe /data/scratch/richteny/thesis/cosipy_test_space/data/input/Urumqi/Urumqi_ERA5_1D20m_HORAYZON_1987_2024-terrairT.nc
 Fertig.
-=== Urumqi fertig Mon Aug 17 14:44:01 CEST 2026 ===
+=== Urumqi fertig Wed Sep  9 18:41:02 CEST 2026 ===
 
-=== InteriorGlacier  Mon Aug 17 14:44:02 CEST 2026 ===
+=== InteriorGlacier  Wed Sep  9 18:41:03 CEST 2026 ===
     Baseline: InteriorGlacier_RGI6_HORAYZON-LUT_1D20m.nc
     Umrisse:  2010 2016
     Wolken:   456 CLOUD-Dateien in /data/scratch/richteny/projects/interiorglacier/inputs/climate/yearly
@@ -162,11 +178,15 @@ interiorglacier: 36 Baender
   Zeit: 1987-10-01 00:00:00 .. 2024-12-31 23:00:00  (326568 Schritte)
   unkorrigierte Felder gefunden: SW_direct_flat, SW_diffuse_flat, LW_flat
   Baender an SRF-Reihenfolge angeglichen (Hoehen-Lookup, max Abweichung 0.0 m)
+Wind profile: 'hypsometric' - gradient deleted
+Reference height 5924m -> Band 20 (HGT 5924 m,278 points)
+before dU2/dz +0.374 m/s per 100m,band mean 7.14-10.01 m/s
+after average 9.20 m/sSpan 0.01-27.90 m/s over time)
   LWin-Methode: topopyscale (LW_flat, ohne SVF-Skalierung)
 Wertebereiche (n = Anzahl Werte ausserhalb der COSIPY-Grenzen):
   T2    min=  238.93 max=  286.39  [ok]
   RH2   min=    1.39 max=  100.00  [ok]
-  U2    min=    0.00 max=   31.69  [ok]
+  U2    min=    0.01 max=   27.90  [ok]
   PRES  min=  451.27 max=  526.48  [ok]
   RRR   min=    0.00 max=    9.64  [ok]
   LWin  min=   66.14 max=  320.45  [ok]
@@ -186,9 +206,9 @@ Nach SW-Block:
   SVF: zeitabhaengig (variiert ueber Umrisse)
 Schreibe /data/scratch/richteny/thesis/cosipy_test_space/data/input/InteriorGlacier/InteriorGlacier_ERA5_1D20m_HORAYZON_1987_2024-terrairT.nc
 Fertig.
-=== InteriorGlacier fertig Mon Aug 17 14:47:21 CEST 2026 ===
+=== InteriorGlacier fertig Wed Sep  9 18:43:49 CEST 2026 ===
 
-=== Bordu  Mon Aug 17 14:47:22 CEST 2026 ===
+=== Bordu  Wed Sep  9 18:43:50 CEST 2026 ===
     Baseline: Bordu_RGI6_HORAYZON-LUT_1D20m.nc
     Umrisse:  2011 2014 2017 2020
     Wolken:   456 CLOUD-Dateien in /data/scratch/richteny/projects/bordu/inputs/climate/yearly
@@ -199,11 +219,15 @@ bordu: 45 Baender
   Zeit: 1987-10-01 00:00:00 .. 2024-12-31 23:00:00  (326568 Schritte)
   unkorrigierte Felder gefunden: SW_direct_flat, SW_diffuse_flat, LW_flat
   Baender an SRF-Reihenfolge angeglichen (Hoehen-Lookup, max Abweichung 0.0 m)
+Wind profile: 'hypsometric' - gradient deleted
+Reference height 4242m -> Band 19 (HGT 4242 m,317 points)
+before dU2/dz +0.625 m/s per 100m,band mean 2.27-7.77 m/s
+after average 4.83 m/sSpan 0.02-20.59 m/s over time)
   LWin-Methode: topopyscale (LW_flat, ohne SVF-Skalierung)
 Wertebereiche (n = Anzahl Werte ausserhalb der COSIPY-Grenzen):
   T2    min=  236.54 max=  289.01  [ok]
   RH2   min=    0.55 max=  100.00  [ok]
-  U2    min=    0.00 max=   28.47  [ok]
+  U2    min=    0.02 max=   20.59  [ok]
   PRES  min=  547.07 max=  648.44  [ok]
   RRR   min=    0.00 max=    3.82  [ok]
   LWin  min=   73.34 max=  357.56  [ok]
@@ -227,9 +251,9 @@ Nach SW-Block:
   SVF: zeitabhaengig (variiert ueber Umrisse)
 Schreibe /data/scratch/richteny/thesis/cosipy_test_space/data/input/Bordu/Bordu_ERA5_1D20m_HORAYZON_1987_2024-terrairT.nc
 Fertig.
-=== Bordu fertig Mon Aug 17 14:51:46 CEST 2026 ===
+=== Bordu fertig Wed Sep  9 18:46:50 CEST 2026 ===
 
-=== Guliya  Mon Aug 17 14:51:52 CEST 2026 ===
+=== Guliya  Wed Sep  9 18:46:51 CEST 2026 ===
     Baseline: Guliya_RGI6_HORAYZON-LUT_1D20m.nc
     Umrisse:  (nur Baseline)
     Wolken:   456 CLOUD-Dateien in /data/scratch/richteny/projects/guliya/inputs/climate/yearly
@@ -240,11 +264,15 @@ guliya: 59 Baender
   Zeit: 1987-10-01 00:00:00 .. 2024-12-31 23:00:00  (326568 Schritte)
   unkorrigierte Felder gefunden: SW_direct_flat, SW_diffuse_flat, LW_flat
   Baender an SRF-Reihenfolge angeglichen (Hoehen-Lookup, max Abweichung 0.0 m)
+Wind profile: 'hypsometric' - gradient deleted
+Reference height 6013m -> Band 21 (HGT 6022 m,7736 points)
+before dU2/dz +0.578 m/s per 100m,band mean 3.63-9.85 m/s
+after average 6.25 m/sSpan 0.00-20.70 m/s over time)
   LWin-Methode: topopyscale (LW_flat, ohne SVF-Skalierung)
 Wertebereiche (n = Anzahl Werte ausserhalb der COSIPY-Grenzen):
   T2    min=  233.05 max=  283.09  [ok]
   RH2   min=    0.72 max=  100.00  [ok]
-  U2    min=    0.00 max=   33.63  [ok]
+  U2    min=    0.00 max=   20.70  [ok]
   PRES  min=  423.16 max=  529.50  [ok]
   RRR   min=    0.00 max=    3.07  [ok]
   LWin  min=   41.66 max=  322.64  [ok]
@@ -259,9 +287,9 @@ Nach SW-Block:
   SVF: statisch
 Schreibe /data/scratch/richteny/thesis/cosipy_test_space/data/input/Guliya/Guliya_ERA5_1D20m_HORAYZON_1987_2024-terrairT.nc
 Fertig.
-=== Guliya fertig Mon Aug 17 14:57:05 CEST 2026 ===
+=== Guliya fertig Wed Sep  9 18:49:52 CEST 2026 ===
 
-=== Kolahoi  Mon Aug 17 14:57:05 CEST 2026 ===
+=== Kolahoi  Wed Sep  9 18:49:53 CEST 2026 ===
     Baseline: Kolahoi_RGI6_HORAYZON-LUT_1D20m.nc
     Umrisse:  2014
     Wolken:   456 CLOUD-Dateien in /data/scratch/richteny/projects/kolahoi/inputs/climate/yearly
@@ -272,11 +300,15 @@ kolahoi: 77 Baender
   Zeit: 1987-10-01 00:00:00 .. 2024-12-31 23:00:00  (326568 Schritte)
   unkorrigierte Felder gefunden: SW_direct_flat, SW_diffuse_flat, LW_flat
   Baender an SRF-Reihenfolge angeglichen (Hoehen-Lookup, max Abweichung 0.0 m)
+Wind profile: 'hypsometric' - gradient deleted
+Reference height 4429m -> Band 29 (HGT 4435 m,512 points)
+before dU2/dz +0.255 m/s per 100m,band mean 1.13-4.92 m/s
+after average 2.88 m/sSpan 0.01-19.97 m/s over time)
   LWin-Methode: topopyscale (LW_flat, ohne SVF-Skalierung)
 Wertebereiche (n = Anzahl Werte ausserhalb der COSIPY-Grenzen):
   T2    min=  245.17 max=  291.49  [ok]
   RH2   min=    1.80 max=  100.00  [ok]
-  U2    min=    0.00 max=   30.09  [ok]
+  U2    min=    0.01 max=   19.97  [ok]
   PRES  min=  532.67 max=  676.38  [ok]
   RRR   min=    0.00 max=    9.74  [ok]
   LWin  min=   86.87 max=  379.99  [ok]
@@ -295,9 +327,9 @@ Nach SW-Block:
   SVF: zeitabhaengig (variiert ueber Umrisse)
 Schreibe /data/scratch/richteny/thesis/cosipy_test_space/data/input/Kolahoi/Kolahoi_ERA5_1D20m_HORAYZON_1987_2024-terrairT.nc
 Fertig.
-=== Kolahoi fertig Mon Aug 17 15:01:15 CEST 2026 ===
+=== Kolahoi fertig Wed Sep  9 18:53:21 CEST 2026 ===
 
-=== Mera  Mon Aug 17 15:01:15 CEST 2026 ===
+=== Mera  Wed Sep  9 18:53:22 CEST 2026 ===
     Baseline: Mera_RGI6_HORAYZON-LUT_1D20m.nc
     Umrisse:  2012 2018
     Wolken:   456 CLOUD-Dateien in /data/scratch/richteny/projects/mera/inputs/climate/yearly
@@ -308,11 +340,15 @@ mera: 74 Baender
   Zeit: 1987-10-01 00:00:00 .. 2024-12-31 23:00:00  (326568 Schritte)
   unkorrigierte Felder gefunden: SW_direct_flat, SW_diffuse_flat, LW_flat
   Baender an SRF-Reihenfolge angeglichen (Hoehen-Lookup, max Abweichung 0.0 m)
+Wind profile: 'hypsometric' - gradient deleted
+Reference height 5644m -> Band 37 (HGT 5650 m,150 points)
+before dU2/dz +0.510 m/s per 100m,band mean 2.77-10.26 m/s
+after average 5.14 m/sSpan 0.00-23.57 m/s over time)
   LWin-Methode: topopyscale (LW_flat, ohne SVF-Skalierung)
 Wertebereiche (n = Anzahl Werte ausserhalb der COSIPY-Grenzen):
   T2    min=  241.49 max=  279.88  [ok]
   RH2   min=    1.04 max=  100.00  [ok]
-  U2    min=    0.00 max=   43.07  [ok]
+  U2    min=    0.00 max=   23.57  [ok]
   PRES  min=  444.45 max=  566.77  [ok]
   RRR   min=    0.00 max=   10.91  [ok]
   LWin  min=   47.02 max=  338.03  [ok]
@@ -333,9 +369,9 @@ Nach SW-Block:
   SVF: zeitabhaengig (variiert ueber Umrisse)
 Schreibe /data/scratch/richteny/thesis/cosipy_test_space/data/input/Mera/Mera_ERA5_1D20m_HORAYZON_1987_2024-terrairT.nc
 Fertig.
-=== Mera fertig Mon Aug 17 15:05:34 CEST 2026 ===
+=== Mera fertig Wed Sep  9 18:56:51 CEST 2026 ===
 
-=== Halji  Mon Aug 17 15:05:34 CEST 2026 ===
+=== Halji  Wed Sep  9 18:56:51 CEST 2026 ===
     Baseline: Halji_RGI6_HORAYZON-LUT_1D20m.nc
     Umrisse:  2014 2018 2021 2023
     Wolken:   456 CLOUD-Dateien in /data/scratch/richteny/projects/halji/inputs/climate/yearly
@@ -346,11 +382,15 @@ halji: 21 Baender
   Zeit: 1987-10-01 00:00:00 .. 2024-12-31 23:00:00  (326568 Schritte)
   unkorrigierte Felder gefunden: SW_direct_flat, SW_diffuse_flat, LW_flat
   Baender an SRF-Reihenfolge angeglichen (Hoehen-Lookup, max Abweichung 0.0 m)
+Wind profile: 'hypsometric' - gradient deleted
+Reference height 5438m -> Band 8 (HGT 5446 m,263 points)
+before dU2/dz +0.333 m/s per 100m,band mean 2.83-4.16 m/s
+after average 3.39 m/sSpan 0.01-19.92 m/s over time)
   LWin-Methode: topopyscale (LW_flat, ohne SVF-Skalierung)
 Wertebereiche (n = Anzahl Werte ausserhalb der COSIPY-Grenzen):
   T2    min=  244.31 max=  283.02  [ok]
   RH2   min=    2.44 max=  100.00  [ok]
-  U2    min=    0.00 max=   25.46  [ok]
+  U2    min=    0.01 max=   19.92  [ok]
   PRES  min=  488.47 max=  543.34  [ok]
   RRR   min=    0.00 max=   11.08  [ok]
   LWin  min=   68.88 max=  339.79  [ok]
@@ -375,6 +415,6 @@ Nach SW-Block:
   SVF: zeitabhaengig (variiert ueber Umrisse)
 Schreibe /data/scratch/richteny/thesis/cosipy_test_space/data/input/Halji/Halji_ERA5_1D20m_HORAYZON_1987_2024-terrairT.nc
 Fertig.
-=== Halji fertig Mon Aug 17 15:08:13 CEST 2026 ===
+=== Halji fertig Wed Sep  9 18:59:18 CEST 2026 ===
 
-ALLE FERTIG Mon Aug 17 15:08:13 CEST 2026:  10 gebaut, 0 uebersprungen/fehlerhaft
+ALLE FERTIG Wed Sep  9 18:59:18 CEST 2026:  10 gebaut, 0 uebersprungen/fehlerhaft

@@ -474,6 +474,7 @@ class IOClass:
             t_wet = opt_dict[15]
             t_dry = opt_dict[16]
             t_K = opt_dict[17]
+            minimum_snowfall = opt_dict[18]
             #print(aging_factor_roughness)
         else:
             mult_factor_RRR = Constants.mult_factor_RRR
@@ -494,6 +495,7 @@ class IOClass:
             t_wet = Constants.t_star_wet
             t_dry = Constants.t_star_dry
             t_K = Constants.t_star_K
+            minimum_snowfall = Constants.minimum_snowfall
  
         # Coordinates
         self.RESULT = xr.Dataset()
@@ -539,7 +541,7 @@ class IOClass:
         self.RESULT.attrs["Multiplication_factor_for_WS"] = mult_factor_WS
         self.RESULT.attrs["Summer_bias_for_T2"] = bias_T2
         self.RESULT.attrs["Minimum_snow_layer_height"] = Constants.minimum_snow_layer_height
-        self.RESULT.attrs["Minimum_snowfall"] = Constants.minimum_snowfall
+        self.RESULT.attrs["Minimum_snowfall"] = minimum_snowfall
 
         self.RESULT.attrs["Remesh_method"] = Constants.remesh_method
         self.RESULT.attrs["First_layer_height_log_profile"] = Constants.first_layer_height

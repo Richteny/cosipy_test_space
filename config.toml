@@ -6,10 +6,10 @@
 #time_start = "1999-01-01T00:00"
 #time_end = "2009-12-31T23:00"
 #full time paper 3
-#time_start = "1987-10-01T00:00"
+time_start = "1987-10-01T00:00"
 #sens runs abramov
-time_start = "1998-10-01T00:00"
-time_end = "2019-12-31T23:00"
+#time_start = "1998-10-01T00:00"
+time_end = "2023-12-31T23:00"
 
 [FILENAMES]
 data_path = "./data/"
@@ -19,7 +19,7 @@ data_path = "./data/"
 input_netcdf = "Abramov/Abramov_ERA5_1D20m_HORAYZON_1987_2024-terrairT.nc"
 #input_netcdf = "Kolahoi/Kolahoi_HARv2_1D20m_HORAYZON_1988_2022.nc"
 #output_prefix = "HEF_COSMO_1D20m_1999_2010_GSA" #"HEF_COSMO_1D20m_1999_2010_HORAYZON_IntpPRES"
-output_prefix = "Abramov_GSA_ERA5_1998-2020"
+output_prefix = "Abramov_LHS-wide_ERA5_1987-2023"
 #output_prefix = "Posterior-Mean_Abramov_HARv2_1988-2022.nc" #"Posterior-Mean-Halji_HARv2_1988-2022.nc"
 
 [RESTART]
@@ -35,7 +35,7 @@ obs_type = "snowheight" # What kind of stake data is used "mb" or "snowheight"
 ["TRANSIENT SNOWLINE DATA"]
 time_start_cali = "1990-01-01T00:00"
 #time_start_cali = "2000-01-01T00:00"
-time_end_cali = "2019-12-31T23:00"
+time_end_cali = "2023-12-31T23:00"
 time_start_mb = "2000-01-01T00:00"
 time_end_mb = "2019-12-31T23:00"
 tsl_evaluation = true #true

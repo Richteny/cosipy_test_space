@@ -8,27 +8,28 @@ from cosipy.constants import Constants
 from COSIPY import main as runcosipy
 
 # --- 1. CONFIGURATION ---
-TOTAL_SIMULATIONS = 1600
-NUM_CHUNKS = 4
+TOTAL_SIMULATIONS = 1500
+NUM_CHUNKS = 3
 SEED = 42  # CRITICAL: Ensures all 4 processes see the exact same 1000 params
 
 # Define Parameter Ranges (Min, Max)
 # Adjust these bounds to match your prior ranges
 param_bounds = {
-    'rrr_factor':      (np.log(0.3), np.log(1.2)),
-    'alb_ice':         (0.11, 0.39),
-    'alb_snow':        (0.82, 0.9),
-    'alb_firn':        (0.4, 0.65),
+    'rrr_factor':      (np.log(0.333), np.log(3.0)),
+    #'alb_ice':         (0.11, 0.39),
+    'alb_snow':        (0.75, 0.9),
+    'alb_firn':        (0.45, 0.75),
     #'albedo_aging':    (1.0, 25.0), not needed with bougamont scheme  
     'albedo_depth':    (1.0, 14.0), 
-    'center_snow':     (-1.5, 1.5), 
-    'roughness_ice':   (0.7, 20.0),
-    'lwin_factor':     (np.log(0.85), np.log(1.15)),
-    'ws_factor':       (np.log(0.75), np.log(2)),
-    'bias_T2':         (0.0, 1.5),
+    #'center_snow':     (-1.5, 1.5), 
+    #'roughness_ice':   (0.7, 20.0),
+    'bias_LWin':       (-50, 50),
+    'ws_factor':       (np.log(0.5), np.log(2)),
+    'bias_T2':         (-2, 2),
     't_wet':           (1.0, 23.0),
+    'min_snowfall':    (0.001, 0.008),
     #'t_dry':           (25.0, 35.0), keep constant at 30 in accordance with other studies and exp. nature  
-    't_K':             (3.0, 16.0)
+    #'t_K':             (3.0, 16.0), keep constant at 
 }
 
 # --- 2. LHS GENERATOR FUNCTION ---
@@ -76,7 +77,7 @@ if __name__ == "__main__":
     print("Generating Master LHS Parameter Set...")
     df_master = generate_lhs_params(TOTAL_SIMULATIONS, SEED)
     
-    df_master.to_csv("./Kolahoi_LHS-wide-master.csv")    
+    df_master.to_csv("./Abramov_LHS-wide-master.csv")    
     # C. Slice the DataFrame for this Chunk
     chunk_size = TOTAL_SIMULATIONS // NUM_CHUNKS
     start_idx = chunk_id * chunk_size
@@ -102,18 +103,19 @@ if __name__ == "__main__":
         try:
             runcosipy(
                 RRR_factor        = float(np.exp(row['rrr_factor'])),
-                alb_ice           = float(row['alb_ice']),
+                #alb_ice           = float(row['alb_ice']),
                 alb_snow          = float(row['alb_snow']),
                 alb_firn          = float(row['alb_firn']),
                 #albedo_aging      = float(row['albedo_aging']),
                 albedo_depth      = float(row['albedo_depth']),
-                center_snow_transfer_function = float(row['center_snow']),
-                roughness_ice     = float(row['roughness_ice']),
-                LWIN_factor       = float(np.exp(row['lwin_factor'])),
+                #center_snow_transfer_function = float(row['center_snow']),
+                #roughness_ice     = float(row['roughness_ice']),
+                bias_LWIN         = float(row['bias_LWin']),
                 WS_factor         = float(np.exp(row['ws_factor'])),
-                summer_bias_t2    = float(row['bias_T2']),
+                bias_T2           = float(row['bias_T2']),
                 t_wet             = float(row['t_wet']),
-                t_K               = float(row['t_K']),
+                #t_K               = float(row['t_K']),
+                minimum_snowfall  = float(row['min_snowfall']),
                 count             = global_id  # CRITICAL: Use global_id for output filename
             )
             print(f" -> Sim {global_id} finished.")

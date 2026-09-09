@@ -62,8 +62,8 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
          albedo_depth= Constants.albedo_mod_snow_depth, center_snow_transfer_function= Constants.center_snow_transfer_function,
          spread_snow_transfer_function= Constants.spread_snow_transfer_function, roughness_fresh_snow= Constants.roughness_fresh_snow,
          roughness_ice= Constants.roughness_ice,roughness_firn= Constants.roughness_firn, aging_factor_roughness= Constants.aging_factor_roughness,
-         LWIN_bias = Constants.bias_LWin, WS_factor = Constants.mult_factor_WS, bias_T2 = Constants.bias_T2,
-         t_wet = Constants.t_star_wet, t_dry = Constants.t_star_dry, t_K = Constants.t_star_K,
+         bias_LWIN = Constants.bias_LWin, WS_factor = Constants.mult_factor_WS, bias_T2 = Constants.bias_T2,
+         t_wet = Constants.t_star_wet, t_dry = Constants.t_star_dry, t_K = Constants.t_star_K, minimum_snowfall = Constants.minimum_snowfall,
          count=""):
 
     Config()
@@ -87,7 +87,7 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
     #aging_factor_roughness = float(0.0026)
     opt_dict = (RRR_factor, alb_ice, alb_snow, alb_firn, albedo_aging, albedo_depth, center_snow_transfer_function,
                 spread_snow_transfer_function, roughness_fresh_snow, roughness_ice, roughness_firn, aging_factor_roughness,
-                bias_LWIN, WS_factor, bias_T2, t_wet, t_dry, t_K)
+                bias_LWIN, WS_factor, bias_T2, t_wet, t_dry, t_K, minimum_snowfall)
     #0 to 5 - base, 6 center snow , 7 spreadsnow, 8 to 10 roughness length 
     #opt_dict=None
     lapse_T = float(lr_T)
@@ -183,25 +183,30 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
             results_output_name = output_netcdf.split('.nc')[0] + f"_RRR-{round(RRR_factor,4)}_{round(alb_snow,4)}_{round(alb_ice,4)}_{round(alb_firn,4)}"\
                                                                   f"_{round(albedo_aging,4)}_{round(albedo_depth,4)}_{round(roughness_fresh_snow,4)}"\
                                                                   f"_{round(roughness_ice,4)}_{round(roughness_firn,4)}_{round(aging_factor_roughness,6)}"\
-                                                                  f"_{round(bias_LWIN,4)}_{round(WS_factor,4)}_{round(bias_T2,4)}_{round(center_snow_transfer_function,4)}_num{count}.nc"
+                                                                  f"_{round(bias_LWIN,4)}_{round(WS_factor,4)}_{round(bias_T2,4)}_{round(center_snow_transfer_function,4)}"\
+                                                                  f"_{round(minimum_snowfall,6)}_num{count}.nc"
         #item below only works when objects are arrays and not given by hand, parameters not taken from pymc or sorts are floats
         except:
             results_output_name = output_netcdf.split('.nc')[0] + f"_RRR-{round(RRR_factor.item(),4)}_{round(alb_snow.item(),4)}_{round(alb_ice.item(),4)}_{round(alb_firn.item(),4)}"\
-                                                                  f"_{round(albedo_aging.item(),4)}_{round(albedo_depth.item(),4)}_{round(roughness_fresh_snow,4)}"\
-                                                                  f"_{round(roughness_ice,4)}_{round(roughness_firn,4)}_{round(aging_factor_roughness,6)}"\
-                                                                  f"_{round(bias_LWIN,4)}_{round(WS_factor,4)}_{round(bias_T2,4)}_{round(center_snow_transfer_function,4)}_num{count}.nc"
+                                                                  f"_{round(albedo_aging.item(),4)}_{round(albedo_depth.item(),4)}_{round(roughness_fresh_snow.item(),4)}"\
+                                                                  f"_{round(roughness_ice.item(),4)}_{round(roughness_firn.item(),4)}_{round(aging_factor_roughness.item(),6)}"\
+                                                                  f"_{round(bias_LWIN.item(),4)}_{round(WS_factor.item(),4)}_{round(bias_T2.item(),4)}_{round(center_snow_transfer_function.item(),4)}"\
+                                                                  f"_{round(minimum_snowfall.item(),6)}_num{count}.nc"
     else:
         try:
             results_output_name = output_netcdf.split('.nc')[0] + f"_RRR-{round(RRR_factor,4)}_{round(alb_snow,4)}_{round(alb_ice,4)}_{round(alb_firn,4)}"\
                                                                   f"_{round(t_wet,4)}_{round(t_dry,4)}_{round(t_K,4)}_{round(albedo_depth,4)}_{round(roughness_fresh_snow,4)}"\
                                                                   f"_{round(roughness_ice,4)}_{round(roughness_firn,4)}_{round(aging_factor_roughness,6)}"\
-                                                                  f"_{round(bias_LWIN,4)}_{round(WS_factor,4)}_{round(bias_T2,4)}_{round(center_snow_transfer_function,4)}_num{count}.nc"
+                                                                  f"_{round(bias_LWIN,4)}_{round(WS_factor,4)}_{round(bias_T2,4)}_{round(center_snow_transfer_function,4)}"\
+                                                                  f"_{round(minimum_snowfall,6)}_num{count}.nc"
+
         #item below only works when objects are arrays and not given by hand, parameters not taken from pymc or sorts are floats
         except:
             results_output_name = output_netcdf.split('.nc')[0] + f"_RRR-{round(RRR_factor.item(),4)}_{round(alb_snow.item(),4)}_{round(alb_ice.item(),4)}_{round(alb_firn.item(),4)}"\
                                                                   f"_{round(t_wet.item(),4)}_{round(t_dry.item(),4)}_{round(t_K.item(),4)}_{round(albedo_depth.item(),4)}_{round(roughness_fresh_snow,4)}"\
-                                                                  f"_{round(roughness_ice,4)}_{round(roughness_firn,4)}_{round(aging_factor_roughness,6)}"\
-                                                                  f"_{round(bias_LWIN,4)}_{round(WS_factor,4)}_{round(bias_T2,4)}_{round(center_snow_transfer_function,4)}_num{count}.nc"
+                                                                  f"_{round(roughness_ice.item(),4)}_{round(roughness_firn.item(),4)}_{round(aging_factor_roughness.item(),6)}"\
+                                                                  f"_{round(bias_LWIN.item(),4)}_{round(WS_factor.item(),4)}_{round(bias_T2.item(),4)}_{round(center_snow_transfer_function.item(),4)}"\
+                                                                  f"_{round(minimum_snowfall.item(),6)}_num{count}.nc"
 
     IO.get_result().to_netcdf(os.path.join(output_path,results_output_name), encoding=encoding, mode='w')
     
