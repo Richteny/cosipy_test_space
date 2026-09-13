@@ -107,6 +107,9 @@ def init_snowpack(DATA):
         np.array(layer_T, dtype=np.float64),
         np.array(layer_liquid_water, dtype=np.float64),
         None,
+        np.array(layer_T, dtype=np.float64), #Tavg
+        np.zeros(len(layer_heights), dtype=np.int32), #hydro year
+        0.0, #base elevation
         None,
         None,
         None,
@@ -128,6 +131,18 @@ def load_snowpack(GRID_RESTART):
     layer_T = GRID_RESTART.LAYER_T.values[0:num_layers]
     layer_LWC = GRID_RESTART.LAYER_LWC.values[0:num_layers]
     layer_IF = GRID_RESTART.LAYER_IF.values[0:num_layers]
+    if "LAYER_TAVG" in GRID_RESTART:
+        layer_TAVG = GRID_RESTART.LAYER_TAVG.values[0:num_layers]
+    else:
+        layer_TAVG = None
+    if "LAYER_HY" in GRID_RESTART:
+        layer_HY = GRID_RESTART.LAYER_HY.values[0:num_layers]
+    else:
+        layer_HY = None
+    if "BASE_ELEVATION" in GRID_RESTART:
+        base_elevation = float(GRID_RESTART.BASE_ELEVATION.values)
+    else:
+        base_elevation = None
 
     new_snow_height = np.float64(GRID_RESTART.NEWSNOWHEIGHT.to_numpy())
     new_snow_timestamp = np.float64(GRID_RESTART.NEWSNOWTIMESTAMP.to_numpy())
@@ -139,6 +154,9 @@ def load_snowpack(GRID_RESTART):
         layer_T,
         layer_LWC,
         layer_IF,
+        layer_TAVG, #restart has no t_avg
+        layer_HY, # hydro_year 
+        base_elevation, #base elevation
         new_snow_height,
         new_snow_timestamp,
         old_snow_timestamp,
@@ -154,6 +172,9 @@ def create_grid_jitted(
     layer_T: np.ndarray,
     layer_LWC: np.ndarray,
     layer_IF: np.ndarray,
+    layer_TAVG: np.ndarray,
+    layer_HY: np.ndarray,
+    base_elevation: np.ndarray,
     new_snow_height: float | np.float64,
     new_snow_timestamp: float | np.float64,
     old_snow_timestamp: float | np.float64,
@@ -170,6 +191,9 @@ def create_grid_jitted(
         layer_T,
         layer_LWC,
         layer_IF,
+        layer_TAVG,
+        layer_HY,
+        base_elevation,
         new_snow_height,
         new_snow_timestamp,
         old_snow_timestamp,

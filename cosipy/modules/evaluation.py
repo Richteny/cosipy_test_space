@@ -90,7 +90,8 @@ def resample_by_hand(vals,secs,time_vals):
     ntime, nlat, nlon = vals.shape
     ndays = len(time_vals)
     
-    day_next = 24*3600*1e9 #nanoseconds
+    day_next = np.int64(86_400_000_000_000)   # ns, integer nanoseconds
+    #day_next = 24*3600*1e9 #nanoseconds
 
     out = np.zeros((ndays, nlat, nlon))
     count = np.zeros((ndays, nlat, nlon))
@@ -466,6 +467,15 @@ def create_tsl_df(var_to_check, cos_output, min_albedo, tsl_method, tsl_normaliz
     elif var_to_check == "SNOWHEIGHT":
         amed,amean,astd,amax,amin,flag = calculate_tsl_byhand(
             cos_output.SNOWHEIGHT.values,
+            cos_output.HGT.values,
+            cos_output.MASK.values,
+            min_albedo,
+            tsl_method,
+            tsl_normalize,
+            n_points_arg)
+    elif var_to_check == "CY_SNOWHEIGHT":
+        amed,amean,astd,amax,amin,flag = calculate_tsl_byhand(
+            cos_output.CY_SNOWHEIGHT.values,
             cos_output.HGT.values,
             cos_output.MASK.values,
             min_albedo,

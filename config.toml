@@ -16,7 +16,8 @@ data_path = "./data/"
 #input_netcdf = "HEF/HEF_COSMO_1D20m_HORAYZON_1999_2010_IntpPRES.nc"
 #input_netcdf = "HEF/HEF_COSMO_1D20m_HORAYZON_radfix_hydro_1999_2010.nc"
 #input_netcdf = "Halji/Halji_HARv2_1D20m_HRZ_1988_2022.nc" # 
-input_netcdf = "Abramov/Abramov_ERA5_1D20m_HORAYZON_1987_2024-terrairT.nc"
+#input_netcdf = "Abramov/Abramov_ERA5_1D20m_HORAYZON_1987_2024-terrairT.nc"
+input_netcdf = "Abramov/Abramov_ERA5_1D20m_HORAYZON_1987_2024-terrairT_dh.nc"
 #input_netcdf = "Kolahoi/Kolahoi_HARv2_1D20m_HORAYZON_1988_2022.nc"
 #output_prefix = "HEF_COSMO_1D20m_1999_2010_GSA" #"HEF_COSMO_1D20m_1999_2010_HORAYZON_IntpPRES"
 output_prefix = "Abramov_LHS-wide_ERA5_1987-2023"
@@ -44,7 +45,7 @@ csv_filename = "localsens_1D20m_1999_2010.csv"
 time_col_obs = "LS_DATE"
 tsla_col_obs = "TSL_normalized"
 min_snowheight = 0.001 # 1mm old functionality
-min_albedo_method = true #false or true, use albedo to calc snowline or min snowheight
+tsl_source = "snowheight" #hydro_year, albedo, anything else reverts to SNOWHEIGHT
 tsl_method = "conservative"
 tsl_normalize = true
 #tsl_data_file = "./data/input/HEF/snowlines/HEF-snowlines-1999-2010_manual_filtered.csv"
@@ -95,9 +96,9 @@ yend = 40
 
 [OUTPUT_VARIABLES]
 # Select which output variables are written to disk. Comma-separated. Edit with caution.
-output_atm="ALBEDO,SNOWFALL"
-output_internal="MB,SNOWHEIGHT,ME"
-output_full="HEIGHT"
-#output_atm = "T2,RH2,U2,RAIN,SNOWFALL,RRR,PRES,N,G,LWin,LWout,H,LE,B,QRR,Z0,ALBEDO,TS"
-#output_internal = "ME,MB,surfMB,intMB,EVAPORATION,SUBLIMATION,CONDENSATION,DEPOSITION,surfM,subM,Q,REFREEZE,SNOWHEIGHT,TOTALHEIGHT,LAYERS"
-#output_full = "HEIGHT,RHO,T,LWC,CC,POROSITY,LW,ICE_FRACTION,IRREDUCIBLE_WATER,REFREEZE"
+#output_atm="ALBEDO,SNOWFALL"
+#output_internal="MB,SNOWHEIGHT,TOTALHEIGHT,CY_SNOWHEIGHT"
+#output_full="HEIGHT"
+output_atm = "T2,RH2,U2,RAIN,SNOWFALL,RRR,PRES,N,G,LWin,LWout,H,LE,B,QRR,Z0,ALBEDO,TS"
+output_internal = "ME,MB,surfMB,intMB,EVAPORATION,SUBLIMATION,CONDENSATION,DEPOSITION,surfM,subM,Q,REFREEZE,SNOWHEIGHT,TOTALHEIGHT,CY_SNOWHEIGHT,LAYERS"
+output_full = "HEIGHT,RHO,T,LWC,CC,POROSITY,LW,ICE_FRACTION,IRREDUCIBLE_WATER,REFREEZE"

@@ -1,24 +1,27 @@
 [GENERAL]
 dt = 3600
-max_layers = 90
+max_layers = 200 #75
 z = 2.0
 
 [PARAMETERIZATIONS]
 stability_correction = "MO"
 albedo_method = "Bougamont05"
-densification_method = "Boone"
+densification_method = "Ligtenberg-vanKampenhout" #Ligtenberg11,Boone, Vionnet, empirical, Ligtenberg-vanKampenhout
 penetrating_method = "Bintanja95"
 roughness_method = "Moelg12"
 saturation_water_vapour_method = "Sonntag90"
-thermal_conductivity_method = "bulk"
+thermal_conductivity_method = "Calonne19" #bulk, empirical, Sturm97, Calonne19
 sfc_temperature_method = "Secant"
 precip_partitioning_method = "Ding2014"
+specific_heat_method = "Yen81" #bulk, Yen81
+preferential_percolation_method = "Marchenko17" # Marchenko17 or disabled aka behaviour as usual
+preferential_percolation_depth = 6.0 # as in Kronenberg et al. 3.0 = FRICOSIPY and Marchenko17
 
 [INITIAL_CONDITIONS]
 initial_snowheight_constant = 0.0
-initial_snow_layer_heights = 0.1
+initial_snow_layer_heights = 0.25 #matching maximum_snow_layer_height 0.1
 initial_glacier_height = 400.0
-initial_glacier_layer_heights = 0.5
+initial_glacier_layer_heights = 5.0 #fit to max glacier layer heights for lagrangian use else 0.5
 initial_top_density_snowpack = 300.0
 initial_bottom_density_snowpack = 600.0
 temperature_bottom = 270.16
@@ -29,15 +32,20 @@ zlt2 = 0.1
 [PRECIPITATION]
 center_snow_transfer_function = 0.0
 spread_snow_transfer_function = 1
-mult_factor_RRR = 1.9945921121709402
-minimum_snow_layer_height = 0.001
-minimum_snowfall = 0.001 #1mm
-bias_LWin = 8.0078125
-mult_factor_WS = 1.2794012075056693
-bias_T2 = -0.1328125
+mult_factor_RRR = 1.158677
+minimum_snowfall = 0.001879 #1mm
+bias_LWin = 29.379364
+mult_factor_WS = 0.737442
+bias_T2 = -0.497501
 
 [REMESHING]
-remesh_method = "log_profile"
+remesh_method = "lagrangian" #log_profile, adaptive_profile, lagrangian
+minimum_snow_layer_height = 0.0005
+maximum_snow_layer_height = 0.25 #FRICOSIPY has 0.1
+coarse_layer_threshold = 10.0    #FRICOSIPY has 21.0
+maximum_coarse_layer_height = 2.00 #FRICOSIPY has 0.30
+maximum_glacier_layer_height = 5.0 #FRICOSIPY has 1.0
+max_depth = 500.0                   #FRICOSIPY 50.0
 first_layer_height = 0.01
 layer_stretching = 1.2
 merge_max = 1
@@ -46,12 +54,14 @@ temperature_threshold_merging = 0.01
 
 [CONSTANTS]
 constant_density = 300.0
-albedo_fresh_snow = 0.82142578125
-albedo_firn = 0.53873046875
+rho_firn = 500.0 #Switch
+rho_max_dm = 300.0 #EBFM default 175.0
+albedo_fresh_snow = 0.807839
+albedo_firn = 0.638042
 albedo_ice = 0.174
 albedo_mod_snow_aging = 18.038579229329066
-albedo_mod_snow_depth = 13.87890625
-t_star_wet = 2.52734375
+albedo_mod_snow_depth = 3.575544
+t_star_wet = 2.342398
 t_star_dry = 30
 t_star_K = 14
 t_star_cutoff = 263.17
@@ -60,6 +70,7 @@ roughness_ice = 1.7
 roughness_firn = 4.0
 aging_factor_roughness = 0.0026
 snow_ice_threshold = 900.0
+pore_closeoff_density = 830.0 
 lat_heat_melting = 334000.0
 lat_heat_vaporize = 2500000.0
 lat_heat_sublimation = 2834000.0

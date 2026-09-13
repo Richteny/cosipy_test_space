@@ -2,7 +2,7 @@ import os
 from collections import OrderedDict
 
 import numpy as np
-from numba import float64, intp, optional, typed, types
+from numba import float64, int32, intp, optional, typed, types
 from numba.experimental import jitclass
 
 from cosipy.constants import Constants
@@ -20,7 +20,10 @@ spec["number_nodes"] = intp
 spec["new_snow_height"] = float64
 spec["new_snow_timestamp"] = float64
 spec["old_snow_timestamp"] = float64
+spec["average_layer_temperatures"] = float64[:]
 spec["grid"] = types.ListType(node_type)
+spec["layer_hydro_years"] = int32[:]
+spec["base_elevation"] = float64
 
 # only required for njitted functions
 snow_ice_threshold = Constants.snow_ice_threshold
@@ -35,7 +38,11 @@ remesh_method = Constants.remesh_method
 ice_density = Constants.ice_density
 water_density = Constants.water_density
 albedo_method = Constants.albedo_method
-
+maximum_snow_layer_height = Constants.maximum_snow_layer_height
+maximum_coarse_layer_height = Constants.maximum_coarse_layer_height
+coarse_layer_threshold = Constants.coarse_layer_threshold
+maximum_glacier_layer_height = Constants.maximum_glacier_layer_height
+max_depth = Constants.max_depth
 
 @jitclass(spec)
 class Grid:
@@ -72,6 +79,9 @@ class Grid:
         layer_temperatures,
         layer_liquid_water_content,
         layer_ice_fraction=None,
+        average_layer_temperatures=None,
+        layer_hydro_years=None,
+        base_elevation=None,
         new_snow_height=None,
         new_snow_timestamp=None,
         old_snow_timestamp=None,
@@ -82,7 +92,16 @@ class Grid:
         self.layer_temperatures = layer_temperatures
         self.layer_liquid_water_content = layer_liquid_water_content
         self.layer_ice_fraction = layer_ice_fraction
+        if average_layer_temperatures is None:
+            self.average_layer_temperatures = layer_temperatures.copy()
+        else:
+            self.average_layer_temperatures = average_layer_temperatures
 
+        if layer_hydro_years is None:
+            self.layer_hydro_years = np.zeros(len(layer_heights), dtype=np.int32)
+        else:
+            self.layer_hydro_years = layer_hydro_years
+        self.base_elevation = 0.0 if base_elevation is None else base_elevation
         # Number of total nodes
         self.number_nodes = len(layer_heights)
 
@@ -125,11 +144,13 @@ class Grid:
                     self.layer_temperatures[idxNode],
                     self.layer_liquid_water_content[idxNode],
                     layer_IF,
+                    self.average_layer_temperatures[idxNode],
+                    self.layer_hydro_years[idxNode],
                 )
             )
 
     def add_fresh_snow(
-        self, height, density, temperature, liquid_water_content, dt,
+        self, height, density, temperature, liquid_water_content, dt, hydro_year,
     ):
         """Add a fresh snow layer (node).
 
@@ -147,7 +168,7 @@ class Grid:
 
         # Add new node
         self.grid.insert(
-            0, Node(height, density, temperature, liquid_water_content, None)
+            0, Node(height, density, temperature, liquid_water_content, None, None, hydro_year)
         )
 
         # Increase node counter
@@ -243,6 +264,16 @@ class Grid:
             idx + 1
         )
 
+        # Calc new average temperature
+        new_average_temperature = (
+            self.get_node_height(idx) / new_height
+        ) * self.get_node_average_temperature(idx) + (
+            self.get_node_height(idx + 1) / new_height
+        ) * self.get_node_average_temperature(idx + 1)
+
+        #
+        new_hydro_year = self.get_node_hydro_year(idx)
+
         # Update node properties
         self.update_node(
             idx,
@@ -250,6 +281,8 @@ class Grid:
             new_temperature,
             new_ice_fraction,
             new_liquid_water_content,
+            new_average_temperature,
+            new_hydro_year,
         )
 
         # Remove the second layer
@@ -354,9 +387,12 @@ class Grid:
                     (if0, por0, lwc0),
                 )
 
-            self.update_node(idx, h0, T0, if0, lwc0)  # Update node properties
+            Tavg = self.get_node_average_temperature(idx)
+            HY = self.get_node_hydro_year(idx)
+
+            self.update_node(idx, h0, T0, if0, lwc0, Tavg, HY)  # Update node properties
             self.grid.insert(
-                idx + 1, Node(h1, self.get_node_density(idx), T1, lwc1, if1)
+                idx + 1, Node(h1, self.get_node_density(idx), T1, lwc1, if1, Tavg, HY),
             )
 
             self.number_nodes += 1  # Update node counter
@@ -485,6 +521,61 @@ class Grid:
                 idx += 1
         self.correct_layer(0, first_layer_height)
 
+
+    def lagrangian_profile(self):
+        """ Remeshes the subsurface numerical mesh / grid according to a threshold height Lagrangian 
+        scheme. New snowfall is accumulated in the uppermost layer until a fixed threshold height is
+        attained. At this point a new layer is created and all remaining layers are shifted downwards.
+        Beyond the user-defined region of interest, layers are merged into a coarser mesh to improve 
+        computational efficiency.
+        """
+        
+        # Merge uppermost snow layer with the second snow layer unless it exceeds the maximum snow layer height or they are from different hydrological years
+        if self.get_number_snow_layers() >= 2:  
+            if ((self.get_node_height(0) + self.get_node_height(1) <= maximum_snow_layer_height) and (self.get_node_hydro_year(0) == self.get_node_hydro_year(1))):
+                self.merge_nodes(0)     
+       
+        # Merge into coarser snow layers if a layer goes beyond the region of interest:
+        _depth = np.asarray(self.get_depth())
+        idx = np.searchsorted(_depth, coarse_layer_threshold, side="right")
+        if idx < self.get_number_snow_layers() - 2: 
+            if ((self.get_node_height(idx) + self.get_node_height(idx + 1) <= maximum_coarse_layer_height) and (self.get_node_hydro_year(idx) == self.get_node_hydro_year(idx + 1))):
+                self.merge_nodes(idx)
+
+        # Remove layers if they subseed the minimum layer height and become too small
+        # Taken from FRICOSIPY  
+        #indices = np.where(np.asarray(self.get_height()) < minimum_snow_layer_height)[0]
+        #for i in range(len(indices) - 1, -1, -1): # backwards loop to avoid index misalignment
+        #    idx = indices[i]
+        #    self.remove_node([idx])        
+        indices = np.where(np.asarray(self.get_height()) < minimum_snow_layer_height)[0]
+        for i in range(len(indices) -1, -1, -1):
+            idx = indices[i]
+            if self.get_number_layers() < 2:
+                break
+            if idx < self.get_number_layers() -1:
+                self.merge_nodes(idx)
+            else:
+                self.merge_nodes(idx - 1)
+
+        # Merge uppermost glacier layer with the second glacier layer unless it exceeds the maximum glacier layer height or they are from different hydrological years
+        if self.get_number_glacier_layers() >= 2:
+            idx = self.get_number_snow_layers() # the index of the first glacier layer
+            if ((self.get_node_height(idx) + self.get_node_height(idx + 1) <= maximum_glacier_layer_height) and (self.get_node_hydro_year(idx) == self.get_node_hydro_year(idx + 1))):
+                self.merge_nodes(idx)    
+
+        # If last layer depth exceeds the desired subsurface measurement depth, remove it:
+        idx = self.get_number_layers() - 1
+        _depth = np.asarray(self.get_depth())
+        if (_depth[idx] > max_depth):
+
+            # Update base elevation of computational grid now that the las subsurface layer is to be removed:
+            self.set_base_elevation(self.get_base_elevation() + self.get_node_height(-1))
+
+            # Remove the last layer:
+            self.remove_node([idx])
+
+
     def split_node(self, pos: int):
         """Split node at position.
 
@@ -504,6 +595,8 @@ class Grid:
                 self.get_node_temperature(pos),
                 self.get_node_liquid_water_content(pos) / 2.0,
                 self.get_node_ice_fraction(pos),
+                self.get_node_average_temperature(pos),
+                self.get_node_hydro_year(pos),
             ),
         )
         self.update_node(
@@ -512,12 +605,14 @@ class Grid:
             self.get_node_temperature(pos),
             self.get_node_ice_fraction(pos),
             self.get_node_liquid_water_content(pos) / 2.0,
+            self.get_node_average_temperature(pos),
+            self.get_node_hydro_year(pos)
         )
 
         self.number_nodes += 1
 
     def update_node(
-        self, idx, height, temperature, ice_fraction, liquid_water_content
+        self, idx, height, temperature, ice_fraction, liquid_water_content, average_temperature, hydro_year,
     ):
         """Update properties of a specific node.
 
@@ -538,6 +633,8 @@ class Grid:
         self.set_node_temperature(idx, temperature)
         self.set_node_ice_fraction(idx, ice_fraction)
         self.set_node_liquid_water_content(idx, liquid_water_content)
+        self.set_node_average_temperature(idx, average_temperature)
+        self.set_node_hydro_year(idx, hydro_year)
 
     def check(self, name):
         """Check layer temperature and height are within a valid range."""
@@ -566,6 +663,7 @@ class Grid:
 
             (i)  log_profile
             (ii) adaptive_profile
+            (iii) langrangian profile
 
         (i)  The log-profile algorithm arranges the mesh
              logarithmically. The user specifies the stretching factor
@@ -584,6 +682,9 @@ class Grid:
             self.log_profile()
         elif remesh_method == "adaptive_profile":
             self.adaptive_profile()
+        elif remesh_method == "lagrangian":
+            self.lagrangian_profile()
+            return
 
         # remove the first layer if it is too small
         if self.get_node_height(0) < minimum_snow_layer_height:
@@ -612,6 +713,8 @@ class Grid:
                 self.get_node_temperature(idx + 1),
                 self.get_node_ice_fraction(idx + 1),
                 0.0,
+                self.get_node_average_temperature(idx + 1),
+                self.get_node_hydro_year(idx + 1),
             )
 
             self.remove_node([idx])  # Remove the second layer
@@ -741,6 +844,43 @@ class Grid:
         for idx in range(self.number_nodes):
             self.grid[idx].set_layer_temperature(temperature[idx])
 
+    def set_node_average_temperature(self, idx: int, T_avg: float):
+        """ Set a node's 5-year EMA temperature [K]."""
+        self.grid[idx].set_average_layer_temperature(T_avg)
+
+    def set_average_temperature(self, T_avg: np.ndarray):
+        """ Set the EMA temperature profile [K]."""
+        for idx in range(self.number_nodes):
+            self.grid[idx].set_average_layer_temperature(T_avg[idx])
+
+    def get_node_hydro_year(self, idx: int):
+        """ Get a node's hydrological year of formation [yyyy]."""
+        return self.grid[idx].get_layer_hydro_year()
+
+    def get_hydro_year(self) -> list:
+        """ Get the hydrological year profile [yyyy]."""
+        return [self.grid[idx].get_layer_hydro_year()
+                for idx in range(self.number_nodes)]
+
+    def set_node_hydro_year(self, idx: int, hydro_year: int):
+        """ Set a node's hydrological year of formation [yyyy]."""
+        self.grid[idx].set_layer_hydro_year(hydro_year)
+
+    def get_number_glacier_layers(self):
+        """ Get the number of glacier layers (density > snow_ice_threshold)."""
+        return int(np.sum(np.array([
+            1 for idx in range(self.number_nodes)
+            if self.get_node_density(idx) > snow_ice_threshold
+        ])))
+
+    def set_base_elevation(self, base_elevation):
+        """ Set the elevation of the bottom of the domain [m asl]."""
+        self.base_elevation = base_elevation
+
+    def get_base_elevation(self):
+        """ Get the elevation of the bottom of the domain [m asl]."""
+        return self.base_elevation
+
     def set_node_height(self, idx: int, height: float):
         """Set a node's height."""
         self.grid[idx].set_layer_height(height)
@@ -791,6 +931,17 @@ class Grid:
     def get_node_temperature(self, idx: int):
         """Get a node's temperature."""
         return self.grid[idx].get_layer_temperature()
+
+    def get_average_temperature(self) -> list:
+        """ Get the EMA temperature profile [K]."""
+        return [
+            self.grid[idx].get_average_layer_temperature()
+            for idx in range(self.number_nodes)
+        ]
+
+    def get_node_average_temperature(self, idx: int):
+        """ Get a node's 5-year EMA temperature [K]."""
+        return self.grid[idx].get_average_layer_temperature()
 
     def get_specific_heat(self) -> list:
         """Get the specific heat capacity profile (air+water+ice)."""

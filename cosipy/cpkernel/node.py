@@ -1,7 +1,7 @@
 from collections import OrderedDict
 
 import numpy as np
-from numba import float64
+from numba import float64, int32
 from numba.experimental import jitclass
 
 from cosipy.constants import Constants
@@ -18,6 +18,7 @@ k_a = Constants.k_a
 k_w = Constants.k_w
 thermal_conductivity_method = Constants.thermal_conductivity_method
 zero_temperature = Constants.zero_temperature
+specific_heat_method = Constants.specific_heat_method
 
 spec = OrderedDict()
 spec["height"] = float64
@@ -25,7 +26,8 @@ spec["temperature"] = float64
 spec["liquid_water_content"] = float64
 spec["ice_fraction"] = float64
 spec["refreeze"] = float64
-
+spec["average_temperature"] = float64
+spec["hydro_year"] = int32
 
 @jitclass(spec)
 class Node:
@@ -51,10 +53,21 @@ class Node:
         temperature: float,
         liquid_water_content: float,
         ice_fraction: float = None,
+        average_temperature = None,
+        hydro_year = None,
     ):
         # Initialises state variables.
         self.height = height
         self.temperature = temperature
+        if average_temperature is None:
+            self.average_temperature = temperature
+        else:
+            self.average_temperature = average_temperature
+
+        if hydro_year is None:
+            self.hydro_year = 0
+        else:
+            self.hydro_year = hydro_year
         self.liquid_water_content = liquid_water_content
 
         if ice_fraction is None:
@@ -87,6 +100,22 @@ class Node:
             Snow layer temperature [K].
         """
         return self.temperature
+
+    def get_average_layer_temperature(self) -> float:
+        """ Get the node's 5-year EMA temperature [K]."""
+        return self.average_temperature
+
+    def set_average_layer_temperature(self, T_avg: float):
+        """ Set the node's 5-year EMA temperature [K]."""
+        self.average_temperature = T_avg
+
+    def get_layer_hydro_year(self) -> int:
+        """ Get the hydrological year of the layer's formation [yyyy]."""
+        return self.hydro_year
+
+    def set_layer_hydro_year(self, hydro_year: int):
+        """ Set the hydrological year of the layer's formation [yyyy]."""
+        self.hydro_year = hydro_year
 
     def get_layer_ice_fraction(self) -> float:
         """Get the node's volumetric ice fraction.
@@ -133,7 +162,14 @@ class Node:
         Returns:
             Specific heat capacity [|J kg^-1 K^-1|].
         """
-        return self.get_layer_ice_fraction()*spec_heat_ice + self.get_layer_air_porosity()*spec_heat_air + self.get_layer_liquid_water_content()*spec_heat_water
+        methods_allowed = ["bulk","Yen81"]
+        if specific_heat_method == "bulk":
+            specific_heat = self.get_layer_ice_fraction()*spec_heat_ice + self.get_layer_air_porosity()*spec_heat_air + self.get_layer_liquid_water_content()*spec_heat_water
+        elif specific_heat_method == "Yen81":
+            specific_heat = 152.2 + 7.122 * self.get_layer_temperature()
+        else:
+            raise ValueError("Specific heat method not allowed! Check possible arguments (bulk,Yen81).")
+        return specific_heat
 
     def get_layer_liquid_water_content(self) -> float:
         """Get the node's liquid water content.
@@ -181,11 +217,17 @@ class Node:
         Returns:
             Thermal conductivity, |kappa| [|W m^-1 K^-1|].
         """
-        methods_allowed = ['bulk', 'empirical']
+        methods_allowed = ['bulk', 'empirical', 'Sturm97', 'Calonne19']
         if thermal_conductivity_method == 'bulk':
             kappa = self.get_layer_ice_fraction()*k_i + self.get_layer_air_porosity()*k_a + self.get_layer_liquid_water_content()*k_w
         elif thermal_conductivity_method == 'empirical':
             kappa = 0.021 + 2.5 * np.power((self.get_layer_density()/1000),2)
+        elif thermal_conductivity_method == 'Sturm97':
+            kappa = 0.138 - 1.01e-3 * self.get_layer_density() + 3.23e-6 * np.power((self.get_layer_density()),2)
+        elif thermal_conductivity_method == 'Calonne19': 
+            theta = 1 / (1 + np.exp(-2 * 0.02 * (self.get_layer_density() - 450)))
+            kappa = (theta * (2.107 + 0.003618 * (self.get_layer_density() - ice_density))) + \
+                  ((1 - theta) * ((0.024 - (1.23e-4 * self.get_layer_density()) + (2.5e-6 * np.power(self.get_layer_density(),2)))))
         else:
             message = ("Thermal conductivity method =",
                        f"{thermal_conductivity_method}",

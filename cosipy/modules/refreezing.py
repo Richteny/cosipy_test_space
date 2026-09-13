@@ -10,7 +10,7 @@ spec_heat_ice = Constants.spec_heat_ice
 spec_heat_water = Constants.spec_heat_water
 lat_heat_melting = Constants.lat_heat_melting
 snow_ice_threshold = Constants.snow_ice_threshold
-
+pore_closeoff_density = Constants.pore_closeoff_density
 
 @njit
 def check_oob(ice_fraction: float, lwc: float):
@@ -112,7 +112,7 @@ def refreezing(GRID) -> float:
     """
 
     # Maximum snow fractional ice content:
-    phi_ice_max = (snow_ice_threshold - air_density) / (
+    phi_ice_max = (pore_closeoff_density - air_density) / (
         ice_density - air_density
     )
     ice_water_density_ratio = ice_density / water_density

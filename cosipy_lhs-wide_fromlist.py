@@ -3,15 +3,17 @@ import numpy as np
 import sys
 import gc
 from scipy.stats import qmc
+from distributed import Client
 from cosipy.config import Config
 from cosipy.constants import Constants
-from COSIPY import main as runcosipy
+from LHS_COSIPY import main as runcosipy, make_cluster
 
 # --- 1. CONFIGURATION ---
-TOTAL_SIMULATIONS = 1500
-NUM_CHUNKS = 3
+TOTAL_SIMULATIONS = 8
+NUM_CHUNKS = 4
 SEED = 42  # CRITICAL: Ensures all 4 processes see the exact same 1000 params
 
+RESTART_EVERY = 50
 # Define Parameter Ranges (Min, Max)
 # Adjust these bounds to match your prior ranges
 param_bounds = {
@@ -95,35 +97,59 @@ if __name__ == "__main__":
     Config()
     Constants()
 
-    # E. Execution Loop
-    for i, row in df_chunk.iterrows():
-        global_id = int(row['global_id'])
-        print(f"\n[Global Sim ID: {global_id}] Running...")
 
-        try:
-            runcosipy(
-                RRR_factor        = float(np.exp(row['rrr_factor'])),
-                #alb_ice           = float(row['alb_ice']),
-                alb_snow          = float(row['alb_snow']),
-                alb_firn          = float(row['alb_firn']),
-                #albedo_aging      = float(row['albedo_aging']),
-                albedo_depth      = float(row['albedo_depth']),
-                #center_snow_transfer_function = float(row['center_snow']),
-                #roughness_ice     = float(row['roughness_ice']),
-                bias_LWIN         = float(row['bias_LWin']),
-                WS_factor         = float(np.exp(row['ws_factor'])),
-                bias_T2           = float(row['bias_T2']),
-                t_wet             = float(row['t_wet']),
-                #t_K               = float(row['t_K']),
-                minimum_snowfall  = float(row['min_snowfall']),
-                count             = global_id  # CRITICAL: Use global_id for output filename
-            )
-            print(f" -> Sim {global_id} finished.")
+    # E. Cluster EINMAL erzeugen und ueber alle Simulationen wiederverwenden.
+    #    Bisher baute main() pro Aufruf einen eigenen Cluster auf und wieder ab;
+    #    dabei musste numba in jedem neuen Worker alles neu kompilieren (~40 s
+    #    pro Simulation). Mit bestehenden Workern faellt das nur einmal an.
+    n_ok, n_fail = 0, 0
+ 
+    with make_cluster() as cluster:
+        print(cluster)
+ 
+        for n, (i, row) in enumerate(df_chunk.iterrows()):
+            global_id = int(row['global_id'])
+            print(f"\n[Global Sim ID: {global_id}]  ({n + 1}/{len(df_chunk)})")
+ 
+            try:
+                runcosipy(
+                    RRR_factor        = float(np.exp(row['rrr_factor'])),
+                    #alb_ice           = float(row['alb_ice']),
+                    alb_snow          = float(row['alb_snow']),
+                    alb_firn          = float(row['alb_firn']),
+                    #albedo_aging      = float(row['albedo_aging']),
+                    albedo_depth      = float(row['albedo_depth']),
+                    #center_snow_transfer_function = float(row['center_snow']),
+                    #roughness_ice     = float(row['roughness_ice']),
+                    bias_LWIN         = float(row['bias_LWin']),
+                    WS_factor         = float(np.exp(row['ws_factor'])),
+                    bias_T2           = float(row['bias_T2']),
+                    t_wet             = float(row['t_wet']),
+                    #t_K               = float(row['t_K']),
+                    minimum_snowfall  = float(row['min_snowfall']),
+                    count             = global_id,   # CRITICAL: output filename
+                    cluster           = cluster,     # NEU: bestehenden Cluster nutzen
+                )
+                n_ok += 1
+                print(f" -> Sim {global_id} finished.")
+ 
+            except Exception as e:
+                n_fail += 1
+                failed_ids.append(global_id)
+                print(f" -> Sim {global_id} FAILED: {e}")
 
-        except Exception as e:
-            print(f" -> Sim {global_id} FAILED: {e}")
-
-        # Clean up memory
-        gc.collect()
-
-    print(f"\nChunk {chunk_id} Complete.")
+            # Clean up memory
+            gc.collect()
+ 
+            # Worker gelegentlich neu starten: bei mehreren hundert Laeufen
+            # sammelt sich sonst Speicher an. Kostet einmal Kompilierzeit,
+            # aber nur alle RESTART_EVERY Simulationen statt jedes Mal.
+            if RESTART_EVERY and (n + 1) % RESTART_EVERY == 0 and (n + 1) < len(df_chunk):
+                try:
+                    with Client(cluster) as client:
+                        client.restart()
+                    print(f"   [Worker nach {n + 1} Simulationen neu gestartet]")
+                except Exception as e:
+                    print(f"   [Worker-Neustart fehlgeschlagen: {e}]")
+ 
+    print(f"\nChunk {chunk_id} Complete.  {n_ok} erfolgreich, {n_fail} fehlgeschlagen.")

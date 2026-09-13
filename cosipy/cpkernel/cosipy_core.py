@@ -184,6 +184,9 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
         max_layers = int(DATA.max_layers.values)
         z = float(DATA.ZLVL.values)
 
+    #del later
+    DEBUG_ELEV = None
+
     # Replace imported variables with content of the opt_dict. If it's empty
     # nothing happens.
     if opt_dict is not None:
@@ -245,6 +248,7 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
         _new_snow_height = init_nan_array_1d(nt)
         _new_snow_timestamp = init_nan_array_1d(nt)
         _old_snow_timestamp = init_nan_array_1d(nt)
+        _CY_SNOWHEIGHT = init_nan_array_1d(nt)
 
         _LAYER_HEIGHT = init_nan_array_2d(nt, max_layers)
         _LAYER_RHO = init_nan_array_2d(nt, max_layers)
@@ -255,7 +259,8 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
         _LAYER_ICE_FRACTION = init_nan_array_2d(nt, max_layers)
         _LAYER_IRREDUCIBLE_WATER = init_nan_array_2d(nt, max_layers)
         _LAYER_REFREEZE = init_nan_array_2d(nt, max_layers)
-
+        _LAYER_TAVG = init_nan_array_2d(nt, max_layers)
+        _LAYER_HY = init_nan_array_2d(nt, max_layers)
 
     #--------------------------------------------
     # Initialize snowpack or load restart grid
@@ -331,9 +336,7 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
     SLOPE = 0.
     if 'SLOPE' in DATA:
         SLOPE = DATA.SLOPE.values
-
-    # Initial cumulative mass balance variable
-    MB_cum = 0
+    _elev = float(DATA["HGT"].values) #time constant!
 
     # Initial snow albedo and surface temperature for Bougamont et al. 2005 albedo
     surface_temperature = 270.0
@@ -344,6 +347,16 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
     if Config.stake_evaluation:
         # Create pandas dataframe for stake evaluation
         _df = pd.DataFrame(index=stake_data.index, columns=['mb','snowheight'], dtype='float')
+
+    # Initial values
+    MB_cum = 0
+    #Ligtenberg annual accum.
+    _months = pd.DatetimeIndex(DATA.time.values).month.values
+    _years  = pd.DatetimeIndex(DATA.time.values).year.values
+    HYDRO_YEAR = np.where(_months < 10,_years, _years+1)
+    annual_mass_balances = np.empty(0)
+    ACC_cum_year = 0.0
+    accumulation = 1 #results in 1000 m w.e. for first year
 
     #--------------------------------------------
     # TIME LOOP
@@ -385,20 +398,19 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
             elif precippartition_method == "Ding2014":
                 #Ding, et al. 2014. J. Hydrol http://dx.doi.org/10.1016/j.jhydrol.2014.03.038 also in T&C
                 Twb = calc_wetbulb_temperature(T2[t], RH2[t], PRES[t])
-                elev = float(DATA["HGT"].values)
+                elev = _elev
                 offset_T = center_snow_transfer_function
                 RAIN, Pr_sno = partition_precipitation (T2[t], Twb, RH2[t], PRES[t], RRR[t], elev, offset_T) 
                 SNOWFALL = (Pr_sno / 1000.0) * (water_density/density_fresh_snow)
         else:
             raise ValueError("No SNOWFALL or RRR data provided.")
         
-        # Apply SRF if present (otherwise multiplied by 1.0)
-        SNOWFALL = SNOWFALL * local_srf
-
         # if snowfall is smaller than the threshold
         if SNOWFALL<minimum_snowfall:
-            print(f"Filter due to min snowfall: {minimum_snowfall}")
             SNOWFALL = 0.0
+
+        # Apply SRF if present (otherwise multiplied by 1.0)
+        SNOWFALL = SNOWFALL * local_srf
 
         # if rainfall is smaller than the threshold
         if RAIN<(minimum_snowfall*(density_fresh_snow/water_density)*1000.0):
@@ -406,7 +418,7 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
 
         if SNOWFALL > 0.0:
             # Add a new snow node on top
-            GRID.add_fresh_snow(SNOWFALL, density_fresh_snow, np.minimum(float(T2[t]),zero_temperature), 0.0, dt)
+            GRID.add_fresh_snow(SNOWFALL, density_fresh_snow, np.minimum(float(T2[t]),zero_temperature), 0.0, dt, int(HYDRO_YEAR[t]))
         else:
             GRID.set_fresh_snow_props_update_time(dt)
 
@@ -524,7 +536,12 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
         #--------------------------------------------
         # Calculate new density to densification
         #--------------------------------------------
-        densification(GRID, SLOPE, dt)
+        if (HYDRO_YEAR[t] != HYDRO_YEAR[max(t - 1, 0)]) and (HYDRO_YEAR[t] != (HYDRO_YEAR[0] + 1)):
+            annual_mass_balances = np.append(annual_mass_balances, ACC_cum_year)
+            accumulation = np.mean(annual_mass_balances)
+            ACC_cum_year = 0.0
+
+        densification(GRID, SLOPE, dt, accumulation)
 
         #--------------------------------------------
         # Calculate mass balance
@@ -539,11 +556,56 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
         internal_mass_balance = water_refreezed - subsurface_melt
         mass_balance = surface_mass_balance + internal_mass_balance
 
+
+
+        # ---- Debug: Dichteprofil einmal pro Jahr fuer ein einzelnes Band ----
+        # DEBUG_ELEV = None schaltet ab. Toleranz, weil HGT selten exakt trifft.
+        #DEBUG_ELEV = None
+        if DEBUG_ELEV is not None and abs(_elev - DEBUG_ELEV) < 10.0:
+            _ts = DATA.isel(time=t).time.values
+
+            _tav = np.asarray(GRID.get_average_temperature())
+            _tt = np.asarray(GRID.get_temperature())
+
+            if (pd.Timestamp(_ts).month == 9) and (pd.Timestamp(_ts).day == 30) \
+               and (pd.Timestamp(_ts).hour == 0):
+                _rho = np.asarray(GRID.get_density())
+                _h = np.asarray(GRID.get_height())
+                _d = np.cumsum(_h) - 0.5 * _h
+                _n830 = int((_rho >= 830).sum())
+                _z830 = _d[_rho >= 830][0] if _n830 > 0 else np.nan
+                _n = len(_d)
+                _i1 = min(np.searchsorted(_d, 1.0), _n -1)
+                _i5 = min(np.searchsorted(_d, 5.0), _n -1)
+                _i10 = min(np.searchsorted(_d, 10.0), _n-1)
+
+                print(f"[{pd.Timestamp(_ts).year}] HGT={_elev:.0f} "
+                      f"nlay={GRID.get_number_layers():4d} "
+                      f"H={_h.sum():6.2f}m  rho: top={_rho[0]:5.0f} "
+                      f"1m={_rho[_i1]:5.0f} "
+                      f"5m={_rho[_i5]:5.0f} "
+                      f"10m={_rho[_i10]:5.0f} "
+                      f"max={_rho.max():5.0f}  n>=830: {_n830:3d}  z830={_z830:6.2f}m",
+                      flush=True)
+
+                print(f"      T[0]={_tt[0]-273.16:+6.1f} Tavg[0]={_tav[0]-273.16:+6.1f}  "
+                      f"T[10]={_tt[min(10,len(_tt)-1)]-273.16:+6.1f} "
+                      f"Tavg[10]={_tav[min(10,len(_tav)-1)]-273.16:+6.1f}", 
+                      flush=True)
+
+                _mass = float(np.sum(np.asarray(GRID.get_height())
+                                     * np.asarray(GRID.get_density())) / 1000.0)
+                print(f"        T[0]={_tt[0]-273.16:+6.1f} Tavg[0]={_tav[0]-273.16:+6.1f}  "
+                      f"T[10]={_tt[min(10,len(_tt)-1)]-273.16:+6.1f} "
+                      f"Tavg[10]={_tav[min(10,len(_tav)-1)]-273.16:+6.1f}  "
+                      f"Masse={_mass:9.3f} m w.e.", flush=True)
+
         # internal_mass_balance2 = melt-Q  + subsurface_melt
         # mass_balance_check = surface_mass_balance + internal_mass_balance2
 
         # Cumulative mass balance for stake evaluation 
         MB_cum = MB_cum + mass_balance
+        ACC_cum_year = ACC_cum_year + SNOWFALL * (density_fresh_snow / water_density) + deposition + sublimation
 
         # Store cumulative MB in pandas frame for validation
         if stake_names:
@@ -565,6 +627,9 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
             _surfMB[t] = surface_mass_balance
             _Q[t] = Q
             _SNOWHEIGHT[t] = GRID.get_total_snowheight()
+            _hy = np.asarray(GRID.get_hydro_year())
+            _lh = np.asarray(GRID.get_height())
+            _CY_SNOWHEIGHT[t] = float(np.sum(_lh[_hy == HYDRO_YEAR[t]]))
             _TOTALHEIGHT[t] = GRID.get_total_height()
             _TS[t] = surface_temperature
             _ALBEDO[t] = alpha
@@ -594,6 +659,8 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
                 _LAYER_ICE_FRACTION[t, 0:GRID.get_number_layers()] = GRID.get_ice_fraction()
                 _LAYER_IRREDUCIBLE_WATER[t, 0:GRID.get_number_layers()] = GRID.get_irreducible_water_content()
                 _LAYER_REFREEZE[t, 0:GRID.get_number_layers()] = GRID.get_refreeze()
+                _LAYER_TAVG[t, 0:GRID.get_number_layers()] = GRID.get_average_temperature()
+                _LAYER_HY[t, 0:GRID.get_number_layers()] = GRID.get_hydro_year()
             else:
                 _LAYER_HEIGHT = None
                 _LAYER_RHO = None
@@ -604,6 +671,8 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
                 _LAYER_ICE_FRACTION = None
                 _LAYER_IRREDUCIBLE_WATER = None
                 _LAYER_REFREEZE = None
+                _LAYER_TAVG = None
+                _LAYER_HY = None
 
         # Save results -- WRF_X_CSPY case
         else:
@@ -652,10 +721,13 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
         RESTART.LAYER_T[0:GRID.get_number_layers()] = GRID.get_temperature()
         RESTART.LAYER_LWC[0:GRID.get_number_layers()] = GRID.get_liquid_water_content()
         RESTART.LAYER_IF[0:GRID.get_number_layers()] = GRID.get_ice_fraction()
+        RESTART.LAYER_TAVG[0:GRID.get_number_layers()] = GRID.get_average_temperature()
+        RESTART.LAYER_HY[0:GRID.get_number_layers()] = GRID.get_hydro_year()
+        RESTART.BASE_ELEVATION.values[:] = GRID.get_base_elevation()
 
         return (indY,indX,RESTART,_RAIN,_SNOWFALL,_LWin,_LWout,_H,_LE,_B,_QRR, \
             _MB,_surfMB,_Q,_SNOWHEIGHT,_TOTALHEIGHT,_TS,_ALBEDO,_NLAYERS, \
             _ME,_intMB,_EVAPORATION,_SUBLIMATION,_CONDENSATION,_DEPOSITION,_REFREEZE, \
             _subM,_Z0,_surfM,_new_snow_height,_new_snow_timestamp,_old_snow_timestamp,_MOL, \
             _LAYER_HEIGHT,_LAYER_RHO,_LAYER_T,_LAYER_LWC,_LAYER_CC,_LAYER_POROSITY,_LAYER_ICE_FRACTION, \
-            _LAYER_IRREDUCIBLE_WATER,_LAYER_REFREEZE,stake_names,_stat,_df)
+            _LAYER_IRREDUCIBLE_WATER,_LAYER_REFREEZE,_LAYER_TAVG,_LAYER_HY,_CY_SNOWHEIGHT,stake_names,_stat,_df)

@@ -9,7 +9,7 @@ from numba import njit, prange
 # 1. Physics: OpenAmundsen Logic (Numba Optimized)  -- unchanged
 # -----------------------------------------------------------------------------
 
-@njit(cache=True)
+@njit
 def _shift_arr_retain(M, dir, n):
     """Shift array helper."""
     S = M.copy()

@@ -8,9 +8,11 @@ densification_method = Constants.densification_method
 snow_ice_threshold = Constants.snow_ice_threshold
 minimum_snow_layer_height = Constants.minimum_snow_layer_height
 zero_temperature = Constants.zero_temperature
+ice_density = Constants.ice_density
+rho_firn = Constants.rho_firn #500.0 (Kronenberg et al. 2022)
+rho_max_dm = Constants.rho_max_dm #300.0 (calibrated for Abramov, EBFM default 175.0)
 
-
-def densification(GRID, SLOPE, dt):
+def densification(GRID, SLOPE, dt, accumulation):
     """Apply densification to the snowpack.
 
     Implemented densification methods:
@@ -19,6 +21,8 @@ def densification(GRID, SLOPE, dt):
           et al. (2013).
         - **Vionnet**: Densification through overburden stress. Vionnet
           et al. (2011).
+        - **Ligtenberg2011**: firn densification after Ligtenberg 2011 (EBFM)
+        - **Ligtenberg-vanKampenhout**: combines Ligtenberg scheme with new vanKampenhout snow metamorphism, as used in the EBFM model
         - **empirical**: Empirical compaction with constant time scale.
         - **constant**: Constant density (no compaction).
 
@@ -30,13 +34,20 @@ def densification(GRID, SLOPE, dt):
     Raises:
         NotImplementedError: Densification method is not allowed.
     """
-    densification_allowed = ['Boone', 'Vionnet', 'empirical', 'constant']
+    densification_allowed = ['Boone', 'Vionnet', 'empirical', 'constant', 'Ligtenberg11', 'Ligtenberg-vanKampenhout']
     if densification_method == 'Boone':
         method_Boone(GRID,SLOPE,dt)
     elif densification_method == 'Vionnet':
         method_Vionnet(GRID,SLOPE,dt)
     elif densification_method == 'empirical':
         method_empirical(GRID,SLOPE,dt)
+    elif densification_method == "Ligtenberg11":
+        method_Ligtenberg(GRID, dt, accumulation, split=False)
+    elif densification_method == "Ligtenberg-vanKampenhout":
+        # rho < rho_firn -> van Kampenhout et al. 2017
+        # rho >= rho_firn -> Arthern 2010 + Ligtenberg 2011
+        method_vanKampenhout(GRID, dt)
+        method_Ligtenberg(GRID, dt, accumulation, split=True)
     elif densification_method == 'constant':
         pass
     else:
@@ -263,3 +274,106 @@ def method_empirical(GRID, SLOPE, dt):
 
             # Set height change
             GRID.set_node_height(idxNode, (1-(dRho/GRID.get_node_density(idxNode)))*GRID.get_node_height(idxNode))
+
+@njit
+def _apply_compaction(GRID, rho, drho, h, icf, lwc):
+    """ Mass consreving compaction.
+    """
+    ratio = np.ones_like(rho)
+    for i in range(len(drho)):
+        if drho[i] > 0.0:
+            ratio[i] = rho[i] / (rho[i] + drho[i])
+            GRID.set_node_height(i, h[i] * ratio[i])
+            GRID.set_node_ice_fraction(i, icf[i] / ratio[i])
+            GRID.set_node_liquid_water_content(i, lwc[i] / ratio[i])
+    return ratio
+
+
+@njit
+def method_vanKampenhout(GRID, dt):
+    """Snow settling, compaction and metamorphosis after van Kampenhout et al. (2017).
+    """
+
+    cdm3, cdm4 = 2.777e-6, 0.04           # s-1, K-1
+    eta0, a_eta, b_eta, c_eta = 7.62237e6, 0.1, 0.023, 358.0
+
+    rho = np.asarray(GRID.get_density())
+    h = np.asarray(GRID.get_height())
+    T = np.asarray(GRID.get_temperature())
+    lwc = np.asarray(GRID.get_liquid_water_content())
+    icf = np.asarray(GRID.get_ice_fraction())
+
+    cond = rho < rho_firn
+
+    # --- Gl. 2: zerstoerende Metamorphose ---
+    cdm1 = np.where(rho < rho_max_dm, 1.0, np.exp(-0.046 * (rho - rho_max_dm)))
+    cdm2 = np.where(lwc == 0.0, 1.0, 2.0)
+    drho_dm = np.where(cond, dt * rho * cdm3 * cdm2 * cdm1
+                       * np.exp(-cdm4 * (zero_temperature - T)), 0.0)
+
+    rho_1 = np.minimum(rho + drho_dm, ice_density)
+    ratio = _apply_compaction(GRID, rho, rho_1 - rho, h, icf, lwc)
+
+    # --- Gl. 3/4: Auflastdruck, aus der aktualisierten Dichte ---
+    h = h * ratio
+    lwc = lwc / ratio
+    icf = icf / ratio 
+    #h = np.asarray(GRID.get_height())
+    #lwc = np.asarray(GRID.get_liquid_water_content())
+    #icf = np.asarray(GRID.get_ice_fraction())
+
+    f1 = 1.0 / (1.0 + 60.0 * lwc)          # EBFM: subW/(Dwater*subZ) == COSIPYs lwc
+    eta = f1 * 4.0 * eta0 * (rho_1 / c_eta) \
+        * np.exp(a_eta * (zero_temperature - T) + b_eta * rho_1)
+    Psload = np.cumsum(rho_1 * h) - 0.5 * rho_1 * h
+
+    drho_ob = np.where(cond, dt * rho_1 * Psload / eta, 0.0)
+    rho_2 = np.minimum(rho_1 + drho_ob, ice_density)
+    _apply_compaction(GRID, rho_1, rho_2 - rho_1, h, icf, lwc)
+
+
+@njit
+def method_Ligtenberg(GRID, dt, accumulation, split):
+    """ Densification based on in situ measurements of Antarctic snow compaction (used in EBFM)
+        after  Arthern et al. (2010) and modified by Ligtenberg et al. (2011).
+    
+        Parameters:
+                   dt = integration time in a model time-step [s]
+        Input: 
+                   GRID = subsurface grid variables
+                   accumulation = grid annual accumulation [m a-1]
+        Output rho (z) = layer_density
+    """
+
+    R, Ec, Eg, g = 8.314, 60e3, 42.4e3, 9.81
+
+    rho = np.asarray(GRID.get_density())
+    h = np.asarray(GRID.get_height())
+    T = np.asarray(GRID.get_temperature())
+    T_avg = np.asarray(GRID.get_average_temperature())
+    lwc = np.asarray(GRID.get_liquid_water_content())
+    icf = np.asarray(GRID.get_ice_fraction())
+
+    b = max(accumulation * 1000.0, 1.0)           # mm w.e. a-1
+    dt_frac = dt / (365.0 * 24.0 * 3600.0)
+
+    if split:
+        cond = (rho >= rho_firn) & (rho < snow_ice_threshold)
+    else:
+        cond = rho < snow_ice_threshold
+
+    C = np.where(rho < 550.0,
+                 0.07 * max(1.435 - 0.151 * np.log(b), 0.25),
+                 0.03 * max(2.366 - 0.293 * np.log(b), 0.25))
+
+    # Estimate average temperature using an Exponential Moving Average (EMA)
+    alpha = (2 * dt_frac) / (5 + dt_frac) #smoothing factor (five-yearly average)
+    T_avg = (T * alpha) + (T_avg * (1.0 - alpha))
+    GRID.set_average_temperature(T_avg)
+
+    drho = np.where(cond,
+                    dt_frac * C * b * g * np.maximum(ice_density - rho, 0.0)
+                    * np.exp((-Ec / (R * T)) + (Eg / (R * T_avg))), 0.0)
+
+    _apply_compaction(GRID, rho, drho, h, icf, lwc)
+

@@ -57,6 +57,38 @@ from cosipy.modules.evaluation import evaluate, resample_output, create_tsl_df, 
 from numba import njit
 import xarray as xr
 
+def make_cluster():
+    """Baut den Dask-Cluster nach der aktuellen Konfiguration.
+ 
+    Ausgelagert aus main(), damit ein Treiberskript (z.B. das LHS) den
+    Cluster einmal erzeugen und ueber viele Simulationen wiederverwenden
+    kann. Die Worker bleiben dann bestehen und numba kompiliert nur einmal
+    statt bei jedem Aufruf neu.
+    """
+    if Config.slurm_use:
+        SlurmConfig()
+        cluster = SLURMCluster(
+            job_name=SlurmConfig.name,
+            cores=SlurmConfig.cores,
+            processes=SlurmConfig.cores,
+            memory=SlurmConfig.memory,
+            account=SlurmConfig.account,
+            job_extra_directives=SlurmConfig.slurm_parameters,
+            local_directory=SlurmConfig.local_directory,
+        )
+        cluster.scale(SlurmConfig.nodes * SlurmConfig.cores)
+        print(cluster.job_script())
+        print("You are using SLURM!\n")
+    else:
+        cluster = LocalCluster(
+            scheduler_port=Config.local_port,
+            n_workers=Config.workers,
+            local_directory='logs/dask-worker-space',
+            threads_per_worker=1,
+            silence_logs=True,
+        )
+    return cluster
+
 def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, alb_ice=Constants.albedo_ice,
          alb_snow= Constants.albedo_fresh_snow, alb_firn=Constants.albedo_firn, albedo_aging= Constants.albedo_mod_snow_aging,
          albedo_depth= Constants.albedo_mod_snow_depth, center_snow_transfer_function= Constants.center_snow_transfer_function,
@@ -64,7 +96,7 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
          roughness_ice= Constants.roughness_ice,roughness_firn= Constants.roughness_firn, aging_factor_roughness= Constants.aging_factor_roughness,
          bias_LWIN = Constants.bias_LWin, WS_factor = Constants.mult_factor_WS, bias_T2 = Constants.bias_T2,
          t_wet = Constants.t_star_wet, t_dry = Constants.t_star_dry, t_K = Constants.t_star_K, minimum_snowfall = Constants.minimum_snowfall,
-         count=""):
+         count="", cluster=None):
 
     Config()
     Constants()
@@ -136,26 +168,12 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
     # Create a client for distributed calculations
     #-----------------------------------------------
     if Config.slurm_use:
-        SlurmConfig()
-        with SLURMCluster(
-            job_name=SlurmConfig.name,
-            cores=SlurmConfig.cores,
-            processes=SlurmConfig.cores,
-            memory=SlurmConfig.memory,
-            account=SlurmConfig.account,
-            job_extra_directives=SlurmConfig.slurm_parameters,
-            local_directory=SlurmConfig.local_directory,
-        ) as cluster:
-            cluster.scale(SlurmConfig.nodes * SlurmConfig.cores)
-            print(cluster.job_script())
-            print("You are using SLURM!\n")
-            print(cluster)
+        if cluster is not None:
             run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures, opt_dict=opt_dict)
-
-    else:
-        with LocalCluster(scheduler_port=Config.local_port, n_workers=Config.workers, local_directory='logs/dask-worker-space', threads_per_worker=1, silence_logs=True) as cluster:
-            print(cluster)
-            run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures, opt_dict=opt_dict)
+        else:
+            with make_cluster() as cluster:
+                print(cluster)
+                run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures, opt_dict=opt_dict)
 
     print("\n")
     print_notice(msg="Write results ...")

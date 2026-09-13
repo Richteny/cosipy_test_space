@@ -379,6 +379,9 @@ class IOClass:
             "LAYER_IF": ("-", "Layer ice fraction"),  # RESTART compatibility
             "LAYER_IRREDUCIBLE_WATER": ("-", "Irreducible water"),
             "LAYER_REFREEZE": ("m w.e.", "Refreezing"),
+            "LAYER_TAVG": ("K", "Layer 5-year EMA temperature"),
+            "LAYER_HY": ("yyyy", "Hydroyear of layer's formation"),
+
         }
 
         return metadata
@@ -391,6 +394,7 @@ class IOClass:
             "new_snow_timestamp": ("s", "New snow timestamp"),
             "old_snow_timestamp": ("s", "Old snow timestamp"),
             "NLAYERS": ("-", "Number of layers"),
+            "BASE_ELEVATION": ("m", "Elevation of the bottom of the domain"),
             "NEWSNOWHEIGHT": ("m .w.e", "New snow height"),
             "NEWSNOWTIMESTAMP": ("s", "New snow timestamp"),
             "OLDSNOWTIMESTAMP": ("s", "Old snow timestamp"),
@@ -421,6 +425,7 @@ class IOClass:
             "MB": ("m w.e.", "Mass balance"),
             "Q": ("m w.e.", "Runoff"),
             "SNOWHEIGHT": ("m", "Snowheight"),
+            "CY_SNOWHEIGHT": ("m", "current years snowheight"),
             "TOTALHEIGHT": ("m", "Total domain height"),
             "TS": ("K", "Surface temperature"),
             "ALBEDO": ("-", "Albedo"),
@@ -679,6 +684,9 @@ class IOClass:
         local_LAYER_ICE_FRACTION: np.ndarray,
         local_LAYER_IRREDUCIBLE_WATER: np.ndarray,
         local_LAYER_REFREEZE: np.ndarray,
+        local_LAYER_TAVG: np.ndarray,
+        local_LAYER_HY: np.ndarray,
+        local_CY_SNOWHEIGHT: np.ndarray,
     ):
         """Copy the local results from workers to global numpy arrays."""
 
@@ -698,6 +706,7 @@ class IOClass:
         self.set_internal_attribute("MB", local_MB, x, y)
         self.set_internal_attribute("Q", local_Q, x, y)
         self.set_internal_attribute("SNOWHEIGHT", local_SNOWHEIGHT, x, y)
+        self.set_internal_attribute("CY_SNOWHEIGHT", local_CY_SNOWHEIGHT, x, y)
         self.set_internal_attribute("TOTALHEIGHT", local_TOTALHEIGHT, x, y)
         self.set_internal_attribute("LAYERS", local_LAYERS, x, y)
         self.set_internal_attribute("ME", local_ME, x, y)
@@ -725,6 +734,8 @@ class IOClass:
                 "IRREDUCIBLE_WATER", local_LAYER_IRREDUCIBLE_WATER, x, y
             )
             self.set_full_field_attribute("REFREEZE", local_LAYER_REFREEZE, x, y)
+            self.set_full_field_attribute("TAVG", local_LAYER_TAVG, x, y)
+            self.set_full_field_attribute("HY", local_LAYER_HY, x, y)
 
     def write_results_to_file(self):
         """Add the global numpy arrays to the RESULT dataset."""
@@ -798,13 +809,14 @@ class IOClass:
 
         for name in [
             "NLAYERS",
+            "BASE_ELEVATION",
             "NEWSNOWHEIGHT",
             "NEWSNOWTIMESTAMP",
             "OLDSNOWTIMESTAMP",
         ]:
             setattr(self, f"RES_{name}", np.full((self.ny, self.nx), np.nan))
 
-        for name in ["HEIGHT", "RHO", "T", "LWC", "IF"]:
+        for name in ["HEIGHT", "RHO", "T", "LWC", "IF", "TAVG", "HY"]:
             setattr(
                 self,
                 f"RES_LAYER_{name}",
@@ -823,6 +835,7 @@ class IOClass:
         metadata = self.get_restart_metadata()
         for name in [
             "NLAYERS",
+            "BASE_ELEVATION",
             "NEWSNOWHEIGHT",
             "NEWSNOWTIMESTAMP",
             "OLDSNOWTIMESTAMP",
@@ -835,7 +848,7 @@ class IOClass:
                 metadata[name][1],
             )
 
-        for layer_name in ["HEIGHT", "RHO", "T", "LWC", "IF"]:
+        for layer_name in ["HEIGHT", "RHO", "T", "LWC", "IF", "TAVG", "HY"]:
             keyname = f"LAYER_{layer_name}"
             self.add_variable_along_layer(
                 self.RESTART,
@@ -858,13 +871,14 @@ class IOClass:
 
         for name in [
             "NLAYERS",
+            "BASE_ELEVATION",
             "NEWSNOWHEIGHT",
             "NEWSNOWTIMESTAMP",
             "OLDSNOWTIMESTAMP",
         ]:
             getattr(self, f"RES_{name}")[y, x] = getattr(local_restart, name)
 
-        for name in ["HEIGHT", "RHO", "T", "LWC", "IF"]:
+        for name in ["HEIGHT", "RHO", "T", "LWC", "IF", "TAVG", "HY"]:
             getattr(self, f"RES_LAYER_{name}")[y, x, :] = getattr(
                 local_restart, f"LAYER_{name}"
             )
@@ -875,6 +889,7 @@ class IOClass:
         metadata = self.get_restart_metadata()
         for name in [
             "NLAYERS",
+            "BASE_ELEVATION",
             "NEWSNOWHEIGHT",
             "NEWSNOWTIMESTAMP",
             "OLDSNOWTIMESTAMP",
@@ -887,7 +902,7 @@ class IOClass:
                 metadata[name][0],
                 metadata[name][1],
             )
-        for name in ["HEIGHT", "RHO", "T", "LWC", "IF"]:
+        for name in ["HEIGHT", "RHO", "T", "LWC", "IF", "TAVG", "HY"]:
             keyname = f"LAYER_{name}"
             self.add_variable_along_latlonlayer(
                 self.RESTART,

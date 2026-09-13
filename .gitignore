@@ -6,6 +6,8 @@ cosipy/__pycache__/
 cosipy/modules/__pycache__/
 cosipy/cpkernel/__pycache__/
 utilities/__pycache__/
+cosipy/utilities/__pycache__/
+cosipy/utilities/aws2cosipy/__pycache__/
 logs/*
 MISC/*
 debug*
@@ -31,3 +33,5 @@ Control_master.out
 Control_master2.err
 Control_master2.out
 Control_master.err
+Output_nodes.out
+Error_nodes.out
