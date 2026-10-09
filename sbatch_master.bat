@@ -1,6 +1,6 @@
 #!/bin/bash -l
 
-#SBATCH --job-name="HEF-batch0"
+#SBATCH --job-name="Batch0"
 #SBATCH --qos=long
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=20
@@ -42,7 +42,26 @@ conda activate pymc_env
 #python -u /data/scratch/richteny/thesis/cosipy_test_space/cosipy_run_fromlist.py "/data/scratch/richteny/for_emulator/Halji/LHS-narrow/LHS_Posterior_batch_0.csv"
 #python -u /data/scratch/richteny/thesis/cosipy_test_space/cosipy_run_fromlist.py "/data/scratch/richteny/for_emulator/Abramov/LHS-narrow/Abramov_LHS_Posterior_batch_0.csv"
 #python -u /data/scratch/richteny/thesis/cosipy_test_space/cosipy_run_fromlist.py "/data/scratch/richteny/for_emulator/Abramov/LHS-narrow/Abramov_lhs_redo_and_new_part_1.csv"
+
 python -u /data/scratch/richteny/thesis/cosipy_test_space/cosipy_lhs-wide_fromlist.py 0
+python -u /data/scratch/richteny/thesis/cosipy_test_space/cosipy_lhs-wide_fromlist.py 1
+python -u /data/scratch/richteny/thesis/cosipy_test_space/cosipy_lhs-wide_fromlist.py 2
+#python -u /data/scratch/richteny/thesis/cosipy_test_space/cosipy_lhs-wide_fromlist.py 3
+
+#python -u /data/scratch/richteny/thesis/cosipy_test_space/cosipy_lhs-narrow-A_fromlist.py 0
+#python -u /data/scratch/richteny/thesis/cosipy_test_space/cosipy_lhs-narrow-A_fromlist.py 1
+#python -u /data/scratch/richteny/thesis/cosipy_test_space/cosipy_lhs-narrow-A_fromlist.py 2
+#python -u /data/scratch/richteny/thesis/cosipy_test_space/cosipy_lhs-narrow-A_fromlist.py 3
+#python -u /data/scratch/richteny/thesis/cosipy_test_space/cosipy_lhs-narrow-A_fromlist.py 4
+
+#python -u /data/scratch/richteny/thesis/cosipy_test_space/cosipy_lhs_round2.py 0
+#python -u /data/scratch/richteny/thesis/cosipy_test_space/cosipy_lhs_round2.py 1
+#python -u /data/scratch/richteny/thesis/cosipy_test_space/cosipy_lhs_round2.py 2
+#python -u /data/scratch/richteny/thesis/cosipy_test_space/cosipy_lhs_round2.py 3
+#python -u /data/scratch/richteny/thesis/cosipy_test_space/cosipy_lhs_round2.py 4
+#python -u /data/scratch/richteny/thesis/cosipy_test_space/cosipy_lhs_round2.py 5
+#python -u /data/scratch/richteny/thesis/cosipy_test_space/cosipy_lhs_round2.py 6
+
 #python -u /data/scratch/richteny/thesis/cosipy_test_space/run_gsa.py 0
 #python -u /data/scratch/richteny/thesis/cosipy_test_space/run_gsa_forcing.py 0
 #python -u /data/scratch/richteny/thesis/cosipy_test_space/run_gsa_forcing.py 3 

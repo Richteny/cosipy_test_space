@@ -159,6 +159,8 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
     max_layers = Constants.max_layers
     z = Constants.z
     mult_factor_RRR = Constants.mult_factor_RRR
+    rrr_factor_summer = Constants.rrr_factor_summer
+    rrr_factor_winter = Constants.rrr_factor_winter
     densification_method = Constants.densification_method
     precippartition_method = Constants.precip_partitioning_method
     ice_density = Constants.ice_density
@@ -209,6 +211,8 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
         t_dry = opt_dict[16]
         t_K = opt_dict[17]
         minimum_snowfall = opt_dict[18]
+        rrr_factor_summer = opt_dict[19]
+        rrr_factor_winter = opt_dict[20]
 
     nt = len(DATA.time.values)  # accessing DATA is expensive
     """
@@ -300,17 +304,24 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
     if use_srf:
         _srf = np.atleast_1d(DATA["SRF"].values)
         srf_timevar = _srf.size > 1
+
+    _months = pd.DatetimeIndex(DATA.time.values).month.values
+    rrr_summer_months = (4,5,6,7,8,9)
+    if (rrr_factor_summer is not None) and (rrr_factor_winter is not None):
+        rrr_factor = np.where(np.isin(_months, rrr_summer_months), rrr_factor_summer, rrr_factor_winter)
+    else:
+        rrr_factor = np.full(nt, mult_factor_RRR, dtype='float64')
     
     if ('SNOWFALL' in DATA) and ('RRR' in DATA):
-        SNOWF = DATA.SNOWFALL.values * mult_factor_RRR
-        RRR = DATA.RRR.values * mult_factor_RRR
+        SNOWF = DATA.SNOWFALL.values * rrr_factor
+        RRR = DATA.RRR.values * rrr_factor
     elif 'SNOWFALL' in DATA:
-        SNOWF = DATA.SNOWFALL.values * mult_factor_RRR
+        SNOWF = DATA.SNOWFALL.values * rrr_factor
         RRR = None
         RAIN = None
     else:
         SNOWF = None
-        RRR = DATA.RRR.values * mult_factor_RRR
+        RRR = DATA.RRR.values * rrr_factor
 
     # Use RRR rather than snowfall?
     if Config.force_use_TP:
@@ -351,7 +362,6 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
     # Initial values
     MB_cum = 0
     #Ligtenberg annual accum.
-    _months = pd.DatetimeIndex(DATA.time.values).month.values
     _years  = pd.DatetimeIndex(DATA.time.values).year.values
     HYDRO_YEAR = np.where(_months < 10,_years, _years+1)
     annual_mass_balances = np.empty(0)

@@ -80,6 +80,7 @@ def make_cluster():
         print(cluster.job_script())
         print("You are using SLURM!\n")
     else:
+        print(Config.local_port, Config.workers)
         cluster = LocalCluster(
             scheduler_port=Config.local_port,
             n_workers=Config.workers,
@@ -96,6 +97,7 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
          roughness_ice= Constants.roughness_ice,roughness_firn= Constants.roughness_firn, aging_factor_roughness= Constants.aging_factor_roughness,
          bias_LWIN = Constants.bias_LWin, WS_factor = Constants.mult_factor_WS, bias_T2 = Constants.bias_T2,
          t_wet = Constants.t_star_wet, t_dry = Constants.t_star_dry, t_K = Constants.t_star_K, minimum_snowfall = Constants.minimum_snowfall,
+         rrr_factor_summer = Constants.rrr_factor_summer, rrr_factor_winter = Constants.rrr_factor_winter,
          count="", cluster=None):
 
     Config()
@@ -119,7 +121,7 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
     #aging_factor_roughness = float(0.0026)
     opt_dict = (RRR_factor, alb_ice, alb_snow, alb_firn, albedo_aging, albedo_depth, center_snow_transfer_function,
                 spread_snow_transfer_function, roughness_fresh_snow, roughness_ice, roughness_firn, aging_factor_roughness,
-                bias_LWIN, WS_factor, bias_T2, t_wet, t_dry, t_K, minimum_snowfall)
+                bias_LWIN, WS_factor, bias_T2, t_wet, t_dry, t_K, minimum_snowfall, rrr_factor_summer, rrr_factor_winter)
     #0 to 5 - base, 6 center snow , 7 spreadsnow, 8 to 10 roughness length 
     #opt_dict=None
     lapse_T = float(lr_T)
@@ -170,10 +172,10 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
     if Config.slurm_use:
         if cluster is not None:
             run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures, opt_dict=opt_dict)
-        else:
-            with make_cluster() as cluster:
-                print(cluster)
-                run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures, opt_dict=opt_dict)
+    else:
+        with make_cluster() as cluster:
+            print(cluster)
+            run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures, opt_dict=opt_dict)
 
     print("\n")
     print_notice(msg="Write results ...")
@@ -216,7 +218,7 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
                                                                   f"_{round(t_wet,4)}_{round(t_dry,4)}_{round(t_K,4)}_{round(albedo_depth,4)}_{round(roughness_fresh_snow,4)}"\
                                                                   f"_{round(roughness_ice,4)}_{round(roughness_firn,4)}_{round(aging_factor_roughness,6)}"\
                                                                   f"_{round(bias_LWIN,4)}_{round(WS_factor,4)}_{round(bias_T2,4)}_{round(center_snow_transfer_function,4)}"\
-                                                                  f"_{round(minimum_snowfall,6)}_num{count}.nc"
+                                                                  f"_{round(minimum_snowfall,6)}_{round(rrr_factor_summer,4)}_{round(rrr_factor_winter,4)}_num{count}.nc"
 
         #item below only works when objects are arrays and not given by hand, parameters not taken from pymc or sorts are floats
         except:
@@ -224,7 +226,7 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
                                                                   f"_{round(t_wet.item(),4)}_{round(t_dry.item(),4)}_{round(t_K.item(),4)}_{round(albedo_depth.item(),4)}_{round(roughness_fresh_snow,4)}"\
                                                                   f"_{round(roughness_ice.item(),4)}_{round(roughness_firn.item(),4)}_{round(aging_factor_roughness.item(),6)}"\
                                                                   f"_{round(bias_LWIN.item(),4)}_{round(WS_factor.item(),4)}_{round(bias_T2.item(),4)}_{round(center_snow_transfer_function.item(),4)}"\
-                                                                  f"_{round(minimum_snowfall.item(),6)}_num{count}.nc"
+                                                                  f"_{round(minimum_snowfall.item(),6)}_{round(rrr_factor_summer.item(),4)}_{round(rrr_factor_winter.item(),4)}_num{count}.nc"
 
     IO.get_result().to_netcdf(os.path.join(output_path,results_output_name), encoding=encoding, mode='w')
     
@@ -329,29 +331,6 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
     
         print("Time required for full TSL EVAL: ", datetime.now()-times)
 
-        ## Create DF that holds params to save ##
-        if Config.write_csv_status:
-            try:
-                param_df = pd.read_csv(f"./simulations/{Config.csv_filename}", index_col=0)
-                curr_df = pd.DataFrame( np.concatenate((np.array(opt_dict, dtype=float),np.array([geod_mb]),
-                                        tsl_out_match.Med_TSL.values)) ).transpose()
-                curr_df.columns = ['rrr_factor', 'alb_ice', 'alb_snow', 'alb_firn', 'albedo_aging',
-                                   'albedo_depth', 'center_snow_transfer', 'spread_snow_transfer',
-                                   'roughness_fresh_snow', 'roughness_ice', 'roughness_firn',
-                                   'aging_factor_roughness', 'lwin_factor', 'ws_factor','t2_factor', 'mb'] +\
-                                  [f'sim{i+1}' for i in range(tsl_out_match.shape[0])]
-
-                param_df = pd.concat([param_df, curr_df], ignore_index=True)
-            except:
-                #print(opt_dict)
-                param_df = pd.DataFrame( np.concatenate((np.array(opt_dict, dtype=float), np.array([geod_mb]),
-                                         tsl_out_match.Med_TSL.values)) ).transpose()
-                param_df.columns =   ['rrr_factor', 'alb_ice', 'alb_snow', 'alb_firn', 'albedo_aging',
-                                      'albedo_depth', 'center_snow_transfer', 'spread_snow_transfer',
-                                      'roughness_fresh_snow', 'roughness_ice', 'roughness_firn',
-                                      'aging_factor_roughness','lwin_factor', 'ws_factor','t2_factor', 'mb'] +\
-                                     [f'sim{i+1}' for i in range(tsl_out_match.shape[0])]
-            param_df.to_csv(f"./simulations/{Config.csv_filename}")
 
     #-----------------------------------------------
     # Stop time measurement

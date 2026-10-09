@@ -4,20 +4,22 @@ import numpy as np
 import xarray as xr
 from numba import njit
 
-path = "/data/scratch/richteny/thesis/cosipy_test_space/data/output/"
+glacier = "Dongkemadi"
+path = f"/data/scratch/richteny/thesis/cosipy_test_space/data/output/{glacier}/"
 
 #alb_obs_data = xr.open_dataset("/data/scratch/richteny/Ren_21_Albedo/Halji_hrz-merged_mean-albedos.nc")
-alb_obs_data = xr.open_dataset("/data/scratch/richteny/Ren_21_Albedo/Abramov_hrz-merged_mean-albedos.nc")
+alb_obs_data = xr.open_dataset(f"/data/scratch/richteny/Ren_21_Albedo/{glacier}_hrz-merged_mean-albedos.nc")
 alb_obs_data = alb_obs_data.sortby("time")
 alb_obs_data = alb_obs_data.sel(time=slice("1990-01-01","2023-12-31"))
 
 #tsla_obs = pd.read_csv("/data/scratch/richteny/thesis/cosipy_test_space/data/input/Halji/snowlines/Halji_TSLA_fixed-1990-2025.csv", parse_dates=True, index_col="LS_DATE")
-tsla_obs = pd.read_csv("/data/scratch/richteny/thesis/cosipy_test_space/data/input/Abramov/snowlines/Abramov_TSLA_fixed-1990-2024.csv", parse_dates=True, index_col="LS_DATE")
+tsla_obs = pd.read_csv(f"/data/scratch/richteny/thesis/cosipy_test_space/data/input/{glacier}/snowlines/{glacier}_TSLA_fixed-1990-2024.csv", parse_dates=True, index_col="LS_DATE")
 tsla_obs = tsla_obs.loc["1990-01-01":"2023-12-31"]
 
 #df = pd.read_csv("/data/scratch/richteny/for_emulator/Halji/LHS-narrow/LHS_Posterior_Design_Buffered.csv")
-df = pd.read_csv("/data/scratch/richteny/thesis/cosipy_test_space/Abramov_LHS-wide-master.csv", index_col=0)
-df['rrr_factor'] = np.exp(df['rrr_factor'])
+df = pd.read_csv(f"/data/scratch/richteny/thesis/cosipy_test_space/{glacier}_LHS-wide-master.csv", index_col=0)
+df['rrr_factor_summer'] = np.exp(df['rrr_factor_summer'])
+df['rrr_factor_winter'] = np.exp(df['rrr_factor_winter'])
 df['ws_factor'] = np.exp(df['ws_factor'])
 
 param_cols = df.columns
@@ -71,13 +73,13 @@ def parse_param_key_from_filename(fname):
     Filename if Bougamont: 
     0 RRR_factor, 1 alb_snow, 2 alb_ice, 3 alb_firn, 4 t wet
     5 t dry, 6 t K, 7 alb depth, 8 roughness fresh snow, 9 roughness ice, 10 roughness firn, 11 aging factor roughness
-    12 bias LWin, 13 WS_factor, 14 bias T2, 15 center_snow_transfer, 16 min snowfall
+    12 bias LWin, 13 WS_factor, 14 bias T2, 15 center_snow_transfer, 16 min snowfall, 17 rrr summer, 18 rrr winter
 
-    # Order in CSV: rrr-factor, alb-snow, alb-firn, alb-depth, bias-LWin, ws-factor, bias-t2, t-wet, min-snowfall, global-id
+    # Order in CSV: rrr-factor-summer, alb-snow, alb-firn, alb-depth, bias-LWin, ws-factor, bias-t2, t-wet, rrr-factor-winter, global-id
     """
 
     return tuple([
-        round(vals[0], 4), #rrr_factor
+        round(vals[17], 4), #rrr_factor summer
         #round(vals[2], 4), #alb_ice now fixed
         round(vals[1], 4), #alb_snow
         round(vals[3], 4), #alb_firn
@@ -86,7 +88,7 @@ def parse_param_key_from_filename(fname):
         round(vals[13], 4), #ws factor
         round(vals[14], 4), #bias t2
         round(vals[4], 4), #t wet
-        round(vals[16], 4), #min-snowfall
+        round(vals[18], 4), #rrr_factor winter
     ])
 """
     return tuple([
@@ -106,36 +108,50 @@ def parse_param_key_from_filename(fname):
 """
 
 def prereq_res(ds):
-    time_vals = pd.to_datetime(ds.time.values)
-    unique_dates = np.unique(time_vals.date)
-    holder = np.zeros(len(unique_dates))
-    secs = ds.time.values.astype("int64")
-    dates_pd = pd.to_datetime(unique_dates)
-    clean_day_vals = dates_pd.astype("int64").values
-    return (dates_pd, clean_day_vals, secs, holder)
+    t = np.asarray(ds.time.values, dtype="datetime64[ns]")
+    secs = t.astype("int64")
+    dates = pd.to_datetime(np.unique(t.astype("datetime64[D]")))
+    clean_day_vals = dates.values.astype("datetime64[ns]").astype("int64")
+    assert abs(np.log10(max(clean_day_vals[0], 1)) - np.log10(max(secs[0], 1))) < 0.5, "time units don't match"
+    return dates, clean_day_vals, secs
+
 
 @njit
-def resample_by_hand(holder,vals,secs,day_starts):
-    day_len = 24*60*60*1e9
-    n_days = len(day_starts)
-    n_inputs = len(secs)
-    i=0
-    for i in range(n_days):
-        ts = day_starts[i]
-        next_ts = ts + day_len
-        current_sum = 0.0
-        current_count = 0
-        for j in range(n_inputs):
-            if secs[j] >= ts and secs[j] < next_ts:
-                val = vals[j]
-                if not np.isnan(val):
-                    current_sum += val
-                    current_count += 1
-        if current_count > 0:
-            holder[i] = current_sum / current_count
+def resample_by_hand(vals, secs, time_vals):
+    # vals is 1D, so shape is just (ntime,)
+    ntime = vals.shape[0] 
+    ndays = len(time_vals)
+
+    day_next = np.int64(86_400_000_000_000)   # ns, integer nanoseconds
+
+    # Arrays only need to be 1D now
+    out = np.zeros(ndays)
+    count = np.zeros(ndays)
+
+    day_idx = 0
+    day_end = time_vals[0] + day_next
+
+    for t in range(ntime):
+        ts = secs[t]
+
+        while day_idx < ndays - 1 and ts >= day_end:
+            day_idx += 1
+            day_end = time_vals[day_idx] + day_next
+
+        # No more j, k loops. Just grab the 1D value.
+        v = vals[t]
+        if not np.isnan(v):
+            out[day_idx] += v
+            count[day_idx] += 1
+
+    # Mean calculation for 1D
+    for d in range(ndays):
+        if count[d] > 0:
+            out[d] /= count[d]
         else:
-            holder[i] = np.nan
-    return holder
+            out[d] = np.nan
+            
+    return out
 
 def compute_glacier_mean(ncfile, target_var, time_start_mb, albobs):
     if target_var == "MB":
@@ -147,15 +163,15 @@ def compute_glacier_mean(ncfile, target_var, time_start_mb, albobs):
         total_mass_change = (ncfile["MB"] * ref_weights).sum(dim=["lat","lon"])
         weighted_mb = total_mass_change / ref_area_total
         dfmb = weighted_mb.to_dataframe(name="weighted_mb")
-        annual_mb = dfmb.resample("1Y").sum()
+        annual_mb = dfmb.resample("1YE").sum()
         geod_mb = np.nanmean(annual_mb["weighted_mb"].values)
         return geod_mb
     else:
         ref_weights = ncfile["N_Points"].sum(dim=["lat","lon"])
         alb_total = (ncfile["ALBEDO"] * ncfile["N_Points"]).sum(dim=["lat","lon"])
         weighted_alb = alb_total / ref_weights
-        dates,clean_day_vals,secs,holder = prereq_res(weighted_alb)
-        resampled_alb_vals = resample_by_hand(holder, weighted_alb.data, secs, clean_day_vals).copy()
+        dates,clean_day_vals,secs = prereq_res(weighted_alb)
+        resampled_alb_vals = resample_by_hand(weighted_alb.data, secs, clean_day_vals).copy()
         resampled_alb = xr.DataArray(resampled_alb_vals, coords={"time":dates}, dims=["time"], name="ALBEDO_weighted")
         result = resampled_alb.sortby("time")
         result = result.sel(time=albobs.time)
@@ -184,7 +200,7 @@ for fp in pathlib.Path(path).glob('*.nc'):
         df_params.at[idx, "filename_tolerance_match"] = name
 
     ds = xr.open_dataset(fp).sel(time=slice("1990-01-01",None))
-    mb = compute_glacier_mean(ds.sel(time=slice("2000-01-01T00:00","2020-01-01T00:00")),"MB", "2000-01-01T01:00", None)
+    mb = compute_glacier_mean(ds.sel(time=slice("2000-01-01T00:00","2019-12-31T23:00")),"MB", "2000-01-01T01:00", None)
     albsim = compute_glacier_mean(ds,"ALBEDO",None,alb_obs_data)
 
     snowlinesim = pd.read_csv(path+csv_name, parse_dates=True, index_col="time")
@@ -195,4 +211,4 @@ for fp in pathlib.Path(path).glob('*.nc'):
     df_params.loc[idx, [f"alb{i}" for i in range(1, n_alb+1)]] = albsim.data[:n_alb]
     i +=1
 
-df_params.to_csv("/data/scratch/richteny/thesis/cosipy_test_space/Abramov_LHS-wide_filled_params.csv") 
+df_params.to_csv(f"/data/scratch/richteny/thesis/cosipy_test_space/{glacier}_LHS-wide_filled_params.csv") 

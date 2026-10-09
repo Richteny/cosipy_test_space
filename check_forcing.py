@@ -35,6 +35,10 @@ LIMITS = dict(
     eps_eff=(0.45, 1.00),      # LWin / (sigma T^4), band means
     pres_resid=3.0,            # hPa, max deviation from barometry
     rh_at_100=25.0,            # % of steps pinned at 100 % RH
+    ann_mm=(50.0, 5000.0),     # band-mean annual precipitation, mm a-1
+    p_ratio=3.0,               # top/bottom band ratio of annual total
+    drizzle=40.0,              # % of steps in 0 < RRR < 0.1 mm
+    p_max_step=50.0,           # mm per timestep, single-step maximum
 )
 
 
@@ -201,6 +205,101 @@ def check_one(path, lat=None, lon=None, verbose=True):
         if n_abs:
             warns.append(f"{n_abs} G values above {SOL0} W/m2")
 
+    # --- 7. Precipitation --------------------------------------------------
+    # No observations here either. What can be judged without them: the
+    # magnitude of the annual total, the shape of its elevation profile
+    # (this is where a precipitation lapse rate shows up), the split between
+    # how OFTEN it rains and how MUCH falls, and the single-step maximum.
+    if "RRR" in ds:
+        rr = np.squeeze(np.asarray(ds["RRR"].values, dtype=float))
+        if rr.ndim == 3:
+            rr = rr[:, :, 0]
+        t = pd.to_datetime(ds.time.values)
+        dt_h = float(np.median(np.diff(t.values).astype("timedelta64[s]")
+                               .astype(float)) / 3600.0)
+        steps_per_year = 8766.0 / dt_h
+        ann = np.nanmean(rr, axis=0) * steps_per_year      # mm a-1 per band
+        prof["RRR"] = ann       # the figure shows annual totals, not mm/step
+
+        print(f"\n  precipitation  (timestep {dt_h:.2f} h)")
+        lo, hi = LIMITS["ann_mm"]
+        amin, amax = float(np.nanmin(ann)), float(np.nanmax(ann))
+        ok = lo <= amin and amax <= hi
+        print(f"    annual total   {amin:7.0f} .. {amax:7.0f} mm/a   "
+              f"{'ok' if ok else 'FAIL'}")
+        if not ok:
+            fails.append(f"annual precipitation {amin:.0f}-{amax:.0f} mm/a "
+                         f"outside [{lo:.0f}, {hi:.0f}]")
+        if amax <= 0:
+            fails.append("RRR is zero everywhere")
+
+        # Elevation profile. A multiplicative lapse rate is linear in log P,
+        # so fit there and report the ratio the bands actually span.
+        a_lo, a_hi = ann[int(np.argmin(z))], ann[int(np.argmax(z))]
+        with np.errstate(divide="ignore", invalid="ignore"):
+            gp = _slope(np.log(ann), z) * 100.0        # % per 100 m
+        ratio = float(a_hi / a_lo) if a_lo > 0 else np.nan
+        print(f"    dRRR/dz        {gp:+7.2f} %/100m   "
+              f"(lowest {a_lo:.0f} -> highest {a_hi:.0f} mm/a, "
+              f"factor {ratio:.2f})")
+        if np.isfinite(ratio) and ratio > LIMITS["p_ratio"]:
+            warns.append(
+                f"precipitation grows by a factor {ratio:.2f} from the lowest "
+                f"to the highest band. TopoPyScale applies "
+                f"(1+c*dz)/(1-c*dz) against the ERA5 cell elevation, with c "
+                f"from 0.20 (summer) to 0.35 (winter) per km -- over a large "
+                f"dz that is a steep extrapolation of coefficients derived for "
+                f"much smaller offsets, and it diverges as c*dz -> 1.")
+            print("      note: check this against the ERA5 cell elevation "
+                  "before calibrating;\n            the factor is a "
+                  "downscaling assumption, not an observation.")
+        if np.isfinite(ratio) and ratio < 1.0:
+            warns.append("precipitation DECREASES with elevation -- "
+                         "precip_lapse_rate off, or bands mis-ordered")
+
+        # Monotonicity over the elevation-sorted bands: the lapse rate is a
+        # monotone function of elevation, so anything else is a band-ordering
+        # problem rather than meteorology.
+        d_ann = np.diff(ann[order])
+        n_against = int(np.sum(d_ann < 0) if np.nansum(d_ann) >= 0
+                        else np.sum(d_ann > 0))
+        if n_against > 0.1 * nb:
+            warns.append(f"annual precipitation reverses against its own "
+                         f"trend over {n_against} of {nb-1} band pairs")
+            print(f"      note: reverses over {n_against} of {nb-1} band "
+                  f"pairs -- check the band-to-HGT assignment")
+
+        # Frequency against mass: the known ERA5 failure mode is too many wet
+        # steps carrying almost no water, which a scaling factor cannot fix
+        # but which resets the surface albedo in COSIPY at every step.
+        tot = float(np.nansum(rr))
+        f_dry = 100.0 * float(np.mean(rr <= 0.0))
+        f_driz = 100.0 * float(np.mean((rr > 0.0) & (rr < 0.1)))
+        m_driz = 100.0 * float(np.nansum(rr[(rr > 0.0) & (rr < 0.1)]) / tot) \
+            if tot > 0 else 0.0
+        print(f"    dry steps      {f_dry:6.1f} %")
+        print(f"    0 < RRR < 0.1  {f_driz:6.1f} % of steps, "
+              f"{m_driz:.1f} % of the mass")
+        if f_driz > LIMITS["drizzle"]:
+            warns.append(f"{f_driz:.0f} % of steps hold drizzle below 0.1 mm "
+                         f"carrying {m_driz:.1f} % of the mass -- a frequency "
+                         f"problem, not a mass problem; note COSIPY's "
+                         f"minimum_snowfall already discards part of it")
+
+        # Single-step maximum and seasonality.
+        rmax = float(np.nanmax(rr))
+        print(f"    max step       {rmax:6.2f} mm   "
+              f"{'ok' if rmax <= LIMITS['p_max_step'] else 'check'}")
+        if rmax > LIMITS["p_max_step"]:
+            warns.append(f"single-step maximum {rmax:.1f} mm")
+        mon = pd.Series(np.nanmean(rr, axis=1), index=t).groupby(t.month).sum()
+        if mon.sum() > 0:
+            share = 100.0 * mon / mon.sum()
+            print(f"    peak month     {int(share.idxmax()):02d} "
+                  f"({share.max():.0f} % of the year), "
+                  f"JJA {share.reindex([6,7,8]).sum():.0f} %, "
+                  f"DJF {share.reindex([12,1,2]).sum():.0f} %")
+
     # --- verdict ----------------------------------------------------------
     print()
     if fails:
@@ -252,9 +351,9 @@ def main():
         import matplotlib
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
-        vs = ["T2", "RH2", "U2", "G", "LWin", "PRES"]
+        vs = ["T2", "RH2", "U2", "G", "LWin", "PRES", "RRR"]
         UN = {"T2": "K", "RH2": "%", "U2": "m s$^{-1}$", "G": "W m$^{-2}$",
-              "LWin": "W m$^{-2}$", "PRES": "hPa"}
+              "LWin": "W m$^{-2}$", "PRES": "hPa", "RRR": "mm a$^{-1}$"}
         # One row per glacier: shared axes across ten glaciers would compress
         # every profile into a sliver, and the point is the SHAPE of each.
         names = list(profiles)
