@@ -271,8 +271,11 @@ class Grid:
             self.get_node_height(idx + 1) / new_height
         ) * self.get_node_average_temperature(idx + 1)
 
+
+        m0 = self.get_node_height(idx) * self.get_node_density(idx)
+        m1 = self.get_node_height(idx + 1) * self.get_node_density(idx + 1)
         #
-        new_hydro_year = self.get_node_hydro_year(idx)
+        new_hydro_year = self.get_node_hydro_year(idx) if m0 >= m1 else self.get_node_hydro_year(idx + 1)
 
         # Update node properties
         self.update_node(

@@ -250,7 +250,9 @@ class IOClass:
             "PRES": (1080.0, 400.0),
             "LWin": (400.0, 200.0),
             "SNOWFALL": (0.1, 0.0),
-            "SLOPE": (0.0, 90.0),
+            "SLOPE": (90.0, 0.0),
+            "SRF": (10.0, 0.0),
+            "K_AVA": (10.0, 0.0),
         }
 
         for key, bounds in data_bounds.items():
@@ -357,6 +359,7 @@ class IOClass:
             "LWin": ("W m\u207b\xb2", "Incoming longwave radiation"),
             "N_Points": ("count", "Number of points in each bin"),
             "SRF": ("-", "Snow Redistribution Factor"),
+            "K_AVA": ("-", "Avalanche contribution factor from Kneib et al., 2025")
         }
 
         return metadata_spatial, metadata_spatiotemporal
@@ -480,6 +483,8 @@ class IOClass:
             t_dry = opt_dict[16]
             t_K = opt_dict[17]
             minimum_snowfall = opt_dict[18]
+            rrr_factor_summer = opt_dict[19]
+            rrr_factor_winter = opt_dict[20]
             #print(aging_factor_roughness)
         else:
             mult_factor_RRR = Constants.mult_factor_RRR
@@ -501,7 +506,9 @@ class IOClass:
             t_dry = Constants.t_star_dry
             t_K = Constants.t_star_K
             minimum_snowfall = Constants.minimum_snowfall
- 
+            rrr_factor_summer = Constants.rrr_factor_summer
+            rrr_factor_winter = Constants.rrr_factor_winter
+
         # Coordinates
         self.RESULT = xr.Dataset()
         self.RESULT.coords["time"] = self.DATA.coords["time"]
@@ -542,6 +549,11 @@ class IOClass:
         self.RESULT.attrs["Center_snow_transfer_function"] = center_snow_transfer_function
         self.RESULT.attrs["Spread_snow_transfer_function"] = spread_snow_transfer_function
         self.RESULT.attrs["Multiplication_factor_for_RRR_or_SNOWFALL"] = mult_factor_RRR
+        # seasonal factors (JJAS / rest of year) replace mult_factor_RRR when both are set (see cosipy_core)
+        self.RESULT.attrs["Multiplication_factor_RRR_summer_JJAS"] = str(rrr_factor_summer)
+        self.RESULT.attrs["Multiplication_factor_RRR_winter"] = str(rrr_factor_winter)
+        self.RESULT.attrs["Use_SRF"] = str(("SRF" in self.DATA) and (Config.use_srf is True))
+        self.RESULT.attrs["Use_K_AVA"] = str(("K_AVA" in self.DATA) and (Config.use_ava is True))
         self.RESULT.attrs["Multiplication_factor_for_LWin"] = bias_LWIN
         self.RESULT.attrs["Multiplication_factor_for_WS"] = mult_factor_WS
         self.RESULT.attrs["Summer_bias_for_T2"] = bias_T2

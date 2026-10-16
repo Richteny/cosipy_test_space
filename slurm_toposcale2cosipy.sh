@@ -36,12 +36,14 @@ LW_TERRAIN="${LW_TERRAIN:-off}"
 LW_EPS="${LW_EPS:-0.98}"
 WIND_PROFILE="${WIND_PROFILE:-hypsometric}"
 
-# Niederschlags-Lapse-Rate im TopoPyScale-Downscaling (config.yml: climate.precip_lapse_rate)
-#   on  = down_pt wurde MIT Lapse-Rate gebaut  -> Dateisuffix -lrpr
-#   off = down_pt ohne Lapse-Rate              -> kein Suffix (alte Namen)
-# Das Skript rechnet die Lapse-Rate NICHT selbst -- sie steckt bereits in tp.
-# Die Variable steuert nur den Dateinamen und die Vorpruefung weiter unten.
-PRECIP_LR="${PRECIP_LR:-on}"
+# Niederschlags-Lapse-Rate aus dem TopoPyScale-Downscaling
+#   on  = tp aus down_pt inkl. Lapse-Rate        -> Dateisuffix -lrpr
+#   off = tp / precip_lapse_rate (unkorrigiert)  -> kein Suffix
+# down_pt speichert den Faktor mit, also kommen beide Varianten aus DEMSELBEN
+# Downscaling (Downscaling mit precip_lapse_rate: True rechnen).
+#   capped = Lapse-Rate mit |dz| <= PRECIP_DZ_MAX (m)  -> Dateisuffix -lrprcap<dz>
+PRECIP_LR="${PRECIP_LR:-off}"
+PRECIP_DZ_MAX="${PRECIP_DZ_MAX:-1000}"
 
 # Nur die Testgletscher bauen: GLACIERS="mera parlung"
 GLACIERS="${GLACIERS:-}"
@@ -60,7 +62,7 @@ echo "  LW_METHOD = $LW_METHOD"
 echo "  LW_TERRAIN= $LW_TERRAIN   (eps=$LW_EPS)"
 echo "  SW_CLOUD  = $SW_CLOUD"
 echo "  WIND_PROF = $WIND_PROFILE"
-echo "  PRECIP_LR = $PRECIP_LR   (Suffix: $([ "$PRECIP_LR" = off ] && echo "(keines)" || echo "-lrpr"))"
+echo "  PRECIP_LR = $PRECIP_LR   (dz_max $PRECIP_DZ_MAX m bei capped)"
 echo "  ACHTUNG: gleichnamige Forcings werden ueberschrieben"
 [ -n "$GLACIERS" ] && echo "  nur: $GLACIERS"
 echo "############################################################"
@@ -85,6 +87,8 @@ while read -r g cap lat lon baseline outlines rest; do
     fi
     if [ "$PRECIP_LR" = "off" ]; then
         PRTAG=""
+    elif [ "$PRECIP_LR" = "capped" ]; then
+        PRTAG="-lrprcap${PRECIP_DZ_MAX}"
     else
         PRTAG="-lrpr"
     fi
@@ -184,6 +188,7 @@ PYEOF
         --lw-terrain "$LW_TERRAIN" \
         --lw-eps "$LW_EPS" \
         --sw-cloud "$SW_CLOUD" \
+        --precip-lr "$PRECIP_LR" --precip-dz-max "$PRECIP_DZ_MAX" \
         --wind-profile "$WIND_PROFILE"
     rc=$?
     if [ $rc -ne 0 ]; then

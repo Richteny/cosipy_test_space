@@ -20,7 +20,7 @@ Variablen-Mapping (down_pt -> COSIPY)
   q,t,p        -> RH2  (%)          via Sonntag Eis/Wasser (wie COSIPY intern)
   ws  (m/s)    -> U2   (m/s)        direkt
   p   (Pa)     -> PRES (hPa)        / 100   (Attribut 'bar' ist falsch)
-  tp  (mm/hr)  -> RRR  (mm)         direkt
+  tp  (mm/hr)  -> RRR  (mm)         direkt (--precip-lr on) oder / precip_lapse_rate (off)
   LW  (W/m2)   -> LWin (W/m2)       direkt (ERA5, LW_terrain=False)
   SW  (W/m2)   -> G_meas            rohes ERA5-SWin (ssrd/tstep), Erbs-Split
                                     SW_direct/SW_diffuse wird VERWORFEN
@@ -141,7 +141,7 @@ def load_bands(glacier, start_date, end_date):
     # HORAYZON korrigiert genau EINMAL. Fehlen sie, greift der alte Pfad
     # (Moelg-Verhaeltnis auf das bereits korrigierte SW) -- der doppelt
     # korrigiert und nur zur Reproduktion alter Laeufe taugt.
-    varmap_opt = ["SW_direct_flat", "SW_diffuse_flat", "LW_flat"]
+    varmap_opt = ["SW_direct_flat", "SW_diffuse_flat", "LW_flat", "precip_lapse_rate"]
     cols, time_ref = {}, None
     for k, f in enumerate(files):
         d = xr.open_dataset(f)
@@ -620,7 +620,50 @@ def build(a):
     T2   = cols["t"]
     U2   = cols["ws"]
     PRES = cols["p"] / 100.0
-    RRR  = cols["tp"]
+    # Niederschlag mit oder ohne die Lapse-Rate aus TopoPyScale. down_pt traegt
+    # tp = precip_lapse_rate * ERA5-tp; der Faktor ist mitgespeichert, also ist
+    # das unkorrigierte tp exakt tp / precip_lapse_rate -- beide Varianten aus
+    # demselben Downscaling, ohne es neu zu rechnen.
+    lr = cols.get("precip_lapse_rate")
+    if lr is None:
+        RRR = cols["tp"]
+        print(f"  RRR: kein precip_lapse_rate in down_pt -> tp direkt "
+              f"(--precip-lr {a.precip_lr} ohne Wirkung)")
+    else:
+        lr_ok = np.isfinite(lr) & (lr > 0)
+        print(f"  precip_lapse_rate: min {np.nanmin(lr):.2f}, max {np.nanmax(lr):.2f}, "
+              f"<=0 in {100 * np.mean(~lr_ok):.2f} % der Werte")
+        if a.precip_lr == "on":
+            if not lr_ok.all() or np.nanmax(lr) > 10:
+                sys.exit("FEHLER: precip_lapse_rate <= 0 oder > 10 -- Faktor unphysikalisch "
+                         "(z.B. Oberflaechen-z fehlt/NaN oder Hoehendifferenz nahe 1/coef). "
+                         "Mit --precip-lr off rechnen oder Downscaling korrigieren.")
+            RRR = cols["tp"]
+        elif a.precip_lr == "capped":
+            # TopoPyScale: f = (1 + c dz)/(1 - c dz), c = Monatskoeffizient (1/km), dz = z_Band - z_ERA5 (km).
+            # dz exakt aus f zurueckrechnen, auf +-dz_max begrenzen, f neu bilden.
+            if not lr_ok.all():
+                sys.exit("FEHLER: precip_lapse_rate <= 0 -- dz nicht rueckrechenbar (z der SURF-Dateien pruefen).")
+            coef_m = np.array([0.35, 0.35, 0.35, 0.3, 0.25, 0.2, 0.2, 0.2, 0.2, 0.25, 0.3, 0.35])
+            c = coef_m[pd.DatetimeIndex(tvals).month.values - 1][:, None]          # (time, 1)
+            dz = (lr - 1.0) / (lr + 1.0) / c                                         # km
+            dz_band = np.nanmedian(dz, axis=0)
+            if np.nanmax(np.nanmax(dz, axis=0) - np.nanmin(dz, axis=0)) > 0.01:
+                print("  WARNUNG: dz aus precip_lapse_rate ist nicht zeitkonstant -- andere "
+                      "Koeffizienten in TopoPyScale? Ergebnis pruefen.")
+            dz_max = a.precip_dz_max / 1000.0
+            dzc = np.clip(dz, -dz_max, dz_max)
+            f_cap = (1.0 + c * dzc) / (1.0 - c * dzc)
+            print(f"  dz (Band - ERA5-Oberflaeche): {1000 * np.nanmin(dz_band):.0f} .. "
+                  f"{1000 * np.nanmax(dz_band):.0f} m, begrenzt auf +-{a.precip_dz_max:.0f} m "
+                  f"-> Faktor {np.nanmin(f_cap):.2f} .. {np.nanmax(f_cap):.2f}")
+            RRR = cols["tp"] / lr * f_cap
+        else:
+            if (~np.isfinite(lr) | (lr == 0)).any():          # negativ ist ok: tp/lr bleibt exakt
+                sys.exit("FEHLER: precip_lapse_rate = 0/NaN -- tp nicht rueckrechenbar.")
+            RRR = cols["tp"] / lr
+        print(f"  RRR: precip_lapse_rate {a.precip_lr} -> max {np.nanmax(RRR):.1f} mm/h, "
+              f"Mittel {np.nanmean(RRR) * 24 * 365.25:.0f} mm/a")
     SW   = cols["SW"]
     RH2  = rh_from_q(cols["q"], cols["t"], cols["p"])
 
@@ -810,9 +853,9 @@ def build(a):
             dso[v] = (("lat", "lon"), ds_static[v].values)
             dso[v].attrs = dict(ds_static[v].attrs)
 
-    # SRF / N_Points: Forward-Fill falls time-Dimension vorhanden
+    # SRF / K_AVA / N_Points: Forward-Fill falls time-Dimension vorhanden
     sim_times = pd.to_datetime(tvals)
-    for v in ["SRF", "N_Points"]:
+    for v in ["SRF", "K_AVA", "N_Points"]:
         if v not in ds_static:
             continue
         if "time" in ds_static[v].dims:
@@ -899,6 +942,12 @@ def main():
     p.add_argument("--lw-eps", dest="lw_eps", type=float, default=0.98,
                    help="Terrain-Emissivitaet (0.98 = Prinz 2016 / natuerliche "
                         "Oberflaechen; 0.97 Schnee/Fels, 0.99 quasi-Schwarzkoerper).")
+    p.add_argument("--precip-lr", dest="precip_lr", default="off", choices=["on", "off", "capped"],
+                   help="on: tp aus down_pt inkl. TopoPyScale-Lapse-Rate; off: tp / "
+                        "precip_lapse_rate = unkorrigiertes ERA5-tp (Default); capped: Lapse-Rate "
+                        "mit |dz| <= --precip-dz-max")
+    p.add_argument("--precip-dz-max", dest="precip_dz_max", type=float, default=1000.0,
+                   help="capped: maximale Hoehendifferenz Band - ERA5-Oberflaeche in m (Default 1000)")
     p.add_argument("--wind-profile", dest="wind_profile", default="hypsometric",
                    choices=["hypsometric", "mean", "keep"],
                    help="U2-gradient: 'hypsometric' = Value at N_Points weighted mean of all bands"

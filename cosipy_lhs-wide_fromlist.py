@@ -20,7 +20,7 @@ except ImportError:
 # --- 1. CONFIGURATION ---
 TOTAL_SIMULATIONS = 1000
 NUM_CHUNKS = 12
-SEED = 42  # CRITICAL: Ensures all 4 processes see the exact same 1000 params
+SEED = 11  # CRITICAL: Ensures all 4 processes see the exact same 1000 params
 
 GLACIER = "Mera"
 OUTPUT_DIR = "/data/scratch/richteny/thesis/cosipy_test_space/data/output/"
@@ -36,7 +36,7 @@ param_bounds = {
     'alb_firn':          (0.45, 0.75),                   # unchanged
     'albedo_depth':      (0.1, 14.0),                    # was 0.5-14
     'bias_LWin':         (-40, 80),                      # was -50 to 50
-    'ws_factor':         (np.log(0.33), np.log(3.0)),    # was 0.5-2.0
+    'ws_factor':         (np.log(0.25), np.log(4.0)),    # was 0.5-2.0
     'bias_T2':           (-3, 4),                        # was -2 to 2
     't_wet':             (1.0, 23.0),                    # unchanged
     'rrr_factor_winter': (np.log(0.25), np.log(4.0)),   # was 0.333-3.0

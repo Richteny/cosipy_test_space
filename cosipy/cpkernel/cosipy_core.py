@@ -69,7 +69,7 @@ def calc_wetbulb_temperature(TK: float, RH: float, pressure: float) -> float:
     lheat = 1000.0 * (2501.3 - 2.361 * Ta)    # J/kg
     cp = 1005.0 + ((Ta + 23.15)**2) / 3364.0  # J/kg/K
     Pre_Pa = pressure * 100.0                 # Pa
-    gam = cp * 100.0 * Pre_Pa / (0.622 * lheat)
+    gam = cp * Pre_Pa / (0.622 * lheat)
 
     esat_Pa = esat * 100.0
     ea_Pa = ea * 100.0
@@ -286,9 +286,16 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
     #--------------------------------------------
     # Get data from file
     #--------------------------------------------
+    T2_raw = DATA.T2.values.copy()
     DATA['T2'] = DATA['T2'] + bias_T2
     T2 = DATA.T2.values.copy()
 
+    # bias_T2 at constant vapour pressure: RH follows the new saturation pressure
+    # (same Sonntag function COSIPY uses to turn RH into vapour pressure)
+    if bias_T2 != 0.0:
+        _es_raw = np.array([method_EW_Sonntag(x) for x in T2_raw])
+        _es_new = np.array([method_EW_Sonntag(x) for x in T2])
+        DATA['RH2'] = (DATA.RH2.dims, np.minimum(DATA.RH2.values * _es_raw / _es_new, 100.0))
     RH2 = DATA.RH2.values
     PRES = DATA.PRES.values
     G = DATA.G.values
@@ -299,14 +306,27 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
     # Checks for optional input variables
     #--------------------------------------------
     
-    # create combined pr_factor with srf
+    # Snowfall factor per time step = SRF x K_AVA (each one only if in the forcing and switched on in the config).
+    # Both are constant within an outline period and change when the next outline starts, so they may vary in
+    # time. NaN -> 1 (no redistribution / no avalanche input).
     use_srf = ("SRF" in DATA) and (Config.use_srf is True)
+    use_ava = ("K_AVA" in DATA) and (Config.use_ava is True)
+
+    def _per_step(name):
+        a = np.atleast_1d(np.asarray(DATA[name].values, dtype="float64"))
+        a = np.where(np.isfinite(a), a, 1.0)
+        if a.size not in (1, nt):
+            raise ValueError(f"{name} has {a.size} values, expected 1 or {nt}")
+        return np.broadcast_to(a, (nt,))
+
+    snow_factor = np.ones(nt)
     if use_srf:
-        _srf = np.atleast_1d(DATA["SRF"].values)
-        srf_timevar = _srf.size > 1
+        snow_factor = snow_factor * _per_step("SRF")
+    if use_ava:
+        snow_factor = snow_factor * _per_step("K_AVA")
 
     _months = pd.DatetimeIndex(DATA.time.values).month.values
-    rrr_summer_months = (4,5,6,7,8,9)
+    rrr_summer_months = (6,7,8,9)          # JJAS
     if (rrr_factor_summer is not None) and (rrr_factor_winter is not None):
         rrr_factor = np.where(np.isin(_months, rrr_summer_months), rrr_factor_summer, rrr_factor_winter)
     else:
@@ -329,12 +349,14 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
 
     LWin = np.array(nt * [None])
     N = np.array(nt * [None])
+    # LWin: scaled with the T2 bias (Stefan-Boltzmann, clouds/terrain of the forcing kept),
+    # then the constant radiative offset bias_LWIN
     if ('LWin' in DATA) and ('N' in DATA):
-        DATA['LWin'] = np.clip(DATA['LWin'] + bias_LWIN, a_min=0.0, a_max=None)
+        DATA['LWin'] = np.clip(DATA['LWin'] * (T2 / T2_raw) ** 4 + bias_LWIN, a_min=0.0, a_max=None)
         LWin = DATA.LWin.values
         N = DATA.N.values
     elif 'LWin' in DATA:
-        DATA['LWin'] = np.clip(DATA['LWin'] + bias_LWIN, a_min=0.0, a_max=None)
+        DATA['LWin'] = np.clip(DATA['LWin'] * (T2 / T2_raw) ** 4 + bias_LWIN, a_min=0.0, a_max=None)
         LWin = DATA.LWin.values
     else:
         LWin = None
@@ -387,13 +409,6 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
         else:
             density_fresh_snow = constant_density 
 
-        #SRF check
-        local_srf = 1.0
-        if use_srf:
-            srf_val = float(_srf[t]) if srf_timevar else float(_srf[0])
-            if not np.isnan(srf_val):
-                local_srf = srf_val
-
         # Derive snowfall [m] and rain rates [m w.e.]
         if (SNOWF is not None) and (RRR is not None):
             SNOWFALL = SNOWF[t]
@@ -419,8 +434,8 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
         if SNOWFALL<minimum_snowfall:
             SNOWFALL = 0.0
 
-        # Apply SRF if present (otherwise multiplied by 1.0)
-        SNOWFALL = SNOWFALL * local_srf
+        # Apply SRF x K_AVA (1.0 if neither is used)
+        SNOWFALL = SNOWFALL * snow_factor[t]
 
         # if rainfall is smaller than the threshold
         if RAIN<(minimum_snowfall*(density_fresh_snow/water_density)*1000.0):
@@ -639,7 +654,9 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
             _SNOWHEIGHT[t] = GRID.get_total_snowheight()
             _hy = np.asarray(GRID.get_hydro_year())
             _lh = np.asarray(GRID.get_height())
-            _CY_SNOWHEIGHT[t] = float(np.sum(_lh[_hy == HYDRO_YEAR[t]]))
+            _rho = np.asarray(GRID.get_density())
+            _CY_SNOWHEIGHT[t] = float(np.sum(_lh[(_hy == HYDRO_YEAR[t]) & (_rho < Constants.snow_ice_threshold)]))
+
             _TOTALHEIGHT[t] = GRID.get_total_height()
             _TS[t] = surface_temperature
             _ALBEDO[t] = alpha
