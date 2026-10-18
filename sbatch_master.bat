@@ -46,7 +46,7 @@ conda activate pymc_env
 python -u /data/scratch/richteny/thesis/cosipy_test_space/cosipy_lhs-wide_fromlist.py 0
 python -u /data/scratch/richteny/thesis/cosipy_test_space/cosipy_lhs-wide_fromlist.py 1
 python -u /data/scratch/richteny/thesis/cosipy_test_space/cosipy_lhs-wide_fromlist.py 2
-#python -u /data/scratch/richteny/thesis/cosipy_test_space/cosipy_lhs-wide_fromlist.py 3
+python -u /data/scratch/richteny/thesis/cosipy_test_space/cosipy_lhs-wide_fromlist.py 3
 
 #python -u /data/scratch/richteny/thesis/cosipy_test_space/cosipy_lhs-narrow-A_fromlist.py 0
 #python -u /data/scratch/richteny/thesis/cosipy_test_space/cosipy_lhs-narrow-A_fromlist.py 1

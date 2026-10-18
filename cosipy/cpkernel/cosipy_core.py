@@ -17,6 +17,34 @@ from cosipy.modules.surfaceTemperature import update_surface_temperature
 from cosipy.modules.surfaceTemperature import method_EW_Sonntag
 
 
+# Depth zones (m) for the near-surface liquid water outputs, for comparison with Sentinel-1 wet-snow maps.
+# C-band reaches only a few cm into wet snow, but metres into dry snow above a wet layer, so the depth that
+# matters is not known in advance: the maximum liquid water content is stored per zone (no threshold applied),
+# and depth and threshold are chosen in the analysis (max over the zones down to the chosen depth).
+# The deepest zone ends at preferential_percolation_depth, the depth down to which the Marchenko et al. (2017)
+# scheme places surface water directly.
+LWC_ZONES = {"LWC_00_10": (0.0, 0.1), "LWC_10_50": (0.1, 0.5),
+             "LWC_DEEP": (0.5, float(Constants.preferential_percolation_depth))}
+
+
+def zone_max_lwc(height: np.ndarray, lwc: np.ndarray, z_top: float, z_bottom: float) -> float:
+    """Highest liquid water volume fraction of the layers overlapping the depth zone [z_top, z_bottom).
+
+    Args:
+        height: Layer thicknesses from the surface down [|m|].
+        lwc: Layer liquid water content, volume fraction [-].
+        z_top: Upper limit of the zone, depth below the surface [|m|].
+        z_bottom: Lower limit of the zone, depth below the surface [|m|].
+
+    Returns:
+        Maximum liquid water volume fraction in the zone [-] (NaN if no layer reaches the zone).
+    """
+    bottom = np.cumsum(height)                        # depth of each layer's lower boundary
+    top = bottom - height                             # depth of each layer's upper boundary
+    inside = (top < z_bottom) & (bottom > z_top)
+    return float(np.max(lwc[inside])) if inside.any() else np.nan
+
+
 def init_nan_array_1d(nt: int) -> np.ndarray:
     """Initialise and fill an array with NaNs.
     
@@ -253,6 +281,9 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
         _new_snow_timestamp = init_nan_array_1d(nt)
         _old_snow_timestamp = init_nan_array_1d(nt)
         _CY_SNOWHEIGHT = init_nan_array_1d(nt)
+        _LWC_00_10 = init_nan_array_1d(nt)
+        _LWC_10_50 = init_nan_array_1d(nt)
+        _LWC_DEEP = init_nan_array_1d(nt)
 
         _LAYER_HEIGHT = init_nan_array_2d(nt, max_layers)
         _LAYER_RHO = init_nan_array_2d(nt, max_layers)
@@ -656,6 +687,10 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
             _lh = np.asarray(GRID.get_height())
             _rho = np.asarray(GRID.get_density())
             _CY_SNOWHEIGHT[t] = float(np.sum(_lh[(_hy == HYDRO_YEAR[t]) & (_rho < Constants.snow_ice_threshold)]))
+            _lwc = np.asarray(GRID.get_liquid_water_content())
+            _LWC_00_10[t] = zone_max_lwc(_lh, _lwc, *LWC_ZONES["LWC_00_10"])
+            _LWC_10_50[t] = zone_max_lwc(_lh, _lwc, *LWC_ZONES["LWC_10_50"])
+            _LWC_DEEP[t] = zone_max_lwc(_lh, _lwc, *LWC_ZONES["LWC_DEEP"])
 
             _TOTALHEIGHT[t] = GRID.get_total_height()
             _TS[t] = surface_temperature
@@ -757,4 +792,4 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
             _ME,_intMB,_EVAPORATION,_SUBLIMATION,_CONDENSATION,_DEPOSITION,_REFREEZE, \
             _subM,_Z0,_surfM,_new_snow_height,_new_snow_timestamp,_old_snow_timestamp,_MOL, \
             _LAYER_HEIGHT,_LAYER_RHO,_LAYER_T,_LAYER_LWC,_LAYER_CC,_LAYER_POROSITY,_LAYER_ICE_FRACTION, \
-            _LAYER_IRREDUCIBLE_WATER,_LAYER_REFREEZE,_LAYER_TAVG,_LAYER_HY,_CY_SNOWHEIGHT,stake_names,_stat,_df)
+            _LAYER_IRREDUCIBLE_WATER,_LAYER_REFREEZE,_LAYER_TAVG,_LAYER_HY,_CY_SNOWHEIGHT,_LWC_00_10,_LWC_10_50,_LWC_DEEP,stake_names,_stat,_df)

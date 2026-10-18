@@ -4,7 +4,7 @@ import sys
 import gc
 import os
 import glob
-from scipy.stats import qmc
+from scipy.stats import qmc, truncnorm
 from distributed import Client
 from cosipy.config import Config
 from cosipy.constants import Constants
@@ -22,45 +22,58 @@ TOTAL_SIMULATIONS = 1000
 NUM_CHUNKS = 12
 SEED = 11  # CRITICAL: Ensures all 4 processes see the exact same 1000 params
 
-GLACIER = "Mera"
+GLACIER = "Dongkemadi"
 OUTPUT_DIR = "/data/scratch/richteny/thesis/cosipy_test_space/data/output/"
+# NOTE: the skip check (output_exists) goes by run number only. Move old wide-LHS output of this glacier out of
+# OUTPUT_DIR before starting, or the new parameter sets with the same numbers are skipped as "done".
 MIN_SIZE_MB = 600
 
 RESTART_EVERY = 25
-# Define Parameter Ranges (Min, Max)
-# Adjust these bounds to match your prior ranges
 
-param_bounds = {
-    'rrr_factor_summer': (np.log(0.25), np.log(4.0)),   # was 0.333-3.0
-    'alb_snow':          (0.75, 0.90),                   # unchanged
-    'alb_firn':          (0.45, 0.75),                   # unchanged
-    'albedo_depth':      (0.1, 14.0),                    # was 0.5-14
-    'bias_LWin':         (-40, 80),                      # was -50 to 50
-    'ws_factor':         (np.log(0.25), np.log(4.0)),    # was 0.5-2.0
-    'bias_T2':           (-3, 4),                        # was -2 to 2
-    't_wet':             (1.0, 23.0),                    # unchanged
-    'rrr_factor_winter': (np.log(0.25), np.log(4.0)),   # was 0.333-3.0
+# Priors in SAMPLING space (ln for rrr_factor_* and ws_factor, which are exponentiated below), from the prior
+# section of A_99_create-prior-knowledge (paste its PRIORS block here). The LHS is drawn in probability space and
+# mapped through each prior's quantile function, so the wide LHS samples FROM the priors.
+#   tn(mu, sd[, lo, hi]): normal truncated at mu +- TRUNC sd (and at lo / hi, physical limits)
+#   ('unif', lo, hi):     no observational prior -> uniform
+TRUNC = 2.5
+
+
+def tn(mu, sd, lo=-np.inf, hi=np.inf):
+    return ('norm', mu, sd, max(mu - TRUNC * sd, lo), min(mu + TRUNC * sd, hi))
+
+
+WINTER_CENTRE = {"Abramov": 0.6780, "Bordu": 0.8459, "Dongkemadi": 0.2390, "Guliya": 0.9478, "Halji": -0.2107,
+                 "InteriorGlacier": 0.4318, "Kolahoi": 0.4383, "Mera": -1.2379, "ParlungNo4": -0.5108,
+                 "Urumqi": 0.5306}   # ln of the HMA_SR_D winter factor
+PRIORS = {
+    'rrr_factor_summer': tn(0.0, 0.8),
+    'alb_snow':          tn(0.83, 0.05, 0.75, 0.90),
+    'alb_firn':          ('unif', 0.45, 0.75),
+    'albedo_depth':      ('unif', 0.1, 14.0),
+    'bias_LWin':         tn(22.4, 25.0),
+    'ws_factor':         tn(0.0, 0.7),        # <- centre from A_99 (ln of measured / forcing wind)
+    'bias_T2':           tn(0.23, 1.5),
+    't_wet':             ('unif', 0.1, 23.0),
+    'rrr_factor_winter': tn(WINTER_CENTRE[GLACIER], 0.65),
 }
+
+
+def from_prior(u, spec):
+    """uniform [0, 1] -> the prior (quantile function)."""
+    if spec[0] == 'unif':
+        return spec[1] + u * (spec[2] - spec[1])
+    _, mu, sd, lo, hi = spec
+    return truncnorm.ppf(u, (lo - mu) / sd, (hi - mu) / sd, loc=mu, scale=sd)
+
 
 # --- 2. LHS GENERATOR FUNCTION ---
 def generate_lhs_params(n_samples, seed):
-    """Generates a reproducible LHS parameter set."""
-    # Initialize LHS sampler
-    sampler = qmc.LatinHypercube(d=len(param_bounds), optimization="random-cd", seed=seed)
-    #sampler = qmc.LatinHypercube(d=len(param_bounds), seed=seed)
-    sample = sampler.random(n=n_samples)
-    
-    # Scale samples to parameter bounds
-    l_bounds = [b[0] for b in param_bounds.values()]
-    u_bounds = [b[1] for b in param_bounds.values()]
-    sample_scaled = qmc.scale(sample, l_bounds, u_bounds)
-    
-    # Convert to DataFrame
-    df = pd.DataFrame(sample_scaled, columns=param_bounds.keys())
-    
+    """Reproducible LHS drawn from the priors (stratified in probability space)."""
+    sampler = qmc.LatinHypercube(d=len(PRIORS), optimization="random-cd", seed=seed)
+    u = sampler.random(n=n_samples)
+    df = pd.DataFrame({p: from_prior(u[:, j], spec) for j, (p, spec) in enumerate(PRIORS.items())})
     # Add a global ID column to ensure filenames match the master list
     df['global_id'] = range(n_samples)
-    
     return df
 
 def output_exists(global_id, outdir=OUTPUT_DIR, min_size_mb=MIN_SIZE_MB):
@@ -102,7 +115,7 @@ if __name__ == "__main__":
     print("Generating Master LHS Parameter Set...")
     df_master = generate_lhs_params(TOTAL_SIMULATIONS, SEED)
     
-    df_master.to_csv(f"./{GLACIER}_LHS-wide-master.csv")    
+    df_master.to_csv(f"./{GLACIER}_LHS-wide-prior-master.csv")    
     # C. Slice the DataFrame for this Chunk
     chunk_size = TOTAL_SIMULATIONS // NUM_CHUNKS
     start_idx = chunk_id * chunk_size

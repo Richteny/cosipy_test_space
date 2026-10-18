@@ -1,6 +1,6 @@
 [GENERAL]
 dt = 3600
-max_layers = 300 #75
+max_layers = 325 #75
 z = 2.0
 
 [PARAMETERIZATIONS]

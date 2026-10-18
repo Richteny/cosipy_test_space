@@ -494,7 +494,7 @@ def run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures, opt_dict=None):
                 NLAYERS, ME, intMB, EVAPORATION, SUBLIMATION, CONDENSATION, \
                 DEPOSITION, REFREEZE, subM, Z0, surfM, new_snow_height, new_snow_timestamp, old_snow_timestamp, MOL, LAYER_HEIGHT, \
                 LAYER_RHO, LAYER_T, LAYER_LWC, LAYER_CC, LAYER_POROSITY, \
-                LAYER_ICE_FRACTION, LAYER_IRREDUCIBLE_WATER, LAYER_REFREEZE, LAYER_TAVG, LAYER_HY, CY_SNOWHEIGHT, \
+                LAYER_ICE_FRACTION, LAYER_IRREDUCIBLE_WATER, LAYER_REFREEZE, LAYER_TAVG, LAYER_HY, CY_SNOWHEIGHT, LWC_00_10, LWC_10_50, LWC_DEEP, \
                 stake_names, stat, df_eval = future.result()
 
             IO.copy_local_to_global(
@@ -502,7 +502,7 @@ def run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures, opt_dict=None):
                 SNOWHEIGHT, TOTALHEIGHT, TS, ALBEDO, NLAYERS, ME, intMB, EVAPORATION,
                 SUBLIMATION, CONDENSATION, DEPOSITION, REFREEZE, subM, Z0, surfM, MOL,
                 LAYER_HEIGHT, LAYER_RHO, LAYER_T, LAYER_LWC, LAYER_CC, LAYER_POROSITY,
-                LAYER_ICE_FRACTION, LAYER_IRREDUCIBLE_WATER, LAYER_REFREEZE, LAYER_TAVG, LAYER_HY, CY_SNOWHEIGHT)
+                LAYER_ICE_FRACTION, LAYER_IRREDUCIBLE_WATER, LAYER_REFREEZE, LAYER_TAVG, LAYER_HY, CY_SNOWHEIGHT, LWC_00_10, LWC_10_50, LWC_DEEP)
 
             IO.copy_local_restart_to_global(indY,indX,local_restart)
 

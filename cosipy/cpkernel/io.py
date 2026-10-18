@@ -444,6 +444,9 @@ class IOClass:
             "Z0": ("m", "Roughness length"),
             "surfM": ("m w.e.", "Surface melt"),
             "MOL": ("m", "Monin Obukhov length"),
+            "LWC_00_10": ("-", "Maximum liquid water content (volume fraction) of the layers at 0-0.1 m depth"),
+            "LWC_10_50": ("-", "Maximum liquid water content (volume fraction) of the layers at 0.1-0.5 m depth"),
+            "LWC_DEEP": ("-", "Maximum liquid water content (volume fraction) of the layers from 0.5 m to the preferential percolation depth"),
         }
         # metadata_result overwrites items in previous union!
         metadata = (
@@ -699,6 +702,9 @@ class IOClass:
         local_LAYER_TAVG: np.ndarray,
         local_LAYER_HY: np.ndarray,
         local_CY_SNOWHEIGHT: np.ndarray,
+        local_LWC_00_10: np.ndarray,
+        local_LWC_10_50: np.ndarray,
+        local_LWC_DEEP: np.ndarray,
     ):
         """Copy the local results from workers to global numpy arrays."""
 
@@ -731,6 +737,9 @@ class IOClass:
         self.set_internal_attribute("subM", local_subM, x, y)
         self.set_internal_attribute("surfM", local_surfM, x, y)
         self.set_internal_attribute("MOL", local_MOL, x, y)
+        self.set_internal_attribute("LWC_00_10", local_LWC_00_10, x, y)
+        self.set_internal_attribute("LWC_10_50", local_LWC_10_50, x, y)
+        self.set_internal_attribute("LWC_DEEP", local_LWC_DEEP, x, y)
 
         if Config.full_field:
             self.set_full_field_attribute("HEIGHT", local_LAYER_HEIGHT, x, y)
