@@ -14,14 +14,14 @@ thermal_conductivity_method = "Calonne19" #bulk, empirical, Sturm97, Calonne19
 sfc_temperature_method = "Secant"
 precip_partitioning_method = "Ding2014"
 specific_heat_method = "Yen81" #bulk, Yen81
-preferential_percolation_method = "Marchenko17" # Marchenko17 or disabled aka behaviour as usual
+preferential_percolation_method = "disabled" # Marchenko17 or disabled aka behaviour as usual
 preferential_percolation_depth = 6.0 # as in Kronenberg et al. 3.0 = FRICOSIPY and Marchenko17
 
 [INITIAL_CONDITIONS]
 initial_snowheight_constant = 0.0
-initial_snow_layer_heights = 0.25 #matching maximum_snow_layer_height 0.1
+initial_snow_layer_heights = 0.1 #matching maximum_snow_layer_height 0.1
 initial_glacier_height = 500.0
-initial_glacier_layer_heights = 5.0 #fit to max glacier layer heights for lagrangian use else 0.5
+initial_glacier_layer_heights = 20.0 #fit to max glacier layer heights for lagrangian use else 0.5
 initial_top_density_snowpack = 300.0
 initial_bottom_density_snowpack = 600.0
 temperature_bottom = 265.16 #abramov 270.16, mera (Khadka 2024: 265.16K)
@@ -33,20 +33,27 @@ zlt2 = 0.1
 center_snow_transfer_function = 0.0
 spread_snow_transfer_function = 1
 mult_factor_RRR = 1.0
-rrr_factor_summer = 1.0
-rrr_factor_winter = 1.0
-minimum_snowfall = 0.001 #1mm
-bias_LWin = 29.379364
-mult_factor_WS = 0.737442
-bias_T2 = -0.497501
+rrr_factor_summer = 1.07 #1.826188
+rrr_factor_winter = 1.78 #1.204653
+#precip_lapse_rate = 0.004 #%
+minimum_snowfall = 0.001 #0.001 = 1mm
+bias_LWin = 23.625954
+mult_factor_WS = 0.5
+bias_T2 = 0.0
+# Seasonal T2 bias, summer = JJAS, winter = Oct-May (same months as rrr_factor_summer / _winter).
+# When BOTH are set they replace bias_T2 (applied the same way: constant vapour pressure, LWin scaled).
+# Leave commented to use bias_T2 all year.
+bias_T2_summer = 1.119451
+bias_T2_winter = -0.880549
 
 [REMESHING]
 remesh_method = "lagrangian" #log_profile, adaptive_profile, lagrangian
 minimum_snow_layer_height = 0.0005
-maximum_snow_layer_height = 0.25 #FRICOSIPY has 0.1
+maximum_snow_layer_height = 0.1 #FRICOSIPY has 0.1
 coarse_layer_threshold = 10.0    #FRICOSIPY has 21.0
+fine_ice_depth = 10.0 #new, starts splitting columns at this height
 maximum_coarse_layer_height = 2.00 #FRICOSIPY has 0.30
-maximum_glacier_layer_height = 5.0 #FRICOSIPY has 1.0
+maximum_glacier_layer_height = 1.0 #FRICOSIPY has 1.0
 max_depth = 500.0                   #FRICOSIPY 50.0
 first_layer_height = 0.01
 layer_stretching = 1.2
@@ -58,12 +65,12 @@ temperature_threshold_merging = 0.01
 constant_density = 300.0
 rho_firn = 500.0 #Switch
 rho_max_dm = 300.0 #EBFM default 175.0
-albedo_fresh_snow = 0.807839
-albedo_firn = 0.638042
+albedo_fresh_snow = 0.793451
+albedo_firn = 0.5
 albedo_ice = 0.355
 albedo_mod_snow_aging = 18.038579229329066
-albedo_mod_snow_depth = 3.575544
-t_star_wet = 2.342398
+albedo_mod_snow_depth = 1.676463
+t_star_wet = 7.048785
 t_star_dry = 30
 t_star_K = 14
 t_star_cutoff = 263.17

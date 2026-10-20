@@ -38,6 +38,11 @@ RESTART_EVERY = 25
 TRUNC = 2.5
 
 
+# Seasonal T2 bias (JJAS / Oct-May) instead of one bias_T2. Do NOT switch while a round is running: the LHS is
+# regenerated from SEED in every chunk, so all chunks of a round must use the same PRIORS.
+T2_SPLIT = True
+
+
 def tn(mu, sd, lo=-np.inf, hi=np.inf):
     return ('norm', mu, sd, max(mu - TRUNC * sd, lo), min(mu + TRUNC * sd, hi))
 
@@ -56,6 +61,12 @@ PRIORS = {
     't_wet':             ('unif', 0.1, 23.0),
     'rrr_factor_winter': tn(WINTER_CENTRE[GLACIER], 0.65),
 }
+if T2_SPLIT:
+    # TODO priors to be confirmed: placeholders = the old bias_T2 prior for both seasons
+    # (appended after rrr_factor_winter, like the precipitation pair in the output file name)
+    _t2 = PRIORS.pop('bias_T2')
+    PRIORS['bias_T2_summer'] = _t2
+    PRIORS['bias_T2_winter'] = _t2
 
 
 def from_prior(u, spec):
@@ -169,7 +180,9 @@ if __name__ == "__main__":
                     #roughness_ice     = float(row['roughness_ice']),
                     bias_LWIN         = float(row['bias_LWin']),
                     WS_factor         = float(np.exp(row['ws_factor'])),
-                    bias_T2           = float(row['bias_T2']),
+                    **({'bias_T2_summer': float(row['bias_T2_summer']),
+                        'bias_T2_winter': float(row['bias_T2_winter'])} if T2_SPLIT
+                       else {'bias_T2': float(row['bias_T2'])}),
                     t_wet             = float(row['t_wet']),
                     #t_K               = float(row['t_K']),
                     rrr_factor_summer = float(np.exp(row['rrr_factor_summer'])),

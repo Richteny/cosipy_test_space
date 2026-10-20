@@ -659,6 +659,24 @@ class IOClass:
             for full_field_var in self.full:
                 self.init_full_field_attribute(full_field_var, max_layers)
 
+    def copy_local_forcing_to_global(self, y: int, x: int, forcing: dict):
+        """Replace the forcing fields in RESULT (copied from the input file at initialisation) by the forcing as
+        COSIPY used it in this grid cell (after bias and multiplication factors)."""
+        if not forcing:
+            return
+        if not getattr(self, "_forcing_detached", False):
+            # RESULT shares the arrays of DATA (add_variable_along_latlontime stores var.data): copy once, so that
+            # writing the adapted values does not change the input data
+            for name in forcing:
+                if name in self.RESULT:
+                    self.RESULT[name] = self.RESULT[name].copy(deep=True)
+                    self.RESULT[name].attrs["comment"] = ("as used by COSIPY: after bias_T2 / RH2 adjustment, "
+                                                          "mult_factor_WS and precipitation factors")
+            self._forcing_detached = True
+        for name, values in forcing.items():
+            if name in self.RESULT:
+                self.RESULT[name].values[:, y, x] = values
+
     def copy_local_to_global(
         self,
         y: int,

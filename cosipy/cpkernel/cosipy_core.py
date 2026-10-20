@@ -787,9 +787,17 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
         RESTART.LAYER_HY[0:GRID.get_number_layers()] = GRID.get_hydro_year()
         RESTART.BASE_ELEVATION.values[:] = GRID.get_base_elevation()
 
+        # Forcing as COSIPY used it (after bias_T2 incl. the RH2 adjustment, the wind factor and the precipitation
+        # factors; RRR before the snowfall threshold and SRF / K_AVA). Written to the output instead of the raw
+        # forcing copied from the input file (the raw fields stay available in the forcing file).
+        forcing_out = {"T2": np.asarray(T2, dtype=np.float64), "RH2": np.asarray(RH2, dtype=np.float64),
+                       "U2": np.asarray(U2, dtype=np.float64)}
+        if RRR is not None:
+            forcing_out["RRR"] = np.asarray(RRR, dtype=np.float64)
+
         return (indY,indX,RESTART,_RAIN,_SNOWFALL,_LWin,_LWout,_H,_LE,_B,_QRR, \
             _MB,_surfMB,_Q,_SNOWHEIGHT,_TOTALHEIGHT,_TS,_ALBEDO,_NLAYERS, \
             _ME,_intMB,_EVAPORATION,_SUBLIMATION,_CONDENSATION,_DEPOSITION,_REFREEZE, \
             _subM,_Z0,_surfM,_new_snow_height,_new_snow_timestamp,_old_snow_timestamp,_MOL, \
             _LAYER_HEIGHT,_LAYER_RHO,_LAYER_T,_LAYER_LWC,_LAYER_CC,_LAYER_POROSITY,_LAYER_ICE_FRACTION, \
-            _LAYER_IRREDUCIBLE_WATER,_LAYER_REFREEZE,_LAYER_TAVG,_LAYER_HY,_CY_SNOWHEIGHT,_LWC_00_10,_LWC_10_50,_LWC_DEEP,stake_names,_stat,_df)
+            _LAYER_IRREDUCIBLE_WATER,_LAYER_REFREEZE,_LAYER_TAVG,_LAYER_HY,_CY_SNOWHEIGHT,_LWC_00_10,_LWC_10_50,_LWC_DEEP,stake_names,_stat,_df,forcing_out)

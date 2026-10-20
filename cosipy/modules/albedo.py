@@ -284,9 +284,15 @@ def method_Bougamont(GRID, surface_temperature, albedo_snow, albedo_ice: float, 
         # slightly faster than one-liner
         delta_albedo = albedo_snow - albedo_firn
         albedo_snow -= delta_albedo * float(dt_days) / float(t_star)
-        # Reset if snowfall in current timestep
+
         if hours_since_snowfall == 0:
-            albedo_snow = albedo_fresh_snow
+            d_new, _, _ = GRID.get_fresh_snow_props() #height of fresh snow since last reset
+            w = 1.0 - np.exp(-d_new / (albedo_mod_snow_depth / 100.0)) #share of fresh-snow signal
+            albedo_snow = albedo_snow + w * (albedo_fresh_snow - albedo_snow)
+        # OLD default
+        # Reset if snowfall in current timestep
+        #if hours_since_snowfall == 0:
+        #    albedo_snow = albedo_fresh_snow
 
         # Effect of surface albedo decay due to the snow depth (Oerlemans & Knap 1998):
         alphaMod = get_albedo_with_decay(snow_albedo=albedo_snow,snow_height=h,albedo_mod_snow_depth=albedo_mod_snow_depth)

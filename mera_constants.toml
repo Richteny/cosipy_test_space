@@ -39,6 +39,11 @@ minimum_snowfall = 0.001 #1mm
 bias_LWin = 29.379364
 mult_factor_WS = 0.737442
 bias_T2 = -0.497501
+# Seasonal T2 bias, summer = JJAS, winter = Oct-May (same months as rrr_factor_summer / _winter).
+# When BOTH are set they replace bias_T2 (applied the same way: constant vapour pressure, LWin scaled).
+# Leave commented to use bias_T2 all year.
+#bias_T2_summer = -0.497501
+#bias_T2_winter = -0.497501
 
 [REMESHING]
 remesh_method = "lagrangian" #log_profile, adaptive_profile, lagrangian

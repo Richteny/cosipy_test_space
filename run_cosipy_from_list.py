@@ -61,8 +61,12 @@ PARAM_MAP = {
     'albedo_depth':      'albedo_depth',
     'bias_LWin':         'bias_LWIN',
     'bias_T2':           'bias_T2',
+    'bias_T2_summer':    'bias_T2_summer',     # seasonal T2 bias (JJAS) ...
+    'bias_T2_winter':    'bias_T2_winter',     # ... and Oct-May; both replace bias_T2 in COSIPY
     't_wet':             't_wet',
 }
+# A list needs bias_T2 OR both seasonal columns; columns of this group that are missing are not passed.
+OPTIONAL = ['bias_T2', 'bias_T2_summer', 'bias_T2_winter']
 LOG_COLS = []               # list columns stored in log space (exp() is applied); [] = all linear
 POSITIVE = ['rrr_factor_summer', 'rrr_factor_winter', 'ws_factor', 'albedo_depth', 't_wet']
 # ============================================================================
@@ -81,9 +85,11 @@ def complete_file(folder, cosipy_id):
 
 def load_list(path):
     lst = pd.read_csv(path)
-    missing = [c for c in PARAM_MAP if c not in lst.columns]
+    missing = [c for c in PARAM_MAP if c not in lst.columns and c not in OPTIONAL]
     if missing:
         sys.exit(f"columns missing in {path}: {missing}")
+    if not ('bias_T2' in lst.columns or {'bias_T2_summer', 'bias_T2_winter'} <= set(lst.columns)):
+        sys.exit(f"{path} needs a column bias_T2 or both bias_T2_summer and bias_T2_winter")
     if ID_COL is None or ID_COL not in lst.columns:
         if ID_COL is not None:
             print(f"(no column '{ID_COL}' -- using the row number as id)")
@@ -100,10 +106,15 @@ def load_list(path):
     return lst
 
 
+def active_cols(lst):
+    """PARAM_MAP columns present in the list (optional T2 columns may be absent)."""
+    return [c for c in PARAM_MAP if c in lst.columns]
+
+
 def manifest_row(run_id, row, status, out_file, minutes):
     d = {'run_id': run_id, 'list_id': int(row['_id']), 'status': status,
          'file': os.path.basename(out_file) if out_file else '', 'minutes': round(minutes, 1)}
-    d.update({c: row[c] for c in PARAM_MAP})
+    d.update({c: row[c] for c in PARAM_MAP if c in row.index})
     return d
 
 
@@ -136,7 +147,7 @@ if __name__ == "__main__":
     print(f"--- {tag}: chunk {chunk_id + 1}/{NUM_CHUNKS}, {len(chunk)} of {len(lst)} runs ---")
     print(f"list: {list_csv}\noutput: {target_dir}")
     print("\nparameter ranges in this chunk:")
-    for c in PARAM_MAP:
+    for c in active_cols(lst):
         v = chunk[c].values
         print(f"  {c:<20}{v.min():10.4f} - {v.max():10.4f}   median {np.median(v):10.4f}")
 
@@ -189,7 +200,7 @@ if __name__ == "__main__":
             known.add(run_id)
             t0 = time.time()
             try:
-                runcosipy(**{kw: float(row[col]) for col, kw in PARAM_MAP.items()},
+                runcosipy(**{PARAM_MAP[col]: float(row[col]) for col in active_cols(lst)},
                           count=run_id, cluster=cluster)
                 out = complete_file(COSIPY_OUTPUT_DIR, cosipy_id)
                 if out is None or os.path.getmtime(out) < t0 - 5:     # 5 s: coarse file-system timestamps

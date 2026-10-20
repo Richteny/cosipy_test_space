@@ -5,6 +5,11 @@ from cosipy.constants import Constants
 preferential_percolation_method = Constants.preferential_percolation_method
 preferential_percolation_depth = Constants.preferential_percolation_depth
 
+snow_ice_threshold = Constants.snow_ice_threshold
+ice_density = Constants.ice_density
+air_density = Constants.air_density
+icf_ice = (snow_ice_threshold - air_density) / (ice_density - air_density) #same as in refreezing
+
 @njit
 def percolation(GRID, water: float, dt: int) -> float:
     """Percolate melt water through the snow- and firn pack.
@@ -73,8 +78,47 @@ def percolation(GRID, water: float, dt: int) -> float:
 
 @njit
 def method_Marchenko(GRID, surface_water: float):
-    """ Statistical preferential percolation scheme (Gaussian) after Marchenko et al. (2017).
-        Water is distributed instantenously over the column following a normal PDF with sigma = zlim/3."""
+    """Statistical preferential percolation scheme (Gaussian) after Marchenko et al. (2017).
+    Water is distributed instantaneously following a half-normal PDF with sigma = zlim/3,
+    but only over the porous column above the first ice layer (snow/firn that can hold or
+    refreeze water). In deep firn this is identical to the original scheme; over thin snow on
+    ice the water stays in the snow instead of being placed in ice layers (immediate runoff)."""
+
+    h = np.asarray(GRID.get_height(), dtype=np.float64)
+    lwc = np.asarray(GRID.get_liquid_water_content(), dtype=np.float64)
+    icf = np.asarray(GRID.get_ice_fraction(), dtype=np.float64)
+
+    # number of porous layers above the first ice layer
+    n_por = len(h)
+    for i in range(len(h)):
+        if icf[i] >= icf_ice:
+            n_por = i
+            break
+
+    if n_por == 0:
+        # bare ice at the surface: all water to the top layer (bucket routes it to runoff)
+        GRID.set_node_liquid_water_content(0, lwc[0] + surface_water / h[0])
+        return
+
+    z = np.cumsum(h) - 0.5 * h
+    sigma = preferential_percolation_depth / 3.0
+    PDF_normal = 2.0 * (np.exp(-(z**2) / (2.0 * sigma**2))
+                        / (sigma * np.sqrt(2.0 * np.pi)))
+    PDF_normal_height = PDF_normal * h
+    PDF_normal_height[n_por:] = 0.0                  # no water placed in or below the first ice layer
+    total = np.sum(PDF_normal_height)
+    if total > 0.0:
+        water = lwc + (PDF_normal_height / total * surface_water) / h
+        GRID.set_liquid_water_content(water)
+    else:
+        GRID.set_node_liquid_water_content(0, lwc[0] + surface_water / h[0])
+
+#OLD VERSION, copy from FRICOSIPY / EBFM
+"""
+@njit
+def method_Marchenko(GRID, surface_water: float):
+    #Statistical preferential percolation scheme (Gaussian) after Marchenko et al. (2017).
+    #Water is distributed instantenously over the column following a normal PDF with sigma = zlim/3.
 
     h = np.asarray(GRID.get_height(), dtype=np.float64)
     lwc = np.asarray(GRID.get_liquid_water_content(), dtype=np.float64)
@@ -96,7 +140,7 @@ def method_Marchenko(GRID, surface_water: float):
         #add everything to top
         GRID.set_node_liquid_water_content(0, GRID.get_node_liquid_water_content(0) + surface_water / h[0]
         )
-
+"""
 
 @njit
 def get_runoff(grid) -> float:

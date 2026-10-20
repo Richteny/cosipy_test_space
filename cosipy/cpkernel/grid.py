@@ -43,6 +43,9 @@ maximum_coarse_layer_height = Constants.maximum_coarse_layer_height
 coarse_layer_threshold = Constants.coarse_layer_threshold
 maximum_glacier_layer_height = Constants.maximum_glacier_layer_height
 max_depth = Constants.max_depth
+# Lagrangian scheme: glacier layers whose top lies within fine_ice_depth [m] of the surface are split until they are
+# no thicker than maximum_glacier_layer_height (0 or missing = off, old behaviour)
+fine_ice_depth = float(getattr(Constants, "fine_ice_depth", 0.0))
 
 @jitclass(spec)
 class Grid:
@@ -566,6 +569,27 @@ class Grid:
             idx = self.get_number_snow_layers() # the index of the first glacier layer
             if ((self.get_node_height(idx) + self.get_node_height(idx + 1) <= maximum_glacier_layer_height) and (self.get_node_hydro_year(idx) == self.get_node_hydro_year(idx + 1))):
                 self.merge_nodes(idx)    
+
+        # Keep the near-surface ice finely resolved. Glacier layers are otherwise only merged, so with a deep column of
+        # coarse initial ice layers the coarse layers reach the surface after a few metres of ablation (and stay
+        # coarse at the snow/ice interface). Split glacier layers whose top lies within fine_ice_depth of the surface
+        # until they are no thicker than maximum_glacier_layer_height. The deep ice keeps its coarse layers.
+        if fine_ice_depth > 0.0:
+            idx = 0
+            top = 0.0
+            n_split = 0
+            while (idx < self.number_nodes) and (top < fine_ice_depth) and (n_split < 500):
+                h = self.get_node_height(idx)
+                if (self.get_node_density(idx) > snow_ice_threshold) and (h > maximum_glacier_layer_height):
+                    lwc = self.get_node_liquid_water_content(idx)
+                    self.split_node(idx)
+                    # split_node halves the liquid water content, but it is a volume fraction: keep it in both halves
+                    self.set_node_liquid_water_content(idx, lwc)
+                    self.set_node_liquid_water_content(idx + 1, lwc)
+                    n_split += 1
+                    continue
+                top += h
+                idx += 1
 
         # If last layer depth exceeds the desired subsurface measurement depth, remove it:
         idx = self.get_number_layers() - 1

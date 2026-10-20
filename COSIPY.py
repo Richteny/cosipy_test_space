@@ -123,7 +123,17 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
     rrr = DATA.RRR.values
     hgt = DATA.HGT.values
     station_altitude = Config.station_altitude #define outside for numba
-    t2, rh2, rrr = online_lapse_rate(t2,rh2,rrr,hgt,station_altitude,lapse_T,lapse_RH, lapse_RRR)
+    # Precipitation lapse rate: MULTIPLICATIVE, lapse_RRR in 1/m (0.0004 = +4 % per 100 m), around the area-weighted
+    # mean glacier elevation, so the glacier-wide total stays the same and dry hours stay dry. lr_RRR passed to main()
+    # wins; otherwise precip_lapse_rate from constants.toml ([PRECIPITATION]; missing or 0 = off).
+    if lapse_RRR == 0.0:
+        lapse_RRR = float(getattr(Constants, "precip_lapse_rate", 0.0))
+    rrr_ref = precip_reference_elevation(DATA)
+    t2, rh2, rrr = online_lapse_rate(t2,rh2,rrr,hgt,station_altitude,lapse_T,lapse_RH, lapse_RRR, rrr_ref)
+    RESULT.attrs["Precip_lapse_rate_per_m"] = lapse_RRR
+    RESULT.attrs["Precip_lapse_reference_elevation"] = rrr_ref
+    if lapse_RRR != 0.0:
+        print(f"Precipitation lapse rate {lapse_RRR * 1e4:.1f} % per 100 m around {rrr_ref:.0f} m")
 
     print("Assigning values back to DATA")
     DATA['T2'] = (('time','lat','lon'), t2)
@@ -476,7 +486,7 @@ def run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures, opt_dict=None):
                 DEPOSITION, REFREEZE, subM, Z0, surfM, new_snow_height, new_snow_timestamp, old_snow_timestamp, MOL, LAYER_HEIGHT, \
                 LAYER_RHO, LAYER_T, LAYER_LWC, LAYER_CC, LAYER_POROSITY, \
                 LAYER_ICE_FRACTION, LAYER_IRREDUCIBLE_WATER, LAYER_REFREEZE, LAYER_TAVG, LAYER_HY, CY_SNOWHEIGHT, LWC_00_10, LWC_10_50, LWC_DEEP, \
-                stake_names, stat, df_eval = future.result()
+                stake_names, stat, df_eval, forcing_out = future.result()
 
             IO.copy_local_to_global(
                 indY, indX, RAIN, SNOWFALL, LWin, LWout, H, LE, B, QRR, MB, surfMB, Q,
@@ -485,6 +495,7 @@ def run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures, opt_dict=None):
                 LAYER_HEIGHT, LAYER_RHO, LAYER_T, LAYER_LWC, LAYER_CC, LAYER_POROSITY,
                 LAYER_ICE_FRACTION, LAYER_IRREDUCIBLE_WATER, LAYER_REFREEZE, LAYER_TAVG, LAYER_HY, CY_SNOWHEIGHT, LWC_00_10, LWC_10_50, LWC_DEEP)
 
+            IO.copy_local_forcing_to_global(indY, indX, forcing_out)
             IO.copy_local_restart_to_global(indY,indX,local_restart)
 
             # Write results to file
@@ -604,15 +615,27 @@ def close_everything(scheduler):
     yield scheduler.retire_workers(workers=scheduler.workers, close_workers=True)
     yield scheduler.close()
 
+def precip_reference_elevation(DATA) -> float:
+    """Area-weighted mean glacier elevation (N_Points, else MASK): reference of the precipitation lapse rate."""
+    hgt = np.asarray(DATA["HGT"].values, dtype=float)
+    w = np.asarray(DATA["N_Points"].values if "N_Points" in DATA else DATA["MASK"].values, dtype=float)
+    if w.ndim == 3:                                   # dynamic N_Points (time, lat, lon)
+        w = np.nanmean(w, axis=0)
+    w = np.where(np.isfinite(w) & np.isfinite(hgt), w, 0.0)
+    return float(np.sum(w * np.nan_to_num(hgt)) / np.sum(w))
+
 @njit
-def online_lapse_rate(t2,rh2,rrr,hgt,station_altitude,lapse_T,lapse_RH,lapse_RRR):
-    print(t2.shape)
+def online_lapse_rate(t2,rh2,rrr,hgt,station_altitude,lapse_T,lapse_RH,lapse_RRR,rrr_ref):
+    """T2 and RH2: additive lapse rates relative to station_altitude (as before).
+    RRR: multiplicative, rrr * max(1 + (hgt - rrr_ref) * lapse_RRR, 0) with lapse_RRR in 1/m. (The old additive
+    rrr + (hgt - station_altitude) * lapse_RRR put precipitation into every dry time step.)"""
+    f_rrr = np.maximum(1.0 + (hgt - rrr_ref)*lapse_RRR, 0.0)
     for t in range(t2.shape[0]):
         t2[t,:,:] = t2[t,:,:]+ (hgt - station_altitude)*lapse_T
         rh2[t,:,:] = rh2[t,:,:]+ (hgt - station_altitude)*lapse_RH
         rh2[t,:,:] = np.where(rh2[t,:,:] > 100, 100, rh2[t,:,:])
         rh2[t,:,:] = np.where(rh2[t,:,:] < 0, 0, rh2[t,:,:])
-        rrr[t,:,:] = np.maximum(rrr[t,:,:]+ (hgt - station_altitude)*lapse_RRR, 0.0)
+        rrr[t,:,:] = rrr[t,:,:] * f_rrr
     return t2,rh2,rrr
 
 def construct_resampled_ds(input_ds,vals,time_vals,var_to_check):

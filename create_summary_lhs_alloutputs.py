@@ -1,7 +1,7 @@
 """
-Summary of the LHS-wide runs. As before: one row per run in {glacier}_LHS-wide_filled_params.csv with the
-parameters, mb, tsla1..N and alb1..N. New: every other COSIPY output of the run goes into one small NetCDF per
-run in {glacier}_LHS-wide_summary/ (the CSV column summary_file names it):
+Summary of a set of COSIPY runs (wide LHS, narrow LHS, posterior or validation lists). One row per run in
+OUT_CSV with the parameters, mb, tsla1..N and alb1..N. Every other COSIPY output of the run goes into one small
+NetCDF per run in SUMMARY_DIR (the CSV column summary_file names it):
 
   * daily glacier-wide series (dim day, whole run), N_Points-weighted like the albedo:
       daily sums   MB, surfM, subM, SNOWFALL                         (m w.e. / m per day)
@@ -14,9 +14,21 @@ run in {glacier}_LHS-wide_summary/ (the CSV column summary_file names it):
     +-1 h where the true pass time lies close to a full hour (printed for the first file; check against t_ms
     of the GEE tables).
 
+Matching output files to design rows (MATCH):
+  "run_id"  (default) via the _num suffix: every runner writes _num{ID_OFFSET + global_id + 1}
+            (cosipy_lhs-wide_fromlist.py: ID_OFFSET 0; run_cosipy_from_list.py: its ID_OFFSET, e.g. 100000).
+            The parameters in the file name are only a cross-check (mismatch -> row left empty, reported).
+            Safe for narrow / posterior lists, where several rows can be near-identical.
+  "params"  via the parameter values in the file name (old behaviour; for files whose numbers do not follow
+            the design ids).
+
+Resume (RESUME = True): rows of an existing OUT_CSV that are already filled (mb not NaN, summary NetCDF
+present, parameters unchanged) are taken over and their files skipped. A file that cannot be read (still being
+written, TSLA csv missing) is left empty and retried on the next call. SAVE_EVERY writes intermediate results.
+
 Read all runs together:
-    S = xr.open_mfdataset(f"{glacier}_LHS-wide_summary/*.nc", combine="nested", concat_dim="run")
-S.run is the row index of the CSV.
+    S = xr.open_mfdataset(f"{SUMMARY_DIR}/*.nc", combine="nested", concat_dim="run")
+S.run is the global_id of the design row.
 """
 import pandas as pd
 import pathlib
@@ -24,8 +36,23 @@ import numpy as np
 import xarray as xr
 from numba import njit
 
+# ============================================================================
+# CONFIGURATION
+# ============================================================================
 glacier = "Dongkemadi"
-path = f"/data/scratch/richteny/thesis/cosipy_test_space/data/output/{glacier}/"
+TAG = "wide"                       # name of the set: output CSV / summary folder are named after it
+BASE = "/data/scratch/richteny/thesis/cosipy_test_space"
+path = f"{BASE}/data/output/{glacier}/"                       # folder with the .nc files (and tsla_*.csv) of THIS set
+DESIGN_CSV = f"{BASE}/{glacier}_LHS-wide-prior-master.csv"    # one row per run, column global_id (else row number)
+LOG_COLS = ['rrr_factor_summer', 'rrr_factor_winter', 'ws_factor']   # design columns stored as ln (wide LHS);
+                                                                      # [] for linear lists (narrow, posterior)
+MATCH = "run_id"                   # "run_id" (file number) or "params" (parameter values)
+ID_OFFSET = 0                      # run_id = ID_OFFSET + global_id (as in the runner)
+OUT_CSV = f"{BASE}/{glacier}_LHS-{TAG}_filled_params.csv"
+SUMMARY_DIR = pathlib.Path(f"{BASE}/{glacier}_LHS-{TAG}_summary")
+RESUME = False                     # True: take over filled rows of an existing OUT_CSV
+SAVE_EVERY = 0                     # write OUT_CSV every N newly filled runs (0 = only at the end)
+# ============================================================================
 
 #alb_obs_data = xr.open_dataset("/data/scratch/richteny/Ren_21_Albedo/Halji_hrz-merged_mean-albedos.nc")
 alb_obs_data = xr.open_dataset(f"/data/scratch/richteny/Ren_21_Albedo/{glacier}_hrz-merged_mean-albedos.nc")
@@ -33,101 +60,142 @@ alb_obs_data = alb_obs_data.sortby("time")
 alb_obs_data = alb_obs_data.sel(time=slice("1990-01-01","2023-12-31"))
 
 #tsla_obs = pd.read_csv("/data/scratch/richteny/thesis/cosipy_test_space/data/input/Halji/snowlines/Halji_TSLA_fixed-1990-2025.csv", parse_dates=True, index_col="LS_DATE")
-tsla_obs = pd.read_csv(f"/data/scratch/richteny/thesis/cosipy_test_space/data/input/{glacier}/snowlines/{glacier}_TSLA_fixed-1990-2024.csv", parse_dates=True, index_col="LS_DATE")
+tsla_obs = pd.read_csv(f"{BASE}/data/input/{glacier}/snowlines/{glacier}_TSLA_fixed-1990-2024.csv", parse_dates=True, index_col="LS_DATE")
 tsla_obs = tsla_obs.loc["1990-01-01":"2023-12-31"]
 
-#df = pd.read_csv("/data/scratch/richteny/for_emulator/Halji/LHS-narrow/LHS_Posterior_Design_Buffered.csv")
-df = pd.read_csv(f"/data/scratch/richteny/thesis/cosipy_test_space/{glacier}_LHS-wide-prior-master.csv", index_col=0)
-df['rrr_factor_summer'] = np.exp(df['rrr_factor_summer'])
-df['rrr_factor_winter'] = np.exp(df['rrr_factor_winter'])
-df['ws_factor'] = np.exp(df['ws_factor'])
+# Position of each parameter in the output file name (after "_RRR-", Bougamont albedo layout):
+# 0 RRR_factor, 1 alb_snow, 2 alb_ice, 3 alb_firn, 4 t wet, 5 t dry, 6 t K, 7 alb depth, 8 roughness fresh snow,
+# 9 roughness ice, 10 roughness firn, 11 aging factor roughness, 12 bias LWin, 13 WS_factor, 14 bias T2,
+# 15 center_snow_transfer, 16 min snowfall, 17 rrr summer, 18 rrr winter, 19 T2 bias summer, 20 T2 bias winter
+# (19/20 only in runs made after the seasonal T2 bias was added; without a split both equal bias T2).
+FNAME_INDEX = {'rrr_factor': 0, 'alb_snow': 1, 'alb_ice': 2, 'alb_firn': 3, 't_wet': 4, 't_dry': 5, 't_K': 6,
+               'albedo_depth': 7, 'roughness_fresh_snow': 8, 'roughness_ice': 9, 'roughness_firn': 10,
+               'aging_factor_roughness': 11, 'bias_LWin': 12, 'ws_factor': 13, 'bias_T2': 14, 'center_snow': 15,
+               'minimum_snowfall': 16, 'rrr_factor_summer': 17, 'rrr_factor_winter': 18,
+               'bias_T2_summer': 19, 'bias_T2_winter': 20}
 
-param_cols = df.columns
-param_cols = [x for x in param_cols if 'global_id' not in x]
-print(param_cols)
+# ---------------- design ----------------------------------------------------------------------------------------
+df = pd.read_csv(DESIGN_CSV)
+df = df.drop(columns=[c for c in df.columns if c.startswith("Unnamed")])      # old index column
+if "global_id" not in df.columns:
+    df["global_id"] = range(len(df))
+df["global_id"] = df["global_id"].astype(int)
+df = df.set_index("global_id", drop=False)
+for c in LOG_COLS:
+    df[c] = np.exp(df[c])
+
+# parameter columns = design columns that appear in the file name (order of the design CSV)
+param_cols = [c for c in df.columns if c in FNAME_INDEX]
+other = [c for c in df.columns if c not in FNAME_INDEX and c != "global_id"]
+print("parameters:", param_cols)
+if other:
+    print("design columns not in the file name (kept, not checked):", other)
+
 df_params = df.copy()
-#df_params[param_cols] = df_params[param_cols].round(4)
-
 n = len(df_params)
 
 n_tsla = len(tsla_obs.index)
 n_alb = len(alb_obs_data.time)
+tsla_names = [f"tsla{i}" for i in range(1, n_tsla + 1)]
+alb_names = [f"alb{i}" for i in range(1, n_alb + 1)]
 
-tsla_cols = pd.DataFrame(np.nan, index=df_params.index,
-                         columns=[f"tsla{i}" for i in range(1, n_tsla+1)])
-
-alb_cols = pd.DataFrame(np.nan, index=df_params.index,
-                        columns=[f"alb{i}" for i in range(1, n_alb+1)])
-
-df_params = pd.concat([df_params, tsla_cols, alb_cols], axis=1)
+df_params = pd.concat([df_params,
+                       pd.DataFrame(np.nan, index=df_params.index, columns=tsla_names),
+                       pd.DataFrame(np.nan, index=df_params.index, columns=alb_names)], axis=1)
 df_params["mb"] = np.nan
-df_params["summary_file"] = None
+df_params["filename"] = pd.Series(None, index=df_params.index, dtype=object)
+df_params["summary_file"] = pd.Series(None, index=df_params.index, dtype=object)
+df_params["param_mismatch"] = np.nan              # largest |design - file name| when the cross-check fails
+df_params["filename_tolerance_match"] = pd.Series(None, index=df_params.index, dtype=object)   # MATCH = "params"
+result_cols = tsla_names + alb_names + ["mb", "filename", "summary_file"]
 
-df_params["filename_tolerance_match"] = np.nan
-df_params["param_key"] = list(map(tuple, df_params[param_cols].values))
-#order must match order below
+SUMMARY_DIR.mkdir(exist_ok=True)
 
-def find_row(df, cols, values, atol=5e-5):
-    rounded_df = df[cols].round(4)
-    rounded_vals = np.round(values, 4)
-    mask_exact = (rounded_df.values == rounded_vals).all(axis=1)
-    idxs = np.where(mask_exact)[0]
-    if len(idxs) == 1:
-        return idxs[0], "exact"
+# ---------------- resume -----------------------------------------------------------------------------------------
+def load_previous(fpath):
+    prev = pd.read_csv(fpath, index_col=0)
+    if "global_id.1" in prev.columns:                 # global_id as index and column -> read back as global_id.1
+        prev = prev.rename(columns={"global_id.1": "global_id"})
+    prev.index = prev.index.astype(int)
+    prev.index.name = "global_id"
+    return prev
 
-    arr = df[cols].values
-    mask_tol = np.all(np.isclose(arr, values, atol=atol), axis=1)
-    idxs = np.where(mask_tol)[0]
-    if len(idxs) == 1:
-        return idxs[0], "tolerance"
+
+already_filled = set()
+if RESUME and pathlib.Path(OUT_CSV).exists():
+    prev = load_previous(OUT_CSV)
+    missing_cols = [c for c in result_cols + param_cols if c not in prev.columns]
+    if missing_cols:
+        print(f"RESUME: existing file has a different structure ({len(missing_cols)} columns missing, "
+              f"e.g. {missing_cols[:3]}) -> ignoring it and starting from scratch.")
     else:
-        print(idxs)
+        common = prev.index[prev["mb"].notna()].intersection(df_params.index)
+        same = np.isclose(prev.loc[common, param_cols].values.astype(float),
+                          df_params.loc[common, param_cols].values.astype(float), atol=1e-8).all(axis=1)
+        has_nc = np.array([isinstance(f, str) and (SUMMARY_DIR / f).exists()
+                           for f in prev.loc[common, "summary_file"]], dtype=bool)
+        if (~same).any():
+            print(f"RESUME: {int((~same).sum())} filled rows differ from the design file and will be recomputed.")
+        if (same & ~has_nc).any():
+            print(f"RESUME: {int((same & ~has_nc).sum())} filled rows lack their summary NetCDF and will be recomputed.")
+        keep = common[same & has_nc]
+        df_params.update(prev.loc[keep, result_cols])
+        already_filled = set(int(g) for g in keep)
+        print(f"RESUME: took over {len(already_filled)} filled rows from {OUT_CSV}")
+else:
+    print("No previous output used -> computing everything.")
 
-    return None, None
 
-def parse_param_key_from_filename(fname):
+# ---------------- matching ---------------------------------------------------------------------------------------
+def parse_param_vals_from_filename(fname):
+    """parameter values in the order of param_cols (the file name rounds to 4 decimals)."""
     tail = fname.split("_RRR-")[1]
     tail = tail.split("_num")[0]
     vals = [float(v) for v in tail.split("_")]
+    return np.array([vals[FNAME_INDEX[c]] for c in param_cols])
 
-    """
-    Filename if Bougamont: 
-    0 RRR_factor, 1 alb_snow, 2 alb_ice, 3 alb_firn, 4 t wet
-    5 t dry, 6 t K, 7 alb depth, 8 roughness fresh snow, 9 roughness ice, 10 roughness firn, 11 aging factor roughness
-    12 bias LWin, 13 WS_factor, 14 bias T2, 15 center_snow_transfer, 16 min snowfall, 17 rrr summer, 18 rrr winter
 
-    # Order in CSV: rrr-factor-summer, alb-snow, alb-firn, alb-depth, bias-LWin, ws-factor, bias-t2, t-wet, rrr-factor-winter, global-id
-    """
+def parse_run_id_from_filename(fname):
+    """COSIPY counts from 1, so _num{k} belongs to run_id k-1."""
+    return int(fname.split("_num")[-1]) - 1
 
-    return tuple([
-        round(vals[17], 4), #rrr_factor summer
-        #round(vals[2], 4), #alb_ice now fixed
-        round(vals[1], 4), #alb_snow
-        round(vals[3], 4), #alb_firn
-        round(vals[7], 4), #alb_depth
-        round(vals[12], 4), #bias lwin
-        round(vals[13], 4), #ws factor
-        round(vals[14], 4), #bias t2
-        round(vals[4], 4), #t wet
-        round(vals[18], 4), #rrr_factor winter
-    ])
-"""
-    return tuple([
-        round(vals[0], 4), #rrr_factor
-        round(vals[2], 4), #alb_ice
-        round(vals[1], 4), #alb_snow
-        round(vals[3], 4), #alb_firn
-        round(vals[4], 4), #alb_aging
-        round(vals[5], 4), #alb_depth
-        round(vals[13], 4), #center snow
-        round(vals[7], 4), #roughness ice
-        round(vals[10], 4), #LWin factor
-        round(vals[11], 4), #WS factor
-        round(vals[12], 4), #bias t2
-        #round(vals[13], 4), #center snow
-    ])
-"""
 
+def find_row(df, cols, values, atol=5e-5):
+    """MATCH = "params": the design row whose parameters equal the file name's (exact at 4 decimals, else atol)."""
+    rounded_vals = np.round(values, 4)
+    mask_exact = (df[cols].round(4).values == rounded_vals).all(axis=1)
+    idxs = np.where(mask_exact)[0]
+    if len(idxs) == 1:
+        return df.index[idxs[0]], "exact"
+    mask_tol = np.all(np.isclose(df[cols].values, values, atol=atol), axis=1)
+    idxs = np.where(mask_tol)[0]
+    if len(idxs) == 1:
+        return df.index[idxs[0]], "tolerance"
+    if len(idxs) > 1:
+        print("  ambiguous parameter match, rows:", list(df.index[idxs]))
+    return None, None
+
+
+def match_file(name):
+    """-> (global_id or None, status)."""
+    param_vals = parse_param_vals_from_filename(name)
+    if MATCH == "params":
+        gid, method = find_row(df_params, param_cols, param_vals)
+        return (gid, "nomatch") if gid is None else (gid, method)
+    gid = parse_run_id_from_filename(name) - ID_OFFSET
+    if gid not in df_params.index:
+        return None, "nomatch"
+    design_vals = np.round(df_params.loc[gid, param_cols].values.astype(float), 4)
+    if not np.allclose(design_vals, param_vals, atol=1.5e-4):
+        diff = np.abs(design_vals - param_vals)
+        print(f"PARAM MISMATCH {name}: largest difference in {param_cols[int(np.argmax(diff))]} "
+              f"({diff.max():.5f}) -- wrong design file or ID_OFFSET?")
+        df_params.at[gid, "param_mismatch"] = float(diff.max())
+        return None, "mismatch"
+    return gid, "run_id"
+
+
+# ---------------- glacier-wide MB and albedo -----------------------------------------------------------------------
 def prereq_res(ds):
     t = np.asarray(ds.time.values, dtype="datetime64[ns]")
     secs = t.astype("int64")
@@ -140,67 +208,53 @@ def prereq_res(ds):
 @njit
 def resample_by_hand(vals, secs, time_vals):
     # vals is 1D, so shape is just (ntime,)
-    ntime = vals.shape[0] 
+    ntime = vals.shape[0]
     ndays = len(time_vals)
-
     day_next = np.int64(86_400_000_000_000)   # ns, integer nanoseconds
-
-    # Arrays only need to be 1D now
     out = np.zeros(ndays)
     count = np.zeros(ndays)
-
     day_idx = 0
     day_end = time_vals[0] + day_next
-
     for t in range(ntime):
         ts = secs[t]
-
         while day_idx < ndays - 1 and ts >= day_end:
             day_idx += 1
             day_end = time_vals[day_idx] + day_next
-
-        # No more j, k loops. Just grab the 1D value.
         v = vals[t]
         if not np.isnan(v):
             out[day_idx] += v
             count[day_idx] += 1
-
-    # Mean calculation for 1D
     for d in range(ndays):
         if count[d] > 0:
             out[d] /= count[d]
         else:
             out[d] = np.nan
-            
     return out
+
 
 def compute_glacier_mean(ncfile, target_var, time_start_mb, albobs):
     if target_var == "MB":
         try:
             ref_weights = ncfile["N_Points"].sel(time=time_start_mb, method="nearest")
-        except:
+        except Exception:
             ref_weights = ncfile["N_Points"]
         ref_area_total = ref_weights.sum()
         total_mass_change = (ncfile["MB"] * ref_weights).sum(dim=["lat","lon"])
         weighted_mb = total_mass_change / ref_area_total
         dfmb = weighted_mb.to_dataframe(name="weighted_mb")
         annual_mb = dfmb.resample("1YE").sum()
-        geod_mb = np.nanmean(annual_mb["weighted_mb"].values)
-        return geod_mb
+        return np.nanmean(annual_mb["weighted_mb"].values)
     else:
         ref_weights = ncfile["N_Points"].sum(dim=["lat","lon"])
         alb_total = (ncfile["ALBEDO"] * ncfile["N_Points"]).sum(dim=["lat","lon"])
         weighted_alb = alb_total / ref_weights
-        dates,clean_day_vals,secs = prereq_res(weighted_alb)
+        dates, clean_day_vals, secs = prereq_res(weighted_alb)
         resampled_alb_vals = resample_by_hand(weighted_alb.data, secs, clean_day_vals).copy()
-        resampled_alb = xr.DataArray(resampled_alb_vals, coords={"time":dates}, dims=["time"], name="ALBEDO_weighted")
-        result = resampled_alb.sortby("time")
-        result = result.sel(time=albobs.time)
-        return result
+        resampled_alb = xr.DataArray(resampled_alb_vals, coords={"time": dates}, dims=["time"], name="ALBEDO_weighted")
+        return resampled_alb.sortby("time").sel(time=albobs.time)
+
 
 # ---------------- all other outputs: one NetCDF per run --------------------------------------------------------
-SUMMARY_DIR = pathlib.Path(f"/data/scratch/richteny/thesis/cosipy_test_space/{glacier}_LHS-wide_summary")
-SUMMARY_DIR.mkdir(exist_ok=True)
 DAILY_SUM = ["MB", "surfM", "subM", "SNOWFALL"]
 DAILY_MEAN = ["ALBEDO", "TS", "SNOWHEIGHT", "LWC_00_10", "LWC_10_50", "LWC_DEEP"]
 PASS_VARS = ["LWC_00_10", "LWC_10_50", "LWC_DEEP", "SNOWHEIGHT"]
@@ -233,10 +287,10 @@ def daily_glacier_wide(ds, w):
         if v not in ds:
             continue
         g = np.nansum(flat(ds, v) * w, axis=1) / wsum
-        n = np.add.reduceat(np.isfinite(g).astype(float), start)
+        n_ = np.add.reduceat(np.isfinite(g).astype(float), start)
         s = np.add.reduceat(np.nan_to_num(g), start)
-        s = s / n if v in DAILY_MEAN else s
-        out[v] = (("day",), np.where(n > 0, s, np.nan).astype("float32"), {"units": ds[v].attrs.get("units", "")})
+        s = s / n_ if v in DAILY_MEAN else s
+        out[v] = (("day",), np.where(n_ > 0, s, np.nan).astype("float32"), {"units": ds[v].attrs.get("units", "")})
     return pd.DatetimeIndex(days.astype("datetime64[ns]")), out
 
 
@@ -288,43 +342,62 @@ def write_summary(ds, row, source):
     return out.name, step_time
 
 
-i = 0
-for fp in pathlib.Path(path).glob('*.nc'):
-    if i % 100 == 0:
-        print(f"Processed {i} files.")
+# ---------------- main loop ----------------------------------------------------------------------------------------
+n_done = n_nomatch = n_mismatch = n_skipped = n_error = 0
+first = True
+for fp in sorted(pathlib.Path(path).glob('*.nc')):
     name = str(fp.stem)
-    #print(name)
     csv_name = "tsla_" + name.lower() + ".csv"
     try:
-        param_vals = parse_param_key_from_filename(name)
+        gid, status = match_file(name)
     except Exception:
-        print("EXCEPTION FOUND.")
+        print("EXCEPTION FOUND (file name not parsable):", fp.name)
         continue
-
-    idx, method = find_row(df_params, param_cols, param_vals)
-    if idx is None:
-        print("NO MATCH:", fp.name)
+    if gid is None:
+        if status == "nomatch":
+            print("NO MATCH:", fp.name)
+            n_nomatch += 1
+        else:
+            n_mismatch += 1
         continue
-
-    if method == "tolerance":
+    if gid in already_filled:
+        n_skipped += 1
+        continue
+    if status == "tolerance":
         print("TOLERANCE:", fp.name)
-        df_params.at[idx, "filename_tolerance_match"] = name
+        df_params.at[gid, "filename_tolerance_match"] = name
 
-    ds = xr.open_dataset(fp).sel(time=slice("1990-01-01",None))
-    mb = compute_glacier_mean(ds.sel(time=slice("2000-01-01T00:00","2019-12-31T23:00")),"MB", "2000-01-01T01:00", None)
-    albsim = compute_glacier_mean(ds,"ALBEDO",None,alb_obs_data)
+    # a file that is still being written (or whose TSLA csv is missing) is left empty and retried next call
+    try:
+        with xr.open_dataset(fp) as ds_raw:
+            ds = ds_raw.sel(time=slice("1990-01-01", None))
+            mb = compute_glacier_mean(ds.sel(time=slice("2000-01-01T00:00", "2019-12-31T23:00")),
+                                      "MB", "2000-01-01T01:00", None)
+            alb_vals = np.asarray(compute_glacier_mean(ds, "ALBEDO", None, alb_obs_data).data[:n_alb])
+            snowlinesim = pd.read_csv(path + csv_name, parse_dates=True, index_col="time")
+            tsla_vals = snowlinesim.loc[snowlinesim.index.isin(tsla_obs.index), "Med_TSL"].values[:n_tsla]
+            summary_file, step_time = write_summary(ds, gid, name)
+    except Exception as e:
+        print(f"ERROR reading {fp.name} ({type(e).__name__}: {e}) -- left empty, retried next call")
+        n_error += 1
+        continue
 
-    snowlinesim = pd.read_csv(path+csv_name, parse_dates=True, index_col="time")
-    tsla_sim = snowlinesim.loc[snowlinesim.index.isin(tsla_obs.index)]
-     
-    df_params.loc[idx, "mb"] = mb
-    df_params.loc[idx, [f"tsla{i}" for i in range(1, n_tsla+1)]] = tsla_sim["Med_TSL"].values[:n_tsla]
-    df_params.loc[idx, [f"alb{i}" for i in range(1, n_alb+1)]] = albsim.data[:n_alb]
-    summary_file, step_time = write_summary(ds, df_params.index[idx], name)
-    df_params.loc[idx, "summary_file"] = summary_file
-    if i == 0:
+    df_params.loc[gid, "mb"] = mb
+    df_params.loc[gid, "filename"] = name
+    df_params.loc[gid, "summary_file"] = summary_file
+    df_params.loc[gid, tsla_names] = tsla_vals
+    df_params.loc[gid, alb_names] = alb_vals
+    n_done += 1
+    if first:
         print("model steps used for the S1 passes (UTC, hour-ending):",
               {p: sorted(set(pd.DatetimeIndex(step_time[:, k]).dropna().strftime("%H:%M"))) for k, p in enumerate(PASS_LST)})
-    i +=1
+        first = False
+    if n_done % 100 == 0:
+        print(f"Processed {n_done} new files ({n_skipped} skipped so far).")
+    if SAVE_EVERY and n_done % SAVE_EVERY == 0:
+        df_params.to_csv(OUT_CSV)
 
-df_params.to_csv(f"/data/scratch/richteny/thesis/cosipy_test_space/{glacier}_LHS-wide_filled_params.csv")
+print(f"\nnewly filled: {n_done}   taken over/skipped: {n_skipped}   no match: {n_nomatch}"
+      f"   parameter mismatch: {n_mismatch}   read errors: {n_error}"
+      f"   still missing: {int(df_params['mb'].isna().sum())} of {n}")
+df_params.to_csv(OUT_CSV)
