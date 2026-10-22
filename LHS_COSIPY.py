@@ -49,6 +49,7 @@ from distributed import Client, LocalCluster
 # import dask
 from tornado import gen
 
+from cosipy.modules.precip_profile import glacier_weights, precip_profile_factor
 from cosipy.config import Config, SlurmConfig
 from cosipy.constants import Constants
 from cosipy.cpkernel.cosipy_core import cosipy_core
@@ -98,6 +99,9 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
          bias_LWIN = Constants.bias_LWin, WS_factor = Constants.mult_factor_WS, bias_T2 = Constants.bias_T2,
          t_wet = Constants.t_star_wet, t_dry = Constants.t_star_dry, t_K = Constants.t_star_K, minimum_snowfall = Constants.minimum_snowfall,
          rrr_factor_summer = Constants.rrr_factor_summer, rrr_factor_winter = Constants.rrr_factor_winter,
+         bias_T2_summer = getattr(Constants, "bias_T2_summer", None),
+         bias_T2_winter = getattr(Constants, "bias_T2_winter", None),
+         precip_peak_elevation = None,
          count="", cluster=None):
 
     Config()
@@ -121,7 +125,8 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
     #aging_factor_roughness = float(0.0026)
     opt_dict = (RRR_factor, alb_ice, alb_snow, alb_firn, albedo_aging, albedo_depth, center_snow_transfer_function,
                 spread_snow_transfer_function, roughness_fresh_snow, roughness_ice, roughness_firn, aging_factor_roughness,
-                bias_LWIN, WS_factor, bias_T2, t_wet, t_dry, t_K, minimum_snowfall, rrr_factor_summer, rrr_factor_winter)
+                bias_LWIN, WS_factor, bias_T2, t_wet, t_dry, t_K, minimum_snowfall, rrr_factor_summer, rrr_factor_winter,
+                bias_T2_summer, bias_T2_winter)   # 21, 22: seasonal T2 bias (JJAS / Oct-May); both set -> replace bias_T2
     #0 to 5 - base, 6 center snow , 7 spreadsnow, 8 to 10 roughness length 
     #opt_dict=None
     lapse_T = float(lr_T)
@@ -156,17 +161,21 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
     rrr = DATA.RRR.values
     hgt = DATA.HGT.values
     station_altitude = Config.station_altitude #define outside for numba
-    # Precipitation lapse rate: MULTIPLICATIVE, lapse_RRR in 1/m (0.0004 = +4 % per 100 m), around the area-weighted
-    # mean glacier elevation, so the glacier-wide total stays the same and dry hours stay dry. lr_RRR passed to main()
-    # wins; otherwise precip_lapse_rate from constants.toml ([PRECIPITATION]; missing or 0 = off).
+    # Precipitation profile (cosipy/modules/precip_profile.py): increase with lapse_RRR (1/m) up to
+    # precip_peak_elevation, decrease with the same rate above, normalised to the N_Points-weighted glacier mean.
+    # Arguments of main() win; otherwise constants.toml (precip_lapse_rate, precip_peak_elevation; missing = off).
     if lapse_RRR == 0.0:
         lapse_RRR = float(getattr(Constants, "precip_lapse_rate", 0.0))
-    rrr_ref = precip_reference_elevation(DATA)
-    t2, rh2, rrr = online_lapse_rate(t2,rh2,rrr,hgt,station_altitude,lapse_T,lapse_RH, lapse_RRR, rrr_ref)
+    if precip_peak_elevation is None:
+        precip_peak_elevation = float(getattr(Constants, "precip_peak_elevation", 9000.0))
+    precip_peak_elevation = float(precip_peak_elevation)
+    f_rrr = precip_profile_factor(hgt, glacier_weights(DATA), lapse_RRR, precip_peak_elevation)
+    t2, rh2, rrr = online_lapse_rate(t2, rh2, rrr, hgt, station_altitude, lapse_T, lapse_RH, f_rrr)
     RESULT.attrs["Precip_lapse_rate_per_m"] = lapse_RRR
-    RESULT.attrs["Precip_lapse_reference_elevation"] = rrr_ref
+    RESULT.attrs["Precip_peak_elevation"] = precip_peak_elevation
     if lapse_RRR != 0.0:
-        print(f"Precipitation lapse rate {lapse_RRR * 1e4:.1f} % per 100 m around {rrr_ref:.0f} m")
+        print(f"Precipitation profile: {lapse_RRR * 1e4:.1f} % per 100 m (of the tongue value), peak at "
+              f"{precip_peak_elevation:.0f} m; factor {np.nanmin(f_rrr):.2f}-{np.nanmax(f_rrr):.2f}")
 
     print("Assigning values back to DATA")
     DATA['T2'] = (('time','lat','lon'), t2)
@@ -634,28 +643,17 @@ def close_everything(scheduler):
     yield scheduler.retire_workers(workers=scheduler.workers, close_workers=True)
     yield scheduler.close()
 
-def precip_reference_elevation(DATA) -> float:
-    """Area-weighted mean glacier elevation (N_Points, else MASK): reference of the precipitation lapse rate."""
-    hgt = np.asarray(DATA["HGT"].values, dtype=float)
-    w = np.asarray(DATA["N_Points"].values if "N_Points" in DATA else DATA["MASK"].values, dtype=float)
-    if w.ndim == 3:                                   # dynamic N_Points (time, lat, lon)
-        w = np.nanmean(w, axis=0)
-    w = np.where(np.isfinite(w) & np.isfinite(hgt), w, 0.0)
-    return float(np.sum(w * np.nan_to_num(hgt)) / np.sum(w))
-
 @njit
-def online_lapse_rate(t2,rh2,rrr,hgt,station_altitude,lapse_T,lapse_RH,lapse_RRR,rrr_ref):
-    """T2 and RH2: additive lapse rates relative to station_altitude (as before).
-    RRR: multiplicative, rrr * max(1 + (hgt - rrr_ref) * lapse_RRR, 0) with lapse_RRR in 1/m. (The old additive
-    rrr + (hgt - station_altitude) * lapse_RRR put precipitation into every dry time step.)"""
-    f_rrr = np.maximum(1.0 + (hgt - rrr_ref)*lapse_RRR, 0.0)
+def online_lapse_rate(t2, rh2, rrr, hgt, station_altitude, lapse_T, lapse_RH, f_rrr):
+    """T2 and RH2: additive lapse rates relative to station_altitude. RRR: multiplied by the precipitation
+    profile factor f_rrr (precip_profile_factor, same shape as hgt)."""
     for t in range(t2.shape[0]):
-        t2[t,:,:] = t2[t,:,:]+ (hgt - station_altitude)*lapse_T
-        rh2[t,:,:] = rh2[t,:,:]+ (hgt - station_altitude)*lapse_RH
+        t2[t,:,:] = t2[t,:,:] + (hgt - station_altitude) * lapse_T
+        rh2[t,:,:] = rh2[t,:,:] + (hgt - station_altitude) * lapse_RH
         rh2[t,:,:] = np.where(rh2[t,:,:] > 100, 100, rh2[t,:,:])
         rh2[t,:,:] = np.where(rh2[t,:,:] < 0, 0, rh2[t,:,:])
         rrr[t,:,:] = rrr[t,:,:] * f_rrr
-    return t2,rh2,rrr
+    return t2, rh2, rrr
 
 def construct_resampled_ds(input_ds,vals,time_vals,var_to_check):
     if var_to_check == "CY_SNOWHEIGHT":

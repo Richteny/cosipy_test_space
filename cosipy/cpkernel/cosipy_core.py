@@ -207,6 +207,9 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
     bias_LWIN = Constants.bias_LWin
     mult_factor_WS = Constants.mult_factor_WS
     bias_T2 = Constants.bias_T2
+    # Seasonal T2 bias (JJAS / Oct-May): when both are set they replace bias_T2 (constants.toml or opt_dict[21:23])
+    bias_T2_summer = getattr(Constants, "bias_T2_summer", None)
+    bias_T2_winter = getattr(Constants, "bias_T2_winter", None)
     # Replace values from constants.py if coupled
     # TODO: This only affects the current module scope instead of global.
     if WRF_X_CSPY:
@@ -241,6 +244,9 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
         minimum_snowfall = opt_dict[18]
         rrr_factor_summer = opt_dict[19]
         rrr_factor_winter = opt_dict[20]
+        if len(opt_dict) > 22:
+            bias_T2_summer = opt_dict[21]
+            bias_T2_winter = opt_dict[22]
 
     nt = len(DATA.time.values)  # accessing DATA is expensive
     """
@@ -318,12 +324,22 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
     # Get data from file
     #--------------------------------------------
     T2_raw = DATA.T2.values.copy()
-    DATA['T2'] = DATA['T2'] + bias_T2
+    _months = pd.DatetimeIndex(DATA.time.values).month.values
+    # T2 bias per time step: seasonal (JJAS / Oct-May, same months as rrr_factor_summer / _winter) when both seasonal
+    # values are set, else bias_T2 all year
+    _seasonal_t2 = (bias_T2_summer is not None) and (bias_T2_winter is not None) \
+        and np.isfinite(float(bias_T2_summer)) and np.isfinite(float(bias_T2_winter))
+    if _seasonal_t2:
+        bias_T2_step = np.where(np.isin(_months, (6, 7, 8, 9)), float(bias_T2_summer), float(bias_T2_winter))
+    else:
+        bias_T2_step = np.full(nt, float(bias_T2))
+    bias_T2_step = bias_T2_step.reshape((nt,) + (1,) * (T2_raw.ndim - 1))
+    DATA['T2'] = (DATA.T2.dims, T2_raw + bias_T2_step)
     T2 = DATA.T2.values.copy()
 
-    # bias_T2 at constant vapour pressure: RH follows the new saturation pressure
-    # (same Sonntag function COSIPY uses to turn RH into vapour pressure)
-    if bias_T2 != 0.0:
+    # T2 bias at constant vapour pressure: RH follows the new saturation pressure
+    # (same Sonntag function COSIPY uses to turn RH into vapour pressure); LWin is scaled further below
+    if np.any(bias_T2_step != 0.0):
         _es_raw = np.array([method_EW_Sonntag(x) for x in T2_raw])
         _es_new = np.array([method_EW_Sonntag(x) for x in T2])
         DATA['RH2'] = (DATA.RH2.dims, np.minimum(DATA.RH2.values * _es_raw / _es_new, 100.0))
@@ -356,7 +372,6 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
     if use_ava:
         snow_factor = snow_factor * _per_step("K_AVA")
 
-    _months = pd.DatetimeIndex(DATA.time.values).month.values
     rrr_summer_months = (6,7,8,9)          # JJAS
     if (rrr_factor_summer is not None) and (rrr_factor_winter is not None):
         rrr_factor = np.where(np.isin(_months, rrr_summer_months), rrr_factor_summer, rrr_factor_winter)
