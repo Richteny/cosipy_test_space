@@ -35,9 +35,10 @@ spread_snow_transfer_function = 1
 mult_factor_RRR = 1.0
 rrr_factor_summer = 1.07 #1.826188
 rrr_factor_winter = 1.78 #1.204653
-#precip_lapse_rate = 0.004 #%
+precip_lapse_rate = 0.0004 #1%/m
+precip_peak_elevation = 5800
 minimum_snowfall = 0.001 #0.001 = 1mm
-bias_LWin = 23.625954
+bias_LWin = 13.625954
 mult_factor_WS = 0.5
 bias_T2 = 0.0
 # Seasonal T2 bias, summer = JJAS, winter = Oct-May (same months as rrr_factor_summer / _winter).
@@ -65,12 +66,12 @@ temperature_threshold_merging = 0.01
 constant_density = 300.0
 rho_firn = 500.0 #Switch
 rho_max_dm = 300.0 #EBFM default 175.0
-albedo_fresh_snow = 0.793451
+albedo_fresh_snow = 0.85
 albedo_firn = 0.5
 albedo_ice = 0.355
 albedo_mod_snow_aging = 18.038579229329066
 albedo_mod_snow_depth = 1.676463
-t_star_wet = 7.048785
+t_star_wet = 2 #7.048785
 t_star_dry = 30
 t_star_K = 14
 t_star_cutoff = 263.17

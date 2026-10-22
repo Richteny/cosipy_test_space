@@ -122,18 +122,34 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
     rh2 = DATA.RH2.values
     rrr = DATA.RRR.values
     hgt = DATA.HGT.values
+
     station_altitude = Config.station_altitude #define outside for numba
-    # Precipitation lapse rate: MULTIPLICATIVE, lapse_RRR in 1/m (0.0004 = +4 % per 100 m), around the area-weighted
-    # mean glacier elevation, so the glacier-wide total stays the same and dry hours stay dry. lr_RRR passed to main()
-    # wins; otherwise precip_lapse_rate from constants.toml ([PRECIPITATION]; missing or 0 = off).
+    
+    # Safely extract N_points (using MASK as a fallback if N_points is missing)
+    if "N_Points" in DATA:
+        n_points_arr = DATA.N_Points.values
+        if n_points_arr.ndim == 3:  # If dynamic, take the time-mean
+            n_points = np.nanmean(n_points_arr, axis=0)
+        else:
+            n_points = n_points_arr
+    else:
+        n_points = DATA.MASK.values
+
+    # Get lapse parameters (defaulting to 0.0 and 9000.0 if missing from Constants)
     if lapse_RRR == 0.0:
         lapse_RRR = float(getattr(Constants, "precip_lapse_rate", 0.0))
-    rrr_ref = precip_reference_elevation(DATA)
-    t2, rh2, rrr = online_lapse_rate(t2,rh2,rrr,hgt,station_altitude,lapse_T,lapse_RH, lapse_RRR, rrr_ref)
+    precip_peak_elevation = float(getattr(Constants, "precip_peak_elevation", 9000.0))
+
+    # Apply lapse rates globally
+    t2, rh2, rrr = online_lapse_rate(
+        t2, rh2, rrr, hgt, n_points, station_altitude, 
+        lapse_T, lapse_RH, lapse_RRR, precip_peak_elevation
+    )
+
     RESULT.attrs["Precip_lapse_rate_per_m"] = lapse_RRR
-    RESULT.attrs["Precip_lapse_reference_elevation"] = rrr_ref
+    RESULT.attrs["Precip_lapse_reference_elevation"] = precip_peak_elevation
     if lapse_RRR != 0.0:
-        print(f"Precipitation lapse rate {lapse_RRR * 1e4:.1f} % per 100 m around {rrr_ref:.0f} m")
+        print(f"Precipitation lapse rate {lapse_RRR * 1e4:.1f} % per 100 m around {precip_peak_elevation:.0f} m")
 
     print("Assigning values back to DATA")
     DATA['T2'] = (('time','lat','lon'), t2)
@@ -625,18 +641,65 @@ def precip_reference_elevation(DATA) -> float:
     return float(np.sum(w * np.nan_to_num(hgt)) / np.sum(w))
 
 @njit
-def online_lapse_rate(t2,rh2,rrr,hgt,station_altitude,lapse_T,lapse_RH,lapse_RRR,rrr_ref):
-    """T2 and RH2: additive lapse rates relative to station_altitude (as before).
-    RRR: multiplicative, rrr * max(1 + (hgt - rrr_ref) * lapse_RRR, 0) with lapse_RRR in 1/m. (The old additive
-    rrr + (hgt - station_altitude) * lapse_RRR put precipitation into every dry time step.)"""
-    f_rrr = np.maximum(1.0 + (hgt - rrr_ref)*lapse_RRR, 0.0)
+def online_lapse_rate(t2, rh2, rrr, hgt, n_points, station_altitude, lapse_T, lapse_RH, lapse_RRR, precip_peak_elevation):
+    """
+    T2 and RH2: additive lapse rates relative to station_altitude.
+    RRR: Two-parameter lapse rate (Immerzeel et al. 2015). Increases up to precip_peak_elevation, 
+    then decreases at the exact same rate. Normalized by N_points so total glacier mass is conserved.
+    """
+    # 1. Temperature and Relative Humidity (unchanged)
     for t in range(t2.shape[0]):
-        t2[t,:,:] = t2[t,:,:]+ (hgt - station_altitude)*lapse_T
-        rh2[t,:,:] = rh2[t,:,:]+ (hgt - station_altitude)*lapse_RH
+        t2[t,:,:] = t2[t,:,:] + (hgt - station_altitude) * lapse_T
+        rh2[t,:,:] = rh2[t,:,:] + (hgt - station_altitude) * lapse_RH
         rh2[t,:,:] = np.where(rh2[t,:,:] > 100, 100, rh2[t,:,:])
         rh2[t,:,:] = np.where(rh2[t,:,:] < 0, 0, rh2[t,:,:])
+
+    # 2. Precipitation Redistribution
+    rows, cols = hgt.shape
+    f_rrr = np.ones((rows, cols), dtype=np.float64)
+
+    if lapse_RRR > 0.0:
+        z_min = np.nanmin(hgt)
+        max_raw_factor = 1.0 + lapse_RRR * (precip_peak_elevation - z_min)
+        
+        weighted_sum = 0.0
+        total_points = 0.0
+        
+        # Calculate raw piecewise shape and sum for normalization
+        for i in range(rows):
+            for j in range(cols):
+                z = hgt[i, j]
+                if np.isnan(z):
+                    continue
+                
+                # Apply Increase or Decrease
+                if z <= precip_peak_elevation:
+                    val = 1.0 + lapse_RRR * (z - z_min)
+                else:
+                    val = max_raw_factor - lapse_RRR * (z - precip_peak_elevation)
+                    
+                # Hard floor to prevent negative precipitation
+                if val < 0.01:
+                    val = 0.01
+                    
+                f_rrr[i, j] = val
+                
+                # Accumulate weighting using n_points
+                pts = n_points[i, j]
+                if not np.isnan(pts):
+                    weighted_sum += val * pts
+                    total_points += pts
+                    
+        # Normalize the field by the N_Points-weighted mean
+        if total_points > 0:
+            weighted_mean = weighted_sum / total_points
+            f_rrr = f_rrr / weighted_mean
+        
+    # 3. Apply the normalized factor to the forcing data
+    for t in range(rrr.shape[0]):
         rrr[t,:,:] = rrr[t,:,:] * f_rrr
-    return t2,rh2,rrr
+        
+    return t2, rh2, rrr
 
 def construct_resampled_ds(input_ds,vals,time_vals,var_to_check):
     if var_to_check == "CY_SNOWHEIGHT":
