@@ -91,7 +91,7 @@ def make_cluster():
         )
     return cluster
 
-def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, alb_ice=Constants.albedo_ice,
+def main(lr_T=0.0, lr_RRR=None, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, alb_ice=Constants.albedo_ice,
          alb_snow= Constants.albedo_fresh_snow, alb_firn=Constants.albedo_firn, albedo_aging= Constants.albedo_mod_snow_aging,
          albedo_depth= Constants.albedo_mod_snow_depth, center_snow_transfer_function= Constants.center_snow_transfer_function,
          spread_snow_transfer_function= Constants.spread_snow_transfer_function, roughness_fresh_snow= Constants.roughness_fresh_snow,
@@ -123,10 +123,18 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
     #roughness_ice = float(1.7) #range LHS 0.7 to 20 the lower the more positive MB
     #roughness_firn = float(4.0)
     #aging_factor_roughness = float(0.0026)
+    # Precipitation profile (cosipy/modules/precip_profile.py): arguments of main() win, else constants.toml
+    # (precip_lapse_rate, precip_peak_elevation; missing = off). Resolved here so they go into opt_dict (23, 24),
+    # the run attributes and the file name.
+    if lr_RRR is None:
+        lr_RRR = float(getattr(Constants, "precip_lapse_rate", 0.0))
+    if precip_peak_elevation is None:
+        precip_peak_elevation = float(getattr(Constants, "precip_peak_elevation", 9000.0))
     opt_dict = (RRR_factor, alb_ice, alb_snow, alb_firn, albedo_aging, albedo_depth, center_snow_transfer_function,
                 spread_snow_transfer_function, roughness_fresh_snow, roughness_ice, roughness_firn, aging_factor_roughness,
                 bias_LWIN, WS_factor, bias_T2, t_wet, t_dry, t_K, minimum_snowfall, rrr_factor_summer, rrr_factor_winter,
-                bias_T2_summer, bias_T2_winter)   # 21, 22: seasonal T2 bias (JJAS / Oct-May); both set -> replace bias_T2
+                bias_T2_summer, bias_T2_winter,   # 21, 22: seasonal T2 bias (JJAS / Oct-May); both set -> replace bias_T2
+                float(lr_RRR), float(precip_peak_elevation))   # 23, 24: precipitation profile (applied in main)
     #0 to 5 - base, 6 center snow , 7 spreadsnow, 8 to 10 roughness length 
     #opt_dict=None
     lapse_T = float(lr_T)
@@ -164,15 +172,9 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
     # Precipitation profile (cosipy/modules/precip_profile.py): increase with lapse_RRR (1/m) up to
     # precip_peak_elevation, decrease with the same rate above, normalised to the N_Points-weighted glacier mean.
     # Arguments of main() win; otherwise constants.toml (precip_lapse_rate, precip_peak_elevation; missing = off).
-    if lapse_RRR == 0.0:
-        lapse_RRR = float(getattr(Constants, "precip_lapse_rate", 0.0))
-    if precip_peak_elevation is None:
-        precip_peak_elevation = float(getattr(Constants, "precip_peak_elevation", 9000.0))
     precip_peak_elevation = float(precip_peak_elevation)
     f_rrr = precip_profile_factor(hgt, glacier_weights(DATA), lapse_RRR, precip_peak_elevation)
     t2, rh2, rrr = online_lapse_rate(t2, rh2, rrr, hgt, station_altitude, lapse_T, lapse_RH, f_rrr)
-    RESULT.attrs["Precip_lapse_rate_per_m"] = lapse_RRR
-    RESULT.attrs["Precip_peak_elevation"] = precip_peak_elevation
     if lapse_RRR != 0.0:
         print(f"Precipitation profile: {lapse_RRR * 1e4:.1f} % per 100 m (of the tongue value), peak at "
               f"{precip_peak_elevation:.0f} m; factor {np.nanmin(f_rrr):.2f}-{np.nanmax(f_rrr):.2f}")
@@ -217,35 +219,7 @@ def main(lr_T=0.0, lr_RRR=0.0, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR, 
     output_netcdf = set_output_netcdf_path()
     output_path = create_data_directory(path='output')
     #version for parsed floats by hand here
-    if Constants.albedo_method == "Oerlemans98":
-        try:
-            results_output_name = output_netcdf.split('.nc')[0] + f"_RRR-{round(RRR_factor,4)}_{round(alb_snow,4)}_{round(alb_ice,4)}_{round(alb_firn,4)}"\
-                                                                  f"_{round(albedo_aging,4)}_{round(albedo_depth,4)}_{round(roughness_fresh_snow,4)}"\
-                                                                  f"_{round(roughness_ice,4)}_{round(roughness_firn,4)}_{round(aging_factor_roughness,6)}"\
-                                                                  f"_{round(bias_LWIN,4)}_{round(WS_factor,4)}_{round(bias_T2,4)}_{round(center_snow_transfer_function,4)}"\
-                                                                  f"_{round(minimum_snowfall,6)}_num{count}.nc"
-        #item below only works when objects are arrays and not given by hand, parameters not taken from pymc or sorts are floats
-        except:
-            results_output_name = output_netcdf.split('.nc')[0] + f"_RRR-{round(RRR_factor.item(),4)}_{round(alb_snow.item(),4)}_{round(alb_ice.item(),4)}_{round(alb_firn.item(),4)}"\
-                                                                  f"_{round(albedo_aging.item(),4)}_{round(albedo_depth.item(),4)}_{round(roughness_fresh_snow.item(),4)}"\
-                                                                  f"_{round(roughness_ice.item(),4)}_{round(roughness_firn.item(),4)}_{round(aging_factor_roughness.item(),6)}"\
-                                                                  f"_{round(bias_LWIN.item(),4)}_{round(WS_factor.item(),4)}_{round(bias_T2.item(),4)}_{round(center_snow_transfer_function.item(),4)}"\
-                                                                  f"_{round(minimum_snowfall.item(),6)}_num{count}.nc"
-    else:
-        try:
-            results_output_name = output_netcdf.split('.nc')[0] + f"_RRR-{round(RRR_factor,4)}_{round(alb_snow,4)}_{round(alb_ice,4)}_{round(alb_firn,4)}"\
-                                                                  f"_{round(t_wet,4)}_{round(t_dry,4)}_{round(t_K,4)}_{round(albedo_depth,4)}_{round(roughness_fresh_snow,4)}"\
-                                                                  f"_{round(roughness_ice,4)}_{round(roughness_firn,4)}_{round(aging_factor_roughness,6)}"\
-                                                                  f"_{round(bias_LWIN,4)}_{round(WS_factor,4)}_{round(bias_T2,4)}_{round(center_snow_transfer_function,4)}"\
-                                                                  f"_{round(minimum_snowfall,6)}_{round(rrr_factor_summer,4)}_{round(rrr_factor_winter,4)}_num{count}.nc"
-
-        #item below only works when objects are arrays and not given by hand, parameters not taken from pymc or sorts are floats
-        except:
-            results_output_name = output_netcdf.split('.nc')[0] + f"_RRR-{round(RRR_factor.item(),4)}_{round(alb_snow.item(),4)}_{round(alb_ice.item(),4)}_{round(alb_firn.item(),4)}"\
-                                                                  f"_{round(t_wet.item(),4)}_{round(t_dry.item(),4)}_{round(t_K.item(),4)}_{round(albedo_depth.item(),4)}_{round(roughness_fresh_snow,4)}"\
-                                                                  f"_{round(roughness_ice.item(),4)}_{round(roughness_firn.item(),4)}_{round(aging_factor_roughness.item(),6)}"\
-                                                                  f"_{round(bias_LWIN.item(),4)}_{round(WS_factor.item(),4)}_{round(bias_T2.item(),4)}_{round(center_snow_transfer_function.item(),4)}"\
-                                                                  f"_{round(minimum_snowfall.item(),6)}_{round(rrr_factor_summer.item(),4)}_{round(rrr_factor_winter.item(),4)}_num{count}.nc"
+    results_output_name = output_netcdf.split('.nc')[0] + "_RRR-" + output_name_values(opt_dict) + f"_num{count}.nc"
 
     IO.get_result().to_netcdf(os.path.join(output_path,results_output_name), encoding=encoding, mode='w')
     
@@ -642,6 +616,28 @@ def compute_scale_and_offset(min, max, n):
 def close_everything(scheduler):
     yield scheduler.retire_workers(workers=scheduler.workers, close_workers=True)
     yield scheduler.close()
+
+def output_name_values(opt_dict) -> str:
+    """Parameter values in the output file name, "_"-separated (parsed by create_summary_lhs_alloutputs.py).
+    Bougamont05: 0 RRR, 1 alb_snow, 2 alb_ice, 3 alb_firn, 4 t_wet, 5 t_dry, 6 t_K, 7 alb depth, 8-10 roughness
+    fresh snow / ice / firn, 11 roughness aging, 12 bias LWin, 13 WS factor, 14 bias T2, 15 center snow transfer,
+    16 minimum snowfall, 17 / 18 rrr summer / winter, 19 / 20 T2 bias summer / winter (= bias T2 if not split),
+    21 precip lapse rate [1/m], 22 precip peak elevation [m]. Oerlemans98: the old layout (0-16 with albedo aging
+    instead of t_wet / t_dry / t_K)."""
+    o = [float(np.asarray(v)) if v is not None else np.nan for v in opt_dict]
+    if Constants.albedo_method == "Oerlemans98":
+        vals = [(o[0], 4), (o[2], 4), (o[1], 4), (o[3], 4), (o[4], 4), (o[5], 4), (o[8], 4), (o[9], 4), (o[10], 4),
+                (o[11], 6), (o[12], 4), (o[13], 4), (o[14], 4), (o[6], 4), (o[18], 6)]
+    else:
+        t2s = o[21] if len(o) > 22 and np.isfinite(o[21]) and np.isfinite(o[22]) else o[14]
+        t2w = o[22] if len(o) > 22 and np.isfinite(o[21]) and np.isfinite(o[22]) else o[14]
+        vals = [(o[0], 4), (o[2], 4), (o[1], 4), (o[3], 4), (o[15], 4), (o[16], 4), (o[17], 4), (o[5], 4),
+                (o[8], 4), (o[9], 4), (o[10], 4), (o[11], 6), (o[12], 4), (o[13], 4), (o[14], 4), (o[6], 4),
+                (o[18], 6), (o[19], 4), (o[20], 4), (t2s, 4), (t2w, 4)]
+        if len(o) > 24:
+            vals += [(o[23], 6), (o[24], 1)]
+    return "_".join(str(round(v, n)) for v, n in vals)
+
 
 @njit
 def online_lapse_rate(t2, rh2, rrr, hgt, station_altitude, lapse_T, lapse_RH, f_rrr):

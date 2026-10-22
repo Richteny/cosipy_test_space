@@ -64,9 +64,11 @@ PARAM_MAP = {
     'bias_T2_summer':    'bias_T2_summer',     # seasonal T2 bias (JJAS) ...
     'bias_T2_winter':    'bias_T2_winter',     # ... and Oct-May; both replace bias_T2 in COSIPY
     't_wet':             't_wet',
+    'precip_lapse_rate':     'lr_RRR',                 # precipitation profile (optional) ...
+    'precip_peak_elevation': 'precip_peak_elevation',  # ... missing columns -> constants.toml
 }
 # A list needs bias_T2 OR both seasonal columns; columns of this group that are missing are not passed.
-OPTIONAL = ['bias_T2', 'bias_T2_summer', 'bias_T2_winter']
+OPTIONAL = ['bias_T2', 'bias_T2_summer', 'bias_T2_winter', 'precip_lapse_rate', 'precip_peak_elevation']
 LOG_COLS = []               # list columns stored in log space (exp() is applied); [] = all linear
 POSITIVE = ['rrr_factor_summer', 'rrr_factor_winter', 'ws_factor', 'albedo_depth', 't_wet']
 # ============================================================================

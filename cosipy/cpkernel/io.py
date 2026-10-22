@@ -490,6 +490,8 @@ class IOClass:
             rrr_factor_winter = opt_dict[20]
             bias_T2_summer = opt_dict[21] if len(opt_dict) > 22 else getattr(Constants, "bias_T2_summer", None)
             bias_T2_winter = opt_dict[22] if len(opt_dict) > 22 else getattr(Constants, "bias_T2_winter", None)
+            precip_lapse_rate = opt_dict[23] if len(opt_dict) > 24 else getattr(Constants, "precip_lapse_rate", 0.0)
+            precip_peak_elevation = opt_dict[24] if len(opt_dict) > 24 else getattr(Constants, "precip_peak_elevation", 9000.0)
             #print(aging_factor_roughness)
         else:
             mult_factor_RRR = Constants.mult_factor_RRR
@@ -515,6 +517,8 @@ class IOClass:
             rrr_factor_winter = Constants.rrr_factor_winter
             bias_T2_summer = getattr(Constants, "bias_T2_summer", None)
             bias_T2_winter = getattr(Constants, "bias_T2_winter", None)
+            precip_lapse_rate = getattr(Constants, "precip_lapse_rate", 0.0)
+            precip_peak_elevation = getattr(Constants, "precip_peak_elevation", 9000.0)
 
         # Coordinates
         self.RESULT = xr.Dataset()
@@ -566,6 +570,8 @@ class IOClass:
         self.RESULT.attrs["Summer_bias_for_T2"] = bias_T2   # bias_T2 (all year; replaced by the seasonal pair below)
         self.RESULT.attrs["Bias_T2_summer_JJAS"] = str(bias_T2_summer)
         self.RESULT.attrs["Bias_T2_winter"] = str(bias_T2_winter)
+        self.RESULT.attrs["Precip_lapse_rate_per_m"] = float(precip_lapse_rate)
+        self.RESULT.attrs["Precip_peak_elevation"] = float(precip_peak_elevation)
         self.RESULT.attrs["Minimum_snow_layer_height"] = Constants.minimum_snow_layer_height
         self.RESULT.attrs["Minimum_snowfall"] = minimum_snowfall
 

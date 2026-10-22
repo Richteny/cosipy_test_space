@@ -67,12 +67,13 @@ tsla_obs = tsla_obs.loc["1990-01-01":"2023-12-31"]
 # 0 RRR_factor, 1 alb_snow, 2 alb_ice, 3 alb_firn, 4 t wet, 5 t dry, 6 t K, 7 alb depth, 8 roughness fresh snow,
 # 9 roughness ice, 10 roughness firn, 11 aging factor roughness, 12 bias LWin, 13 WS_factor, 14 bias T2,
 # 15 center_snow_transfer, 16 min snowfall, 17 rrr summer, 18 rrr winter, 19 T2 bias summer, 20 T2 bias winter
-# (19/20 only in runs made after the seasonal T2 bias was added; without a split both equal bias T2).
+# (19/20 only in runs made after the seasonal T2 bias was added; without a split both equal bias T2),
+# 21 precip lapse rate [1/m], 22 precip peak elevation [m] (runs from 22 Oct 2026 on).
 FNAME_INDEX = {'rrr_factor': 0, 'alb_snow': 1, 'alb_ice': 2, 'alb_firn': 3, 't_wet': 4, 't_dry': 5, 't_K': 6,
                'albedo_depth': 7, 'roughness_fresh_snow': 8, 'roughness_ice': 9, 'roughness_firn': 10,
                'aging_factor_roughness': 11, 'bias_LWin': 12, 'ws_factor': 13, 'bias_T2': 14, 'center_snow': 15,
                'minimum_snowfall': 16, 'rrr_factor_summer': 17, 'rrr_factor_winter': 18,
-               'bias_T2_summer': 19, 'bias_T2_winter': 20}
+               'bias_T2_summer': 19, 'bias_T2_winter': 20, 'precip_lapse_rate': 21, 'precip_peak_elevation': 22}
 
 # ---------------- design ----------------------------------------------------------------------------------------
 df = pd.read_csv(DESIGN_CSV)
