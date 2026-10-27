@@ -561,6 +561,38 @@ def compute_shortwave(sw, T_interp, RH_interp, P_interp, heights,
 
 
 # ══════════════════════════════════════════════════════════════════════════
+#  Schnee-Umverteilung: welche SRF / K_AVA ins Forcing kommen
+# ══════════════════════════════════════════════════════════════════════════
+# Die kombinierte SRF-Datei (createSRFmap.py, Merge-Modus) enthaelt:
+#   SRF          Hanzer 0.5*(50 m + 5 km), normiert      K_AVA       SRF-gewichtet
+#   SRF_50       nur 50-m-Term, normiert                  K_AVA_50    SRF_50-gewichtet
+#                                                         K_AVA_PLAIN Band-Mittel (ohne SRF)
+# COSIPY nimmt immer die Variablen 'SRF' und 'K_AVA' (Schneefall x SRF x K_AVA);
+# hier wird die gewaehlte Variante unter diesen Namen geschrieben, die andere
+# weggelassen. K_AVA passt dabei zur gewaehlten SRF, damit SRF x K_AVA das
+# Bandmittel des Pixelprodukts bleibt.
+SRF_SOURCE = {"combined": "SRF", "50m": "SRF_50", "off": None}
+KAVA_SOURCE = {"combined": "K_AVA", "50m": "K_AVA_50", "off": "K_AVA_PLAIN"}
+
+
+def snow_redistribution_fields(ds_static, srf_variant, kava):
+    """{'SRF': DataArray or None, 'K_AVA': DataArray or None} aus der Statik."""
+    out = {"SRF": None, "K_AVA": None}
+    src = SRF_SOURCE[srf_variant]
+    if src is not None:
+        if src not in ds_static:
+            sys.exit(f"FEHLER: --srf-variant {srf_variant} braucht '{src}' in der SRF-Datei. "
+                     f"createSRFmap.py (Version mit SRF_50) neu laufen lassen.")
+        out["SRF"] = ds_static[src]
+    if kava == "on":
+        ksrc = KAVA_SOURCE[srf_variant]
+        if ksrc not in ds_static:
+            sys.exit(f"FEHLER: --kava on mit --srf-variant {srf_variant} braucht '{ksrc}' in der "
+                     f"SRF-Datei (createSRFmap.py mit --kneib-dir, Version mit K_AVA_50/K_AVA_PLAIN).")
+        out["K_AVA"] = ds_static[ksrc]
+    return out
+
+
 def build(a):
     # Sicherung gegen versehentliches Ueberschreiben: wird ein Terrain-Term
     # angefordert, der Ausgabename traegt aber kein '-terr...', dann landet das
@@ -573,7 +605,8 @@ def build(a):
         print("         Das Terrain-Forcing ueberschreibt so die Sky-Datei!")
         print("         Im Slurm-Aufruf LW_TERRAIN pruefen (kam es durch?).")
         print("=" * 72)
-    print(f"  Ausgabe: {a.output}  (LW={a.lw_method}, Terrain={a.lw_terrain})")
+    print(f"  Ausgabe: {a.output}  (LW={a.lw_method}, Terrain={a.lw_terrain}, "
+          f"SRF={a.srf_variant}, K_AVA={a.kava})")
 
     cols, tvals, n_band, band_hgt = load_bands(a.glacier, a.start_date, a.end_date)
     n_time = len(tvals)
@@ -853,22 +886,40 @@ def build(a):
             dso[v] = (("lat", "lon"), ds_static[v].values)
             dso[v].attrs = dict(ds_static[v].attrs)
 
-    # SRF / K_AVA / N_Points: Forward-Fill falls time-Dimension vorhanden
+    # SRF / K_AVA / N_Points: Forward-Fill falls time-Dimension vorhanden.
+    # SRF und K_AVA nach --srf-variant / --kava (siehe snow_redistribution_fields).
     sim_times = pd.to_datetime(tvals)
-    for v in ["SRF", "K_AVA", "N_Points"]:
-        if v not in ds_static:
+    fields = snow_redistribution_fields(ds_static, a.srf_variant, a.kava)
+    fields["N_Points"] = ds_static["N_Points"] if "N_Points" in ds_static else None
+    for v, da in fields.items():
+        if da is None:
+            print(f"  {v}: nicht geschrieben (COSIPY rechnet ohne)")
             continue
-        if "time" in ds_static[v].dims:
+        if "time" in da.dims:
             sparse = pd.to_datetime(ds_static["time"].values)
             idx_map = np.searchsorted(sparse, sim_times, side="right") - 1
             idx_map = np.clip(idx_map, 0, len(sparse) - 1)
-            expanded = ds_static[v].values[idx_map]        # (time, lat, lon)
+            expanded = da.values[idx_map]                  # (time, lat, lon)
             dso[v] = (("time", "lat", "lon"), expanded)
-            print(f"  {v}: Forward-Fill ueber {len(sparse)} Umrisse "
+            print(f"  {v} (aus '{da.name}'): Forward-Fill ueber {len(sparse)} Umrisse "
                   f"{[str(t)[:10] for t in sparse]}")
         else:
-            dso[v] = (("lat", "lon"), ds_static[v].values)
-        dso[v].attrs = dict(ds_static[v].attrs)
+            dso[v] = (("lat", "lon"), da.values)
+            print(f"  {v} (aus '{da.name}'): statisch")
+        dso[v].attrs = dict(da.attrs)
+        dso[v].attrs["source_variable"] = str(da.name)
+    # glacier-mean snowfall factor (N_Points-weighted, first outline) as a check
+    if "N_Points" in dso:
+        w0 = dso["N_Points"].values[0] if "time" in dso["N_Points"].dims else dso["N_Points"].values
+        f0 = np.ones_like(w0, dtype=float)
+        for v in ("SRF", "K_AVA"):
+            if v in dso:
+                f0 = f0 * (dso[v].values[0] if "time" in dso[v].dims else dso[v].values)
+        ok = np.isfinite(f0) & (w0 > 0)
+        print(f"  Schneefall-Faktor SRF x K_AVA: Gletschermittel {np.sum(f0[ok] * w0[ok]) / np.sum(w0[ok]):.3f}, "
+              f"Bereich {np.nanmin(f0[ok]):.2f}-{np.nanmax(f0[ok]):.2f}")
+    dso.attrs["snow_redistribution"] = (f"SRF={a.srf_variant} ({SRF_SOURCE[a.srf_variant]}), "
+                                        f"K_AVA={a.kava} ({KAVA_SOURCE[a.srf_variant] if a.kava == 'on' else None})")
 
     def put3(name, arr, units, long_name):
         dso[name] = (("time", "lat", "lon"), arr.reshape(n_time, n_band, 1))
@@ -948,6 +999,13 @@ def main():
                         "mit |dz| <= --precip-dz-max")
     p.add_argument("--precip-dz-max", dest="precip_dz_max", type=float, default=1000.0,
                    help="capped: maximale Hoehendifferenz Band - ERA5-Oberflaeche in m (Default 1000)")
+    p.add_argument("--srf-variant", dest="srf_variant", default="combined",
+                   choices=["combined", "50m", "off"],
+                   help="Schnee-Umverteilung: combined = Hanzer 50 m + 5 km (Default, wie bisher), "
+                        "50m = nur 50-m-Term (SRF_50), off = kein SRF.")
+    p.add_argument("--kava", dest="kava", default="on", choices=["on", "off"],
+                   help="Lawinenfaktor K_AVA (Kneib et al. 2025): on (Default) = passend zur "
+                        "gewaehlten SRF gewichtet (K_AVA / K_AVA_50 / K_AVA_PLAIN), off = weglassen.")
     p.add_argument("--wind-profile", dest="wind_profile", default="hypsometric",
                    choices=["hypsometric", "mean", "keep"],
                    help="U2-gradient: 'hypsometric' = Value at N_Points weighted mean of all bands"

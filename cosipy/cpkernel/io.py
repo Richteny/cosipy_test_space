@@ -590,6 +590,8 @@ class IOClass:
         self.RESULT.attrs["Albedo_ice"] = albedo_ice
         self.RESULT.attrs["Albedo_mod_snow_aging"] = albedo_mod_snow_aging
         self.RESULT.attrs["Albedo_mod_snow_depth"] = albedo_mod_snow_depth
+        self.RESULT.attrs["Albedo_refresh_swe"] = float(getattr(Constants, "albedo_refresh_swe", 0.0))  # 0 = depth-weighted reset
+        self.RESULT.attrs["Albedo_memory"] = int(bool(getattr(Constants, "albedo_memory", False)))  # 1 = memory of the surface below fresh snow (Oerlemans & Knap depth term, d* = albedo_mod_snow_depth)
         self.RESULT.attrs["Roughness_fresh_snow"] = roughness_fresh_snow
         self.RESULT.attrs["Roughness_ice"] = roughness_ice
         self.RESULT.attrs["Roughness_firn"] = roughness_firn

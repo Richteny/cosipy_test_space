@@ -5,7 +5,7 @@ from cosipy.config import Config
 from cosipy.constants import Constants
 from cosipy.cpkernel.init import init_snowpack, load_snowpack
 from cosipy.cpkernel.io import IOClass
-from cosipy.modules.albedo import updateAlbedo
+from cosipy.modules.albedo import updateAlbedo, albedo_memory
 from cosipy.modules.densification import densification
 from cosipy.modules.evaluation import evaluate, resample_output, create_tsl_df, eval_tsl, resample_by_hand
 from cosipy.modules.heatEquation import solveHeatEquation
@@ -422,6 +422,9 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
     albedo_snow = albedo_fresh_snow
     if WRF_X_CSPY:
         albedo_snow = albedo_firn
+    # Albedo memory (albedo_memory in constants.toml): [stored snow albedo below the fresh layer, fresh-layer SWE
+    # [kg m-2], fresh-layer height [m]]
+    albedo_memory_state = [np.nan, 0.0, 0.0] if albedo_memory else None
 
     if Config.stake_evaluation:
         # Create pandas dataframe for stake evaluation
@@ -504,7 +507,9 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
         #--------------------------------------------
         # Calculate albedo and roughness length changes if first layer is snow
         #--------------------------------------------
-        alpha, albedo_snow = updateAlbedo(GRID,surface_temperature,albedo_snow,opt_dict)
+        # snowfall mass of this step [kg m-2] for the albedo refresh (SNOWFALL is snow height after SRF x K_AVA)
+        fresh_swe = float(SNOWFALL * density_fresh_snow) if SNOWFALL > 0.0 else 0.0
+        alpha, albedo_snow = updateAlbedo(GRID,surface_temperature,albedo_snow,opt_dict,fresh_swe,albedo_memory_state)
 
         #--------------------------------------------
         # Update roughness length
@@ -579,6 +584,11 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
 
         # Remove melt [m w.e.q.]
         lwc_from_melted_layers = GRID.remove_melt_weq(melt - sublimation - deposition)
+        if albedo_memory_state is not None and albedo_memory_state[1] > 0.0:
+            # surface melt and sublimation remove the fresh layer first [kg m-2]; its height shrinks in proportion
+            swe_left = max(albedo_memory_state[1] - 1000.0 * max(melt - sublimation - deposition, 0.0), 0.0)
+            albedo_memory_state[2] = albedo_memory_state[2] * swe_left / albedo_memory_state[1]
+            albedo_memory_state[1] = swe_left
 
         #--------------------------------------------
         # Percolation

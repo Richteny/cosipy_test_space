@@ -74,7 +74,10 @@ def get_resolution_meters(ds, x_dim, y_dim):
 
 
 def build_topographic_srf(dem_arr, res_meters):
-    """Compute the *unnormalised* topographic SRF field from the DEM only.
+    """Compute the *unnormalised* topographic SRF fields from the DEM only.
+
+    Returns (combined, srf_50): the Hanzer combination 0.5*(50 m + 5 km term)
+    and the 50 m (local curvature) term alone.
 
     This is the expensive part (the L=5000 m openness scan) and depends ONLY
     on HGT.  As long as the DEM grid is identical across outlines, it is the
@@ -95,7 +98,7 @@ def build_topographic_srf(dem_arr, res_meters):
     srf_50 = np.clip(psi_eff_50, 0.0, 5.0)
     srf_5000 = np.clip(psi_eff_5000, 0.0, 5.0)
 
-    return 0.5 * (srf_50 + srf_5000)
+    return 0.5 * (srf_50 + srf_5000), srf_50
 
 
 def normalize_mass_conserving(srf_raw, mask, lo=0.2, hi=1.6,
@@ -405,9 +408,10 @@ def process_single(static_2d_path, target_1d_path, output_path, output_2d_path,
               f"{int(np.ceil(50 / res))} pixels. Results may be unreliable.")
 
     print("Generating 2D SRF Map...")
-    srf_2d = build_topographic_srf(filled_dem(dem_2d), res)
+    srf_2d, srf50_2d = build_topographic_srf(filled_dem(dem_2d), res)
 
     srf_norm, _ = normalize_mass_conserving(srf_2d, mask_2d, lo=lo, hi=hi)
+    srf50_norm, _ = normalize_mass_conserving(srf50_2d, mask_2d, lo=lo, hi=hi)
 
     if output_2d_path:
         crop_and_save_2d(ds_2d, srf_norm, output_2d_path, y_dim, x_dim)
@@ -416,11 +420,16 @@ def process_single(static_2d_path, target_1d_path, output_path, output_2d_path,
     target_levels = ds_1d['HGT'].values
     srf_final = aggregate_to_bands(srf_norm, dem_2d, mask_2d,
                                    target_levels, band_width)
+    srf50_final = aggregate_to_bands(srf50_norm, dem_2d, mask_2d,
+                                     target_levels, band_width)
 
     ds_out = ds_1d.copy(deep=True)
     ds_out['SRF'] = (ds_1d['HGT'].dims, srf_final)
     ds_out['SRF'].attrs = {'long_name': 'Norm. Snow Redistribution Factor (Hanzer 2016)',
                            'units': '-'}
+    ds_out['SRF_50'] = (ds_1d['HGT'].dims, srf50_final)
+    ds_out['SRF_50'].attrs = {'long_name': 'Norm. SRF, 50 m term only (local curvature)',
+                              'units': '-'}
     print(f"Saving 1D profile to {output_path}")
     ds_out.to_netcdf(output_path)
     print("Done.")
@@ -447,6 +456,9 @@ def process_merge(static_list, target_list, dates, merge_output,
                                  normalised; only with kneib_dir. Formed in 2D
                                  so that band SRF x band K_AVA = band mean of
                                  the pixel product SRF*k_ava (see below)
+        SRF_50(time, y, x)    -- the 50 m term alone, same normalisation as SRF
+        K_AVA_50, K_AVA_PLAIN -- k_ava weighted by SRF_50 / plain band mean, for
+                                 runs with the 50 m SRF / without SRF
         N_Points(time, y, x)  -- per outline (from target files or recomputed)
     plus the static geometry (HGT, MASK, SLOPE, ASPECT, SVF ...) from the
     first target as a template.  `time` holds the sporadic outline dates;
@@ -471,7 +483,7 @@ def process_merge(static_list, target_list, dates, merge_output,
     print(f"Reference DEM '{static_list[0]}': Y='{y_dim}', X='{x_dim}', "
           f"res ~{res0:.1f} m")
     print("Generating 2D SRF Map (once, shared across outlines)...")
-    srf_2d = build_topographic_srf(filled_dem(dem0), res0)
+    srf_2d, srf50_2d = build_topographic_srf(filled_dem(dem0), res0)
 
     # --- every outline's MASK and HGT on the reference grid (the earliest
     # static); statics on other grids are matched by nearest neighbour.
@@ -495,6 +507,8 @@ def process_merge(static_list, target_list, dates, merge_output,
     # sheltered than the glacier as a whole was.
     print("Normalising SRF once on the union of outlines...")
     srf_norm_ref, _ = normalize_mass_conserving(srf_2d, ref_mask, lo=lo, hi=hi)
+    print("Normalising SRF_50 (50 m term only) once on the union of outlines...")
+    srf50_norm_ref, _ = normalize_mass_conserving(srf50_2d, ref_mask, lo=lo, hi=hi)
 
     if output_2d:                                # the 2D maps behind the bands, for checking
         ds2 = ds0[['HGT']].copy()
@@ -502,6 +516,7 @@ def process_merge(static_list, target_list, dates, merge_output,
         for k, m in enumerate(masks):
             ds2[f'MASK_{times[k].year}'] = (ds0['HGT'].dims, m.astype(float))
         ds2['SRF'] = (ds0['HGT'].dims, srf_norm_ref)
+        ds2['SRF_50'] = (ds0['HGT'].dims, srf50_norm_ref)
         if kava_2d is not None:
             ds2['K_AVA'] = (ds0['HGT'].dims, kava_2d)
         print(f"Saving 2D maps to {output_2d}")
@@ -511,7 +526,7 @@ def process_merge(static_list, target_list, dates, merge_output,
     ty_dim, tx_dim = tmpl['HGT'].dims
     target_shape = tmpl['HGT'].shape
 
-    srf_stack, kava_stack, np_stack = [], [], []
+    srf_stack, srf50_stack, kava_stack, kava50_stack, kavapl_stack, np_stack = [], [], [], [], [], []
 
     for k, (spath, tpath, t) in enumerate(zip(static_list, target_list, times)):
         print(f"\n[{k + 1}/{n}] outline {t.date()}  static={spath}")
@@ -524,6 +539,7 @@ def process_merge(static_list, target_list, dates, merge_output,
         ds_t = xr.open_dataset(tpath)
         levels = ds_t['HGT'].values
         srf_1d = aggregate_to_bands(srf_norm, dem_s, mask_s, levels, band_width)
+        srf50_1d = aggregate_to_bands(srf50_norm_ref, dem_s, mask_s, levels, band_width)
 
         if 'N_Points' in ds_t.variables:
             npts = ds_t['N_Points'].values.astype(np.float64)
@@ -532,7 +548,8 @@ def process_merge(static_list, target_list, dates, merge_output,
             npts = count_points_per_band(dem_s, mask_s, levels, band_width)
 
         # weighted-mean sanity check over the active glacier
-        print(f"    N_Points-weighted mean SRF {weighted_mean(srf_1d, npts):.5f} "
+        print(f"    N_Points-weighted mean SRF {weighted_mean(srf_1d, npts):.5f}, "
+              f"SRF_50 {weighted_mean(srf50_1d, npts):.5f} "
               f"(active bands: {int(np.sum(npts > 0))}, "
               f"total points: {int(np.nansum(npts)):d})")
 
@@ -550,8 +567,14 @@ def process_merge(static_list, target_list, dates, merge_output,
                   f"SRF x K_AVA {weighted_mean(prod_1d, npts):.4f}, "
                   f"band K_AVA max {np.nanmax(kava_1d):.3f}")
             kava_stack.append(kava_1d)
+            # the same for the 50 m-only SRF, and the plain band mean for runs without SRF
+            prod50_1d = aggregate_to_bands(srf50_norm_ref * kava_2d, dem_s, mask_s, levels, band_width)
+            kava50_stack.append(prod50_1d / srf50_1d)
+            kavapl_stack.append(plain_1d)
+            print(f"    SRF_50 x K_AVA_50 {weighted_mean(prod50_1d, npts):.4f}")
 
         srf_stack.append(srf_1d)
+        srf50_stack.append(srf50_1d)
         np_stack.append(npts)
         ds_t.close()
 
@@ -560,7 +583,7 @@ def process_merge(static_list, target_list, dates, merge_output,
 
     # --- assemble merged static from the template geometry ---
     ds_out = tmpl.copy(deep=True)
-    for v in ('SRF', 'K_AVA', 'N_Points'):
+    for v in ('SRF', 'SRF_50', 'K_AVA', 'K_AVA_50', 'K_AVA_PLAIN', 'N_Points'):
         if v in ds_out.variables:
             ds_out = ds_out.drop_vars(v)
     ds_out = ds_out.assign_coords(time=("time", times.values))
@@ -572,7 +595,21 @@ def process_merge(static_list, target_list, dates, merge_output,
         'note': f'Mean 1 over the union of all outlines, clipped to [{lo},{hi}]; '
                 'band mean over each outline'}
 
+    ds_out['SRF_50'] = (("time", ty_dim, tx_dim), np.stack(srf50_stack, axis=0))
+    ds_out['SRF_50'].attrs = {
+        'long_name': 'Norm. SRF, 50 m term only (local curvature, Hanzer 2016 small scale)',
+        'units': '-',
+        'note': f'Same normalisation as SRF: mean 1 over the union of outlines, clipped to [{lo},{hi}]'}
+
     if kava_2d is not None:
+        ds_out['K_AVA_50'] = (("time", ty_dim, tx_dim), np.stack(kava50_stack, axis=0))
+        ds_out['K_AVA_50'].attrs = {
+            'long_name': 'Avalanche factor k_ava (Kneib et al. 2025), SRF_50-weighted band mean',
+            'units': '-', 'note': 'SRF_50 x K_AVA_50 = band mean of the pixel product; use with SRF_50'}
+        ds_out['K_AVA_PLAIN'] = (("time", ty_dim, tx_dim), np.stack(kavapl_stack, axis=0))
+        ds_out['K_AVA_PLAIN'].attrs = {
+            'long_name': 'Avalanche factor k_ava (Kneib et al. 2025), plain band mean',
+            'units': '-', 'note': 'use when no SRF is applied'}
         ds_out['K_AVA'] = (("time", ty_dim, tx_dim), np.stack(kava_stack, axis=0))
         ds_out['K_AVA'].attrs = {
             'long_name': 'Avalanche redistribution factor k_ava (Kneib et al. 2025)',
