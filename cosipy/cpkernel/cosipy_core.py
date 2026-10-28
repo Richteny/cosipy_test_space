@@ -11,7 +11,7 @@ from cosipy.modules.evaluation import evaluate, resample_output, create_tsl_df, 
 from cosipy.modules.heatEquation import solveHeatEquation
 from cosipy.modules.penetratingRadiation import penetrating_radiation
 from cosipy.modules.percolation import percolation
-from cosipy.modules.refreezing import refreezing
+from cosipy.modules.refreezing import refreezing, superimposed_ice, superimpose_refrozen_snow
 from cosipy.modules.roughness import updateRoughness
 from cosipy.modules.surfaceTemperature import update_surface_temperature
 from cosipy.modules.surfaceTemperature import method_EW_Sonntag
@@ -193,6 +193,7 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
     precippartition_method = Constants.precip_partitioning_method
     ice_density = Constants.ice_density
     water_density = Constants.water_density
+    snow_ice_threshold = Constants.snow_ice_threshold
     minimum_snowfall = Constants.minimum_snowfall
     zero_temperature = Constants.zero_temperature
     lat_heat_sublimation = Constants.lat_heat_sublimation
@@ -397,12 +398,14 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
     N = np.array(nt * [None])
     # LWin: scaled with the T2 bias (Stefan-Boltzmann, clouds/terrain of the forcing kept),
     # then the constant radiative offset bias_LWIN
+    bias_lwin_seas = np.where(np.isin(_months, (6,7,8,9)), float(bias_LWIN), 0.0)
+    bias_lwin_seas = bias_lwin_seas.reshape((nt,) + (1,) * (T2_raw.ndim - 1))
     if ('LWin' in DATA) and ('N' in DATA):
-        DATA['LWin'] = np.clip(DATA['LWin'] * (T2 / T2_raw) ** 4 + bias_LWIN, a_min=0.0, a_max=None)
+        DATA['LWin'] = np.clip(DATA['LWin'] * (T2 / T2_raw) ** 4 + bias_lwin_seas, a_min=0.0, a_max=None)
         LWin = DATA.LWin.values
         N = DATA.N.values
     elif 'LWin' in DATA:
-        DATA['LWin'] = np.clip(DATA['LWin'] * (T2 / T2_raw) ** 4 + bias_LWIN, a_min=0.0, a_max=None)
+        DATA['LWin'] = np.clip(DATA['LWin'] * (T2 / T2_raw) ** 4 + bias_lwin_seas, a_min=0.0, a_max=None)
         LWin = DATA.LWin.values
     else:
         LWin = None
@@ -425,6 +428,10 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
     # Albedo memory (albedo_memory in constants.toml): [stored snow albedo below the fresh layer, fresh-layer SWE
     # [kg m-2], fresh-layer height [m]]
     albedo_memory_state = [np.nan, 0.0, 0.0] if albedo_memory else None
+    # Superimposed ice (superimposed_ice in constants.toml, see refreezing.py): mass [m w.e.] of superimposed ice at
+    # the top of the ice; while >= SI_MIN_MWE the ice surface has albedo_superimposed_ice. Not in the restart file.
+    si_mwe = 0.0
+    SI_MIN_MWE = 0.001        # 1 kg m-2 (~1 mm of ice): fixed, not calibrated
 
     if Config.stake_evaluation:
         # Create pandas dataframe for stake evaluation
@@ -509,7 +516,8 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
         #--------------------------------------------
         # snowfall mass of this step [kg m-2] for the albedo refresh (SNOWFALL is snow height after SRF x K_AVA)
         fresh_swe = float(SNOWFALL * density_fresh_snow) if SNOWFALL > 0.0 else 0.0
-        alpha, albedo_snow = updateAlbedo(GRID,surface_temperature,albedo_snow,opt_dict,fresh_swe,albedo_memory_state)
+        alpha, albedo_snow = updateAlbedo(GRID,surface_temperature,albedo_snow,opt_dict,fresh_swe,albedo_memory_state,
+                                          superimposed_ice and si_mwe >= SI_MIN_MWE)
 
         #--------------------------------------------
         # Update roughness length
@@ -583,7 +591,23 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
         melt = melt_energy * dt / (1000 * lat_heat_melting)
 
         # Remove melt [m w.e.q.]
+        if superimposed_ice:
+            _snow = [i for i in range(GRID.number_nodes) if GRID.get_node_density(i) < snow_ice_threshold]
+            swe_snow_before = sum(GRID.get_node_height(i) * GRID.get_node_density(i) for i in _snow) / water_density
         lwc_from_melted_layers = GRID.remove_melt_weq(melt - sublimation - deposition)
+        interface_water = 0.0
+        if superimposed_ice:
+            _snow = [i for i in range(GRID.number_nodes) if GRID.get_node_density(i) < snow_ice_threshold]
+            swe_snow_after = sum(GRID.get_node_height(i) * GRID.get_node_density(i) for i in _snow) / water_density
+            removal = melt - sublimation - deposition
+            # ablation that reached the ice removes superimposed ice first (it is the top of the ice)
+            si_mwe = max(si_mwe - max(removal - swe_snow_before, 0.0), 0.0)
+            # water that may refreeze at the snow-ice interface: all water if snow is left (it passes through the
+            # snow), else only the water released from the snow that melted away in this step
+            if swe_snow_after > 0.0:
+                interface_water = melt + condensation + RAIN / 1000.0 + lwc_from_melted_layers
+            elif swe_snow_before > 0.0:
+                interface_water = min(max(swe_snow_before - swe_snow_after, 0.0), melt) + lwc_from_melted_layers
         if albedo_memory_state is not None and albedo_memory_state[1] > 0.0:
             # surface melt and sublimation remove the fresh layer first [kg m-2]; its height shrinks in proportion
             swe_left = max(albedo_memory_state[1] - 1000.0 * max(melt - sublimation - deposition, 0.0), 0.0)
@@ -601,12 +625,15 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
                 f"total_h={np.sum(h):.2f}, t={t}"
             )
 
-        Q  = percolation(GRID, melt + condensation + RAIN/1000.0 + lwc_from_melted_layers, dt)
+        Q, refrozen_interface  = percolation(GRID, melt + condensation + RAIN/1000.0 + lwc_from_melted_layers, dt,
+                                             interface_water)
 
         #--------------------------------------------
         # Refreezing
         #--------------------------------------------
-        water_refreezed = refreezing(GRID)
+        water_refreezed = refreezing(GRID) + refrozen_interface
+        if superimposed_ice:
+            si_mwe += refrozen_interface + superimpose_refrozen_snow(GRID)
 
         #--------------------------------------------
         # Solve the heat equation

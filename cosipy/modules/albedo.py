@@ -43,11 +43,25 @@ albedo_refresh_swe = float(getattr(Constants, "albedo_refresh_swe", 0.0))
 # No new parameter. With albedo_memory = false the results are identical to before.
 albedo_memory = bool(getattr(Constants, "albedo_memory", False))
 MEMORY_MERGE_DEPTH_FACTOR = 3.0
+# Superimposed ice (superimposed_ice = true, see refreezing.py): while superimposed ice formed by refreezing lies at
+# the surface, bare ice and the surface below thin snow have albedo_superimposed_ice instead of albedo_ice
+# (fixed value, not calibrated; albedo_ice itself is unchanged). No model precedent was found for a separate
+# superimposed-ice albedo; the value is set from Landsat (Dongkemadi tongue after refreezing events, ~0.45-0.6).
+albedo_superimposed_ice = float(getattr(Constants, "albedo_superimposed_ice", 0.6))
+# Snow albedo on bare ice (Bougamont05; bug fix 27 Oct 2026, always on). The snow albedo is a state carried from step
+# to step. While the surface is bare ice it used to keep the value the last snow had when it melted away (often aged,
+# ~0.5-0.6). With the mass-weighted refresh (albedo_refresh_swe > 0) a new snowfall on the ice then only refreshed that
+# stale value by 1 - exp(-SWE / albedo_refresh_swe) (2 kg m-2 -> 18 %): new snow on ice started as old snow, and the
+# surface could not get brighter than the stale value, whatever albedo_mod_snow_depth was. The refresh describes new
+# snow mixing optically with an existing snowpack; on bare ice there is none. Now the snow albedo is set to
+# albedo_fresh_snow while the surface is bare ice, so new snow on ice starts fresh and exp(-h / d*) alone decides how
+# much of the ice shows through. Original COSIPY (full reset at every snowfall, albedo_refresh_swe = 0) never used the
+# stale value, so its results are unchanged.
 
 
 def updateAlbedo(
     GRID, surface_temperature: float, albedo_snow: float, opt_dict=None, fresh_swe: float = 0.0,
-    memory_state=None) -> tuple:
+    memory_state=None, superimposed: bool = False) -> tuple:
     """Update the surface albedo.
 
     Implemented albedo methods:
@@ -63,6 +77,7 @@ def updateAlbedo(
         fresh_swe: Snowfall of this time step [kg m-2] (Bougamont05 albedo refresh).
         memory_state (list): [stored snow albedo below the fresh layer (nan = none), fresh-layer SWE [kg m-2],
             fresh-layer height [m]]; updated in place (albedo memory, Bougamont05 only; None = off).
+        superimposed: superimposed ice at the top of the ice -> albedo_superimposed_ice replaces the ice albedo.
 
     Returns:
         tuple[float,float]: Updated surface albedo and snow albedo.
@@ -89,14 +104,19 @@ def updateAlbedo(
         t_star_wet = Constants.t_star_wet
         t_star_K = Constants.t_star_K
 
+    albedo_below = None                                # None: the module-level albedo_ice (as before)
+    if superimposed:
+        albedo_ice = albedo_superimposed_ice
+        albedo_below = albedo_superimposed_ice
+
     albedo_allowed = ["Oerlemans98", "Bougamont05"]
     if albedo_method == "Oerlemans98":
         alphaMod = method_Oerlemans(GRID, albedo_ice, albedo_fresh_snow, albedo_firn,
-                                    albedo_mod_snow_aging, albedo_mod_snow_depth)
+                                    albedo_mod_snow_aging, albedo_mod_snow_depth, albedo_below)
     elif albedo_method == "Bougamont05":
         alphaMod, albedo_snow = method_Bougamont(GRID, surface_temperature, albedo_snow, albedo_ice, albedo_fresh_snow,
                                                  albedo_firn, albedo_mod_snow_depth, t_star_wet, t_star_dry, t_star_K,
-                                                 fresh_swe, memory_state)
+                                                 fresh_swe, memory_state, albedo_below)
     else:
         error_message = (
             f'Albedo method = "{albedo_method}"',
@@ -201,7 +221,8 @@ def get_simple_albedo(elapsed_time: float, albedo_firn: float, albedo_fresh_snow
     return albedo
 
 
-def get_albedo_with_decay(snow_albedo: float, snow_height: float, albedo_mod_snow_depth: float) -> float:
+def get_albedo_with_decay(snow_albedo: float, snow_height: float, albedo_mod_snow_depth: float,
+                          albedo_below=None) -> float:
     """Apply surface albedo decay due to the snow depth.
 
     Taken from Oerlemans & Knap (1998).
@@ -209,11 +230,13 @@ def get_albedo_with_decay(snow_albedo: float, snow_height: float, albedo_mod_sno
     Args:
         snow_alb: Initial snow albedo.
         snow_height: Height of snowpack.
+        albedo_below: albedo of the surface below the snow (None = albedo_ice).
 
     Returns:
         Surface albedo with snow depth decay.
     """
-    albedo = snow_albedo + (albedo_ice - snow_albedo) * np.exp(
+    a_below = albedo_ice if albedo_below is None else albedo_below
+    albedo = snow_albedo + (a_below - snow_albedo) * np.exp(
         (-1.0 * snow_height) / (albedo_mod_snow_depth / 100.0)
     )
 
@@ -221,7 +244,7 @@ def get_albedo_with_decay(snow_albedo: float, snow_height: float, albedo_mod_sno
 
 
 def method_Oerlemans(GRID, albedo_ice: float, albedo_fresh_snow: float, albedo_firn: float, 
-                     albedo_mod_snow_aging: float, albedo_mod_snow_depth: float):
+                     albedo_mod_snow_aging: float, albedo_mod_snow_depth: float, albedo_below=None):
     """Get surface albedo using method from Oerlemans & Knap (1998).
 
     Args:
@@ -252,7 +275,8 @@ def method_Oerlemans(GRID, albedo_ice: float, albedo_fresh_snow: float, albedo_f
         # Surface albedo according to Oerlemans & Knap 1998, JGR)
         alphaSnow = get_simple_albedo(elapsed_time=hours_since_snowfall, albedo_firn=albedo_firn,
                                       albedo_fresh_snow=albedo_fresh_snow, albedo_mod_snow_aging=albedo_mod_snow_aging)
-        alphaMod = get_albedo_with_decay(snow_albedo=alphaSnow, snow_height=h, albedo_mod_snow_depth=albedo_mod_snow_depth)
+        alphaMod = get_albedo_with_decay(snow_albedo=alphaSnow, snow_height=h, albedo_mod_snow_depth=albedo_mod_snow_depth,
+                                         albedo_below=albedo_below)
 
     else:
         # If no snow cover than set albedo to ice albedo
@@ -263,7 +287,7 @@ def method_Oerlemans(GRID, albedo_ice: float, albedo_fresh_snow: float, albedo_f
 
 def method_Bougamont(GRID, surface_temperature, albedo_snow, albedo_ice: float, albedo_fresh_snow: float, 
                      albedo_firn: float, albedo_mod_snow_depth: float, t_star_wet: float, t_star_dry: float, t_star_K: float,
-                     fresh_swe: float = 0.0, memory_state=None):
+                     fresh_swe: float = 0.0, memory_state=None, albedo_below=None):
     """Get surface and snow albedos using method from Bougamont (2005).
 
     Args:
@@ -356,7 +380,8 @@ def method_Bougamont(GRID, surface_temperature, albedo_snow, albedo_ice: float, 
                 alphaMod = albedo_snow + (a_below - albedo_snow) * np.exp(-h_fresh / d_star)
             else:
                 alphaMod = get_albedo_with_decay(snow_albedo=albedo_snow, snow_height=h,
-                                                 albedo_mod_snow_depth=albedo_mod_snow_depth)
+                                                 albedo_mod_snow_depth=albedo_mod_snow_depth,
+                                                 albedo_below=albedo_below)
             return float(alphaMod), albedo_snow
 
         # Refresh by this step's snowfall:
@@ -371,13 +396,15 @@ def method_Bougamont(GRID, surface_temperature, albedo_snow, albedo_ice: float, 
                 albedo_snow = albedo_fresh_snow
 
         # Effect of surface albedo decay due to the snow depth (Oerlemans & Knap 1998):
-        alphaMod = get_albedo_with_decay(snow_albedo=albedo_snow,snow_height=h,albedo_mod_snow_depth=albedo_mod_snow_depth)
+        alphaMod = get_albedo_with_decay(snow_albedo=albedo_snow,snow_height=h,albedo_mod_snow_depth=albedo_mod_snow_depth,
+                                         albedo_below=albedo_below)
 
     else:
         # If no snow cover than set albedo to ice albedo
         alphaMod = albedo_ice
         if use_memory:                                    # bare ice: nothing stored
             memory_state[0], memory_state[1], memory_state[2] = np.nan, 0.0, 0.0
+        albedo_snow = albedo_fresh_snow                   # no snow left: the next snowfall starts as fresh snow
 
     # Ensure output value is of the float data type.
     alphaMod = float(alphaMod)  # faster than isinstance

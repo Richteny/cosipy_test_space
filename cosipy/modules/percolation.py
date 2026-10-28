@@ -1,6 +1,7 @@
 import numpy as np
 from numba import njit
 from cosipy.constants import Constants
+from cosipy.modules.refreezing import interface_refreeze_limit, add_refrozen_to_ice
 
 preferential_percolation_method = Constants.preferential_percolation_method
 preferential_percolation_depth = Constants.preferential_percolation_depth
@@ -11,8 +12,14 @@ air_density = Constants.air_density
 icf_ice = (snow_ice_threshold - air_density) / (ice_density - air_density) #same as in refreezing
 
 @njit
-def percolation(GRID, water: float, dt: int) -> float:
+def percolation(GRID, water: float, dt: int, interface_water: float = 0.0) -> tuple:
     """Percolate melt water through the snow- and firn pack.
+
+    Superimposed ice (interface_water > 0, see refreezing.py): water that reaches the first ice layer after passing
+    through snow refreezes onto it: at most interface_water [m w.e.] (water that came through or from snow in this
+    step), the layer's cold content and the heat conducted into it over dt (refreezing.interface_refreeze_limit).
+    The rest runs off as before. If the snow melted completely in this step, the first ice layer is the top layer
+    and the water released from the snow refreezes there.
 
     Surface water is first placed in the column, either entirely in the top layer ('disabled') or distributed over depth following Marchenko et al. (2017). Whatever exceeds the irreducible water content is then routed downwards with the bucket method.
     Bucket method (Bartelt & Lehning, 2002).
@@ -23,8 +30,9 @@ def percolation(GRID, water: float, dt: int) -> float:
         dt: Integration time [s].
 
     Returns:
-        Percolated meltwater.
+        Runoff [m w.e.] and water refrozen at the snow-ice interface [m w.e.].
     """
+    refrozen_interface = 0.0
 
     # convert m to mm = kg/m2, not needed because of change to fraction
     # water = water * 1000
@@ -42,6 +50,17 @@ def percolation(GRID, water: float, dt: int) -> float:
             GRID.set_node_liquid_water_content(
                 0, GRID.get_node_liquid_water_content(0) + float(water)
             )
+
+    # snow melted away in this step: its water sits in the top layer, which is ice
+    if interface_water > 0.0 and GRID.get_node_ice_fraction(0) >= icf_ice:
+        w0 = GRID.get_node_liquid_water_content(0) * GRID.get_node_height(0)
+        r = min(w0, interface_water, interface_refreeze_limit(GRID, 0, dt))
+        if r > 0.0:
+            GRID.set_node_liquid_water_content(0, (w0 - r) / GRID.get_node_height(0))
+            add_refrozen_to_ice(GRID, 0, r)
+            refrozen_interface += r
+            interface_water -= r
+        interface_water = 0.0                      # only the top interface
 
     # Loop over all internal grid points for percolation
     for idxNode in range(0, GRID.number_nodes - 1, 1):
@@ -66,6 +85,15 @@ def percolation(GRID, water: float, dt: int) -> float:
             be considered because of fractions.
             """
             residual = residual * GRID.get_node_height(idxNode)
+            # snow-ice interface: refreeze onto the first ice layer (superimposed ice)
+            if interface_water > 0.0 and GRID.get_node_ice_fraction(idxNode) < icf_ice \
+                    and GRID.get_node_ice_fraction(idxNode + 1) >= icf_ice:
+                r = min(residual, interface_water, interface_refreeze_limit(GRID, idxNode + 1, dt))
+                if r > 0.0:
+                    add_refrozen_to_ice(GRID, idxNode + 1, r)
+                    residual -= r
+                    refrozen_interface += r
+                interface_water = 0.0                  # only the top interface
             GRID.set_node_liquid_water_content(
                 idxNode + 1,
                 GRID.get_node_liquid_water_content(idxNode + 1)
@@ -74,7 +102,7 @@ def percolation(GRID, water: float, dt: int) -> float:
 
     Q = get_runoff(GRID)
 
-    return Q
+    return Q, refrozen_interface
 
 @njit
 def method_Marchenko(GRID, surface_water: float):
