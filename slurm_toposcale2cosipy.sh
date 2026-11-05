@@ -1,6 +1,7 @@
 #!/bin/bash -l
 #SBATCH --job-name="tps2cosipy"
 # Tipp: sbatch --export=ALL,LW_TERRAIN=prinz,PRECIP_LR=on slurm_toposcale2cosipy.sh
+#       sbatch --export=ALL,LW_TERRAIN=prinz,SRF_VARIANT=50m,GLACIERS=dongkemadi slurm_toposcale2cosipy.sh
 #SBATCH --qos=short
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=20
@@ -45,6 +46,14 @@ WIND_PROFILE="${WIND_PROFILE:-hypsometric}"
 PRECIP_LR="${PRECIP_LR:-off}"
 PRECIP_DZ_MAX="${PRECIP_DZ_MAX:-1000}"
 
+# Schnee-Umverteilung (aus ${cap}_combined_SRF_1D20m.nc, createSRFmap.py mit SRF_50):
+#   SRF_VARIANT = combined (Hanzer 50 m + 5 km, wie bisher) | 50m (nur 50-m-Term) | off
+#   KAVA        = on (Kneib-Lawinenfaktor, passend zur SRF gewichtet) | off
+# Dateisuffix: combined+on -> keins (wie bisher); sonst -srf<variante> und/oder -noava,
+# z.B. -srf50m, -srf50m-noava, -srfoff, -srfoff-noava, -noava
+SRF_VARIANT="${SRF_VARIANT:-combined}"
+KAVA="${KAVA:-on}"
+
 # Nur die Testgletscher bauen: GLACIERS="mera parlung"
 GLACIERS="${GLACIERS:-}"
 
@@ -63,6 +72,7 @@ echo "  LW_TERRAIN= $LW_TERRAIN   (eps=$LW_EPS)"
 echo "  SW_CLOUD  = $SW_CLOUD"
 echo "  WIND_PROF = $WIND_PROFILE"
 echo "  PRECIP_LR = $PRECIP_LR   (dz_max $PRECIP_DZ_MAX m bei capped)"
+echo "  SRF       = $SRF_VARIANT   K_AVA = $KAVA"
 echo "  ACHTUNG: gleichnamige Forcings werden ueberschrieben"
 [ -n "$GLACIERS" ] && echo "  nur: $GLACIERS"
 echo "############################################################"
@@ -92,10 +102,13 @@ while read -r g cap lat lon baseline outlines rest; do
     else
         PRTAG="-lrpr"
     fi
+    SNOWTAG=""
+    [ "$SRF_VARIANT" != "combined" ] && SNOWTAG="-srf${SRF_VARIANT}"
+    [ "$KAVA" = "off" ] && SNOWTAG="${SNOWTAG}-noava"
     if [ "$LW_METHOD" = "topopyscale" ]; then
-        out=$INPUT/$cap/${cap}_ERA5_1D20m_HORAYZON_1987_2024${TERRTAG}${PRTAG}.nc
+        out=$INPUT/$cap/${cap}_ERA5_1D20m_HORAYZON_1987_2024${TERRTAG}${PRTAG}${SNOWTAG}.nc
     else
-        out=$INPUT/$cap/${cap}_ERA5_1D20m_HORAYZON_1987_2024_LW-${LW_METHOD}${TERRTAG}${PRTAG}.nc
+        out=$INPUT/$cap/${cap}_ERA5_1D20m_HORAYZON_1987_2024_LW-${LW_METHOD}${TERRTAG}${PRTAG}${SNOWTAG}.nc
     fi
     baseline_lut=$sdir/${cap}_${baseline}_HORAYZON-LUT_1D20m.nc
 
@@ -115,6 +128,18 @@ while read -r g cap lat lon baseline outlines rest; do
     # ── Vorpruefung ────────────────────────────────────────────────────────
     ok=1
     [ ! -f "$srf" ] && { echo "!!! $cap: SRF fehlt ($srf)"; ok=0; }
+    # braucht die gewaehlte Variante Felder, die nur die neue createSRFmap-Version schreibt?
+    if [ $ok -eq 1 ]; then
+        need=""
+        [ "$SRF_VARIANT" = "50m" ] && need="SRF_50"
+        [ "$KAVA" = "on" ] && [ "$SRF_VARIANT" = "50m" ] && need="$need K_AVA_50"
+        [ "$KAVA" = "on" ] && [ "$SRF_VARIANT" = "off" ] && need="$need K_AVA_PLAIN"
+        [ "$KAVA" = "on" ] && [ "$SRF_VARIANT" = "combined" ] && need="$need K_AVA"
+        if [ -n "$need" ]; then
+            miss=$(python -c "import sys, xarray as xr; d = xr.open_dataset(sys.argv[1]); print(' '.join(v for v in sys.argv[2:] if v not in d))" "$srf" $need)
+            [ -n "$miss" ] && { echo "!!! $cap: $srf ohne $miss -- slurm_createSRFmap.sh (neue Version) laufen lassen"; ok=0; }
+        fi
+    fi
     for f in "${sw[@]}"; do
         [ ! -f "$f" ] && { echo "!!! $cap: LUT fehlt ($f)"; ok=0; }
     done
@@ -176,7 +201,7 @@ PYEOF
     echo "    Baseline: ${cap}_${baseline}_HORAYZON-LUT_1D20m.nc"
     echo "    Umrisse:  ${outlines_sp:-(nur Baseline)}"
     echo "    Wolken:   $n_cloud CLOUD-Dateien in $cdir"
-    echo "    lat=$lat  tcart=-$lon  LW=$LW_METHOD  Terrain=$LW_TERRAIN (eps=$LW_EPS)  SW-Wolken=$SW_CLOUD"
+    echo "    lat=$lat  tcart=-$lon  LW=$LW_METHOD  Terrain=$LW_TERRAIN (eps=$LW_EPS)  SW-Wolken=$SW_CLOUD  SRF=$SRF_VARIANT  K_AVA=$KAVA"
     echo "    -> $out"
     python "$SCRIPT" --glacier "$g" \
         -o "$out" \
@@ -189,7 +214,8 @@ PYEOF
         --lw-eps "$LW_EPS" \
         --sw-cloud "$SW_CLOUD" \
         --precip-lr "$PRECIP_LR" --precip-dz-max "$PRECIP_DZ_MAX" \
-        --wind-profile "$WIND_PROFILE"
+        --wind-profile "$WIND_PROFILE" \
+        --srf-variant "$SRF_VARIANT" --kava "$KAVA"
     rc=$?
     if [ $rc -ne 0 ]; then
         echo "!!! $cap: Skript endete mit Code $rc"

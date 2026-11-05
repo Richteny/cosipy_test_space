@@ -101,6 +101,8 @@ def main(lr_T=0.0, lr_RRR=None, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR,
          rrr_factor_summer = Constants.rrr_factor_summer, rrr_factor_winter = Constants.rrr_factor_winter,
          bias_T2_summer = getattr(Constants, "bias_T2_summer", None),
          bias_T2_winter = getattr(Constants, "bias_T2_winter", None),
+         bias_LWin_summer = getattr(Constants, "bias_LWin_summer", None),
+         bias_LWin_winter = getattr(Constants, "bias_LWin_winter", None),
          precip_peak_elevation = None,
          count="", cluster=None):
 
@@ -134,7 +136,8 @@ def main(lr_T=0.0, lr_RRR=None, lr_RH=0.0, RRR_factor=Constants.mult_factor_RRR,
                 spread_snow_transfer_function, roughness_fresh_snow, roughness_ice, roughness_firn, aging_factor_roughness,
                 bias_LWIN, WS_factor, bias_T2, t_wet, t_dry, t_K, minimum_snowfall, rrr_factor_summer, rrr_factor_winter,
                 bias_T2_summer, bias_T2_winter,   # 21, 22: seasonal T2 bias (JJAS / Oct-May); both set -> replace bias_T2
-                float(lr_RRR), float(precip_peak_elevation))   # 23, 24: precipitation profile (applied in main)
+                float(lr_RRR), float(precip_peak_elevation),   # 23, 24: precipitation profile (applied in main)
+                bias_LWin_summer, bias_LWin_winter)  # 25, 26: seasonal LWin offset (JJAS / Oct-May); both set -> replace bias_LWin
     #0 to 5 - base, 6 center snow , 7 spreadsnow, 8 to 10 roughness length 
     #opt_dict=None
     lapse_T = float(lr_T)
@@ -487,7 +490,8 @@ def run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures, opt_dict=None):
                 NLAYERS, ME, intMB, EVAPORATION, SUBLIMATION, CONDENSATION, \
                 DEPOSITION, REFREEZE, subM, Z0, surfM, new_snow_height, new_snow_timestamp, old_snow_timestamp, MOL, LAYER_HEIGHT, \
                 LAYER_RHO, LAYER_T, LAYER_LWC, LAYER_CC, LAYER_POROSITY, \
-                LAYER_ICE_FRACTION, LAYER_IRREDUCIBLE_WATER, LAYER_REFREEZE, LAYER_TAVG, LAYER_HY, CY_SNOWHEIGHT, LWC_00_10, LWC_10_50, LWC_DEEP, \
+                LAYER_ICE_FRACTION, LAYER_IRREDUCIBLE_WATER, LAYER_REFREEZE, LAYER_TAVG, LAYER_HY, CY_SNOWHEIGHT, \
+                LW_COLUMN, WET_TOP_0, WET_TOP_01, WET_TOP_04, \
                 stake_names, stat, df_eval, forcing_out = future.result()
 
             IO.copy_local_to_global(
@@ -495,7 +499,8 @@ def run_cosipy(cluster, IO, DATA, RESULT, RESTART, futures, opt_dict=None):
                 SNOWHEIGHT, TOTALHEIGHT, TS, ALBEDO, NLAYERS, ME, intMB, EVAPORATION,
                 SUBLIMATION, CONDENSATION, DEPOSITION, REFREEZE, subM, Z0, surfM, MOL,
                 LAYER_HEIGHT, LAYER_RHO, LAYER_T, LAYER_LWC, LAYER_CC, LAYER_POROSITY,
-                LAYER_ICE_FRACTION, LAYER_IRREDUCIBLE_WATER, LAYER_REFREEZE, LAYER_TAVG, LAYER_HY, CY_SNOWHEIGHT, LWC_00_10, LWC_10_50, LWC_DEEP)
+                LAYER_ICE_FRACTION, LAYER_IRREDUCIBLE_WATER, LAYER_REFREEZE, LAYER_TAVG, LAYER_HY, CY_SNOWHEIGHT,
+                LW_COLUMN, WET_TOP_0, WET_TOP_01, WET_TOP_04)
 
             IO.copy_local_forcing_to_global(indY, indX, forcing_out)
             IO.copy_local_restart_to_global(indY,indX,local_restart)
@@ -622,8 +627,8 @@ def output_name_values(opt_dict) -> str:
     Bougamont05: 0 RRR, 1 alb_snow, 2 alb_ice, 3 alb_firn, 4 t_wet, 5 t_dry, 6 t_K, 7 alb depth, 8-10 roughness
     fresh snow / ice / firn, 11 roughness aging, 12 bias LWin, 13 WS factor, 14 bias T2, 15 center snow transfer,
     16 minimum snowfall, 17 / 18 rrr summer / winter, 19 / 20 T2 bias summer / winter (= bias T2 if not split),
-    21 precip lapse rate [1/m], 22 precip peak elevation [m]. Oerlemans98: the old layout (0-16 with albedo aging
-    instead of t_wet / t_dry / t_K)."""
+    21 precip lapse rate [1/m], 22 precip peak elevation [m], 23 / 24 LWin offset summer / winter [W m-2] (= bias LWin
+    if not split). Oerlemans98: the old layout (0-16 with albedo aging instead of t_wet / t_dry / t_K)."""
     o = [float(np.asarray(v)) if v is not None else np.nan for v in opt_dict]
     if Constants.albedo_method == "Oerlemans98":
         vals = [(o[0], 4), (o[2], 4), (o[1], 4), (o[3], 4), (o[4], 4), (o[5], 4), (o[8], 4), (o[9], 4), (o[10], 4),
@@ -636,6 +641,9 @@ def output_name_values(opt_dict) -> str:
                 (o[18], 6), (o[19], 4), (o[20], 4), (t2s, 4), (t2w, 4)]
         if len(o) > 24:
             vals += [(o[23], 6), (o[24], 1)]
+        if len(o) > 26:
+            split = np.isfinite(o[25]) and np.isfinite(o[26])
+            vals += [(o[25] if split else o[12], 4), (o[26] if split else o[12], 4)]
     return "_".join(str(round(v, n)) for v, n in vals)
 
 

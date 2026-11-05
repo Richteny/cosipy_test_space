@@ -17,32 +17,31 @@ from cosipy.modules.surfaceTemperature import update_surface_temperature
 from cosipy.modules.surfaceTemperature import method_EW_Sonntag
 
 
-# Depth zones (m) for the near-surface liquid water outputs, for comparison with Sentinel-1 wet-snow maps.
-# C-band reaches only a few cm into wet snow, but metres into dry snow above a wet layer, so the depth that
-# matters is not known in advance: the maximum liquid water content is stored per zone (no threshold applied),
-# and depth and threshold are chosen in the analysis (max over the zones down to the chosen depth).
-# The deepest zone ends at preferential_percolation_depth, the depth down to which the Marchenko et al. (2017)
-# scheme places surface water directly.
-LWC_ZONES = {"LWC_00_10": (0.0, 0.1), "LWC_10_50": (0.1, 0.5),
-             "LWC_DEEP": (0.5, float(Constants.preferential_percolation_depth))}
+# Radar-oriented wetness (Sentinel-1). C-band passes through dry snow and firn but is stopped within a few cm by wet
+# snow, so the radar sees the SHALLOWEST wet layer, wherever it lies under dry snow. Stored per threshold: the depth of
+# the top of the shallowest layer whose liquid water volume fraction exceeds it (NaN if no layer does). With it,
+# "wet within depth d" = WET_TOP_x <= d, exact for these thresholds and any depth chosen in the analysis.
+# WET_TOP_0 (any liquid water) = Cluzet et al. (2024); 0.1 % = Rottler et al. (2024); 0.4 % = Wagner et al. (2026).
+# LW_COLUMN (total liquid water of the column) gives the bulk fraction of Rottler et al.: LW_COLUMN / (1000 SNOWHEIGHT).
+WET_TOP_THRESHOLDS = {"WET_TOP_0": 1e-6, "WET_TOP_01": 0.001, "WET_TOP_04": 0.004}   # volume fraction
 
 
-def zone_max_lwc(height: np.ndarray, lwc: np.ndarray, z_top: float, z_bottom: float) -> float:
-    """Highest liquid water volume fraction of the layers overlapping the depth zone [z_top, z_bottom).
+def wet_top_depth(height: np.ndarray, lwc: np.ndarray, threshold: float) -> float:
+    """Depth of the upper boundary of the shallowest layer with liquid water volume fraction > threshold.
 
     Args:
         height: Layer thicknesses from the surface down [|m|].
         lwc: Layer liquid water content, volume fraction [-].
-        z_top: Upper limit of the zone, depth below the surface [|m|].
-        z_bottom: Lower limit of the zone, depth below the surface [|m|].
+        threshold: Liquid water volume fraction a layer must exceed [-].
 
     Returns:
-        Maximum liquid water volume fraction in the zone [-] (NaN if no layer reaches the zone).
+        Depth below the surface [|m|] (0 if the surface layer is wet; NaN if no layer is).
     """
-    bottom = np.cumsum(height)                        # depth of each layer's lower boundary
-    top = bottom - height                             # depth of each layer's upper boundary
-    inside = (top < z_bottom) & (bottom > z_top)
-    return float(np.max(lwc[inside])) if inside.any() else np.nan
+    wet = lwc > threshold
+    if not wet.any():
+        return np.nan
+    top = np.cumsum(height) - height
+    return float(top[np.argmax(wet)])
 
 
 def init_nan_array_1d(nt: int) -> np.ndarray:
@@ -211,6 +210,9 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
     # Seasonal T2 bias (JJAS / Oct-May): when both are set they replace bias_T2 (constants.toml or opt_dict[21:23])
     bias_T2_summer = getattr(Constants, "bias_T2_summer", None)
     bias_T2_winter = getattr(Constants, "bias_T2_winter", None)
+    # Seasonal LWin offset (JJAS / Oct-May): when both are set they replace bias_LWin (constants.toml or opt_dict[25:27])
+    bias_LWin_summer = getattr(Constants, "bias_LWin_summer", None)
+    bias_LWin_winter = getattr(Constants, "bias_LWin_winter", None)
     # Replace values from constants.py if coupled
     # TODO: This only affects the current module scope instead of global.
     if WRF_X_CSPY:
@@ -248,6 +250,10 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
         if len(opt_dict) > 22:
             bias_T2_summer = opt_dict[21]
             bias_T2_winter = opt_dict[22]
+        # 23, 24: precipitation profile (applied in main before cosipy_core)
+        if len(opt_dict) > 26:
+            bias_LWin_summer = opt_dict[25]
+            bias_LWin_winter = opt_dict[26]
 
     nt = len(DATA.time.values)  # accessing DATA is expensive
     """
@@ -288,9 +294,10 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
         _new_snow_timestamp = init_nan_array_1d(nt)
         _old_snow_timestamp = init_nan_array_1d(nt)
         _CY_SNOWHEIGHT = init_nan_array_1d(nt)
-        _LWC_00_10 = init_nan_array_1d(nt)
-        _LWC_10_50 = init_nan_array_1d(nt)
-        _LWC_DEEP = init_nan_array_1d(nt)
+        _LW_COLUMN = init_nan_array_1d(nt)
+        _WET_TOP_0 = init_nan_array_1d(nt)
+        _WET_TOP_01 = init_nan_array_1d(nt)
+        _WET_TOP_04 = init_nan_array_1d(nt)
 
         _LAYER_HEIGHT = init_nan_array_2d(nt, max_layers)
         _LAYER_RHO = init_nan_array_2d(nt, max_layers)
@@ -396,9 +403,15 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
 
     LWin = np.array(nt * [None])
     N = np.array(nt * [None])
-    # LWin: scaled with the T2 bias (Stefan-Boltzmann, clouds/terrain of the forcing kept),
-    # then the constant radiative offset bias_LWIN
-    bias_lwin_seas = np.where(np.isin(_months, (6,7,8,9)), float(bias_LWIN), 0.0)
+    # LWin: scaled with the T2 bias (Stefan-Boltzmann, clouds/terrain of the forcing kept), then the radiative
+    # offset: seasonal (JJAS / Oct-May, as bias_T2_summer / _winter) when both seasonal values are set, else bias_LWIN
+    # all year
+    _seasonal_lw = (bias_LWin_summer is not None) and (bias_LWin_winter is not None) \
+        and np.isfinite(float(bias_LWin_summer)) and np.isfinite(float(bias_LWin_winter))
+    if _seasonal_lw:
+        bias_lwin_seas = np.where(np.isin(_months, (6, 7, 8, 9)), float(bias_LWin_summer), float(bias_LWin_winter))
+    else:
+        bias_lwin_seas = np.full(nt, float(bias_LWIN))
     bias_lwin_seas = bias_lwin_seas.reshape((nt,) + (1,) * (T2_raw.ndim - 1))
     if ('LWin' in DATA) and ('N' in DATA):
         DATA['LWin'] = np.clip(DATA['LWin'] * (T2 / T2_raw) ** 4 + bias_lwin_seas, a_min=0.0, a_max=None)
@@ -740,9 +753,10 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
             _rho = np.asarray(GRID.get_density())
             _CY_SNOWHEIGHT[t] = float(np.sum(_lh[(_hy == HYDRO_YEAR[t]) & (_rho < Constants.snow_ice_threshold)]))
             _lwc = np.asarray(GRID.get_liquid_water_content())
-            _LWC_00_10[t] = zone_max_lwc(_lh, _lwc, *LWC_ZONES["LWC_00_10"])
-            _LWC_10_50[t] = zone_max_lwc(_lh, _lwc, *LWC_ZONES["LWC_10_50"])
-            _LWC_DEEP[t] = zone_max_lwc(_lh, _lwc, *LWC_ZONES["LWC_DEEP"])
+            _LW_COLUMN[t] = float(np.sum(_lwc * _lh)) * Constants.water_density      # kg m-2 (mm)
+            _WET_TOP_0[t] = wet_top_depth(_lh, _lwc, WET_TOP_THRESHOLDS["WET_TOP_0"])
+            _WET_TOP_01[t] = wet_top_depth(_lh, _lwc, WET_TOP_THRESHOLDS["WET_TOP_01"])
+            _WET_TOP_04[t] = wet_top_depth(_lh, _lwc, WET_TOP_THRESHOLDS["WET_TOP_04"])
 
             _TOTALHEIGHT[t] = GRID.get_total_height()
             _TS[t] = surface_temperature
@@ -852,4 +866,4 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
             _ME,_intMB,_EVAPORATION,_SUBLIMATION,_CONDENSATION,_DEPOSITION,_REFREEZE, \
             _subM,_Z0,_surfM,_new_snow_height,_new_snow_timestamp,_old_snow_timestamp,_MOL, \
             _LAYER_HEIGHT,_LAYER_RHO,_LAYER_T,_LAYER_LWC,_LAYER_CC,_LAYER_POROSITY,_LAYER_ICE_FRACTION, \
-            _LAYER_IRREDUCIBLE_WATER,_LAYER_REFREEZE,_LAYER_TAVG,_LAYER_HY,_CY_SNOWHEIGHT,_LWC_00_10,_LWC_10_50,_LWC_DEEP,stake_names,_stat,_df,forcing_out)
+            _LAYER_IRREDUCIBLE_WATER,_LAYER_REFREEZE,_LAYER_TAVG,_LAYER_HY,_CY_SNOWHEIGHT,_LW_COLUMN,_WET_TOP_0,_WET_TOP_01,_WET_TOP_04,stake_names,_stat,_df,forcing_out)

@@ -444,9 +444,10 @@ class IOClass:
             "Z0": ("m", "Roughness length"),
             "surfM": ("m w.e.", "Surface melt"),
             "MOL": ("m", "Monin Obukhov length"),
-            "LWC_00_10": ("-", "Maximum liquid water content (volume fraction) of the layers at 0-0.1 m depth"),
-            "LWC_10_50": ("-", "Maximum liquid water content (volume fraction) of the layers at 0.1-0.5 m depth"),
-            "LWC_DEEP": ("-", "Maximum liquid water content (volume fraction) of the layers from 0.5 m to the preferential percolation depth"),
+            "LW_COLUMN": ("kg m-2", "Total liquid water of the snow / firn column"),
+            "WET_TOP_0": ("m", "Depth of the top of the shallowest layer with liquid water (> 1e-6 volume fraction)"),
+            "WET_TOP_01": ("m", "Depth of the top of the shallowest layer with liquid water > 0.1 % (volume fraction)"),
+            "WET_TOP_04": ("m", "Depth of the top of the shallowest layer with liquid water > 0.4 % (volume fraction)"),
         }
         # metadata_result overwrites items in previous union!
         metadata = (
@@ -492,6 +493,8 @@ class IOClass:
             bias_T2_winter = opt_dict[22] if len(opt_dict) > 22 else getattr(Constants, "bias_T2_winter", None)
             precip_lapse_rate = opt_dict[23] if len(opt_dict) > 24 else getattr(Constants, "precip_lapse_rate", 0.0)
             precip_peak_elevation = opt_dict[24] if len(opt_dict) > 24 else getattr(Constants, "precip_peak_elevation", 9000.0)
+            bias_LWin_summer = opt_dict[25] if len(opt_dict) > 26 else getattr(Constants, "bias_LWin_summer", None)
+            bias_LWin_winter = opt_dict[26] if len(opt_dict) > 26 else getattr(Constants, "bias_LWin_winter", None)
             #print(aging_factor_roughness)
         else:
             mult_factor_RRR = Constants.mult_factor_RRR
@@ -519,6 +522,8 @@ class IOClass:
             bias_T2_winter = getattr(Constants, "bias_T2_winter", None)
             precip_lapse_rate = getattr(Constants, "precip_lapse_rate", 0.0)
             precip_peak_elevation = getattr(Constants, "precip_peak_elevation", 9000.0)
+            bias_LWin_summer = getattr(Constants, "bias_LWin_summer", None)
+            bias_LWin_winter = getattr(Constants, "bias_LWin_winter", None)
 
         # Coordinates
         self.RESULT = xr.Dataset()
@@ -565,7 +570,9 @@ class IOClass:
         self.RESULT.attrs["Multiplication_factor_RRR_winter"] = str(rrr_factor_winter)
         self.RESULT.attrs["Use_SRF"] = str(("SRF" in self.DATA) and (Config.use_srf is True))
         self.RESULT.attrs["Use_K_AVA"] = str(("K_AVA" in self.DATA) and (Config.use_ava is True))
-        self.RESULT.attrs["Multiplication_factor_for_LWin"] = bias_LWIN
+        self.RESULT.attrs["Multiplication_factor_for_LWin"] = bias_LWIN   # bias_LWin, W m-2 (all year; replaced by the pair below)
+        self.RESULT.attrs["Bias_LWin_summer_JJAS"] = str(bias_LWin_summer)
+        self.RESULT.attrs["Bias_LWin_winter"] = str(bias_LWin_winter)
         self.RESULT.attrs["Multiplication_factor_for_WS"] = mult_factor_WS
         self.RESULT.attrs["Summer_bias_for_T2"] = bias_T2   # bias_T2 (all year; replaced by the seasonal pair below)
         self.RESULT.attrs["Bias_T2_summer_JJAS"] = str(bias_T2_summer)
@@ -734,9 +741,10 @@ class IOClass:
         local_LAYER_TAVG: np.ndarray,
         local_LAYER_HY: np.ndarray,
         local_CY_SNOWHEIGHT: np.ndarray,
-        local_LWC_00_10: np.ndarray,
-        local_LWC_10_50: np.ndarray,
-        local_LWC_DEEP: np.ndarray,
+        local_LW_COLUMN: np.ndarray,
+        local_WET_TOP_0: np.ndarray,
+        local_WET_TOP_01: np.ndarray,
+        local_WET_TOP_04: np.ndarray,
     ):
         """Copy the local results from workers to global numpy arrays."""
 
@@ -769,9 +777,10 @@ class IOClass:
         self.set_internal_attribute("subM", local_subM, x, y)
         self.set_internal_attribute("surfM", local_surfM, x, y)
         self.set_internal_attribute("MOL", local_MOL, x, y)
-        self.set_internal_attribute("LWC_00_10", local_LWC_00_10, x, y)
-        self.set_internal_attribute("LWC_10_50", local_LWC_10_50, x, y)
-        self.set_internal_attribute("LWC_DEEP", local_LWC_DEEP, x, y)
+        self.set_internal_attribute("LW_COLUMN", local_LW_COLUMN, x, y)
+        self.set_internal_attribute("WET_TOP_0", local_WET_TOP_0, x, y)
+        self.set_internal_attribute("WET_TOP_01", local_WET_TOP_01, x, y)
+        self.set_internal_attribute("WET_TOP_04", local_WET_TOP_04, x, y)
 
         if Config.full_field:
             self.set_full_field_attribute("HEIGHT", local_LAYER_HEIGHT, x, y)

@@ -26,7 +26,7 @@ conda activate pymc_env
 #module load anaconda/2019.07
 #export DASK_DISTRIBUTED__LOGGING__DISTRIBUTED="WARNING"
 
-#python -u /data/scratch/richteny/thesis/cosipy_test_space/COSIPY.py
+python -u /data/scratch/richteny/thesis/cosipy_test_space/COSIPY.py
 #python -u /data/scratch/richteny/thesis/cosipy_test_space/FAST_spotpy.py
 #python -u /data/scratch/richteny/thesis/cosipy_test_space/pymc_calibration.py
 #python -u /data/scratch/richteny/thesis/cosipy_test_space/synthetic_pymc_calibration.py
@@ -43,10 +43,11 @@ conda activate pymc_env
 #python -u /data/scratch/richteny/thesis/cosipy_test_space/cosipy_run_fromlist.py "/data/scratch/richteny/for_emulator/Abramov/LHS-narrow/Abramov_LHS_Posterior_batch_0.csv"
 #python -u /data/scratch/richteny/thesis/cosipy_test_space/cosipy_run_fromlist.py "/data/scratch/richteny/for_emulator/Abramov/LHS-narrow/Abramov_lhs_redo_and_new_part_1.csv"
 
-python -u /data/scratch/richteny/thesis/cosipy_test_space/cosipy_lhs-wide_fromlist.py 0
-python -u /data/scratch/richteny/thesis/cosipy_test_space/cosipy_lhs-wide_fromlist.py 1
-python -u /data/scratch/richteny/thesis/cosipy_test_space/cosipy_lhs-wide_fromlist.py 2
-python -u /data/scratch/richteny/thesis/cosipy_test_space/cosipy_lhs-wide_fromlist.py 3
+#RERUN THESE
+#python -u /data/scratch/richteny/thesis/cosipy_test_space/cosipy_lhs-wide_fromlist.py 0
+#python -u /data/scratch/richteny/thesis/cosipy_test_space/cosipy_lhs-wide_fromlist.py 1
+#python -u /data/scratch/richteny/thesis/cosipy_test_space/cosipy_lhs-wide_fromlist.py 2
+#python -u /data/scratch/richteny/thesis/cosipy_test_space/cosipy_lhs-wide_fromlist.py 3
 
 #python -u /data/scratch/richteny/thesis/cosipy_test_space/cosipy_lhs-narrow-A_fromlist.py 0
 #python -u /data/scratch/richteny/thesis/cosipy_test_space/cosipy_lhs-narrow-A_fromlist.py 1

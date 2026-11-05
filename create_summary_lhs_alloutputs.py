@@ -5,9 +5,11 @@ NetCDF per run in SUMMARY_DIR (the CSV column summary_file names it):
 
   * daily glacier-wide series (dim day, whole run), N_Points-weighted like the albedo:
       daily sums   MB, surfM, subM, SNOWFALL                         (m w.e. / m per day)
-      daily means  ALBEDO, TS, SNOWHEIGHT, LWC_00_10, LWC_10_50, LWC_DEEP
+      daily means  ALBEDO, TS, SNOWHEIGHT, LW_COLUMN
   * per elevation band at the Sentinel-1 pass hours (dims date x pass x point, from PASS_START), for the SAR
-    comparison: LWC_00_10, LWC_10_50, LWC_DEEP, SNOWHEIGHT, melt_6h, melt_24h (surfM + subM summed over the
+    comparison: WET_TOP_0 / _01 / _04 (depth of the shallowest layer with LWC > 0 / 0.1 % / 0.4 %; NaN = dry),
+    LW_COLUMN, SNOWHEIGHT,
+    melt_6h, melt_24h (surfM + subM summed over the
     6 / 24 model steps up to the pass), N_Points; HGT per point.
     Pass hour = the model step (hour-ending labels) containing ~06:00 (descending) and ~18:00 (ascending) local
     solar time at the glacier longitude -- what sar_wet_compare.py picks for the actual acquisitions, up to
@@ -68,12 +70,16 @@ tsla_obs = tsla_obs.loc["1990-01-01":"2023-12-31"]
 # 9 roughness ice, 10 roughness firn, 11 aging factor roughness, 12 bias LWin, 13 WS_factor, 14 bias T2,
 # 15 center_snow_transfer, 16 min snowfall, 17 rrr summer, 18 rrr winter, 19 T2 bias summer, 20 T2 bias winter
 # (19/20 only in runs made after the seasonal T2 bias was added; without a split both equal bias T2),
-# 21 precip lapse rate [1/m], 22 precip peak elevation [m] (runs from 22 Oct 2026 on).
+# 21 precip lapse rate [1/m], 22 precip peak elevation [m] (runs from 22 Oct 2026 on),
+# 23 LWin offset summer, 24 LWin offset winter [W m-2] (runs from 29 Oct 2026 on; = bias LWin if not split).
 FNAME_INDEX = {'rrr_factor': 0, 'alb_snow': 1, 'alb_ice': 2, 'alb_firn': 3, 't_wet': 4, 't_dry': 5, 't_K': 6,
-               'albedo_depth': 7, 'roughness_fresh_snow': 8, 'roughness_ice': 9, 'roughness_firn': 10,
+               't_star_K': 6, 'albedo_depth': 7, 'roughness_fresh_snow': 8, 'roughness_ice': 9, 'roughness_firn': 10,
                'aging_factor_roughness': 11, 'bias_LWin': 12, 'ws_factor': 13, 'bias_T2': 14, 'center_snow': 15,
                'minimum_snowfall': 16, 'rrr_factor_summer': 17, 'rrr_factor_winter': 18,
-               'bias_T2_summer': 19, 'bias_T2_winter': 20, 'precip_lapse_rate': 21, 'precip_peak_elevation': 22}
+               'bias_T2_summer': 19, 'bias_T2_winter': 20, 'precip_lapse_rate': 21, 'precip_peak_elevation': 22,
+               'bias_LWin_summer': 23, 'bias_LWin_winter': 24}
+# decimals of each position in the file name (LHS_COSIPY.output_name_values); all others 4
+FNAME_DECIMALS = {11: 6, 16: 6, 21: 6, 22: 1}
 
 # ---------------- design ----------------------------------------------------------------------------------------
 df = pd.read_csv(DESIGN_CSV)
@@ -186,9 +192,11 @@ def match_file(name):
     gid = parse_run_id_from_filename(name) - ID_OFFSET
     if gid not in df_params.index:
         return None, "nomatch"
-    design_vals = np.round(df_params.loc[gid, param_cols].values.astype(float), 4)
-    if not np.allclose(design_vals, param_vals, atol=1.5e-4):
-        diff = np.abs(design_vals - param_vals)
+    dec = np.array([FNAME_DECIMALS.get(FNAME_INDEX[c], 4) for c in param_cols])
+    raw = df_params.loc[gid, param_cols].values.astype(float)
+    design_vals = np.array([round(v, int(d)) for v, d in zip(raw, dec)])
+    diff = np.abs(design_vals - param_vals)
+    if (diff > 1.5 * 10.0 ** (-dec)).any():                  # one unit of the last decimal (+ float noise)
         print(f"PARAM MISMATCH {name}: largest difference in {param_cols[int(np.argmax(diff))]} "
               f"({diff.max():.5f}) -- wrong design file or ID_OFFSET?")
         df_params.at[gid, "param_mismatch"] = float(diff.max())
@@ -257,14 +265,15 @@ def compute_glacier_mean(ncfile, target_var, time_start_mb, albobs):
 
 # ---------------- all other outputs: one NetCDF per run --------------------------------------------------------
 DAILY_SUM = ["MB", "surfM", "subM", "SNOWFALL"]
-DAILY_MEAN = ["ALBEDO", "TS", "SNOWHEIGHT", "LWC_00_10", "LWC_10_50", "LWC_DEEP"]
-PASS_VARS = ["LWC_00_10", "LWC_10_50", "LWC_DEEP", "SNOWHEIGHT"]
+DAILY_MEAN = ["ALBEDO", "TS", "SNOWHEIGHT", "LW_COLUMN"]
+PASS_VARS = ["WET_TOP_0", "WET_TOP_01", "WET_TOP_04", "LW_COLUMN", "SNOWHEIGHT"]   # those in the run output
 PASS_START = "2017-01-01"                    # Sentinel-1 years used (S1_wetsnow_acquisitions.js)
 PASS_LST = {"desc": 6.0, "asc": 18.0}        # h, local solar time of the S1 passes
 # stored as unsigned 16-bit integers (scale, max): saves ~4x before compression; NaN -> fill value
-PACK = {"LWC_00_10": 1e-5, "LWC_10_50": 1e-5, "LWC_DEEP": 1e-5,          # volume fraction, max 0.65
-        "melt_6h": 1e-5, "melt_24h": 1e-5,                                # m w.e., max 0.65
-        "SNOWHEIGHT": 1e-2}                                               # m, max 655
+PACK = {"melt_6h": 1e-5, "melt_24h": 1e-5,                                # m w.e., max 0.65
+        "SNOWHEIGHT": 1e-2,                                               # m, max 655
+        "LW_COLUMN": 1e-2,                                                # kg m-2, max 655
+        "WET_TOP_0": 2e-3, "WET_TOP_01": 2e-3, "WET_TOP_04": 2e-3}        # m, max 131; NaN = no wet layer
 
 
 def flat(ds, v):
@@ -311,7 +320,7 @@ def at_passes(ds, w):
     s = np.where(valid, step, 0)
     melt = np.nan_to_num(flat(ds, "surfM")) + np.nan_to_num(flat(ds, "subM"))
     c = np.vstack([np.zeros((1, melt.shape[1])), np.cumsum(melt, axis=0)])
-    fields = {v: flat(ds, v)[s] for v in PASS_VARS}
+    fields = {v: flat(ds, v)[s] for v in PASS_VARS if v in ds}
     fields["melt_6h"] = c[s + 1] - c[np.maximum(s - 5, 0)]
     fields["melt_24h"] = c[s + 1] - c[np.maximum(s - 23, 0)]
     fields["N_Points"] = w[s]
@@ -337,6 +346,8 @@ def write_summary(ds, row, source):
     ).expand_dims(run=[row])
     enc = {v: {"zlib": True, "complevel": 4} for v in S.data_vars}
     for v, sc in PACK.items():
+        if v not in enc:                     # variable not in this run's output
+            continue
         enc[v].update(dtype="uint16", scale_factor=sc, _FillValue=np.uint16(65535))
     out = SUMMARY_DIR / f"{source}.nc"
     S.to_netcdf(out, encoding=enc)

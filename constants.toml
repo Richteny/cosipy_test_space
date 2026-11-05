@@ -33,8 +33,8 @@ zlt2 = 0.1
 center_snow_transfer_function = 0.0
 spread_snow_transfer_function = 1
 mult_factor_RRR = 1.0
-rrr_factor_summer = 1.05 #1.826188
-rrr_factor_winter = 1.49 #1.204653
+rrr_factor_summer = 0.90 #1.826188
+rrr_factor_winter = 1.27 #1.204653
 precip_lapse_rate = 0.0004 #1%/m
 precip_peak_elevation = 9000
 minimum_snowfall = 0.001 #0.001 = 1mm
@@ -73,9 +73,11 @@ albedo_mod_snow_aging = 18.038579229329066
 albedo_mod_snow_depth = 1.676463
 albedo_refresh_swe = 10.0 #0.0 = switched off, Bougamont05 refresh by snowfall mass [kg m-2] (FSM, Essery 2015); 0 = depth-weighted reset with albedo_mod_snow_depth
 albedo_memory = true #new memory addition
+superimposed_ice = true # true: refreezing at the snow-ice interface + superimposed-ice albedo (refreezing.py); false = as before
+albedo_superimposed_ice = 0.355 # albedo of superimposed ice at the surface (fixed, not calibrated); albedo_ice is unchanged
 t_star_wet = 7.048785
 t_star_dry = 30
-t_star_K = 0 #14
+t_star_K = 14
 t_star_cutoff = 263.17
 roughness_fresh_snow = 0.24
 roughness_ice = 1.7
